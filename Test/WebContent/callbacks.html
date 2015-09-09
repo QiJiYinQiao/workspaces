@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		function fn1(value){
+			console.log(value);
+		}
+		
+		fucntion fn2(value){
+			console.log("fn2 says: " + value);
+			return false;
+		}
+		
+		var callbacks = $.callbacks();
+		callbacks.add(fn1);
+		
+		//Outputs: foo
+		callbacks.fire("foo!");
+		
+		callbacks.add(fn2);
+		
+		//Outputs:bar!,fn2 says:bar!
+		callbacks.fire("bar!");
+		
+		callbacks.remove(fn2);
+		
+		//Only outputs foobar, as fn2 has been removed.
+		callbacks.fire("foobar");
+		
+	});
+	</script>
+</head>
+<body >
+	
+	
+
+</body>
+</html>

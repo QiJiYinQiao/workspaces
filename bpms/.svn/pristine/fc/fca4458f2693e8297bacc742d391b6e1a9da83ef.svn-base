@@ -1,0 +1,99 @@
+package com.bpms.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.bpms.model.LoanContract;
+import com.bpms.model.vo.LoanContractInfoModel;
+import com.bpms.util.PageUtil;
+
+/**
+ * 合同service
+ * 
+ * @author sunyiban
+ * @date 2015/8/4
+ */
+public interface LoanContractService {
+	/**
+	 * 保存合同
+	 * 
+	 * @param loanContract
+	 * @return
+	 */
+	public boolean persistenceLoanContract(LoanContract loanContract);
+
+	/**
+	 * 根据组织机构查询合同最大进件序号
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public String findJinJianNo(String no);
+
+	/**
+	 * 根据ID查询合同
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public LoanContract findLoanContract(String id);
+
+	/**
+	 * 通过合同的编号进行查询合同中的月还款额的信息
+	 * 
+	 * @param contractNo
+	 *            合同的编号信息
+	 * @return 合同的信息
+	 */
+	public LoanContract findLoanContractByContractNo(String contractNo);
+
+	/**
+	 * 根据订单的Id获取合同的信息
+	 * 
+	 * @param loanOrderId
+	 * @return
+	 */
+	public LoanContract findLoanContractByLoanOrderId(String loanOrderId);
+
+	/**
+	 * 获取合同详细信息
+	 * 
+	 * @return
+	 */
+	public List<LoanContractInfoModel> findLoanConractInfoModelList(
+			Map<String, Object> map, PageUtil pageUtil);
+
+	/**
+	 * 合同详细总条数
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public Long getCountOfConractInfoModel(Map<String, Object> map);
+
+	/**
+	 * 保存合同信息
+	 * 
+	 * @param loanContract
+	 *            保存合同信息
+	 * @return
+	 */
+	public boolean saveLoanConract(LoanContract loanContract);
+
+	/**
+	 * 完成合同信息
+	 * 
+	 * @param loanContract
+	 *            合同信息
+	 * @return
+	 */
+	public boolean saveCompleteContract(LoanContract loanContract);
+
+	/**
+	 * 导出合同明细信息
+	 * 
+	 * @throws Exception
+	 */
+	public void exprotLoanConractInfoModel(Map<String, Object> map)
+			throws Exception;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		$('input')
+			.change(function(){
+				var $input = $(this);
+				$("p").html(".attr('checked'):"+
+						$input.attr("checked") +
+						""+".prop('checked'):" +
+						$input.prop("checked") +
+						".is(':checked'): " + $input
+						.is(":checked")+""
+				);
+			})
+			.change();
+		
+		$("#greatephoto").attr({
+			alt:"Beijing Brush Seller",
+			title:"photo by Kelly Clark"
+		});
+	});
+	</script>
+</head>
+<body >
+	<input id="check1" type="checkbox" checked="checked">
+	<label for="check1">Check me</label>
+</body>
+</html>

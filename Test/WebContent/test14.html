@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		p{
+			margin: 4px;
+			font-size: 16px;
+			font-weight: bolder;
+			cursor: pointer;
+		}
+		
+		.blue{
+			color: blue;
+		}
+		
+		.highlight{
+			background:yellow;
+		}
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		$("p").each(function(){
+			var $thisParagraph = $(this);
+			var count = 0;
+			$thisParagraph.click(function(){
+				count++;
+				$thisParagraph.fund("span").text("clicks:"+count);
+				$thisParagraph.toggleClass("highlight",count % 3 === 0);
+			})
+		})
+	});
+	</script>
+</head>
+<body >
+	<p class="blue">Click to toggle(<span>clicks:0</</span>)</p>
+	<p class="blue highlight">highlight(<span>clisks:0</span>)</p>
+	<p class="blue">on these(<span>clicks:0</span>)</p>
+	<p class="blue">paragraphs(<span>clicks:0</span>)</p>
+</body>
+</html>

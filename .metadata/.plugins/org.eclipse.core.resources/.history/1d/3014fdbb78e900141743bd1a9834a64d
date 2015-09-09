@@ -1,0 +1,10 @@
+package com.test;
+
+import java.io.File;
+
+public class Test1 {
+	public static void main(String[] args) {
+		File file = new File("C");
+		String name=file.getName();
+	}
+}

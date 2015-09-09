@@ -1,0 +1,376 @@
+package com.bpms.model.vo;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * 贷款合同的明细的信息
+ */
+public class LoanContractInfoModel implements java.io.Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String loanReviewRommittee1;// 贷审委1
+	private String loanReviewRommittee2;// 贷审委2
+	private String loanReviewRommittee3;// 贷审委3
+	private String loanReviewRommitteeName1;// 贷审委1姓名
+	private String loanReviewRommitteeName2;// 贷审委2姓名
+	private String loanReviewRommitteeName3;// 贷审委3姓名
+	private String loanOrderId;// 订单的ID
+	private String loanName;// 贷款申请人的姓名
+	private String loanType;// 贷款类型，工薪贷1.3%,事业贷1.4%
+	private String loanIdNo;// 贷款申请人的身份证号
+	private String loanHukouAddrId;// 贷款申请人的户籍地址对应地址表中的ID
+	private String loanHukouAddr;// 贷款申请人的户籍地址
+	private String loanCurAddr;// 贷款申请人的当前地址
+	private String loanMobileTel;// 贷款申请人的手机电话
+	private String salesMan;// 业务员
+	private String organizationId;// 登记者所属的机构的ID
+	private BigDecimal contractAmount;// 合同金额
+	private Integer loanPeriod;// 贷款期限
+	private String operatorAId;// 经办人A
+	private String operatorBId;// 经办人B
+	private String operatorAName;// 经办人A的姓名
+	private String operatorBName;// 经办人B的姓名
+	private String contractNo;// 合同编号
+	private String loanerActName;// 开户名
+	private String loanerActNum;// 开户行账号
+	private String loanerBankNmae;// 开户行名称
+	private Date contractSignDate;// 合同签署日期
+	private Date loanBgDate;// 贷款开始日期
+	private Date loanEdDate;// 贷款结束日期
+	private BigDecimal monthlyRepayment;// 月还款额
+	private String remark;// 合同备注
+	private BigDecimal loanEdu;// 贷款额度
+	private BigDecimal loanInterest;// 贷款利息
+	private BigDecimal visitFee;// 信访费用
+
+	public String getLoanReviewRommittee1() {
+		return loanReviewRommittee1;
+	}
+
+	public void setLoanReviewRommittee1(String loanReviewRommittee1) {
+		this.loanReviewRommittee1 = loanReviewRommittee1;
+	}
+
+	public String getLoanReviewRommittee2() {
+		return loanReviewRommittee2;
+	}
+
+	public void setLoanReviewRommittee2(String loanReviewRommittee2) {
+		this.loanReviewRommittee2 = loanReviewRommittee2;
+	}
+
+	public String getLoanReviewRommittee3() {
+		return loanReviewRommittee3;
+	}
+
+	public void setLoanReviewRommittee3(String loanReviewRommittee3) {
+		this.loanReviewRommittee3 = loanReviewRommittee3;
+	}
+
+	public String getLoanReviewRommitteeName1() {
+		return loanReviewRommitteeName1;
+	}
+
+	public void setLoanReviewRommitteeName1(String loanReviewRommitteeName1) {
+		this.loanReviewRommitteeName1 = loanReviewRommitteeName1;
+	}
+
+	public String getLoanReviewRommitteeName2() {
+		return loanReviewRommitteeName2;
+	}
+
+	public void setLoanReviewRommitteeName2(String loanReviewRommitteeName2) {
+		this.loanReviewRommitteeName2 = loanReviewRommitteeName2;
+	}
+
+	public String getLoanReviewRommitteeName3() {
+		return loanReviewRommitteeName3;
+	}
+
+	public void setLoanReviewRommitteeName3(String loanReviewRommitteeName3) {
+		this.loanReviewRommitteeName3 = loanReviewRommitteeName3;
+	}
+
+	public String getLoanOrderId() {
+		return loanOrderId;
+	}
+
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+
+	public String getLoanName() {
+		return loanName;
+	}
+
+	public void setLoanName(String loanName) {
+		this.loanName = loanName;
+	}
+
+	public String getLoanType() {
+		return loanType;
+	}
+
+	public void setLoanType(String loanType) {
+		this.loanType = loanType;
+	}
+
+	public String getLoanIdNo() {
+		return loanIdNo;
+	}
+
+	public void setLoanIdNo(String loanIdNo) {
+		this.loanIdNo = loanIdNo;
+	}
+
+	public String getLoanHukouAddrId() {
+		return loanHukouAddrId;
+	}
+
+	public void setLoanHukouAddrId(String loanHukouAddrId) {
+		this.loanHukouAddrId = loanHukouAddrId;
+	}
+
+	public String getLoanHukouAddr() {
+		return loanHukouAddr;
+	}
+
+	public void setLoanHukouAddr(String loanHukouAddr) {
+		this.loanHukouAddr = loanHukouAddr;
+	}
+
+	public String getLoanCurAddr() {
+		return loanCurAddr;
+	}
+
+	public void setLoanCurAddr(String loanCurAddr) {
+		this.loanCurAddr = loanCurAddr;
+	}
+
+	public String getLoanMobileTel() {
+		return loanMobileTel;
+	}
+
+	public void setLoanMobileTel(String loanMobileTel) {
+		this.loanMobileTel = loanMobileTel;
+	}
+
+	public String getSalesMan() {
+		return salesMan;
+	}
+
+	public void setSalesMan(String salesMan) {
+		this.salesMan = salesMan;
+	}
+
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public BigDecimal getContractAmount() {
+		return contractAmount;
+	}
+
+	public void setContractAmount(BigDecimal contractAmount) {
+		this.contractAmount = contractAmount;
+	}
+
+	public Integer getLoanPeriod() {
+		return loanPeriod;
+	}
+
+	public void setLoanPeriod(Integer loanPeriod) {
+		this.loanPeriod = loanPeriod;
+	}
+
+	public String getOperatorAId() {
+		return operatorAId;
+	}
+
+	public void setOperatorAId(String operatorAId) {
+		this.operatorAId = operatorAId;
+	}
+
+	public String getOperatorBId() {
+		return operatorBId;
+	}
+
+	public void setOperatorBId(String operatorBId) {
+		this.operatorBId = operatorBId;
+	}
+
+	public String getOperatorAName() {
+		return operatorAName;
+	}
+
+	public void setOperatorAName(String operatorAName) {
+		this.operatorAName = operatorAName;
+	}
+
+	public String getOperatorBName() {
+		return operatorBName;
+	}
+
+	public void setOperatorBName(String operatorBName) {
+		this.operatorBName = operatorBName;
+	}
+
+	public String getContractNo() {
+		return contractNo;
+	}
+
+	public void setContractNo(String contractNo) {
+		this.contractNo = contractNo;
+	}
+
+	public String getLoanerActName() {
+		return loanerActName;
+	}
+
+	public void setLoanerActName(String loanerActName) {
+		this.loanerActName = loanerActName;
+	}
+
+	public String getLoanerActNum() {
+		return loanerActNum;
+	}
+
+	public void setLoanerActNum(String loanerActNum) {
+		this.loanerActNum = loanerActNum;
+	}
+
+	public String getLoanerBankNmae() {
+		return loanerBankNmae;
+	}
+
+	public void setLoanerBankNmae(String loanerBankNmae) {
+		this.loanerBankNmae = loanerBankNmae;
+	}
+
+	public Date getContractSignDate() {
+		return contractSignDate;
+	}
+
+	public void setContractSignDate(Date contractSignDate) {
+		this.contractSignDate = contractSignDate;
+	}
+
+	public Date getLoanBgDate() {
+		return loanBgDate;
+	}
+
+	public void setLoanBgDate(Date loanBgDate) {
+		this.loanBgDate = loanBgDate;
+	}
+
+	public Date getLoanEdDate() {
+		return loanEdDate;
+	}
+
+	public void setLoanEdDate(Date loanEdDate) {
+		this.loanEdDate = loanEdDate;
+	}
+
+	public BigDecimal getMonthlyRepayment() {
+		return monthlyRepayment;
+	}
+
+	public void setMonthlyRepayment(BigDecimal monthlyRepayment) {
+		this.monthlyRepayment = monthlyRepayment;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public BigDecimal getLoanEdu() {
+		return loanEdu;
+	}
+
+	public void setLoanEdu(BigDecimal loanEdu) {
+		this.loanEdu = loanEdu;
+	}
+
+	public BigDecimal getLoanInterest() {
+		return loanInterest;
+	}
+
+	public void setLoanInterest(BigDecimal loanInterest) {
+		this.loanInterest = loanInterest;
+	}
+
+	public BigDecimal getVisitFee() {
+		return visitFee;
+	}
+
+	public void setVisitFee(BigDecimal visitFee) {
+		this.visitFee = visitFee;
+	}
+
+	public LoanContractInfoModel(String loanReviewRommittee1,
+			String loanReviewRommittee2, String loanReviewRommittee3,
+			String loanReviewRommitteeName1, String loanReviewRommitteeName2,
+			String loanReviewRommitteeName3, String loanOrderId,
+			String loanName, String loanType, String loanIdNo,
+			String loanHukouAddrId, String loanHukouAddr, String loanCurAddr,
+			String loanMobileTel, String salesMan, String organizationId,
+			BigDecimal contractAmount, Integer loanPeriod, String operatorAId,
+			String operatorBId, String operatorAName, String operatorBName,
+			String contractNo, String loanerActName, String loanerActNum,
+			String loanerBankNmae, Date contractSignDate, Date loanBgDate,
+			Date loanEdDate, BigDecimal monthlyRepayment, String remark,
+			BigDecimal loanEdu, BigDecimal loanInterest, BigDecimal visitFee) {
+		super();
+		this.loanReviewRommittee1 = loanReviewRommittee1;
+		this.loanReviewRommittee2 = loanReviewRommittee2;
+		this.loanReviewRommittee3 = loanReviewRommittee3;
+		this.loanReviewRommitteeName1 = loanReviewRommitteeName1;
+		this.loanReviewRommitteeName2 = loanReviewRommitteeName2;
+		this.loanReviewRommitteeName3 = loanReviewRommitteeName3;
+		this.loanOrderId = loanOrderId;
+		this.loanName = loanName;
+		this.loanType = loanType;
+		this.loanIdNo = loanIdNo;
+		this.loanHukouAddrId = loanHukouAddrId;
+		this.loanHukouAddr = loanHukouAddr;
+		this.loanCurAddr = loanCurAddr;
+		this.loanMobileTel = loanMobileTel;
+		this.salesMan = salesMan;
+		this.organizationId = organizationId;
+		this.contractAmount = contractAmount;
+		this.loanPeriod = loanPeriod;
+		this.operatorAId = operatorAId;
+		this.operatorBId = operatorBId;
+		this.operatorAName = operatorAName;
+		this.operatorBName = operatorBName;
+		this.contractNo = contractNo;
+		this.loanerActName = loanerActName;
+		this.loanerActNum = loanerActNum;
+		this.loanerBankNmae = loanerBankNmae;
+		this.contractSignDate = contractSignDate;
+		this.loanBgDate = loanBgDate;
+		this.loanEdDate = loanEdDate;
+		this.monthlyRepayment = monthlyRepayment;
+		this.remark = remark;
+		this.loanEdu = loanEdu;
+		this.loanInterest = loanInterest;
+		this.visitFee = visitFee;
+	}
+
+	public LoanContractInfoModel() {
+		super();
+	}
+
+}

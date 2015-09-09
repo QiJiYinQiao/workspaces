@@ -1,0 +1,699 @@
+
+package com.qqms.model;
+// Generated 2015-5-22 11:12:17 by Hibernate Tools 4.0.0
+
+import static javax.persistence.GenerationType.IDENTITY;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+/**
+ * 财富客户信息实体类
+ * @author panchuanhe
+ * @date 2015/5/22
+ */
+@Entity
+@Table(name = "t_bp_investor")
+public class Investor implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
+	/**
+	 * ID
+	 */
+	private Integer invstrId;
+	/**
+	 * 财富客户类型
+	 */
+	private String invstrType;
+	/**
+	 * 财富客户状态
+	 */
+	private String invstrStatusType;
+	/**
+	 * 财富客户姓名
+	 */
+	private String name;
+	/**
+	 * 财富客户性别
+	 */
+	private String genderType;
+	/**
+	 * 客户出生日期
+	 */
+	private Date birthday;
+	/**
+	 * 客户国籍
+	 */
+	private String nationality;
+	/**
+	 * 婚姻状况
+	 */
+	private String marriageType;
+	/**
+	 * 是否有子女
+	 */
+	private String hasChild;
+	/**
+	 * 证件类型
+	 */
+	private String idType;
+	/**
+	 * 证件号码
+	 */
+	private String idNo;
+	/**
+	 * 证件图片
+	 */
+	private byte[] idPic;
+	/**
+	 * 证件发证日期
+	 */
+	private Date idIssueDate;
+	/**
+	 * 证件失效日期
+	 */
+	private Date idExpireDate;
+	/**
+	 * 发证机构所在地
+	 */
+	private String idLocation;
+	/**
+	 * 学历类型
+	 */
+	private String degreeType;
+	/**
+	 * 银行卡号
+	 */
+	private String bankNo;
+	/**
+	 * 开户人
+	 */
+	private String bankAccName;
+	/**
+	 * 银行卡图片
+	 */
+	private byte[] bankPic;
+	/**
+	 * 合同图片
+	 */
+	private byte[] contractPic;
+	/**
+	 * 风险提示函图片
+	 */
+	private byte[] riskPromptPic;
+	/**
+	 * 职业类型
+	 */
+	private String jobType;
+	/**
+	 * 行业编码
+	 */
+	private Integer industryId;
+	/**
+	 * 单位名称
+	 */
+	private String companyName;
+	/**
+	 * 工作年限
+	 */
+	private Integer yearsOfWork;
+	/**
+	 * 单位规模
+	 */
+	private String companyScaleType;
+	/**
+	 * 职务
+	 */
+	private String jobTitle;
+	/**
+	 * 移动电话
+	 */
+	private String mobileTel;
+	/**
+	 * 固定电话
+	 */
+	private String fixedTel;
+	/**
+	 * 电子邮箱
+	 */
+	private String email;
+	/**
+	 * 省的ID
+	 */
+	private String province;
+	/**
+	 * 市的ID
+	 */
+	private String city;
+	/**
+	 * 区域的ID
+	 */
+	private String area;
+	/**
+	 * 客户所住街道
+	 */
+	private String street;
+	/**
+	 * 邮政编码
+	 */
+	private String zip;
+	/**
+	 * 创建投资客户的时间
+	 */
+	private Date createdDate;
+	/**
+	 * 创建人
+	 */
+	private int creator;
+	/**
+	 * 修改时间
+	 */
+	private Date lastmod;
+	/**
+	 * 修改人
+	 */
+	private int modifiyer;
+	/**
+	 * 部门主管
+	 */
+	private int depMenager;
+	/**
+	 * 部门主管签字日期
+	 */
+	private Date signDate;
+	/**
+	 * 附件编码
+	 */
+	private Integer attachmentId;
+	/**
+	 * 描述
+	 */
+	private String description;
+	/**
+	 * 
+	 */
+	private String black01;
+	/**
+	 * 
+	 */
+	private String black02;
+	
+	
+	public Investor() {
+	}
+	public Investor(String name, Date birthday, String idType, String idNo,
+			Date idIssueDate, Date idExpireDate, String degreeType,
+			Date createdDate, int creator, Date lastmod, int modifiyer,
+			int depMenager) {
+		this.name = name;
+		this.birthday = birthday;
+		this.idType = idType;
+		this.idNo = idNo;
+		this.idIssueDate = idIssueDate;
+		this.idExpireDate = idExpireDate;
+		this.degreeType = degreeType;
+		this.createdDate = createdDate;
+		this.creator = creator;
+		this.lastmod = lastmod;
+		this.modifiyer = modifiyer;
+		this.depMenager = depMenager;
+	}
+	public Investor(String invstrType, String invstrStatusType,
+			String name, String genderType, Date birthday,
+			String nationality, String marriageType, String hasChild,
+			String idType, String idNo, byte[] idPic, Date idIssueDate,
+			Date idExpireDate, String idLocation, String degreeType,
+			String bankNo, String bankAccName, byte[] bankPic,
+			byte[] contractPic, byte[] riskPromptPic, String jobType,
+			Integer industryId, String companyName, Integer yearsOfWork,
+			String companyScaleType, String jobTitle, String mobileTel,
+			String fixedTel, String email, String province, String city,
+			String area, String street, String zip, Date createdDate,
+			int creator, Date lastmod, int modifiyer, int depMenager,
+			Date signDate, Integer attachmentId, String description,
+			String black01, String black02) {
+		this.invstrType = invstrType;
+		this.invstrStatusType = invstrStatusType;
+		this.name = name;
+		this.genderType = genderType;
+		this.birthday = birthday;
+		this.nationality = nationality;
+		this.marriageType = marriageType;
+		this.hasChild = hasChild;
+		this.idType = idType;
+		this.idNo = idNo;
+		this.idPic = idPic;
+		this.idIssueDate = idIssueDate;
+		this.idExpireDate = idExpireDate;
+		this.idLocation = idLocation;
+		this.degreeType = degreeType;
+		this.bankNo = bankNo;
+		this.bankAccName = bankAccName;
+		this.bankPic = bankPic;
+		this.contractPic = contractPic;
+		this.riskPromptPic = riskPromptPic;
+		this.jobType = jobType;
+		this.industryId = industryId;
+		this.companyName = companyName;
+		this.yearsOfWork = yearsOfWork;
+		this.companyScaleType = companyScaleType;
+		this.jobTitle = jobTitle;
+		this.mobileTel = mobileTel;
+		this.fixedTel = fixedTel;
+		this.email = email;
+		this.province = province;
+		this.city = city;
+		this.area = area;
+		this.street = street;
+		this.zip = zip;
+		this.createdDate = createdDate;
+		this.creator = creator;
+		this.lastmod = lastmod;
+		this.modifiyer = modifiyer;
+		this.depMenager = depMenager;
+		this.signDate = signDate;
+		this.attachmentId = attachmentId;
+		this.description = description;
+		this.black01 = black01;
+		this.black02 = black02;
+	}
+
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "INVSTR_ID", unique = true, nullable = false)
+	public Integer getInvstrId() {
+		return this.invstrId;
+	}
+
+	public void setInvstrId(Integer invstrId) {
+		this.invstrId = invstrId;
+	}
+
+	@Column(name = "INVSTR_TYPE", length = 1)
+	public String getInvstrType() {
+		return this.invstrType;
+	}
+
+	public void setInvstrType(String invstrType) {
+		this.invstrType = invstrType;
+	}
+
+	@Column(name = "INVSTR_STATUS_TYPE", length = 1)
+	public String getInvstrStatusType() {
+		return this.invstrStatusType;
+	}
+
+	public void setInvstrStatusType(String invstrStatusType) {
+		this.invstrStatusType = invstrStatusType;
+	}
+
+	@Column(name = "NAME", nullable = false, length = 200)
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "GENDER_TYPE", length = 1)
+	public String getGenderType() {
+		return this.genderType;
+	}
+
+	public void setGenderType(String genderType) {
+		this.genderType = genderType;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "BIRTHDAY", nullable = false, length = 10)
+	public Date getBirthday() {
+		return this.birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	@Column(name = "NATIONALITY", length = 50)
+	public String getNationality() {
+		return this.nationality;
+	}
+
+	public void setNationality(String nationality) {
+		this.nationality = nationality;
+	}
+
+	@Column(name = "MARRIAGE_TYPE", length = 1)
+	public String getMarriageType() {
+		return this.marriageType;
+	}
+
+	public void setMarriageType(String marriageType) {
+		this.marriageType = marriageType;
+	}
+
+	@Column(name = "HAS_CHILD", length = 1)
+	public String getHasChild() {
+		return this.hasChild;
+	}
+
+	public void setHasChild(String hasChild) {
+		this.hasChild = hasChild;
+	}
+
+	@Column(name = "ID_TYPE", nullable = false, length = 32)
+	public String getIdType() {
+		return this.idType;
+	}
+
+	public void setIdType(String idType) {
+		this.idType = idType;
+	}
+
+	@Column(name = "ID_NO", nullable = false, length = 32)
+	public String getIdNo() {
+		return this.idNo;
+	}
+
+	public void setIdNo(String idNo) {
+		this.idNo = idNo;
+	}
+
+	@Column(name = "ID_PIC")
+	public byte[] getIdPic() {
+		return this.idPic;
+	}
+
+	public void setIdPic(byte[] idPic) {
+		this.idPic = idPic;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "ID_ISSUE_DATE", nullable = false, length = 10)
+	public Date getIdIssueDate() {
+		return this.idIssueDate;
+	}
+
+	public void setIdIssueDate(Date idIssueDate) {
+		this.idIssueDate = idIssueDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "ID_EXPIRE_DATE", nullable = false, length = 10)
+	public Date getIdExpireDate() {
+		return this.idExpireDate;
+	}
+
+	public void setIdExpireDate(Date idExpireDate) {
+		this.idExpireDate = idExpireDate;
+	}
+
+	@Column(name = "ID_LOCATION")
+	public String getIdLocation() {
+		return this.idLocation;
+	}
+
+	public void setIdLocation(String idLocation) {
+		this.idLocation = idLocation;
+	}
+
+	@Column(name = "DEGREE_TYPE", nullable = false, length = 32)
+	public String getDegreeType() {
+		return this.degreeType;
+	}
+
+	public void setDegreeType(String degreeType) {
+		this.degreeType = degreeType;
+	}
+
+	@Column(name = "BANK_NO", length = 30)
+	public String getBankNo() {
+		return this.bankNo;
+	}
+
+	public void setBankNo(String bankNo) {
+		this.bankNo = bankNo;
+	}
+
+	@Column(name = "BANK_ACC_NAME", length = 32)
+	public String getBankAccName() {
+		return this.bankAccName;
+	}
+
+	public void setBankAccName(String bankAccName) {
+		this.bankAccName = bankAccName;
+	}
+
+	@Column(name = "BANK_PIC")
+	public byte[] getBankPic() {
+		return this.bankPic;
+	}
+
+	public void setBankPic(byte[] bankPic) {
+		this.bankPic = bankPic;
+	}
+
+	@Column(name = "CONTRACT_PIC")
+	public byte[] getContractPic() {
+		return this.contractPic;
+	}
+
+	public void setContractPic(byte[] contractPic) {
+		this.contractPic = contractPic;
+	}
+
+	@Column(name = "RISK_PROMPT_PIC")
+	public byte[] getRiskPromptPic() {
+		return this.riskPromptPic;
+	}
+
+	public void setRiskPromptPic(byte[] riskPromptPic) {
+		this.riskPromptPic = riskPromptPic;
+	}
+
+	@Column(name = "JOB_TYPE", length = 1)
+	public String getJobType() {
+		return this.jobType;
+	}
+
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
+	}
+
+	@Column(name = "INDUSTRY_ID")
+	public Integer getIndustryId() {
+		return this.industryId;
+	}
+
+	public void setIndustryId(Integer industryId) {
+		this.industryId = industryId;
+	}
+
+	@Column(name = "COMPANY_NAME")
+	public String getCompanyName() {
+		return this.companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	@Column(name = "YEARS_OF_WORK")
+	public Integer getYearsOfWork() {
+		return this.yearsOfWork;
+	}
+
+	public void setYearsOfWork(Integer yearsOfWork) {
+		this.yearsOfWork = yearsOfWork;
+	}
+
+	@Column(name = "COMPANY_SCALE_TYPE", length = 55)
+	public String getCompanyScaleType() {
+		return this.companyScaleType;
+	}
+
+	public void setCompanyScaleType(String companyScaleType) {
+		this.companyScaleType = companyScaleType;
+	}
+
+	@Column(name = "JOB_TITLE", length = 200)
+	public String getJobTitle() {
+		return this.jobTitle;
+	}
+
+	public void setJobTitle(String jobTitle) {
+		this.jobTitle = jobTitle;
+	}
+
+	@Column(name = "MOBILE_TEL", length = 20)
+	public String getMobileTel() {
+		return this.mobileTel;
+	}
+
+	public void setMobileTel(String mobileTel) {
+		this.mobileTel = mobileTel;
+	}
+
+	@Column(name = "FIXED_TEL", length = 20)
+	public String getFixedTel() {
+		return this.fixedTel;
+	}
+
+	public void setFixedTel(String fixedTel) {
+		this.fixedTel = fixedTel;
+	}
+
+	@Column(name = "EMAIL", length = 200)
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Column(name = "PROVINCE")
+	public String getProvince() {
+		return this.province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	@Column(name = "CITY")
+	public String getCity() {
+		return this.city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	@Column(name = "AREA")
+	public String getArea() {
+		return this.area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	@Column(name = "STREET", length = 1000)
+	public String getStreet() {
+		return this.street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	@Column(name = "ZIP", length = 20)
+	public String getZip() {
+		return this.zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "CREATED_DATE", nullable = false, length = 10)
+	public Date getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	@Column(name = "CREATOR", nullable = false)
+	public int getCreator() {
+		return this.creator;
+	}
+
+	public void setCreator(int creator) {
+		this.creator = creator;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LASTMOD", nullable = false, length = 10)
+	public Date getLastmod() {
+		return this.lastmod;
+	}
+
+	public void setLastmod(Date lastmod) {
+		this.lastmod = lastmod;
+	}
+
+	@Column(name = "MODIFIYER", nullable = false)
+	public int getModifiyer() {
+		return this.modifiyer;
+	}
+
+	public void setModifiyer(int modifiyer) {
+		this.modifiyer = modifiyer;
+	}
+
+	@Column(name = "DEP_MENAGER", nullable = false)
+	public int getDepMenager() {
+		return this.depMenager;
+	}
+
+	public void setDepMenager(int depMenager) {
+		this.depMenager = depMenager;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "SIGN_DATE", length = 10)
+	public Date getSignDate() {
+		return this.signDate;
+	}
+
+	public void setSignDate(Date signDate) {
+		this.signDate = signDate;
+	}
+
+	@Column(name = "ATTACHMENT_ID")
+	public Integer getAttachmentId() {
+		return this.attachmentId;
+	}
+
+	public void setAttachmentId(Integer attachmentId) {
+		this.attachmentId = attachmentId;
+	}
+
+	@Column(name = "DESCRIPTION", length = 2000)
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Column(name = "BLACK01", length = 1)
+	public String getBlack01() {
+		return this.black01;
+	}
+
+	public void setBlack01(String black01) {
+		this.black01 = black01;
+	}
+
+	@Column(name = "BLACK02", length = 1)
+	public String getBlack02() {
+		return this.black02;
+	}
+
+	public void setBlack02(String black02) {
+		this.black02 = black02;
+	}
+}

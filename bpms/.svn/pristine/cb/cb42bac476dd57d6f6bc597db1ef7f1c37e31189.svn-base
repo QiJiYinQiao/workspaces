@@ -1,0 +1,543 @@
+package com.bpms.model;
+
+// Generated 2015-8-4 16:12:03 by Hibernate Tools 4.3.1
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+
+import com.bpms.util.NumberToCN;
+
+/**
+ * 贷款合同的信息
+ */
+@Entity
+@Table(name = "t_bp_loan_contract")
+public class LoanContract implements java.io.Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private String lcId;			//贷款合同ID
+	private String loanOrderId;		//贷款订单ID
+	private String contractNo;		//贷款合同编号
+	private String contractSignSite;//记录合同的签署地
+	private Date contractSignDate;	//合同签署日期
+	private String loaner;			//贷款人姓名
+	private String loanerIdno;		//贷款人身份证号
+	private String loanerPostalAddr;//贷款人通讯地址
+	private String loanerTel;		//贷款人联系电话
+	private Date loanerSignDate;	//贷款人签字日期
+	private String loanerJoint;		//共同贷款人姓名
+	private String ljIdno;			//共同贷款人身份证号
+	private String ljPostalAddr;	//共同贷款人通讯地址
+	private String ljTel;			//共同贷款人联系电话
+	private Date ljSignDate;		//共同贷款人签字日期
+	private String lender;			//出借人，目前固定为于德建
+	private String lenderIdno;		//出借人身份证号，目前固定为131126197912150054
+	private Date lenderSignDate;	//出借人签字日期
+	private String agent;			//委托代理人姓名，有则填写，否则无
+	private String agentIdno;		//委托代理人身份证号
+	private Date agentSignDate;		//委托代理人签字日期
+	private String purpose;			//贷款用途
+	private BigDecimal loanEdu;		//贷款额度，合同金额
+	private Map<String, String> digitLoanEdu;
+	private String characterLoanEdu;//贷款额度的中文大写 例如：壹仟叁百元
+	private BigDecimal monthlyRate;	//月利率，目前固定为1%（年利率12%）
+	private BigDecimal loanInterest;//贷款利息，贷款利息＝合同金额*月利率
+	private BigDecimal monthlyRepayment;//月还款额度，每月还本金和利息总和。计息公式如下(合同金额/贷款期数)+合同金额*月利率
+	private String characterMonthlyRepayment;//月还款额大写 例如：壹仟叁百元
+	private Map<String,String> digitMonthlyRepayment;
+	private Integer loanPeriods;	//贷款期数，目前可选贷款期数为6期和12期
+	private Integer monthlyRepaymentDate;//月还款日，如果批贷日期在当月15号之前的，还款日为30号，否则为15号
+	private Date loanBgDate;		//贷款开始日期，为合同签约日期
+	private Date loanEdDate;		//贷款结束日期，合同履行终止日期
+	private Date repaymentBgDate;	//还款开始日期
+	private Date repaymentEdDate;	//还款结束日期
+	private String loanerBankName;	//贷款人开户银行全称
+	private String loanerActName;	//贷款人开户行户名，账户名称
+	private String loanerActNum;	//贷款人开户行账号
+	private String contractStatus;	//合同状态，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=contract_status的记录的code_id，取值范围为0－初始状态，1－已签约，2－客户拒签，3－作废
+	private String remark;			//备注信息
+
+	public LoanContract() {
+	}
+
+	public LoanContract(String lcId, String loanOrderId, String contractNo,
+			String loaner, String loanerIdno) {
+		this.lcId = lcId;
+		this.loanOrderId = loanOrderId;
+		this.contractNo = contractNo;
+		this.loaner = loaner;
+		this.loanerIdno = loanerIdno;
+	}
+
+	public LoanContract(String lcId, String loanOrderId, String contractNo,
+			String contractSignSite, Date contractSignDate, String loaner,
+			String loanerIdno, String loanerPostalAddr, String loanerTel,
+			Date loanerSignDate, String loanerJoint, String ljIdno,
+			String ljPostalAddr, String ljTel, Date ljSignDate, String lender,
+			String lenderIdno, Date lenderSignDate, String agent,
+			String agentIdno, Date agentSignDate, String purpose,
+			BigDecimal loanEdu, BigDecimal monthlyRate,
+			BigDecimal loanInterest, BigDecimal monthlyRepayment,
+			Integer loanPeriods, Integer monthlyRepaymentDate, Date loanBgDate,
+			Date loanEdDate, Date repaymentBgDate, Date repaymentEdDate,
+			String loanerBankName, String loanerActName, String loanerActNum,
+			String contractStatus, String remark) {
+		this.lcId = lcId;
+		this.loanOrderId = loanOrderId;
+		this.contractNo = contractNo;
+		this.contractSignSite = contractSignSite;
+		this.contractSignDate = contractSignDate;
+		this.loaner = loaner;
+		this.loanerIdno = loanerIdno;
+		this.loanerPostalAddr = loanerPostalAddr;
+		this.loanerTel = loanerTel;
+		this.loanerSignDate = loanerSignDate;
+		this.loanerJoint = loanerJoint;
+		this.ljIdno = ljIdno;
+		this.ljPostalAddr = ljPostalAddr;
+		this.ljTel = ljTel;
+		this.ljSignDate = ljSignDate;
+		this.lender = lender;
+		this.lenderIdno = lenderIdno;
+		this.lenderSignDate = lenderSignDate;
+		this.agent = agent;
+		this.agentIdno = agentIdno;
+		this.agentSignDate = agentSignDate;
+		this.purpose = purpose;
+		this.loanEdu = loanEdu;
+		this.monthlyRate = monthlyRate;
+		this.loanInterest = loanInterest;
+		this.monthlyRepayment = monthlyRepayment;
+		this.loanPeriods = loanPeriods;
+		this.monthlyRepaymentDate = monthlyRepaymentDate;
+		this.loanBgDate = loanBgDate;
+		this.loanEdDate = loanEdDate;
+		this.repaymentBgDate = repaymentBgDate;
+		this.repaymentEdDate = repaymentEdDate;
+		this.loanerBankName = loanerBankName;
+		this.loanerActName = loanerActName;
+		this.loanerActNum = loanerActNum;
+		this.contractStatus = contractStatus;
+		this.remark = remark;
+	}
+
+	@Id
+	@GenericGenerator(name = "systemUUID", strategy = "uuid")
+	@GeneratedValue(generator = "systemUUID")
+	@Column(name = "LC_ID", insertable = true, updatable = true, nullable = false, length = 40, unique = true)
+	public String getLcId() {
+		return this.lcId;
+	}
+
+	public void setLcId(String lcId) {
+		this.lcId = lcId;
+	}
+
+	@Column(name = "LOAN_ORDER_ID", nullable = false, length = 40)
+	public String getLoanOrderId() {
+		return this.loanOrderId;
+	}
+
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+
+	@Column(name = "CONTRACT_NO", nullable = false, length = 50)
+	public String getContractNo() {
+		return this.contractNo;
+	}
+
+	public void setContractNo(String contractNo) {
+		this.contractNo = contractNo;
+	}
+
+	@Column(name = "CONTRACT_SIGN_SITE", length = 128)
+	public String getContractSignSite() {
+		return this.contractSignSite;
+	}
+
+	public void setContractSignSite(String contractSignSite) {
+		this.contractSignSite = contractSignSite;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "CONTRACT_SIGN_DATE", length = 10)
+	public Date getContractSignDate() {
+		return this.contractSignDate;
+	}
+
+	public void setContractSignDate(Date contractSignDate) {
+		this.contractSignDate = contractSignDate;
+	}
+
+	@Column(name = "LOANER", nullable = false, length = 20)
+	public String getLoaner() {
+		return this.loaner;
+	}
+
+	public void setLoaner(String loaner) {
+		this.loaner = loaner;
+	}
+
+	@Column(name = "LOANER_IDNO", nullable = false, length = 32)
+	public String getLoanerIdno() {
+		return this.loanerIdno;
+	}
+
+	public void setLoanerIdno(String loanerIdno) {
+		this.loanerIdno = loanerIdno;
+	}
+
+	@Column(name = "LOANER_POSTAL_ADDR", length = 200)
+	public String getLoanerPostalAddr() {
+		return this.loanerPostalAddr;
+	}
+
+	public void setLoanerPostalAddr(String loanerPostalAddr) {
+		this.loanerPostalAddr = loanerPostalAddr;
+	}
+
+	@Column(name = "LOANER_TEL", length = 20)
+	public String getLoanerTel() {
+		return this.loanerTel;
+	}
+
+	public void setLoanerTel(String loanerTel) {
+		this.loanerTel = loanerTel;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LOANER_SIGN_DATE", length = 10)
+	public Date getLoanerSignDate() {
+		return this.loanerSignDate;
+	}
+
+	public void setLoanerSignDate(Date loanerSignDate) {
+		this.loanerSignDate = loanerSignDate;
+	}
+
+	@Column(name = "LOANER_JOINT", length = 20)
+	public String getLoanerJoint() {
+		return this.loanerJoint;
+	}
+
+	public void setLoanerJoint(String loanerJoint) {
+		this.loanerJoint = loanerJoint;
+	}
+
+	@Column(name = "LJ_IDNO", length = 32)
+	public String getLjIdno() {
+		return this.ljIdno;
+	}
+
+	public void setLjIdno(String ljIdno) {
+		this.ljIdno = ljIdno;
+	}
+
+	@Column(name = "LJ_POSTAL_ADDR", length = 200)
+	public String getLjPostalAddr() {
+		return this.ljPostalAddr;
+	}
+
+	public void setLjPostalAddr(String ljPostalAddr) {
+		this.ljPostalAddr = ljPostalAddr;
+	}
+
+	@Column(name = "LJ_TEL", length = 20)
+	public String getLjTel() {
+		return this.ljTel;
+	}
+
+	public void setLjTel(String ljTel) {
+		this.ljTel = ljTel;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LJ_SIGN_DATE", length = 10)
+	public Date getLjSignDate() {
+		return this.ljSignDate;
+	}
+
+	public void setLjSignDate(Date ljSignDate) {
+		this.ljSignDate = ljSignDate;
+	}
+
+	@Column(name = "LENDER", length = 20)
+	public String getLender() {
+		return this.lender;
+	}
+
+	public void setLender(String lender) {
+		this.lender = lender;
+	}
+
+	@Column(name = "LENDER_IDNO", length = 32)
+	public String getLenderIdno() {
+		return this.lenderIdno;
+	}
+
+	public void setLenderIdno(String lenderIdno) {
+		this.lenderIdno = lenderIdno;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LENDER_SIGN_DATE", length = 10)
+	public Date getLenderSignDate() {
+		return this.lenderSignDate;
+	}
+
+	public void setLenderSignDate(Date lenderSignDate) {
+		this.lenderSignDate = lenderSignDate;
+	}
+
+	@Column(name = "AGENT", length = 20)
+	public String getAgent() {
+		return this.agent;
+	}
+
+	public void setAgent(String agent) {
+		this.agent = agent;
+	}
+
+	@Column(name = "AGENT_IDNO", length = 32)
+	public String getAgentIdno() {
+		return this.agentIdno;
+	}
+
+	public void setAgentIdno(String agentIdno) {
+		this.agentIdno = agentIdno;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "AGENT_SIGN_DATE", length = 10)
+	public Date getAgentSignDate() {
+		return this.agentSignDate;
+	}
+
+	public void setAgentSignDate(Date agentSignDate) {
+		this.agentSignDate = agentSignDate;
+	}
+
+	@Column(name = "PURPOSE", length = 100)
+	public String getPurpose() {
+		return this.purpose;
+	}
+
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
+	}
+
+	@Column(name = "LOAN_EDU", precision = 20, scale = 5)
+	public BigDecimal getLoanEdu() {
+		return this.loanEdu;
+	}
+
+	public void setLoanEdu(BigDecimal loanEdu) {
+		this.loanEdu = loanEdu;
+	}
+
+	@Column(name = "MONTHLY_RATE", precision = 5)
+	public BigDecimal getMonthlyRate() {
+		return this.monthlyRate;
+	}
+
+	public void setMonthlyRate(BigDecimal monthlyRate) {
+		this.monthlyRate = monthlyRate;
+	}
+
+	@Column(name = "LOAN_INTEREST", precision = 20, scale = 5)
+	public BigDecimal getLoanInterest() {
+		return this.loanInterest;
+	}
+
+	public void setLoanInterest(BigDecimal loanInterest) {
+		this.loanInterest = loanInterest;
+	}
+
+	@Column(name = "MONTHLY_REPAYMENT", precision = 20, scale = 5)
+	public BigDecimal getMonthlyRepayment() {
+		return this.monthlyRepayment;
+	}
+
+	public void setMonthlyRepayment(BigDecimal monthlyRepayment) {
+		this.monthlyRepayment = monthlyRepayment;
+	}
+
+	@Column(name = "LOAN_PERIODS")
+	public Integer getLoanPeriods() {
+		return this.loanPeriods;
+	}
+
+	public void setLoanPeriods(Integer loanPeriods) {
+		this.loanPeriods = loanPeriods;
+	}
+
+	@Column(name = "MONTHLY_REPAYMENT_DATE")
+	public Integer getMonthlyRepaymentDate() {
+		return this.monthlyRepaymentDate;
+	}
+
+	public void setMonthlyRepaymentDate(Integer monthlyRepaymentDate) {
+		this.monthlyRepaymentDate = monthlyRepaymentDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LOAN_BG_DATE", length = 10)
+	public Date getLoanBgDate() {
+		return this.loanBgDate;
+	}
+
+	public void setLoanBgDate(Date loanBgDate) {
+		this.loanBgDate = loanBgDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "LOAN_ED_DATE", length = 10)
+	public Date getLoanEdDate() {
+		return this.loanEdDate;
+	}
+
+	public void setLoanEdDate(Date loanEdDate) {
+		this.loanEdDate = loanEdDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPAYMENT_BG_DATE", length = 10)
+	public Date getRepaymentBgDate() {
+		return this.repaymentBgDate;
+	}
+
+	public void setRepaymentBgDate(Date repaymentBgDate) {
+		this.repaymentBgDate = repaymentBgDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "REPAYMENT_ED_DATE", length = 10)
+	public Date getRepaymentEdDate() {
+		return this.repaymentEdDate;
+	}
+
+	public void setRepaymentEdDate(Date repaymentEdDate) {
+		this.repaymentEdDate = repaymentEdDate;
+	}
+
+	@Column(name = "LOANER_BANK_NAME", length = 80)
+	public String getLoanerBankName() {
+		return this.loanerBankName;
+	}
+
+	public void setLoanerBankName(String loanerBankName) {
+		this.loanerBankName = loanerBankName;
+	}
+
+	@Column(name = "LOANER_ACT_NAME", length = 32)
+	public String getLoanerActName() {
+		return this.loanerActName;
+	}
+
+	public void setLoanerActName(String loanerActName) {
+		this.loanerActName = loanerActName;
+	}
+
+	@Column(name = "LOANER_ACT_NUM", length = 32)
+	public String getLoanerActNum() {
+		return this.loanerActNum;
+	}
+
+	public void setLoanerActNum(String loanerActNum) {
+		this.loanerActNum = loanerActNum;
+	}
+
+	@Column(name = "CONTRACT_STATUS", length = 1)
+	public String getContractStatus() {
+		return this.contractStatus;
+	}
+
+	public void setContractStatus(String contractStatus) {
+		this.contractStatus = contractStatus;
+	}
+
+	@Column(name = "REMARK", length = 100)
+	public String getRemark() {
+		return this.remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	@Transient
+	public String getCharacterLoanEdu() {
+		return characterLoanEdu;
+	}
+
+	public void setCharacterLoanEdu(String characterLoanEdu) {
+		this.characterLoanEdu = characterLoanEdu;
+	}
+
+	@Transient
+	public String getCharacterMonthlyRepayment() {
+		return characterMonthlyRepayment;
+	}
+
+	public void setCharacterMonthlyRepayment(String characterMonthlyRepayment) {
+		this.characterMonthlyRepayment = characterMonthlyRepayment;
+	}
+
+	public void numberToCN(){
+		characterLoanEdu = NumberToCN.number2CNMontrayUnit(loanEdu);
+		characterMonthlyRepayment = NumberToCN.number2CNMontrayUnit(monthlyRepayment);
+	}
+
+	@Transient
+	public Map<String, String> getDigitLoanEdu() {
+		return digitLoanEdu;
+	}
+
+	public void setDigitLoanEdu(Map<String, String> digitLoanEdu) {
+		this.digitLoanEdu = digitLoanEdu;
+	}
+
+	@Transient
+	public Map<String, String> getDigitMonthlyRepayment() {
+		return digitMonthlyRepayment;
+	}
+
+	public void setDigitMonthlyRepayment(Map<String, String> digitMonthlyRepayment) {
+		this.digitMonthlyRepayment = digitMonthlyRepayment;
+	}
+	
+	public void numberToDictMap(){
+		NumberFormat nf = new DecimalFormat("￥##.00");
+		
+		String loanEduStr =  StringUtils.leftPad(nf.format(loanEdu.doubleValue()), 10, " ");
+		Map<String, String> mapEdu = new  HashMap<String, String>();
+		for (int i = 0; i < loanEduStr.length(); i++) {
+			mapEdu.put("edu"+i, loanEduStr.substring(i,i+1));
+		}
+		digitLoanEdu = mapEdu;
+		
+		String monthlyRepaymentStr = StringUtils.leftPad(nf.format(monthlyRepayment.doubleValue()), 10, " ");
+		Map<String, String> mapMr = new  HashMap<String, String>();
+		for (int i = 0; i < monthlyRepaymentStr.length(); i++) {
+			mapMr.put("mr"+i, String.valueOf(monthlyRepaymentStr.substring(i,i+1)));
+		}
+		digitMonthlyRepayment = mapMr;
+	}
+}

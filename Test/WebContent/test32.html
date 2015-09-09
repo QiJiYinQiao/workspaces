@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	<script src="other_lib.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			$(function(){
+				$("button").click(function(){
+					$("div")
+						.animate({left:"+=200px"},2000)
+						.animate({top:"0px"},600)
+						.queue(function(){
+							$(this).toggleclass("red").dequeue();
+						})
+						.animate({left:"10px",top:"30px"},700);
+				});
+				
+			});	
+	</script>
+</head>
+<body >
+		<button id="start">Start</button>
+		<button id = "stop">Stop</button>
+		<div></div>
+			
+</body>
+</html>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="500" key="CommitDialog.weights.0"/>
+	<item value="698" key="RevertDialog.location.x"/>
+	<item value="500" key="CommitDialog.weights.1"/>
+	<item value="484" key="GenerateDiffFileWizard.size.y"/>
+	<item value="525" key="GenerateDiffFileWizard.size.x"/>
+	<item value="258" key="RevertDialog.location.y"/>
+	<item value="198" key="GenerateDiffFileWizard.location.y"/>
+	<item value="144" key="HistoryTableProvider.SVNHistoryPage.修订"/>
+	<item value="698" key="GenerateDiffFileWizard.location.x"/>
+	<item value="715" key="HistoryTableProvider.SVNHistoryPage.注释"/>
+	<item value="357" key="HistoryTableProvider.SVNHistoryPage.日期"/>
+	<item value="286" key="HistoryTableProvider.SVNHistoryPage.作者"/>
+	<item value="387" key="CommitDialog.location.y"/>
+	<item value="475" key="CommitDialog.location.x"/>
+	<item value="525" key="RevertDialog.size.x"/>
+	<item value="393" key="RevertDialog.size.y"/>
+	<item value="1186" key="CommitDialog.size.x"/>
+	<item value="441" key="CommitDialog.size.y"/>
+	<section name="CommitWizard">
+		<item value="false" key="ShowCompare"/>
+		<item value="500" key="VWeight2"/>
+		<item value="500" key="VWeight1"/>
+	</section>
+</section>

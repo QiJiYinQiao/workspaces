@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	
+</head>
+<body>
+	<script type="text/javascript">
+		var des = new Array();
+		des[0] = '<style>\nbody {scrollbar-3dlight-color:green}\n</style>';
+		des[1]="<style>\nbody {scrollbar-arrow-color:green}\n</style>";
+		des[2]="<style>\nbody {scrollbar-base-color:green}\n</style>";
+		des[3]="<style>\nbody {scrollbar-darkshadow-color:green}\n</style>"
+		des[4]="<style>\nbody {scrollbar-face-color:green}\n</style>";
+		des[5]="<style>\nbody {scrollbar-highlight-color:green}\n</style>";
+		des[6]="<style>\nbody {scrollbar-shadow-color:green}\n</style>";
+		des[7]="<style>\nbody {scrollbar-track-color:green}\n</style>";
+		
+		function showdetail(cur,which){
+			cur.style.color = "green";
+			cur.style.cursor = "hand";
+			document.scroll.scroll2.value=des[which];
+			if(document.all){
+				if(which==0){
+					document.body.style.cssText="crollbar-3dlight-color='green'";
+				}else if(which==1){
+					document.body.style.cssText="scrollbar-arrow-color='green'";
+				}else if(which==2){
+					document.body.style.cssText="scrollbar-base-color='green'";
+				}else if(which==3){
+					document.body.style.cssText="scrollbar-darkshadow-color='green'";
+				}else if(which==4){
+					document.body.style.cssText="scrollbar-face-color='green'";
+				}else if(which==5){
+					document.body.style.cssText="scrollbar-highlight-color='green'";
+				}else if(which==6){
+					document.body.style.cssText="scrollbar-shadow-color='green'";
+				}else if(which==7){
+					document.body.style.cssText="scrollbar-track-color='green'";
+				}
+			}
+			
+		}
+	</script>
+	
+	<table cellSpacing=0 cellPadding=0 widht="100%" border=0>
+		<tr>
+			<td width="100%">
+				<table cellSpacing=0 cellPadding=0 width="100%" border=0>
+					<tr>
+						<td width="40%">
+							<font face=Arial size=2>
+								1)
+								<span onclick="showdetail(this,0)">
+									scrollbar-3dlight-color
+								</span>
+								<br>
+								2)
+								<span onclick="showdetail(this,1)">
+									scrollbar-arrow-color
+								</span>
+								<br>
+								3)
+								<span onclick="showdetail(this,2)">
+									scrollbar-base-color
+								</span>
+								<br>
+								4)
+								<span onclick="showdetail(this,3)">
+									scrollbar-dartshadow-color
+								</span>
+								<br>
+								5)
+								<span onclick="showdetail(this,4)">
+									scrollbar-face-color
+								</span>
+								<br>
+								6)
+								<span onclick="showdetail(this,5)">
+									scrollbar-highlight-color
+								</span>
+								<br>
+								7)
+								<span onclick="showdetail(this,6)">
+									scrollbar-shadow-color
+								</span>
+								<br>
+								8)
+								<span onclick="showdetail(this,7)">
+									scroll-track-color
+								</span>
+							</font>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	
+</head>
+<body>
+	<script type="text/javascript">
+		var time_start = new Date(); //创建对象
+		var clock_start = time_start.getTime(); //获取当前时间
+		function get_time_spent(){
+			var time_now = new Date(); //创建对象
+			return ((time_now.getTime()-clock_start)/1000);
+		}
+		function show_secs(){
+			var total_secs = Math.round(get_time_spent()); //计算总时间
+			var secs_spent = total_secs % 60;
+			var mins_spent = Math.round((total_secs-30)/60);
+			var secs_spent = "" + ((secs_spent>9)?secs_spent:"0"+secs_spent);
+			//计算停留秒钟
+			var mins_spent = ""+((mins_spent>9)?mins_spent : "0" +mins_spent);
+			//計算停留分鐘
+			document.form.time_spent.value=mins_spent+":"+secs_spent;
+			//顯示當前停留時間
+			alert("您在當前停留了"+mins_spent+":"+secs_spent+"秒！");
+		}
+	</script>
+	
+	<form	name="form" onSubmit="0">
+		你在本頁面的停留時間：
+		<input type="button" name="time_spent" onclick="show_secs()" value="停留時間">
+	
+	</form>
+</body>
+</html>

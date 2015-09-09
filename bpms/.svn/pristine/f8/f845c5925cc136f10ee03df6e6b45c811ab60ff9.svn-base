@@ -1,0 +1,71 @@
+<%@page import="com.bpms.shiro.ShiroUser"%>
+<%@page import="com.bpms.util.Constants"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+ShiroUser user = Constants.getCurrendUser();
+session.setAttribute("user", String.valueOf(user.getUserId()));
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title>欢迎</title>
+    <meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<jsp:include page="layout/script.jsp"></jsp:include>
+<body>
+    <h2>Merge Cells for DataGrid</h2>
+    <p>Cells in DataGrid body can be merged.</p>
+    <div style="margin:20px 0;"></div>
+    <table class="easyui-datagrid" title="Merge Cells for DataGrid" style="width:1000px;height:1000px"
+            data-options="
+				pagination:true,
+				border:true,
+                rownumbers: true,
+                singleSelect: true,
+                iconCls: 'icon-save',
+                url: 'data.json',
+                method: 'get',
+                onLoadSuccess: onLoadSuccess
+            ">
+        <thead>
+            <tr>
+                <th data-options="field:'productid',width:100">Product</th>
+                <th data-options="field:'itemid',width:80">Item ID</th>
+                <th data-options="field:'listprice',width:80,align:'right'">List Price</th>
+                <th data-options="field:'unitcost',width:80,align:'right'">Unit Cost</th>
+                <th data-options="field:'attr1',width:240">Attribute</th>
+                <th data-options="field:'status',width:60,align:'center'">Status</th>
+            </tr>
+        </thead>
+    </table>
+    <script type="text/javascript">
+        function onLoadSuccess(data){
+            var rows = data.rows;
+            var mergeMap = {};
+            if(rows){
+            	for(var i=0;i<rows.length;i++){
+            		var product = rows[i].productid
+            		if( product in mergeMap ){
+            			mergeMap[product].rowspan++;
+            		}else{
+            			mergeMap[product]={"index":i,"rowspan":1}
+            		}
+            	}
+            }
+            for(var i in mergeMap){
+                $(this).datagrid('mergeCells',{
+                    index: mergeMap[i].index,
+                    field: 'productid',
+                    rowspan: mergeMap[i].rowspan
+                });
+            }
+        }
+    </script>
+</body>
+</html>

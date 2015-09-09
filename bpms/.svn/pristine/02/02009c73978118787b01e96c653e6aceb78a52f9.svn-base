@@ -1,0 +1,601 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<script type="text/javascript" src="js/validate.js"></script>
+<style>
+.easyui-textbox {
+	height: 18px;
+	width: 170px;
+	line-height: 16px;
+	/*border-radius: 3px 3px 3px 3px;*/
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+	transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+}
+textarea:focus, input[type="text"]:focus {
+	border-color: rgba(82, 168, 236, 0.8);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px
+		rgba(82, 168, 236, 0.6);
+	outline: 0 none;
+}
+input, textarea {
+	font-weight: normal;
+}
+.easyui-aa{
+}
+.table {
+	background-color: transparent;
+	border-collapse: collapse;
+	border-spacing: 0;
+	max-width: 100%;
+}
+
+.table {
+	text-align: left;
+	padding: 6px 10px 6px 10px;
+}
+
+.table th {
+	text-align: right;
+	padding: 6px 10px 6px 10px;
+}
+.table td {
+	text-align: left;
+	padding: 6px 10px 6px 10px;
+}
+</style>
+<script type="text/javascript" src="jsp/loanOrder/loanOrderBaseForm.js"></script>
+<script type="text/javascript" src="jsp/loanOrder/loanOrderLinkPeople.js"></script>
+<script type="text/javascript" src="jsp/loanOrder/loanOrderWorkUnit.js"></script>
+<script type="text/javascript" src="jsp/loanOrder/loanOrderBankForm.js"></script>
+<script type="text/javascript">
+   var areaComboxUtil;
+   var $row;
+   //页面加载函数
+   $(function(){
+	    //渲染所有的公用的下拉框
+	    RenderCombox();
+	    //渲染基本信息姓名下拉框
+	    RenderName();
+	   //渲染基本信息户籍地址省市县
+	   renderProvinceSelect("hukouProvinceId","hukouCityId","hukouAreaId");
+	   //渲染基本信息现住地址省市县
+	   renderProvinceSelect("curProvinceId","curCityId","curAreaId");
+	   //紧急联系家庭地址
+	   renderProvinceSelect('familyProvince', 'familyCity', 'familyArea');
+	   //紧急联系人单位地址
+	   renderProvinceSelect('compProvince', 'compCity', 'compArea');
+	   //工作单位
+	   renderProvinceSelect('dwProvince', 'dwCity', 'dwArea');
+	   //渲染共同贷款人户籍地址
+	   renderProvinceSelect("residenceProvinceId","residenceCityId","residenceAreaId");
+	   //渲染共同贷款人的当前地址
+	   renderProvinceSelect("ljCurProvinceId","ljCurCityId","ljCurAreaId");
+	   //渲染共同贷款人的单位地址
+	   renderProvinceSelect("corpProvinceId","corpCityId","corpAreaId");
+		//选中客户姓名后 ， 点击对应TAB页再加载对应数据，否则不自动加载	
+		$("#tt").tabs({
+			onSelect:function(title,index){
+				 if($row!=null){
+					if(1==index){
+						linkPeopleDatagrid();//紧急联系人列表
+					 	$('#linkPeople').datagrid('options').url = "contacts/contactsAction!findAllList.action";
+			            $('#linkPeople').datagrid('reload',{"loanerId": $row.loanerId}); 
+					}else if(2==index){
+						initDatagrid();//工作单位列表
+					 	$('#dwDatagrid').datagrid('options').url = "company/companyAction!findListByLoanerId.action";
+			            $('#dwDatagrid').datagrid('reload',{"loanerId": $row.loanerId}); 
+					}else if(4==index){
+						initBankGrid();//开户行列表
+					 	$('#bankGrid').datagrid('options').url = "accountInfo/accountInfoAction!findListByLoanerId.action";
+			            $('#bankGrid').datagrid('reload',{"loanerId": $row.loanerId}); 
+					}
+				  }
+			   }
+		 });
+   });
+   
+   // 用户名的下拉grid
+   function RenderName(){
+		$("#baseForm input[name='name']").combogrid({    
+		    panelWidth:250,  
+		    mode: 'remote',   
+		    idField:'name',    
+		    textField:'name',    
+		    url:'loaner/loanerAction!findCombgridLoaner.action',
+		    columns:[[    
+		        {field:'name',title:'姓名',width:100},    
+		        {field:'idNo',title:'身份证号',width:150},    
+		    ]] ,
+		    onClickRow:function(index,row){
+		        $("#baseForm").form('load',row); 
+		        //渲染市区
+		        renderCitySelect('hukouCityId','hukouAreaId',row.hukouProvinceId);
+		        renderCitySelect('curCityId','curAreaId',row.curProvinceId);
+		        $("#hukouCityId").combobox("setValue",row.hukouCityId);
+		        $("#hukouAreaId").combobox("setValue",row.hukouAreaId);
+		        $("#curCityId").combobox("setValue",row.curCityId);
+		        $("#curAreaId").combobox("setValue",row.curAreaId);
+		        $row = row;
+		    }
+		}); 
+	}
+	
+	//基本信息保存
+	function toSaveBaseInfo(idh,ids){
+		if($("#name").combogrid("getText")==""){
+			$.messager.alert("提示","请填写联系人姓名!","info");
+			return false;
+		}
+		if(!$("#baseForm").form('validate')){return false;}
+		$.ajax({
+			cache:true,
+			type:'POST',
+			url:'loaner/loanerAction!persistenceLoaner.action',
+			data:$('#baseForm').serialize(),
+			async:false,
+			dataType:'JSON',
+			success:function(res){
+				if(res.state){
+					$("#loanerId").val(res.loanerId);
+					$("#loanOrderId").val(res.loanOrderId);
+					$("#createDate").val(res.createDate);
+					$("#hukouAddr").val(res.hukouAddr);
+					$("#curAddr").val(res.curAddr);
+					$row = res;
+					parent.$.messager.show({
+						title : '提示',
+						msg : '恭喜你，保存成功!',
+						timeout : 4000 * 2
+					});
+				}else{
+					$.messager.alert("提示", '出错了，保存失败!',"error")
+				}
+			}
+		});
+	}
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+	<div data-options="region:'center',border:false" title="">
+		<div id="tt">
+			<div title="客户基本资料" data-options="iconCls:'icon-cstbase'"
+				style="padding: 10px">
+				<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+				   <form id="baseForm" method="post">
+						<input id="loanerId" name="loanerId" type="hidden"/><!-- 贷款人id -->
+						<input id="loanOrderId" name="loanOrderId" type="hidden"/><!-- 订单id -->
+						<input id="createDate" name="createDate" type="hidden"/> <!-- 创建时间 -->
+						<input id="hukouAddr" name="hukouAddr" type="hidden"/> <!-- 户籍地址id -->
+						<input id="curAddr" name="curAddr" type="hidden"/> <!-- 现住地址id -->
+						<input id="sign" type="hidden" value="edit"/><!-- 修改or保存状态标志 -->
+						<table class="table">
+							<tr>
+								<th>姓名:</th>
+								<td><input id="name" name="name"
+									class="easyui-validatebox easyui-textbox easyui-combogrid"
+									type="text" data-options="validType:'length[0,100]'"/></td>
+							    <th>身份证号:</th>
+								<td><input id="idNo" name="idNo" type="text"
+									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'idcard'"/></td>
+								<th>性别:</th>
+								<td><input name="genderType" type="text"
+									class="easyui-validatebox easyui-textbox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+							</tr>
+							<tr>
+								<th>手机:</th>
+								<td><input id="mobileTel" name="mobileTel" type="text"
+									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'mobile'"/></td>
+								<th>住址电话:</th>
+								<td><input id="fixedTel" name="fixedTel" type="text"
+									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'phone'"/></td>
+								<th>家庭电话:</th>
+								<td><input id="familyTel" name="familyTel" type="text"
+									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'phone'"/></td>
+							</tr>
+							<tr>
+								<th>年龄:</th>
+								<td><input id="age" name="age" type="text"
+									class="easyui-validatebox easyui-textbox" data-options="validType:'age'"/></td>
+								<th>婚姻状况:</th>
+								<td><input id="marriageType" name="marriageType"
+									type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+								<th>有无子女:</th>
+								<td><input id="hasChild" name="hasChild" type="text"
+									class="easyui-validatebox easyui-textbox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+							</tr>
+							<tr>
+								<th>年收入(元):</th>
+								<td><input id="annualSalary" name="annualSalary"
+									type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'mDouble'"/></td>
+								<th>收入来源:</th>
+								<td><input id="incomeSrc" name="incomeSrc" type="text"
+									class="easyui-validatebox easyui-textbox " data-options="required:true,validType:'length[0,100]'"/></td>
+								<th>居住情况:</th>
+								<td><input id="mortgageStatus" name="mortgageStatus"
+									type="text" class="easyui-textbox easyui-validatebox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+							</tr>
+							<tr>
+							    <th>月供(元):</th>
+							    <td>
+							       <input name="houseInstallPay" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'mDouble'"/>
+							    </td>
+							    <th>房租(元):</th>
+							    <td>
+							       <input name="rent" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'mDouble'"/>
+							    </td>
+							    <th>邮箱:</th>
+								<td>
+								   <input id="email" name="email" type="text"
+									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'email'"/>
+								</td>
+							</tr>
+							<tr>
+								<th>QQ号:</th>
+								<td><input id="qqNo" name="qqNo" type="text"
+									class="easyui-textbox easyui-validatebox" data-options="validType:'qq'"/></td>
+							</tr>
+							<tr>
+							  <th>户籍地址:</th>
+							  <td colspan="5">
+							            省:<input id="hukouProvinceId" name="hukouProvinceId" type="text" class="easyui-combobox"  style="width: 100px;"/>
+							            市:<input id="hukouCityId" name="hukouCityId" type="text" class="easyui-combobox" style="width: 100px;"/>
+							     区/县:<input id="hukouAreaId" name="hukouAreaId" type="text" class="easyui-combobox" style="width: 100px;"/>
+							        街道:<input name="hukouAddrDetails" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,250]'" style="width: 303px;"/>
+							  </td>
+							</tr>
+							<tr>
+							   <th>现住地址:</th>
+							   <td colspan="5">
+							                  省:<input id="curProvinceId" name="curProvinceId" type="text" class="easyui-combobox" style="width: 100px;"/>
+							                  市:<input id="curCityId" name="curCityId" type="text" class="easyui-combobox" style="width: 100px;"/> 
+							           区/县:<input id="curAreaId" name="curAreaId" type="text" class="easyui-combobox" style="width: 100px;"/> 
+							              街道:<input name="curAddrDetails" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,250]'" style="width: 303px;"/>     
+							   </td>
+							</tr>
+							<tr>
+							   <td colspan="6" style="text-align: right;">
+							      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm();">重置</a>
+							      <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveBaseInfo('save','edit');">保存</a>
+							      <a href="javascript:void(0)" id="edit" class="easyui-linkbutton" iconCls="icon-save" style="display: none;" onclick="ableForm();">修改</a>
+							   </td>
+							</tr>
+						</table>
+				</form>
+		        </div>
+			</div>
+			<div title="紧急联系人" data-options="iconCls:'icon-help'"
+				style="padding: 10px">
+				<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+				   <form id="LinkPeopleForm">
+				   <input id="cusId" name="cusId" type="hidden"/><!--贷款人id -->
+				   <input id="contactId" name="contactId" type="hidden"/><!-- 紧急联系人id -->
+				   <input name="cusType" type="hidden"/><!-- 客户类型 -->
+				   <input name="contactStatus" type="hidden"/><!-- 联系人的状态 -->
+				   <input name="enName" type="hidden"/><!-- 联系人的英文名字 -->
+				   <input name="idType" value="A" type="hidden"/><!-- 证件类型 -->
+				   <input name="zip" type="hidden"/><!-- 邮政编码 -->
+				   <input name="creator" type="hidden"/><!-- 创建人 -->
+				   <input name="createDate" type="hidden"/><!-- 创建时间 -->
+				   <input name="email" type="hidden"/><!-- 邮箱 -->
+				   <input name="birthday" type="hidden"/><!-- 出生日期 -->
+					<table class="table">
+						<tr>
+							<th>姓名:</th>
+							<td><input name="chName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,16]'" type="text" /></td>
+							<th>性别:</th>
+							<td><input name="genderType" type="text" class="easyui-textbox easyui-validatebox"  panelHeight="auto" editable="false"/></td>
+							<th>身份证号:</th>
+							<td><input name="idNo" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'idcard'"/></td>
+						</tr>
+						<tr>
+							<th>年龄:</th>
+							<td><input name="age" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'age'"/></td>
+							<th>手机:</th>
+							<td><input id="tel" name="tel" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mobile'"/></td>
+							<th>家庭电话:</th>
+							<td><input id="fixedTel" name="fixedTel" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'phone'"/></td>
+						</tr>
+						<tr>
+							<th>工作单位:</th>
+							<td><input name="workplace" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,50]'"/></td>
+							<th>单位电话:</th>
+							<td><input name="compTel" class="easyui-textbox easyui-validatebox" data-options="validType:'phone'"/></td>
+							<th>职务:</th>
+							<td><input name="jobTitle" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,100]'"/></td>
+						</tr>
+						<tr>
+							<th>年收入(元):</th>
+							<td><input name="annualSalary" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'"/></td>
+							<th>工作年限(年):</th>
+							<td><input name="yearsOfWork" class="easyui-textbox easyui-validatebox" data-options="validType:'integer'"/></td>
+							<th>与本人关系:</th>
+							<td>
+							  <input name="relationship" class="easyui-textbox easyui-validatebox"  panelHeight="auto" editable="false"/>
+							</td>
+						</tr>
+						<tr>
+							<th>单位地址:</th>
+							<td colspan="5">
+							            省:<input id="compProvince" name="compProvince" class="easyui-combobox" style="width: 100px;" /> 
+								市:<input id="compCity" name="compCity" class="easyui-combobox" style="width: 100px;"/> 
+								县:<input id="compArea" name="compArea" class="easyui-combobox" style="width: 100px;"/>
+								详细地址:<input name="compAddrDetails" class="easyui-textbox easyui-validatebox" style="width: 330px;"/>
+							</td>
+						</tr>
+						<tr>
+							<th>家庭地址:</th>
+							<td colspan="5">
+							        省:<input id="familyProvince" name="familyProvince" class="easyui-combobox" style="width: 100px;" /> 
+							        市:<input id="familyCity" name="familyCity" class="easyui-combobox" style="width: 100px;"/> 
+							        县:<input id="familyArea" name="familyArea" class="easyui-combobox" style="width: 100px;"/>
+							        详细地址:<input name="familyAddrDetails" class="easyui-textbox easyui-validatebox" style="width: 330px;"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="6" style="text-align: right;">
+							  <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#LinkPeopleForm').form('clear');">重置</a>
+							  <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveLinkPeople();">保存</a>
+							</td>
+						</tr>
+					</table>
+				</form>
+				</div>
+				<div style="margin-left: 5px;margin-top: 5px;">
+				  <table id="linkPeople"></table>
+				</div>
+			</div>
+			<div title="工作单位" data-options="iconCls:'icon-help'"
+				style="padding: 10px">
+				<div class="well well-small" >
+				  <form id="dwform">
+				    <input name="comId" type="hidden"/><!-- 公司id -->
+				    <input name="creator" type="hidden"/><!-- 创建人 -->
+				    <input name="createDate" type="hidden"/><!-- 创建时间 -->
+					<table class="table">
+						<tr>
+							<th>工作单位:</th>
+							<td><input name="name" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,16]'" type="text" />
+							<th>单位电话:</th>
+							<td><input name="tele" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'phone'"/></td>
+							<th>注册号:</th>
+							<td><input name="regId" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
+						</tr>
+						<tr>
+							<th>营业面积(m²):</th>
+							<td><input name="areaSize" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'integer'"/></td>
+							<th>注册资本(元):</th>
+							<td><input name="regCapital" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mDouble'"/></td>
+							<th>成立时间:</th>
+							<td><input name="foundedTime" type="text" class="easyui-validatebox easyui-datebox"  editable='false'/></td>
+						</tr>
+						<tr>
+							<th>单位性质:</th>
+							<td><input name="corpNature" type="text" class="easyui-textbox easyui-combobox"/></td>
+							<th>员工数量:</th>
+							<td><input name="empAmount" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'integer'"/></td>
+							<th>经营范围:</th>
+							<td colspan="3"><input name="businessScope" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,100]'"/></td>
+						</tr>
+						<tr>
+						    <th>单位地址:</th>
+						    <td colspan="5">
+						                        省:<input id="dwProvince" name="dwProvince" class="easyui-combobox" style="width: 100px;" /> 
+								市:<input id="dwCity" name="dwCity" class="easyui-combobox" style="width: 100px;"/> 
+								县:<input id="dwArea" name="dwArea" class="easyui-combobox" style="width: 100px;"/>
+								详细地址:<input name="dwAddrDetails" class="easyui-validatebox easyui-textbox" data-options="required:true"  style="width: 316px;"/>
+						    </td>
+						</tr>
+						<tr>
+						    <td colspan="6" style="text-align: right;">
+						       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#dwform').form('clear');">重置</a>
+						       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveDw();">保存</a>
+						    </td>
+						</tr>
+					</table>
+				</form>
+				</div>
+				<div>
+				  <table id="dwDatagrid"></table>
+				</div>
+			</div>
+			<div title="申请贷款信息" data-options="iconCls:'icon-help'"
+				style="padding: 10px">
+				<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 700px;">
+				  <form id="loanInfo">
+				    <table class="table">
+						<tr>
+							<th>申请额度(元):</th>
+							<td><input name="loanAmount" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mDouble1'" type="text" />
+							<th>最低接受额度(元):</th>
+							<td><input name="loanMin" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mDouble1'"/></td>
+						</tr>
+						<tr>
+							<th>申请贷款期限(月):</th>
+							<td><input name="loanPeriod" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'integer'"/></td>
+							<th>还款方式:</th>
+							<td><input name="repayMethod" type="text" class="easyui-textbox easyui-validatebox easyui-combobox"  panelHeight="auto" editable="false"/></td>
+						</tr>
+						<tr>
+						    <th>贷款类型:</th>
+						    <td>
+						       <input name="loanType" type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  panelHeight="auto" editable="false"/>
+						    </td>
+						    <th>业务员:</th>
+							<td><input name="salesMan" class="easyui-validatebox easyui-textbox" /></td>
+						</tr>
+						<tr>
+							<th>贷款用途:</th>
+							<td colspan="3">
+							  <textarea name="purpose" class="easyui-validatebox easyui-textbox" data-options="required:true" style="width: 470px; height: 80px;"></textarea>
+							</td>
+						</tr>
+						<tr>
+						    <td colspan="4" style="text-align: right;">
+						      <a href="javascript:void(0)" id="resetinfo" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#loanInfo').form('clear');">重置</a>
+						      <a href="javascript:void(0)" id="saveinfo" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveLoanInfo();">保存</a>
+						      <a href="javascript:void(0)" id="editinfo" class="easyui-linkbutton" iconCls="icon-edit" style="display: none;" onclick="showSavebut();">修改</a>
+						    </td>
+						</tr>
+					</table>
+				  </form>
+				</div>
+			</div>
+			<div id="banks" title="开户行信息" data-options="iconCls:'icon-help'"
+				style="padding: 10px">
+				<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+				   <form id="bankForm" method="post">
+				        <input id="bankCusId" name="cusId" type="hidden"/><!-- 贷款人id -->
+				        <input id="accountId" name="accountId" type="hidden"/><!-- 开户行信息id -->
+				        <input name="cusType" type="hidden"/><!-- 客户类型 -->
+				        <input name="creator" type="hidden"/><!-- 创建人 -->
+				        <input name="createDate" type="hidden"/><!-- 创建时间 -->
+						<table class="table">
+							<tr>
+								<th>开户名称:</th>
+								<td><input name="accountName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,60]'" type="text" /></td>
+								<th>开户行名称:</th>
+								<td><input name="bankName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,60]'" type="text" /></td>
+								<th>开户账号:</th>
+								<td><input name="accountNum" type="text" class="easyui-validatebox easyui-textbox easyui-numberbox" data-options="required:true" /></td>
+							</tr>
+							<tr>
+							    <th>账户介质:</th>
+							    <td><input name="actMedium" type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  panelHeight="auto" editable="false"/></td>
+							    <th>账户性质:</th>
+							    <td><input name="actNature" type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  panelHeight="auto" editable="false"/></td>
+							    <th>主副银行卡:</th>
+							    <td><input name="primaryBackup" type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  panelHeight="auto" editable="false"/></td>
+							</tr>
+							<tr>
+							  <td colspan="6" style="text-align: right;">
+							    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#bankForm').form('clear');">重置</a>
+							    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveBankInfo();">保存</a>
+							  </td>
+							</tr>
+						</table>
+				   </form>
+				</div>
+				<div style="margin-left: 5px;margin-top: 5px;">
+				  <table id="bankGrid"></table>
+				</div>
+			</div>
+			<div title="附件信息" data-options="iconCls:'icon-help'" style="padding: 10px">
+				<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+				   <form id="fujianxinxi" method="post">
+						<input name="auditId" type="hidden" value="noauditId"/>		
+						<div id="attachmentList" style="width:100%;display:block;float:left;">
+						</div>
+						<div id="upload_form_div_adds">
+							<div id="upload_form_father_idDivs" style="width:100%;">
+								<div id="upload_form_divs">
+									　上传附件　　
+									<input class="easyui-textbox easyui-combobox" type="text" />
+									<input name="fileName" type="text" placeholder="请输入附件名">
+									<input id="fileIs" name="file" type="file"  onchange="fileChange(this);" > 
+									<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
+									<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a> 
+								</div>
+							</div>
+						</div>
+						<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
+							<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkOrderID(this);">上传附件</a>
+						</div> 
+					</form>
+				</div>
+			</div>
+			<div title="共同贷款人" data-options="iconCls:'icon-help'" style="padding: 10px">
+				<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+				   <form id="loanerJointForm" method="post">
+						<input id="ljId" name="ljId" type="hidden" /><!-- 共同贷款人的ID -->
+						<input name="loanOrderId" type="hidden"/><!-- 订单id -->
+						<table class="table">
+							<tr>
+								<th>姓名:</th>
+								<td><input  name="name" class="easyui-validatebox easyui-textbox" type="text" data-options="validType:'length[0,100]'"/></td>
+							    <th>身份证号:</th>
+								<td><input  name="idNo" type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'idcard'"/></td>
+								<th>性别:</th>
+								<td><input id="genderType" name="gender" type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+							</tr>
+							<tr>
+								<th>手机:</th>
+								<td><input id="mobileTel" name="mobileTel" type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'mobile'"/></td>
+								<th>住址电话:</th>
+								<td><input id="fixedTel" name="fixedTel" type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'phone'"/></td>
+								<th>家庭电话:</th>
+								<td><input id="familyTel" name="familyTel" type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'phone'"/></td>
+							</tr>
+							<tr>
+								<th>年龄:</th>
+								<td><input id="age" name="age" type="text" class="easyui-validatebox easyui-textbox" data-options="validType:'age'"/></td>
+								<th>婚姻状况:</th>
+								<td><input id="marriageType" name="marriageType"   type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+								<th>有无子女:</th>
+								<td><input id="hasChild" name="hasChild" type="text" class="easyui-validatebox easyui-textbox easyui-combobox"  editable='false' panelHeight="auto"/></td>
+							</tr>
+							<tr>
+							    <th>邮箱:</th>
+								<td>
+								   <input id="email" name="email" type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'email'"/>
+								</td>
+								<th>QQ号:</th>
+								<td><input id="qqNo" name="qqNo" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'qq'"/></td>
+							</tr>
+							<tr>
+								 <th>户籍地址:</th>
+								 <td colspan="5">
+								           省:<input id="residenceProvinceId" name="residenceProvinceId" type="text" class="easyui-combobox"  style="width: 100px;"/>
+								           市:<input id="residenceCityId" name="residenceCityId" type="text" class="easyui-combobox" style="width: 100px;"/>
+								    区/县:<input id="residenceAreaId" name="residenceAreaId" type="text" class="easyui-combobox" style="width: 100px;"/>
+								       街道:<input name="residenceAddrDetails" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,250]'" style="width: 303px;"/>
+								 </td>
+							</tr>
+							<tr>
+								  <th>现住地址:</th>
+								  <td colspan="5">
+								                 省:<input id="ljCurProvinceId" name="curProvinceId" type="text" class="easyui-combobox" style="width: 100px;"/>
+								                 市:<input id="ljCurCityId" name="curCityId" type="text" class="easyui-combobox" style="width: 100px;"/> 
+								          区/县:<input id="ljCurAreaId" name="curAreaId" type="text" class="easyui-combobox" style="width: 100px;"/> 
+								             街道:<input name="curAddrDetails" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,250]'" style="width: 303px;"/>     
+								  </td>
+							</tr>
+							<tr>
+								<th>工作单位:</th>
+								<td><input  name="corpName" type="text" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,20]'"/></td>
+								<th>单位电话:</th>
+								<td><input  name="corpTel" type="text" class="easyui-validatebox easyui-textbox " data-options="required:true,validType:'phone'"/></td>
+								<th>成立时间:</th>
+								<td><input  name="foundedTime" type="text" class="easyui-datebox" data-options="editable:false"/></td>
+							</tr>
+							<tr>
+								<th>营业面积:</th>
+								<td><input  name="areaSize" type="text" class="easyui-validatebox easyui-numberbox" data-options="required:true,validType:'mDouble'"/></td>
+								<th>单位性质:</th>
+								<td><input  name="corpNature" type="text" class="easyui-validatebox easyui-combobox"/></td>
+								<th>注册资本:</th>
+								<td><input  name="regCapital" type="text" class="easyui-textbox easyui-numberbox" data-options="required:true,validType:['mDouble','length[0,17]']"/></td>
+							</tr>
+							<tr>
+							    <th>员工数量:</th>
+							    <td><input name="ljEmpAmt" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'mDouble'"/></td>
+							</tr>
+							<tr>
+								 <th>单位地址:</th>
+								 <td colspan="5">
+								                省:<input id="corpProvinceId" name="corpProvinceId" type="text" class="easyui-combobox" style="width: 100px;"/>
+								                市:<input id="corpCityId" name="corpCityId" type="text" class="easyui-combobox" style="width: 100px;"/> 
+								         区/县:<input id="corpAreaId" name="corpAreaId" type="text" class="easyui-combobox" style="width: 100px;"/> 
+								            街道:<input name="corpAddrDetails" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,250]'" style="width: 303px;"/>     
+								 </td>
+							</tr>
+							<tr>
+							   <td colspan="6" style="text-align: right;">
+							      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearFun('loanerJointForm')">重置</a>
+							      <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="saveLoanerJoint();">保存</a>
+							   </td>
+							</tr>
+						</table>
+					</form>
+		        </div>
+			</div>
+		</div>
+	</div>
+</div>

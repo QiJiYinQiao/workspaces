@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		(function(){
+		var inputTitle = $("input").attr("title");
+		$("button").click(function(){
+			var input = $(this).next();
+			
+			if(input.attr("title") === inputTitle){
+				input.removeAttr("title");
+			} else {
+				input.attr("title",inputTitle);
+			}
+			
+			$("#log").html("input title is now" + input.attr("title");)
+		});
+	
+		})();
+	});
+	</script>
+</head>
+<body >
+	<button>Change title</button>
+	<input type="text" title="hello there">
+	<div id="log"></div>
+</body>
+</html>

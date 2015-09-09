@@ -1,0 +1,55 @@
+package com.bpms.action;
+
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.vo.InvestOrderHisModel;
+import com.bpms.service.InvestOrderHisService;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * @ClassName: InvestOrderHisAction 
+ * @Description: TODO 投资订单履历表action
+ * @author PANCHUANHE
+ * @date 2015年7月28日 下午1:28:15
+ */
+@Namespace("/investOrderHis")
+@Action(value = "investOrderHisAction")
+public class InvestOrderHisAction extends BaseAction implements ModelDriven<InvestOrderHisModel> {
+	private static final long serialVersionUID = 1L;
+	private Log log = LogFactory.getLog(InvestOrderHisAction.class);
+	@Autowired
+	private InvestOrderHisService investOrderHisServiceImpl;
+	//实体类变量
+    private InvestOrderHisModel investOrderHisModel;
+	
+    /**
+     * @Title: findAllInvestOrderHisList 
+     * @Description: TODO 查询审批意见列表
+     * @param @return
+     * @return String
+     * @throws
+     */
+    public String findAllInvestOrderHisList(){
+    	log.info("\n\n------------------>investOrderId"+investOrderHisModel.getInvestOrderId());
+    	GridModel gridModel = new GridModel();
+    	List<InvestOrderHisModel> list = investOrderHisServiceImpl.findAllInvestOrderHisList(investOrderHisModel.getInvestOrderId());
+    	gridModel.setRows(list);
+    	OutputJson(gridModel);
+    	return null;
+    }
+	@Override
+	public InvestOrderHisModel getModel() {
+		if(investOrderHisModel==null){
+			investOrderHisModel = new InvestOrderHisModel();
+		}
+		return investOrderHisModel;
+	}
+
+}

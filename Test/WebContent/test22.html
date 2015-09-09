@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		$.when($.ajax("test.aspx")).then(function(data,textStatus,jqXHR){
+			alert(jqXHR.status);//Alerts 200
+		});
+		//if a single argument is passed to jQuery . when and it is not 
+		//a Deferred or a promise. It will be treated as a resolved Deferred 
+		//and any doneCallbacks attached will be executed immediately.
+		//The doneCallbacks are passed the original arguments.In this 
+		//case any failCallbacks you might set are never called since the Deferred is never rejected.Fo example
+		$.when({testing:123}).done(function(x){
+			alert(x.testing);//Alerts"123"
+		});
+		
+		$.when($.ajax("/page1.php"),$.ajax("/page2.php")).done(function(a1,a2){
+			//a1 and a2 are arguments resolved for the page1 and page2 ajax requests,respectively
+			//Each argument is an array with the following structure:[data,statusText,jqXHR]
+			var data = a1[0] + a2[0];
+			if(/whip It/.test(data)){
+				alert("We got what we came for!")
+			}
+		});
+		
+		$.when($.ajax("/page1.php"),$.ajax("/page2.php"))
+			.then(myFunc,myFailure);
+		
+		/*When this serach for the span selector is restricted to the context of this ,only spans 
+		within the clicked element will get the additional class.internally,selector context is implementted with the
+		.find() method , so $("span",this) is equivalent to $(this).find("span")
+		*/
+		$("div.foo").click(function(){
+			$("span",this).addClass("bar");
+		});
+		
+		/*
+			A common use of this facility is to call jQuery methods on an element that has been
+			passed to a callback function through the keyword this
+		*/
+		$("div.foo").click(function(){
+			$(this).slideUp();
+		});
+		
+		$.post("url.xml",function(data){
+			var $child = $(data).find("child");
+		});
+		
+		//Define a plain object
+		var foo = {foo : "bar" ,  hello : "world" };
+		
+		//Pass it to the jQuery function
+		var $foo = $(foo);
+		
+		//Test accessing property values
+		var test1 = $foo.prop("foo");//bar
+		
+		//Test setting property values
+		$foo.prop("foo","foobar");
+		var test2 = $foo.prop("foo");//foobar
+		
+		//Test using .data() as summarized above
+		$foo.data("keyName","someValue");
+		console.log($foo);//will now contain a jQuery{randomNumber} property
+		
+		//Test binding an event name and triggering
+		$foo.on("eventName",function(){
+			console.log("eventName was called");
+		});
+		
+		$foo.trigger("eventName");//Logs "eventName was called"
+		
+		$.post("url.xml",function(data){
+			var $child = $(data).find("child");
+		});
+		
+		//Define a plain object
+		var foo = {foo:"bar",hello:"world"};
+		
+		//Pass it to the jQuery function
+		var $foo = $(foo);
+		
+		//Test accessing property values
+		var test1 = $foo.prop("foo");//bar
+		
+		//Test setting property values
+		$foo.data("keyName","someValue");
+		console.log($foo);//will now contain a jQuery{randomNumber} property
+		
+		//Test binding an event name and triggering
+		$foo.on("eventName",function(){
+			console.log("eventName was called");
+		})
+		
+		$foo.trigger("eventName");//Logs "eventName was called"
+		
+		$foo.triggerHandler("eventName");//Also logs "eventName was called"
+	});
+	</script>
+</head>
+<body >
+	
+	
+	
+	
+</body>
+</html>

@@ -1,0 +1,138 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+<style type="text/css">
+ th{
+    text-align: right;
+    padding: 6px 10px 6px 10px;
+ }
+ .table td{
+    text-align: left;
+     padding: 6px 10px 6px 10px; 
+ }
+ .table{
+	border-collapse: collapse;
+	border-spacing: 0;
+	max-width: 100%;
+	width: 600px;
+ }
+</style>
+</head>
+<script type="text/javascript">
+  var repayMethodArr = jqueryUtil.getTextArr("repay_method");//还款方式
+  $(function(){
+	  $("#repayMethod").html(jqueryUtil.showText('${loanOrderModel.repayMethod}',repayMethodArr));
+	  createInvestOrderGrid();
+  });
+  function createInvestOrderGrid(){
+	  $("#investOrderGrid").datagrid({
+		    url:'debtMatching/debtMatchingAction!getAutoDebtMatchingData.action',
+			width: 'auto',
+			height: 300,
+			height: $(this).height()-375,
+			pagination:false,
+			rownumbers:true,
+			border:true,
+			singleSelect:true,
+			nowrap:true,//如果为true，则在同一行中显示数据。设置为true可以提高加载性能。
+			remoteSort:false,//定义是否从服务器对数据进行排序。
+			striped:true,//是否显示斑马线
+			columns:[[
+			        {field : 'investorName',title : '投资客户',width :100,align : 'center'},
+	                {field : 'idCrad',title : '身份证号码',width : 180,align : 'center'},
+		            {field : 'matchingEdu',title : '匹配金额(元)',width : 140,align : 'center'},
+	                {field : 'usableEdu',title : '可用余额(元)',width : 140,align : 'center'},
+	                {field : 'investEdu',title : '账户总额(元)',width : 140,align : 'center'},
+	                {field : 'endDate',title : '到期日期',width : 120,align : 'center'},
+	                {field : 'caozuo',title : '操作',width :100,align : 'center',formatter:function(value,row,index){
+	                	return "<a href=\"javascript:void(0)\" onclick=\"shanchu("+index+");\">删除</a>";
+	                }}
+		   ]],
+		   toolbar:[{
+			   text:'添加出借人',
+			   iconCls:'icon-add',
+			   handler:openInvestOrderDialog
+		   },'-',{
+			   text:'自动匹配',
+			   iconCls:'icon-add',
+			   handler:autoMatching
+		   },'-',{
+			   text:'清空列表',
+			   iconCls:'icon-cut',
+			   handler:toDeleteAll
+		   },'-',{
+			   text:'匹配成功并保存',
+			   iconCls:'icon-save',
+			   handler:confirmMachingSuccessAndSave
+		   }]
+	  });
+  }
+
+   //弹出自动进行债券匹配的窗口 
+  function autoMatching(){	  
+	  var loanOrderId = $("#loanOrderId").val();  //获得贷款订单ID
+	  $("#investOrderGrid").datagrid('load', {
+		  loanOrderId : loanOrderId
+	  });
+  }
+  
+  function confirmMachingSuccessAndSave(){
+	  alert("here");
+  }
+  
+  function openInvestOrderDialog(){
+	  var loanOrderId = $("#loanOrderId").val();
+	  $('#investOrderDialog').dialog({    
+		    title: '投资订单信息',    
+		    width: 1000,    
+		    height: 600,    
+		    closed: false,    
+		    cache: false,    
+		    href: 'jsp/investOrder/investOrderList.jsp',    
+		    modal: true   
+		}); 
+  }
+  function toDeleteAll(){
+	  $('#investOrderGrid').datagrid('loadData',{total:0,rows:[]});
+  }
+  //删除
+  function shanchu(index){
+	  $("#investOrderGrid").datagrid("deleteRow",index);
+  }
+</script>
+<div class="well well-small" style="margin: 5px">
+   <input id="loanOrderId" name="loanOrderId" value="${loanOrderModel.loanOrderId}" type="hidden"/>
+   <input id="loanerId" name="loanerId" value="${loanOrderModel.loanerId}" type="hidden"/>
+   <table class="table">
+     <tr>
+        <th>客户名称:</th>
+        <td>${loanOrderModel.name}</td>
+        <th>证件号码:</th>
+        <td>${loanOrderModel.idNo}</td>
+     </tr>
+     <tr>
+        <th>贷款金额:</th>
+        <td>${loanOrderModel.loanAmount}</td>
+        <th>贷款期限(月):</th>
+        <td>${loanOrderModel.loanPeriod}</td>
+        <th>到期日期:</th>
+        <td>${loanOrderModel.loanEdDate}</td>
+     </tr>
+     <tr>
+        <th>利息率(%):</th>
+        <td>${loanOrderModel.rate}</td>
+        <th>还款方式:</th>
+        <td id="repayMethod"></td>
+     </tr>
+   </table>
+</div>
+<div style="margin: 5px">
+ <table id="investOrderGrid"></table>
+</div>
+<div id="investOrderDialog">
+</div>
+</html>

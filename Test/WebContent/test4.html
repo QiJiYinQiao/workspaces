@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+		/* $(document).ready(function(){
+			$("button").click(function(){
+				var div = $("div");
+				div.animate({height:'300px',opacity:'0.4'},"slow");
+				div.animate({width:'300px',opacity:0.8},"slow");
+				div.animate({height:'100px',opacity:'0.4'},"slow")
+				div.animate({width:'100px',opacity:'0.8'},"slow")
+			});
+			
+			$("button").click(function(){
+				$("p").css({"background-color":"red","font-size":"200%"});
+			});
+		}); */
+		
+		/* $(document).ready(function(){
+			$("button").click(function(){
+				alert("Background color = " + $("p").css("background-color"));
+			})	;		
+		}); */
+		
+		/* $(document).ready(function(){
+			$("#button").click(function(){
+				$("div").animate({
+					left:'250px',
+					opacity:'0.5',
+					height:'150px',
+					width:'150px',
+				});
+			})
+			
+		}); */
+		
+		/* $(document).ready(function(){
+			$("button").click(function(){
+				$("div").animate({
+					left:'250px',
+					height:'+=150px',
+					width:'+=150px'
+				});				
+			});			
+		}); */
+		
+		/* $(document).ready(function(){
+			$("#flip").click(function(){
+				$("#panel").slideDown(5000);
+			});
+			$("#stop").click(function(){
+				$("#panel").stop();				
+			});
+		}); */
+		
+		/* $(document).ready(function(){
+			$("#start").click(function(){
+				$("div").animate({left:'100px'},5000);
+				$("div").animate({fontSize:'3em'},5000);
+			});
+			
+			$("#stop").click(function(){
+				$("div").stop();
+			});
+			
+			$("stop2").click(function(){
+				$("div").stop(true);
+			});
+			
+			$("#stop3").click(function(){
+				$("div").stop(true,true);
+			})
+		}); */
+		
+		$(document).ready(function(){
+			$("button").click(function(){
+				$("#p1").css("color","red").slideUp(2000).slideDown(2000);
+			});
+		});
+		
+	</script>
+	
+	<style type="text/css">
+		#panel,#flip{
+			padding:5px;
+			text-align:center;
+			background-color:#e5eecc;
+			border:solid 1px #c3c3c3;
+		}
+		
+		#panel{
+			padding:50px;
+			display:none;
+		}
+	</style>
+	
+</head>
+<body>
+	<!-- <button>开始动画</button>
+	<p>默认情况下HTML元素的位置都是静态</p>
+	<div style="background:#98bf21;height:100px;width:100px;position:absolute;">
+	
+	</div> -->
+	<!-- <h2>这是标题</h2>
+	<p style="background-color:#00ff00">这是一个段落</p>
+	<button>返回 p 元素的背景颜色</button> -->
+	
+	<!-- <button id="stop">停止活动</button>
+	<div id="flip">点击这里，向下滑动面板</div>
+	<div id="panel">HELLO WORLD</div> -->
+	
+	<!-- <button id="start">开始</button>
+	<button id="stop">停止</button>
+	<button id="stop2">停止所有</button>
+	<button id="stop3">停止但要完成</button>
+	<p><b>"开始"</b> 按钮会启动动画。</p>
+	<p><b>"停止"</b> 按钮会停止当前活动的动画，但允许已排队的动画向前执行。</p>
+<p><b>"停止所有"</b> 按钮停止当前活动的动画，并清空动画队列；因此元素上的所有动画都会停止。</p>
+<p><b>"停止但要完成"</b> 会立即完成当前活动的动画，然后停下来。</p> 
+
+<div style="background:#98bf21;height:100px;width:200px;position:absolute;">HELLO</div>
+ -->
+ 	<p id="p1">Jquery乐趣十足</p>
+ 	<button>点击这里</button>
+</body>
+</html>

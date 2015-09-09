@@ -1,0 +1,11 @@
+package com.test;
+
+import java.io.File;
+
+public class Test1 {
+	public static void main(String[] args) {
+			for(int j = 10;j > 0;j--){
+				System.out.print("*");
+			}
+	}
+}

@@ -1,0 +1,86 @@
+package com.bpms.util;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import nl.justobjects.pushlet.core.Dispatcher;
+import nl.justobjects.pushlet.core.Event;
+import nl.justobjects.pushlet.core.SessionManager;
+
+/**
+ * 向浏览器发送消息的工具类
+ * 
+ * @author liuhh
+ *
+ */
+public class SendClientMsgUtil {
+
+	/**
+	 * 向指定的用户发送消息
+	 * 
+	 * @param userId
+	 *            用户的ID
+	 * @param subject
+	 *            监听subject
+	 * @param message
+	 *            发送的消息的键值对
+	 */
+	public static void unicast(String userId, String subject,
+			Map<String, String> message) {
+		if (SessionManager.getInstance().hasSession(userId)) {
+			Dispatcher.getInstance()
+					.unicast(getEvent(subject, message), userId);
+			System.out.println(userId + ":" + message + "---发送消息成功！！！！");
+		} else {
+			System.out.println(userId+"is no session!error！！！！");
+		}
+	}
+
+	/**
+	 * 向所有的subject发送信息
+	 * 
+	 * @param subject
+	 *            发送对象
+	 * @param message
+	 *            发送的消息
+	 */
+	public static void multicast(String subject, Map<String, String> message) {
+		Dispatcher.getInstance().multicast(getEvent(subject, message));
+	}
+
+	/**
+	 * 向所有的客户端推送消息
+	 * 
+	 * @param subject
+	 *            发送对象/不要求完全和subject匹配
+	 * @param message
+	 *            发送的消息
+	 */
+	public static void broadcast(String subject, Map<String, String> message) {
+		Dispatcher.getInstance().broadcast(getEvent(subject, message));
+	}
+
+	/**
+	 * 组织发送的消息
+	 * 
+	 * @param subject
+	 *            发送消息的对象
+	 * @param message
+	 *            发送的信息
+	 * @return 返回组号的消息
+	 */
+	private static Event getEvent(String subject, Map<String, String> message) {
+		Event event = Event.createDataEvent(subject);
+		if (message != null) {
+			Iterator<Entry<String, String>> entryiterator = message.entrySet()
+					.iterator();
+			while (entryiterator.hasNext()) {
+				Entry<String, String> entry = entryiterator.next();
+				event.setField(entry.getKey(), entry.getValue());
+			}
+		}
+		return event;
+	}
+
+}

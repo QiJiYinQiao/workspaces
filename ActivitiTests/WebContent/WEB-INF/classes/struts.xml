@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <!-- 配置模式为开发模式，自动加载struts.xml和显示错误提示信息 -->
+    <constant name="struts.devMode" value="true" />
+    
+    <!-- 设置页面主题为简单主题，去掉struts2开发提供的样式 -->
+    <constant name="struts.ui.theme" value="simple" />
+
+    <package name="default" namespace="/" extends="struts-default">
+
+    </package>
+</struts>

@@ -1,0 +1,1312 @@
+11:33:33,619  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-spring-hibernate.xml]
+11:33:33,766  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+11:33:33,882  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-activiti-context.xml]
+11:33:33,903  INFO GenericApplicationContext:510 - Refreshing org.springframework.context.support.GenericApplicationContext@458d1a4: startup date [Thu Jul 16 11:33:33 CST 2015]; root of context hierarchy
+11:33:34,060  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [test-config.properties]
+11:33:34,106  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@235391e0: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:33:34,369  INFO DruidDataSource:642 - {dataSource-1} inited
+11:33:34,537  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+11:33:34,543  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+11:33:34,545  INFO Environment:239 - HHH000206: hibernate.properties not found
+11:33:34,547  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+11:33:35,100  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+11:33:35,108  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+11:33:35,120  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+11:33:35,125  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+11:33:35,172  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+11:33:35,561  INFO SchemaUpdate:182 - HHH000228: Running hbm2ddl schema update
+11:33:35,561  INFO SchemaUpdate:193 - HHH000102: Fetching database metadata
+11:33:35,564  INFO SchemaUpdate:205 - HHH000396: Updating schema
+11:33:35,597  INFO TableMetadata:65 - HHH000261: Table found: test.t_area
+11:33:35,598  INFO TableMetadata:66 - HHH000037: Columns: [area_type, area_id, py_name, zipcode, area_name, special, parent_id]
+11:33:35,598  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,598  INFO TableMetadata:69 - HHH000126: Indexes: [area_id, primary]
+11:33:35,625  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_account_info
+11:33:35,625  INFO TableMetadata:66 - HHH000037: Columns: [bank_name, create_date, account_id, act_nature, cus_id, act_medium, cus_type, account_num, creator, account_name]
+11:33:35,625  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,626  INFO TableMetadata:69 - HHH000126: Indexes: [account_id, primary]
+11:33:35,653  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_accounts_journal
+11:33:35,654  INFO TableMetadata:66 - HHH000037: Columns: [car_id, bankaccount_no, income01, income02, analysis, income03, income04, income05, income06, mon_name_02, mon_name_01, average_income, mon_name_04, mon_name_03, mon_name_06, mon_name_05, bank_flow_id, bankaccount_type]
+11:33:35,654  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk52965364385511ca]
+11:33:35,654  INFO TableMetadata:69 - HHH000126: Indexes: [fk52965364385511ca, primary, bank_flow_id]
+11:33:35,681  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_address
+11:33:35,681  INFO TableMetadata:66 - HHH000037: Columns: [city_id, area_id, host_id, province_id, addr_type, addr_details, addr_id, host_type]
+11:33:35,681  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,682  INFO TableMetadata:69 - HHH000126: Indexes: [primary, addr_id]
+11:33:35,707  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_assets
+11:33:35,708  INFO TableMetadata:66 - HHH000037: Columns: [asset_id, vehicle, the_same_industry, real_estate]
+11:33:35,708  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,709  INFO TableMetadata:69 - HHH000126: Indexes: [asset_id, primary]
+11:33:35,734  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_attachment
+11:33:35,734  INFO TableMetadata:66 - HHH000037: Columns: [create_date, att_type, att_desc, att_name, att_data, att_id, order_id, order_type, creator]
+11:33:35,734  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,734  INFO TableMetadata:69 - HHH000126: Indexes: [primary, att_id]
+11:33:35,760  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_audit_info_record
+11:33:35,760  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, web_audit_record, query_114, contact_method, name, audit_item, phone_audit_record, audit_id]
+11:33:35,761  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk1ef677d8e420ac87]
+11:33:35,761  INFO TableMetadata:69 - HHH000126: Indexes: [fk1ef677d8e420ac87, primary, audit_id]
+11:33:35,786  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_auditinforecord_and_attachment
+11:33:35,786  INFO TableMetadata:66 - HHH000037: Columns: [audit_id, att_id, audit_att_id]
+11:33:35,786  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,787  INFO TableMetadata:69 - HHH000126: Indexes: [primary, audit_att_id]
+11:33:35,812  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_company
+11:33:35,813  INFO TableMetadata:66 - HHH000037: Columns: [area_size, tele, business_scope, com_id, loaner_id, founded_time, creator, create_date, address, name, reg_id, emp_amount, reg_capital, corp_nature]
+11:33:35,813  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,814  INFO TableMetadata:69 - HHH000126: Indexes: [com_id, primary]
+11:33:35,846  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_contacts
+11:33:35,847  INFO TableMetadata:66 - HHH000037: Columns: [contact_status, birthday, curr_addr, contact_id, familyarea, tel, ch_name, en_name, workplace, familycity, years_of_work, creator, comparea, comp_addr, gender_type, create_date, id_type, compprovince, age, cus_id, compaddrdetails, zip, familyaddrdetails, familyprovince, fixed_tel, relationship, annual_salary, comp_tel, email, job_title, cus_type, compcity, id_no]
+11:33:35,847  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,848  INFO TableMetadata:69 - HHH000126: Indexes: [contact_id, primary]
+11:33:35,882  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_audit_report
+11:33:35,882  INFO TableMetadata:66 - HHH000037: Columns: [firs_id, asset_id, loan_order_id, exist_loan_id, car_id, fina_id, loan_city, law_query_status, com_credit_status, card_info_id]
+11:33:35,883  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, fk179ad858cc9768df, fk179ad858618670a7]
+11:33:35,884  INFO TableMetadata:69 - HHH000126: Indexes: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, car_id, primary, fk179ad858618670a7, fk179ad858cc9768df]
+11:33:35,914  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_cards_details
+11:33:35,915  INFO TableMetadata:66 - HHH000037: Columns: [card_in_use, overdue_card_count, detail, max_qishu, max_limit, credit_total_amount, month_repay, use_rate, overdue_ratio, card_count, validate_year, credit_limit, year_overdue, overdue_rate, cumulative_overdue, card_info_id]
+11:33:35,916  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,916  INFO TableMetadata:69 - HHH000126: Indexes: [primary, card_info_id]
+11:33:35,943  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_investigation
+11:33:35,944  INFO TableMetadata:66 - HHH000037: Columns: [query_notes, credit_card_approval, internet_query, car_id, self_query, query_interval, credit_ref_id, loan_approval]
+11:33:35,944  INFO TableMetadata:68 - HHH000108: Foreign keys: [fkd8a04cc2385511ca]
+11:33:35,945  INFO TableMetadata:69 - HHH000126: Indexes: [fkd8a04cc2385511ca, primary, credit_ref_id]
+11:33:35,971  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_final_audit_report
+11:33:35,971  INFO TableMetadata:66 - HHH000037: Columns: [loan_period_type, loan_order_id, loan_interest_rate, visit_fee, actual_loan_amount, fina_pers_sugg, month_repay, contract_loan_amount, description, fina_personnel, month_service_fee_rate, fina_id, fina_date]
+11:33:35,972  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:35,972  INFO TableMetadata:69 - HHH000126: Indexes: [fina_id, primary]
+11:33:35,999  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_first_audit_report
+11:33:36,000  INFO TableMetadata:66 - HHH000037: Columns: [qulification_status, loan_order_id, com_oper_status, firs_dep_sugg, visit_status, marriage_type, firs_date, is_local_res, credit_status, firs_id, com_oper_duration, phone_check_status, firs_pers_sugg, description, firs_personnel, industry_type, note]
+11:33:36,000  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,000  INFO TableMetadata:69 - HHH000126: Indexes: [firs_id, primary]
+11:33:36,028  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order
+11:33:36,028  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, invstr_id, product_id, act_no, contract_no, sign_site, fm_phone, proc_id, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, subject_type, invst_order_id, updater, dep_menager, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, update_date]
+11:33:36,029  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk81a3b90a61f59991]
+11:33:36,029  INFO TableMetadata:69 - HHH000126: Indexes: [fk81a3b90a61f59991, primary, invst_order_id, invest_order_id]
+11:33:36,050  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order_his
+11:33:36,051  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, act_no, contract_no, fm_phone, sign_site, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, inv_ord_his_id, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, chg_date, changer, chg_contents]
+11:33:36,051  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk27d8e6dd61f59991]
+11:33:36,051  INFO TableMetadata:69 - HHH000126: Indexes: [inv_ord_his_id, primary, fk27d8e6dd61f59991]
+11:33:36,070  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_products
+11:33:36,070  INFO TableMetadata:66 - HHH000037: Columns: [prod_desc, low_lend_edu, hig_lend_edu, ars, prod_id, lending_cycle, prod_status, repayment_mode, ytm]
+11:33:36,071  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,071  INFO TableMetadata:69 - HHH000126: Indexes: [prod_id, primary]
+11:33:36,092  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor
+11:33:36,093  INFO TableMetadata:66 - HHH000037: Columns: [birthday, area_id, bank_acc_name, invstr_id, comp_scale, street, ch_name, has_child, en_name, years_of_work, fam_inc_sta, city_id, id_location, gender_type, investor_status, job_type, company_name, id_type, description, comm_addr, invstr_status, marital_status, invstr_type, industry, company_scale_type, zip, province_id, industry_id, mobile_tel, investor_type, marriage_type, fixed_tel, nationality, email, degree_type, id_issue_date, job_title, investor_id, bank_no, id_expire_date, family_status, id_no]
+11:33:36,093  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,094  INFO TableMetadata:69 - HHH000126: Indexes: [invstr_id, primary, investor_id]
+11:33:36,112  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor_and_contacts
+11:33:36,112  INFO TableMetadata:66 - HHH000037: Columns: [id, contact_id, investor_id]
+11:33:36,112  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,113  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:33:36,131  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investorder_and_products
+11:33:36,132  INFO TableMetadata:66 - HHH000037: Columns: [id, invest_edu, end_date, prod_id, begin_date, invest_order_id]
+11:33:36,132  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,132  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:33:36,153  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order
+11:33:36,153  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, loan_amount, loan_order_id, loan_type, curr_addr, has_child, loaner_id, domi_addr, purpose, house_install_pay, creator, income_src, gender_type, create_date, apply_date, name, age, process_status, subject_type, rent, loan_city, loan_min, repay_method, status_id, mobile_tel, hukou_addr, mortgage_status, fixed_tel, marriage_type, salesman, annual_salary, order_desc, email, qq_no, loan_period, finish_date, id_no]
+11:33:36,153  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk8dce5f45a87ecc16]
+11:33:36,153  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_id, fk8dce5f45a87ecc16, primary]
+11:33:36,172  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order_his
+11:33:36,173  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, role_id, loan_order_hi_id, agent_time, assignee, comment, order_status]
+11:33:36,173  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,173  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_hi_id, primary]
+11:33:36,195  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner
+11:33:36,195  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, mobile_tel, loaner_id, has_child, hukou_addr, mortgage_status, marriage_type, fixed_tel, house_install_pay, income_src, annual_salary, gender_type, create_date, email, family_tel, qq_no, name, age, rent, id_no]
+11:33:36,196  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,196  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_id]
+11:33:36,217  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_info_his
+11:33:36,217  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, bank_no_first, has_child, loaner_id, loaner_status_type, house_install_pay, change_people, income_src, gender_type, create_date, age, name, rent, change_contents, mobile_tel, hukou_addr, fixed_tel, marriage_type, mortgage_status, change_tiem, loaner_hi_id, annual_salary, email, bank_no_second, qq_no, id_no]
+11:33:36,218  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,218  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_hi_id]
+11:33:36,237  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_accountinfo
+11:33:36,238  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, account_id]
+11:33:36,238  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,238  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:33:36,257  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_company
+11:33:36,258  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, com_id]
+11:33:36,258  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,258  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:33:36,277  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_contacts
+11:33:36,277  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, contact_id]
+11:33:36,278  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,278  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:33:36,302  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loans_details
+11:33:36,303  INFO TableMetadata:66 - HHH000037: Columns: [last_loan_space, exist_loan_id, year_overdue, outstanding_balance, overdue_rate, outstanding_count, cumulative_overdue, outstanding_sum, loan_detail, month_repay, total_loan_count]
+11:33:36,303  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,304  INFO TableMetadata:69 - HHH000126: Indexes: [exist_loan_id, primary]
+11:33:36,307  INFO DatabaseMetaData:120 - HHH000262: Table not found: t_bp_microcredit_opinion
+11:33:36,326  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_order_status
+11:33:36,327  INFO TableMetadata:66 - HHH000037: Columns: [status_code, status_name, status_desc, status_id]
+11:33:36,327  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,327  INFO TableMetadata:69 - HHH000126: Indexes: [primary, status_id]
+11:33:36,347  INFO TableMetadata:65 - HHH000261: Table found: test.t_organization
+11:33:36,347  INFO TableMetadata:66 - HHH000037: Columns: [company_id, manager, assistant_manager, fax, status, tel, myid, state, pid, creater, lastmod, short_name, iconcls, created, organization_id, description, modifyer, ename, emp_qty, full_name]
+11:33:36,347  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,348  INFO TableMetadata:69 - HHH000126: Indexes: [organization_id, primary]
+11:33:36,367  INFO TableMetadata:65 - HHH000261: Table found: test.t_permission
+11:33:36,367  INFO TableMetadata:66 - HHH000037: Columns: [isused, sort, permission_id, status, myid, state, creater, lastmod, pid, type, url, iconcls, system_type, created, description, name, modifyer, pname]
+11:33:36,367  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,368  INFO TableMetadata:69 - HHH000126: Indexes: [permission_id, primary]
+11:33:36,387  INFO TableMetadata:65 - HHH000261: Table found: test.t_role
+11:33:36,387  INFO TableMetadata:66 - HHH000037: Columns: [sort, role_id, status, role_code, created, description, name, modifyer, lastmod, creater]
+11:33:36,388  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,388  INFO TableMetadata:69 - HHH000126: Indexes: [role_id, primary]
+11:33:36,419  INFO TableMetadata:65 - HHH000261: Table found: test.t_role_and_permission
+11:33:36,420  INFO TableMetadata:66 - HHH000037: Columns: [role_id, permission_id, status, created, role_perm_id, modifyer, lastmod, creater]
+11:33:36,420  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,420  INFO TableMetadata:69 - HHH000126: Indexes: [role_perm_id, primary]
+11:33:36,437  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_dict
+11:33:36,437  INFO TableMetadata:66 - HHH000037: Columns: [permissionid, sort, status, state, dict_type, code_id, creater, lastmod, iconcls, created, description, dict_name, modifyer, dict_code, parent_id]
+11:33:36,437  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,438  INFO TableMetadata:69 - HHH000126: Indexes: [primary, code_id]
+11:33:36,454  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_log
+11:33:36,455  INFO TableMetadata:66 - HHH000037: Columns: [object_type, object_id, name, user_id, mac, log_date, event_record, type, event_name, log_id, ip]
+11:33:36,455  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,455  INFO TableMetadata:69 - HHH000126: Indexes: [primary, log_id]
+11:33:36,471  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_parameter
+11:33:36,472  INFO TableMetadata:66 - HHH000037: Columns: [updater, create_date, status, description, pram_id, update_date, parm_name, parm_value, parm_code, creator]
+11:33:36,472  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,472  INFO TableMetadata:69 - HHH000126: Indexes: [pram_id, primary]
+11:33:36,488  INFO TableMetadata:65 - HHH000261: Table found: test.t_user_and_role
+11:33:36,489  INFO TableMetadata:66 - HHH000037: Columns: [user_role_id, role_id, status, created, modifyer, user_id, lastmod, creater]
+11:33:36,489  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:33:36,489  INFO TableMetadata:69 - HHH000126: Indexes: [user_role_id, primary]
+11:33:36,506  INFO TableMetadata:65 - HHH000261: Table found: test.t_users
+11:33:36,506  INFO TableMetadata:66 - HHH000037: Columns: [isemployee, first_visit, myid, tel, previous_visit, creater, lang, password, created, description, name, user_id, isonline, status, theme, answer, lastmod, ip, title_id, email, organization_id, last_visits, duty_id, modifyer, account, question_id, login_count]
+11:33:36,506  INFO TableMetadata:68 - HHH000108: Foreign keys: [fka115ca7d29e9dfec]
+11:33:36,507  INFO TableMetadata:69 - HHH000126: Indexes: [fka115ca7d29e9dfec, primary, user_id]
+11:33:36,510  INFO DatabaseMetaData:120 - HHH000262: Table not found: t_bp_microcredit_opinion
+11:33:36,556 ERROR StatFilter:147 - merge sql error, dbType mysql, sql : 
+create table t_bp_microcredit_opinion (MCBR_ID varchar(40) not null unique, ADVICE_LOAN_AMT decimal(20,5), ADVICE_LOAN_PERIOD integer, ADVICE_REPAY_MTHD varchar(50), COBORROWER_IDNO varchar(32), COBORROWER_NAME varchar(20), COLLECTION_MTHD varchar(50), COUNSELING_RATE decimal(5,0), DEPT_PRINCIPAL varchar(20), FINAL_LOAN_AMT decimal(20,5), FINAL_LOAN_PERIOD integer, FINAL_REPAY_MTHD varchar(50), FIRST_MEETING varchar(32), LOAN_MTHD varchar(50), LOAN_ORDER_ID varchar(40), LOAN_RATE decimal(8,5), OPERATOR_A varchar(40), OPERATOR_B varchar(40), REJECT_CAUSE longtext, RISK_CTRL_MEASURES varchar(128), SPECIFIC_MEASURES longtext, SURVEY_DATE datetime, VERIFICATION varchar(32), primary key (MCBR_ID))
+com.alibaba.druid.sql.parser.ParserException: syntax error, expect RPAREN, actual UNIQUE unique, pos 74
+	at com.alibaba.druid.sql.parser.SQLParser.accept(SQLParser.java:127)
+	at com.alibaba.druid.sql.dialect.mysql.parser.MySqlCreateTableParser.parseCrateTable(MySqlCreateTableParser.java:156)
+	at com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser.parseCreate(MySqlStatementParser.java:323)
+	at com.alibaba.druid.sql.parser.SQLStatementParser.parseStatementList(SQLStatementParser.java:102)
+	at com.alibaba.druid.sql.parser.SQLStatementParser.parseStatementList(SQLStatementParser.java:76)
+	at com.alibaba.druid.sql.visitor.ParameterizedOutputVisitorUtils.parameterize(ParameterizedOutputVisitorUtils.java:42)
+	at com.alibaba.druid.filter.stat.StatFilter.mergeSql(StatFilter.java:145)
+	at com.alibaba.druid.filter.stat.StatFilter.createSqlStat(StatFilter.java:629)
+	at com.alibaba.druid.filter.stat.StatFilter.internalBeforeStatementExecute(StatFilter.java:397)
+	at com.alibaba.druid.filter.stat.StatFilter.statementExecuteUpdateBefore(StatFilter.java:325)
+	at com.alibaba.druid.filter.FilterEventAdapter.statement_executeUpdate(FilterEventAdapter.java:324)
+	at com.alibaba.druid.filter.FilterChainImpl.statement_executeUpdate(FilterChainImpl.java:2373)
+	at com.alibaba.druid.proxy.jdbc.StatementProxyImpl.executeUpdate(StatementProxyImpl.java:225)
+	at com.alibaba.druid.pool.DruidPooledStatement.executeUpdate(DruidPooledStatement.java:169)
+	at org.hibernate.tool.hbm2ddl.SchemaUpdate.execute(SchemaUpdate.java:227)
+	at org.hibernate.tool.hbm2ddl.SchemaUpdate.execute(SchemaUpdate.java:178)
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:503)
+	at org.hibernate.cfg.Configuration.buildSessionFactory(Configuration.java:1750)
+	at org.hibernate.cfg.Configuration.buildSessionFactory(Configuration.java:1788)
+	at org.springframework.orm.hibernate4.LocalSessionFactoryBuilder.buildSessionFactory(LocalSessionFactoryBuilder.java:247)
+	at org.springframework.orm.hibernate4.LocalSessionFactoryBean.buildSessionFactory(LocalSessionFactoryBean.java:373)
+	at org.springframework.orm.hibernate4.LocalSessionFactoryBean.afterPropertiesSet(LocalSessionFactoryBean.java:358)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1547)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1485)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:524)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:461)
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:295)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:223)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:292)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:194)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.findAutowireCandidates(DefaultListableBeanFactory.java:910)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:853)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:768)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:486)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:87)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues(AutowiredAnnotationBeanPostProcessor.java:285)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1122)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:522)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:461)
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:295)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:223)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:292)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:194)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:626)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:932)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:479)
+	at org.springframework.test.context.support.AbstractGenericContextLoader.loadContext(AbstractGenericContextLoader.java:120)
+	at org.springframework.test.context.support.AbstractGenericContextLoader.loadContext(AbstractGenericContextLoader.java:60)
+	at org.springframework.test.context.support.AbstractDelegatingSmartContextLoader.delegateLoading(AbstractDelegatingSmartContextLoader.java:100)
+	at org.springframework.test.context.support.AbstractDelegatingSmartContextLoader.loadContext(AbstractDelegatingSmartContextLoader.java:248)
+	at org.springframework.test.context.CacheAwareContextLoaderDelegate.loadContextInternal(CacheAwareContextLoaderDelegate.java:64)
+	at org.springframework.test.context.CacheAwareContextLoaderDelegate.loadContext(CacheAwareContextLoaderDelegate.java:91)
+	at org.springframework.test.context.TestContext.getApplicationContext(TestContext.java:122)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:105)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:74)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:312)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:211)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:288)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:284)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:231)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:88)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:71)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:174)
+	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:459)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:675)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:382)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:192)
+11:33:36,742  INFO SchemaUpdate:240 - HHH000232: Schema update complete
+11:33:36,816  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-07-16 11:33:34",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:2,
+	ConnectCount:2,
+	Connections:[
+		{ID:1141269715, ConnectTime:"2015-07-16 11:33:35", UseCount:2, LastActiveTime:"2015-07-16 11:33:36"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+11:33:37,086  INFO ProcessEngineConfigurationImpl:871 - Found 1 auto-discoverable Process Engine Configurators
+11:33:37,087  INFO ProcessEngineConfigurationImpl:893 - Found 1 Process Engine Configurators in total:
+11:33:37,087  INFO ProcessEngineConfigurationImpl:895 - class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:33:37,087  INFO ProcessEngineConfigurationImpl:905 - Executing beforeInit() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:33:38,020  INFO ProcessEngineConfigurationImpl:912 - Executing configure() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:33:38,211  INFO DefaultManagementAgent:225 - JMX Connector thread started and listening at: service:jmx:rmi:///jndi/rmi://WIN-PF24A8T22DC:1099/jmxrmi/activiti
+11:33:38,274  INFO ProcessEngineImpl:82 - ProcessEngine default created
+11:33:38,426  INFO TransactionalTestExecutionListener:279 - Began transaction (1): transaction manager [org.springframework.orm.hibernate4.HibernateTransactionManager@5398c8dd]; rollback [true]
+11:33:38,581  INFO TransactionalTestExecutionListener:299 - Rolled back transaction after test execution for test context [TestContext@5ac235b5 testClass = TestLoanOrderHisService, testInstance = test.service.TestLoanOrderHisService@4542ca0, testMethod = findAttachmentByULA@TestLoanOrderHisService, testException = java.lang.IndexOutOfBoundsException: Index: 0, Size: 0, mergedContextConfiguration = [MergedContextConfiguration@323dbe98 testClass = TestLoanOrderHisService, locations = '{classpath:/test-spring-hibernate.xml, classpath:/test-activiti-context.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]]
+11:33:38,588  INFO GenericApplicationContext:1042 - Closing org.springframework.context.support.GenericApplicationContext@458d1a4: startup date [Thu Jul 16 11:33:33 CST 2015]; root of context hierarchy
+11:33:38,588  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@235391e0: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:33:38,596  INFO DruidDataSource:1253 - {dataSource-1} closed
+11:34:45,014  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-spring-hibernate.xml]
+11:34:45,175  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+11:34:45,295  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-activiti-context.xml]
+11:34:45,317  INFO GenericApplicationContext:510 - Refreshing org.springframework.context.support.GenericApplicationContext@5c1a1cb1: startup date [Thu Jul 16 11:34:45 CST 2015]; root of context hierarchy
+11:34:45,487  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [test-config.properties]
+11:34:45,533  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@7a663ebc: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:34:45,819  INFO DruidDataSource:642 - {dataSource-1} inited
+11:34:45,993  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+11:34:45,999  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+11:34:46,001  INFO Environment:239 - HHH000206: hibernate.properties not found
+11:34:46,003  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+11:34:46,580  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+11:34:46,588  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+11:34:46,600  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+11:34:46,605  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+11:34:46,637  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+11:34:47,034  INFO SchemaUpdate:182 - HHH000228: Running hbm2ddl schema update
+11:34:47,034  INFO SchemaUpdate:193 - HHH000102: Fetching database metadata
+11:34:47,037  INFO SchemaUpdate:205 - HHH000396: Updating schema
+11:34:47,070  INFO TableMetadata:65 - HHH000261: Table found: test.t_area
+11:34:47,071  INFO TableMetadata:66 - HHH000037: Columns: [area_type, area_id, py_name, zipcode, area_name, special, parent_id]
+11:34:47,071  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,071  INFO TableMetadata:69 - HHH000126: Indexes: [area_id, primary]
+11:34:47,097  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_account_info
+11:34:47,097  INFO TableMetadata:66 - HHH000037: Columns: [bank_name, create_date, account_id, act_nature, cus_id, act_medium, cus_type, account_num, creator, account_name]
+11:34:47,098  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,098  INFO TableMetadata:69 - HHH000126: Indexes: [account_id, primary]
+11:34:47,127  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_accounts_journal
+11:34:47,127  INFO TableMetadata:66 - HHH000037: Columns: [car_id, bankaccount_no, income01, income02, analysis, income03, income04, income05, income06, mon_name_02, mon_name_01, average_income, mon_name_04, mon_name_03, mon_name_06, mon_name_05, bank_flow_id, bankaccount_type]
+11:34:47,128  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk52965364385511ca]
+11:34:47,128  INFO TableMetadata:69 - HHH000126: Indexes: [fk52965364385511ca, primary, bank_flow_id]
+11:34:47,155  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_address
+11:34:47,155  INFO TableMetadata:66 - HHH000037: Columns: [city_id, area_id, host_id, province_id, addr_type, addr_details, addr_id, host_type]
+11:34:47,156  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,156  INFO TableMetadata:69 - HHH000126: Indexes: [primary, addr_id]
+11:34:47,182  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_assets
+11:34:47,182  INFO TableMetadata:66 - HHH000037: Columns: [asset_id, vehicle, the_same_industry, real_estate]
+11:34:47,182  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,183  INFO TableMetadata:69 - HHH000126: Indexes: [asset_id, primary]
+11:34:47,207  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_attachment
+11:34:47,208  INFO TableMetadata:66 - HHH000037: Columns: [create_date, att_type, att_desc, att_name, att_data, att_id, order_id, order_type, creator]
+11:34:47,208  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,208  INFO TableMetadata:69 - HHH000126: Indexes: [primary, att_id]
+11:34:47,233  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_audit_info_record
+11:34:47,234  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, web_audit_record, query_114, contact_method, name, audit_item, phone_audit_record, audit_id]
+11:34:47,234  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk1ef677d8e420ac87]
+11:34:47,234  INFO TableMetadata:69 - HHH000126: Indexes: [fk1ef677d8e420ac87, primary, audit_id]
+11:34:47,261  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_auditinforecord_and_attachment
+11:34:47,261  INFO TableMetadata:66 - HHH000037: Columns: [audit_id, att_id, audit_att_id]
+11:34:47,261  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,262  INFO TableMetadata:69 - HHH000126: Indexes: [primary, audit_att_id]
+11:34:47,288  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_company
+11:34:47,288  INFO TableMetadata:66 - HHH000037: Columns: [area_size, tele, business_scope, com_id, loaner_id, founded_time, creator, create_date, address, name, reg_id, emp_amount, reg_capital, corp_nature]
+11:34:47,289  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,289  INFO TableMetadata:69 - HHH000126: Indexes: [com_id, primary]
+11:34:47,322  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_contacts
+11:34:47,322  INFO TableMetadata:66 - HHH000037: Columns: [contact_status, birthday, curr_addr, contact_id, familyarea, tel, ch_name, en_name, workplace, familycity, years_of_work, creator, comparea, comp_addr, gender_type, create_date, id_type, compprovince, age, cus_id, compaddrdetails, zip, familyaddrdetails, familyprovince, fixed_tel, relationship, annual_salary, comp_tel, email, job_title, cus_type, compcity, id_no]
+11:34:47,323  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,323  INFO TableMetadata:69 - HHH000126: Indexes: [contact_id, primary]
+11:34:47,352  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_audit_report
+11:34:47,353  INFO TableMetadata:66 - HHH000037: Columns: [firs_id, asset_id, loan_order_id, exist_loan_id, car_id, fina_id, loan_city, law_query_status, com_credit_status, card_info_id]
+11:34:47,354  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, fk179ad858cc9768df, fk179ad858618670a7]
+11:34:47,354  INFO TableMetadata:69 - HHH000126: Indexes: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, car_id, primary, fk179ad858618670a7, fk179ad858cc9768df]
+11:34:47,384  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_cards_details
+11:34:47,384  INFO TableMetadata:66 - HHH000037: Columns: [card_in_use, overdue_card_count, detail, max_qishu, max_limit, credit_total_amount, month_repay, use_rate, overdue_ratio, card_count, validate_year, credit_limit, year_overdue, overdue_rate, cumulative_overdue, card_info_id]
+11:34:47,384  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,385  INFO TableMetadata:69 - HHH000126: Indexes: [primary, card_info_id]
+11:34:47,411  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_investigation
+11:34:47,411  INFO TableMetadata:66 - HHH000037: Columns: [query_notes, credit_card_approval, internet_query, car_id, self_query, query_interval, credit_ref_id, loan_approval]
+11:34:47,412  INFO TableMetadata:68 - HHH000108: Foreign keys: [fkd8a04cc2385511ca]
+11:34:47,412  INFO TableMetadata:69 - HHH000126: Indexes: [fkd8a04cc2385511ca, primary, credit_ref_id]
+11:34:47,437  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_final_audit_report
+11:34:47,438  INFO TableMetadata:66 - HHH000037: Columns: [loan_period_type, loan_order_id, loan_interest_rate, visit_fee, actual_loan_amount, fina_pers_sugg, month_repay, contract_loan_amount, description, fina_personnel, month_service_fee_rate, fina_id, fina_date]
+11:34:47,438  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,438  INFO TableMetadata:69 - HHH000126: Indexes: [fina_id, primary]
+11:34:47,465  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_first_audit_report
+11:34:47,465  INFO TableMetadata:66 - HHH000037: Columns: [qulification_status, loan_order_id, com_oper_status, firs_dep_sugg, visit_status, marriage_type, firs_date, is_local_res, credit_status, firs_id, com_oper_duration, phone_check_status, firs_pers_sugg, description, firs_personnel, industry_type, note]
+11:34:47,465  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,466  INFO TableMetadata:69 - HHH000126: Indexes: [firs_id, primary]
+11:34:47,494  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order
+11:34:47,494  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, invstr_id, product_id, act_no, contract_no, sign_site, fm_phone, proc_id, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, subject_type, invst_order_id, updater, dep_menager, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, update_date]
+11:34:47,494  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk81a3b90a61f59991]
+11:34:47,495  INFO TableMetadata:69 - HHH000126: Indexes: [fk81a3b90a61f59991, primary, invst_order_id, invest_order_id]
+11:34:47,528  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order_his
+11:34:47,528  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, act_no, contract_no, fm_phone, sign_site, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, inv_ord_his_id, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, chg_date, changer, chg_contents]
+11:34:47,528  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk27d8e6dd61f59991]
+11:34:47,529  INFO TableMetadata:69 - HHH000126: Indexes: [inv_ord_his_id, primary, fk27d8e6dd61f59991]
+11:34:47,554  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_products
+11:34:47,554  INFO TableMetadata:66 - HHH000037: Columns: [prod_desc, low_lend_edu, hig_lend_edu, ars, prod_id, lending_cycle, prod_status, repayment_mode, ytm]
+11:34:47,554  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,554  INFO TableMetadata:69 - HHH000126: Indexes: [prod_id, primary]
+11:34:47,593  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor
+11:34:47,593  INFO TableMetadata:66 - HHH000037: Columns: [birthday, area_id, bank_acc_name, invstr_id, comp_scale, street, ch_name, has_child, en_name, years_of_work, fam_inc_sta, city_id, id_location, gender_type, investor_status, job_type, company_name, id_type, description, comm_addr, invstr_status, marital_status, invstr_type, industry, company_scale_type, zip, province_id, industry_id, mobile_tel, investor_type, marriage_type, fixed_tel, nationality, email, degree_type, id_issue_date, job_title, investor_id, bank_no, id_expire_date, family_status, id_no]
+11:34:47,594  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,594  INFO TableMetadata:69 - HHH000126: Indexes: [invstr_id, primary, investor_id]
+11:34:47,628  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor_and_contacts
+11:34:47,628  INFO TableMetadata:66 - HHH000037: Columns: [id, contact_id, investor_id]
+11:34:47,629  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,629  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:34:47,649  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investorder_and_products
+11:34:47,650  INFO TableMetadata:66 - HHH000037: Columns: [id, invest_edu, end_date, prod_id, begin_date, invest_order_id]
+11:34:47,650  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,650  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:34:47,673  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order
+11:34:47,674  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, loan_amount, loan_order_id, loan_type, curr_addr, has_child, loaner_id, domi_addr, purpose, house_install_pay, creator, income_src, gender_type, create_date, apply_date, name, age, process_status, subject_type, rent, loan_city, loan_min, repay_method, status_id, mobile_tel, hukou_addr, mortgage_status, fixed_tel, marriage_type, salesman, annual_salary, order_desc, email, qq_no, loan_period, finish_date, id_no]
+11:34:47,674  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk8dce5f45a87ecc16]
+11:34:47,675  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_id, fk8dce5f45a87ecc16, primary]
+11:34:47,695  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order_his
+11:34:47,695  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, role_id, loan_order_hi_id, agent_time, assignee, comment, order_status]
+11:34:47,695  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,696  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_hi_id, primary]
+11:34:47,718  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner
+11:34:47,718  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, mobile_tel, loaner_id, has_child, hukou_addr, mortgage_status, marriage_type, fixed_tel, house_install_pay, income_src, annual_salary, gender_type, create_date, email, family_tel, qq_no, name, age, rent, id_no]
+11:34:47,718  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,719  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_id]
+11:34:47,741  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_info_his
+11:34:47,741  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, bank_no_first, has_child, loaner_id, loaner_status_type, house_install_pay, change_people, income_src, gender_type, create_date, age, name, rent, change_contents, mobile_tel, hukou_addr, fixed_tel, marriage_type, mortgage_status, change_tiem, loaner_hi_id, annual_salary, email, bank_no_second, qq_no, id_no]
+11:34:47,741  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,742  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_hi_id]
+11:34:47,761  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_accountinfo
+11:34:47,762  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, account_id]
+11:34:47,762  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,762  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:34:47,785  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_company
+11:34:47,785  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, com_id]
+11:34:47,785  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,786  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:34:47,805  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_contacts
+11:34:47,805  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, contact_id]
+11:34:47,806  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,806  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:34:47,826  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loans_details
+11:34:47,827  INFO TableMetadata:66 - HHH000037: Columns: [last_loan_space, exist_loan_id, year_overdue, outstanding_balance, overdue_rate, outstanding_count, cumulative_overdue, outstanding_sum, loan_detail, month_repay, total_loan_count]
+11:34:47,827  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,827  INFO TableMetadata:69 - HHH000126: Indexes: [exist_loan_id, primary]
+11:34:47,848  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_microcredit_opinion
+11:34:47,848  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, mcbr_id, advice_repay_mthd, coborrower_idno, loan_rate, final_loan_amt, survey_date, operator_a, first_meeting, operator_b, final_loan_period, reject_cause, advice_loan_amt, loan_mthd, counseling_rate, verification, dept_principal, coborrower_name, specific_measures, final_repay_mthd, risk_ctrl_measures, collection_mthd, advice_loan_period]
+11:34:47,849  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,849  INFO TableMetadata:69 - HHH000126: Indexes: [mcbr_id, primary]
+11:34:47,871  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_order_status
+11:34:47,871  INFO TableMetadata:66 - HHH000037: Columns: [status_code, status_name, status_desc, status_id]
+11:34:47,871  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,872  INFO TableMetadata:69 - HHH000126: Indexes: [primary, status_id]
+11:34:47,893  INFO TableMetadata:65 - HHH000261: Table found: test.t_organization
+11:34:47,893  INFO TableMetadata:66 - HHH000037: Columns: [company_id, manager, assistant_manager, fax, status, tel, myid, state, pid, creater, lastmod, short_name, iconcls, created, organization_id, description, modifyer, ename, emp_qty, full_name]
+11:34:47,894  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,894  INFO TableMetadata:69 - HHH000126: Indexes: [organization_id, primary]
+11:34:47,915  INFO TableMetadata:65 - HHH000261: Table found: test.t_permission
+11:34:47,916  INFO TableMetadata:66 - HHH000037: Columns: [isused, sort, permission_id, status, myid, state, creater, lastmod, pid, type, url, iconcls, system_type, created, description, name, modifyer, pname]
+11:34:47,916  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,916  INFO TableMetadata:69 - HHH000126: Indexes: [permission_id, primary]
+11:34:47,936  INFO TableMetadata:65 - HHH000261: Table found: test.t_role
+11:34:47,937  INFO TableMetadata:66 - HHH000037: Columns: [sort, role_id, status, role_code, created, description, name, modifyer, lastmod, creater]
+11:34:47,937  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,937  INFO TableMetadata:69 - HHH000126: Indexes: [role_id, primary]
+11:34:47,957  INFO TableMetadata:65 - HHH000261: Table found: test.t_role_and_permission
+11:34:47,958  INFO TableMetadata:66 - HHH000037: Columns: [role_id, permission_id, status, created, role_perm_id, modifyer, lastmod, creater]
+11:34:47,958  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,958  INFO TableMetadata:69 - HHH000126: Indexes: [role_perm_id, primary]
+11:34:47,976  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_dict
+11:34:47,976  INFO TableMetadata:66 - HHH000037: Columns: [permissionid, sort, status, state, dict_type, code_id, creater, lastmod, iconcls, created, description, dict_name, modifyer, dict_code, parent_id]
+11:34:47,977  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,977  INFO TableMetadata:69 - HHH000126: Indexes: [primary, code_id]
+11:34:47,993  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_log
+11:34:47,994  INFO TableMetadata:66 - HHH000037: Columns: [object_type, object_id, name, user_id, mac, log_date, event_record, type, event_name, log_id, ip]
+11:34:47,994  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:47,994  INFO TableMetadata:69 - HHH000126: Indexes: [primary, log_id]
+11:34:48,010  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_parameter
+11:34:48,010  INFO TableMetadata:66 - HHH000037: Columns: [updater, create_date, status, description, pram_id, update_date, parm_name, parm_value, parm_code, creator]
+11:34:48,011  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:48,011  INFO TableMetadata:69 - HHH000126: Indexes: [pram_id, primary]
+11:34:48,027  INFO TableMetadata:65 - HHH000261: Table found: test.t_user_and_role
+11:34:48,028  INFO TableMetadata:66 - HHH000037: Columns: [user_role_id, role_id, status, created, modifyer, user_id, lastmod, creater]
+11:34:48,028  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:34:48,028  INFO TableMetadata:69 - HHH000126: Indexes: [user_role_id, primary]
+11:34:48,046  INFO TableMetadata:65 - HHH000261: Table found: test.t_users
+11:34:48,046  INFO TableMetadata:66 - HHH000037: Columns: [isemployee, first_visit, myid, tel, previous_visit, creater, lang, password, created, description, name, user_id, isonline, status, theme, answer, lastmod, ip, title_id, email, organization_id, last_visits, duty_id, modifyer, account, question_id, login_count]
+11:34:48,047  INFO TableMetadata:68 - HHH000108: Foreign keys: [fka115ca7d29e9dfec]
+11:34:48,047  INFO TableMetadata:69 - HHH000126: Indexes: [fka115ca7d29e9dfec, primary, user_id]
+11:34:48,052  INFO SchemaUpdate:240 - HHH000232: Schema update complete
+11:34:48,105  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-07-16 11:34:45",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:2,
+	ConnectCount:2,
+	Connections:[
+		{ID:1939645973, ConnectTime:"2015-07-16 11:34:46", UseCount:2, LastActiveTime:"2015-07-16 11:34:48"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+11:34:48,420  INFO ProcessEngineConfigurationImpl:871 - Found 1 auto-discoverable Process Engine Configurators
+11:34:48,420  INFO ProcessEngineConfigurationImpl:893 - Found 1 Process Engine Configurators in total:
+11:34:48,421  INFO ProcessEngineConfigurationImpl:895 - class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:34:48,421  INFO ProcessEngineConfigurationImpl:905 - Executing beforeInit() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:34:49,382  INFO ProcessEngineConfigurationImpl:912 - Executing configure() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:34:49,580  INFO DefaultManagementAgent:225 - JMX Connector thread started and listening at: service:jmx:rmi:///jndi/rmi://WIN-PF24A8T22DC:1099/jmxrmi/activiti
+11:34:49,692  INFO ProcessEngineImpl:82 - ProcessEngine default created
+11:34:49,863  INFO TransactionalTestExecutionListener:279 - Began transaction (1): transaction manager [org.springframework.orm.hibernate4.HibernateTransactionManager@4f355f55]; rollback [true]
+11:34:50,042  INFO TransactionalTestExecutionListener:299 - Rolled back transaction after test execution for test context [TestContext@183b5819 testClass = TestLoanOrderHisService, testInstance = test.service.TestLoanOrderHisService@6014ddbc, testMethod = findAttachmentByULA@TestLoanOrderHisService, testException = java.lang.IndexOutOfBoundsException: Index: 0, Size: 0, mergedContextConfiguration = [MergedContextConfiguration@79e992eb testClass = TestLoanOrderHisService, locations = '{classpath:/test-spring-hibernate.xml, classpath:/test-activiti-context.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]]
+11:34:50,048  INFO GenericApplicationContext:1042 - Closing org.springframework.context.support.GenericApplicationContext@5c1a1cb1: startup date [Thu Jul 16 11:34:45 CST 2015]; root of context hierarchy
+11:34:50,049  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@7a663ebc: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:34:50,058  INFO DruidDataSource:1253 - {dataSource-1} closed
+11:35:27,213  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-spring-hibernate.xml]
+11:35:27,367  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+11:35:27,484  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-activiti-context.xml]
+11:35:27,507  INFO GenericApplicationContext:510 - Refreshing org.springframework.context.support.GenericApplicationContext@5c1a1cb1: startup date [Thu Jul 16 11:35:27 CST 2015]; root of context hierarchy
+11:35:27,676  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [test-config.properties]
+11:35:27,721  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@25b94a21: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:35:28,001  INFO DruidDataSource:642 - {dataSource-1} inited
+11:35:28,179  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+11:35:28,185  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+11:35:28,187  INFO Environment:239 - HHH000206: hibernate.properties not found
+11:35:28,188  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+11:35:28,781  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+11:35:28,789  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+11:35:28,802  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+11:35:28,807  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+11:35:28,840  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+11:35:29,242  INFO SchemaUpdate:182 - HHH000228: Running hbm2ddl schema update
+11:35:29,243  INFO SchemaUpdate:193 - HHH000102: Fetching database metadata
+11:35:29,246  INFO SchemaUpdate:205 - HHH000396: Updating schema
+11:35:29,280  INFO TableMetadata:65 - HHH000261: Table found: test.t_area
+11:35:29,280  INFO TableMetadata:66 - HHH000037: Columns: [area_type, area_id, py_name, zipcode, area_name, special, parent_id]
+11:35:29,281  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,281  INFO TableMetadata:69 - HHH000126: Indexes: [area_id, primary]
+11:35:29,305  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_account_info
+11:35:29,306  INFO TableMetadata:66 - HHH000037: Columns: [bank_name, create_date, account_id, act_nature, cus_id, act_medium, cus_type, account_num, creator, account_name]
+11:35:29,306  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,306  INFO TableMetadata:69 - HHH000126: Indexes: [account_id, primary]
+11:35:29,335  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_accounts_journal
+11:35:29,335  INFO TableMetadata:66 - HHH000037: Columns: [car_id, bankaccount_no, income01, income02, analysis, income03, income04, income05, income06, mon_name_02, mon_name_01, average_income, mon_name_04, mon_name_03, mon_name_06, mon_name_05, bank_flow_id, bankaccount_type]
+11:35:29,336  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk52965364385511ca]
+11:35:29,336  INFO TableMetadata:69 - HHH000126: Indexes: [fk52965364385511ca, primary, bank_flow_id]
+11:35:29,362  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_address
+11:35:29,362  INFO TableMetadata:66 - HHH000037: Columns: [city_id, area_id, host_id, province_id, addr_type, addr_details, addr_id, host_type]
+11:35:29,362  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,363  INFO TableMetadata:69 - HHH000126: Indexes: [primary, addr_id]
+11:35:29,388  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_assets
+11:35:29,389  INFO TableMetadata:66 - HHH000037: Columns: [asset_id, vehicle, the_same_industry, real_estate]
+11:35:29,389  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,389  INFO TableMetadata:69 - HHH000126: Indexes: [asset_id, primary]
+11:35:29,414  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_attachment
+11:35:29,414  INFO TableMetadata:66 - HHH000037: Columns: [create_date, att_type, att_desc, att_name, att_data, att_id, order_id, order_type, creator]
+11:35:29,415  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,415  INFO TableMetadata:69 - HHH000126: Indexes: [primary, att_id]
+11:35:29,441  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_audit_info_record
+11:35:29,442  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, web_audit_record, query_114, contact_method, name, audit_item, phone_audit_record, audit_id]
+11:35:29,442  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk1ef677d8e420ac87]
+11:35:29,442  INFO TableMetadata:69 - HHH000126: Indexes: [fk1ef677d8e420ac87, primary, audit_id]
+11:35:29,468  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_auditinforecord_and_attachment
+11:35:29,469  INFO TableMetadata:66 - HHH000037: Columns: [audit_id, att_id, audit_att_id]
+11:35:29,469  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,469  INFO TableMetadata:69 - HHH000126: Indexes: [primary, audit_att_id]
+11:35:29,495  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_company
+11:35:29,496  INFO TableMetadata:66 - HHH000037: Columns: [area_size, tele, business_scope, com_id, loaner_id, founded_time, creator, create_date, address, name, reg_id, emp_amount, reg_capital, corp_nature]
+11:35:29,496  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,496  INFO TableMetadata:69 - HHH000126: Indexes: [com_id, primary]
+11:35:29,524  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_contacts
+11:35:29,525  INFO TableMetadata:66 - HHH000037: Columns: [contact_status, birthday, curr_addr, contact_id, familyarea, tel, ch_name, en_name, workplace, familycity, years_of_work, creator, comparea, comp_addr, gender_type, create_date, id_type, compprovince, age, cus_id, compaddrdetails, zip, familyaddrdetails, familyprovince, fixed_tel, relationship, annual_salary, comp_tel, email, job_title, cus_type, compcity, id_no]
+11:35:29,525  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,525  INFO TableMetadata:69 - HHH000126: Indexes: [contact_id, primary]
+11:35:29,553  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_audit_report
+11:35:29,553  INFO TableMetadata:66 - HHH000037: Columns: [firs_id, asset_id, loan_order_id, exist_loan_id, car_id, fina_id, loan_city, law_query_status, com_credit_status, card_info_id]
+11:35:29,553  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, fk179ad858cc9768df, fk179ad858618670a7]
+11:35:29,554  INFO TableMetadata:69 - HHH000126: Indexes: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, car_id, primary, fk179ad858618670a7, fk179ad858cc9768df]
+11:35:29,580  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_cards_details
+11:35:29,580  INFO TableMetadata:66 - HHH000037: Columns: [card_in_use, overdue_card_count, detail, max_qishu, max_limit, credit_total_amount, month_repay, use_rate, overdue_ratio, card_count, validate_year, credit_limit, year_overdue, overdue_rate, cumulative_overdue, card_info_id]
+11:35:29,581  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,581  INFO TableMetadata:69 - HHH000126: Indexes: [primary, card_info_id]
+11:35:29,607  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_investigation
+11:35:29,608  INFO TableMetadata:66 - HHH000037: Columns: [query_notes, credit_card_approval, internet_query, car_id, self_query, query_interval, credit_ref_id, loan_approval]
+11:35:29,608  INFO TableMetadata:68 - HHH000108: Foreign keys: [fkd8a04cc2385511ca]
+11:35:29,608  INFO TableMetadata:69 - HHH000126: Indexes: [fkd8a04cc2385511ca, primary, credit_ref_id]
+11:35:29,635  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_final_audit_report
+11:35:29,636  INFO TableMetadata:66 - HHH000037: Columns: [loan_period_type, loan_order_id, loan_interest_rate, visit_fee, actual_loan_amount, fina_pers_sugg, month_repay, contract_loan_amount, description, fina_personnel, month_service_fee_rate, fina_id, fina_date]
+11:35:29,636  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,636  INFO TableMetadata:69 - HHH000126: Indexes: [fina_id, primary]
+11:35:29,667  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_first_audit_report
+11:35:29,668  INFO TableMetadata:66 - HHH000037: Columns: [qulification_status, loan_order_id, com_oper_status, firs_dep_sugg, visit_status, marriage_type, firs_date, is_local_res, credit_status, firs_id, com_oper_duration, phone_check_status, firs_pers_sugg, description, firs_personnel, industry_type, note]
+11:35:29,668  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,669  INFO TableMetadata:69 - HHH000126: Indexes: [firs_id, primary]
+11:35:29,697  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order
+11:35:29,698  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, invstr_id, product_id, act_no, contract_no, sign_site, fm_phone, proc_id, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, subject_type, invst_order_id, updater, dep_menager, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, update_date]
+11:35:29,698  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk81a3b90a61f59991]
+11:35:29,698  INFO TableMetadata:69 - HHH000126: Indexes: [fk81a3b90a61f59991, primary, invst_order_id, invest_order_id]
+11:35:29,725  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order_his
+11:35:29,726  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, act_no, contract_no, fm_phone, sign_site, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, inv_ord_his_id, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, chg_date, changer, chg_contents]
+11:35:29,726  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk27d8e6dd61f59991]
+11:35:29,726  INFO TableMetadata:69 - HHH000126: Indexes: [inv_ord_his_id, primary, fk27d8e6dd61f59991]
+11:35:29,755  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_products
+11:35:29,755  INFO TableMetadata:66 - HHH000037: Columns: [prod_desc, low_lend_edu, hig_lend_edu, ars, prod_id, lending_cycle, prod_status, repayment_mode, ytm]
+11:35:29,755  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,769  INFO TableMetadata:69 - HHH000126: Indexes: [prod_id, primary]
+11:35:29,798  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor
+11:35:29,799  INFO TableMetadata:66 - HHH000037: Columns: [birthday, area_id, bank_acc_name, invstr_id, comp_scale, street, ch_name, has_child, en_name, years_of_work, fam_inc_sta, city_id, id_location, gender_type, investor_status, job_type, company_name, id_type, description, comm_addr, invstr_status, marital_status, invstr_type, industry, company_scale_type, zip, province_id, industry_id, mobile_tel, investor_type, marriage_type, fixed_tel, nationality, email, degree_type, id_issue_date, job_title, investor_id, bank_no, id_expire_date, family_status, id_no]
+11:35:29,799  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,800  INFO TableMetadata:69 - HHH000126: Indexes: [invstr_id, primary, investor_id]
+11:35:29,824  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor_and_contacts
+11:35:29,825  INFO TableMetadata:66 - HHH000037: Columns: [id, contact_id, investor_id]
+11:35:29,825  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,825  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:35:29,850  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investorder_and_products
+11:35:29,851  INFO TableMetadata:66 - HHH000037: Columns: [id, invest_edu, end_date, prod_id, begin_date, invest_order_id]
+11:35:29,851  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,851  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:35:29,881  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order
+11:35:29,881  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, loan_amount, loan_order_id, loan_type, curr_addr, has_child, loaner_id, domi_addr, purpose, house_install_pay, creator, income_src, gender_type, create_date, apply_date, name, age, process_status, subject_type, rent, loan_city, loan_min, repay_method, status_id, mobile_tel, hukou_addr, mortgage_status, fixed_tel, marriage_type, salesman, annual_salary, order_desc, email, qq_no, loan_period, finish_date, id_no]
+11:35:29,882  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk8dce5f45a87ecc16]
+11:35:29,882  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_id, fk8dce5f45a87ecc16, primary]
+11:35:29,907  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order_his
+11:35:29,908  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, role_id, loan_order_hi_id, agent_time, assignee, comment, order_status]
+11:35:29,908  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,908  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_hi_id, primary]
+11:35:29,935  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner
+11:35:29,936  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, mobile_tel, loaner_id, has_child, hukou_addr, mortgage_status, marriage_type, fixed_tel, house_install_pay, income_src, annual_salary, gender_type, create_date, email, family_tel, qq_no, name, age, rent, id_no]
+11:35:29,936  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,937  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_id]
+11:35:29,964  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_info_his
+11:35:29,964  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, bank_no_first, has_child, loaner_id, loaner_status_type, house_install_pay, change_people, income_src, gender_type, create_date, age, name, rent, change_contents, mobile_tel, hukou_addr, fixed_tel, marriage_type, mortgage_status, change_tiem, loaner_hi_id, annual_salary, email, bank_no_second, qq_no, id_no]
+11:35:29,964  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,964  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_hi_id]
+11:35:29,990  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_accountinfo
+11:35:29,990  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, account_id]
+11:35:29,990  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:29,991  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:35:30,015  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_company
+11:35:30,015  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, com_id]
+11:35:30,015  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,016  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:35:30,041  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_contacts
+11:35:30,041  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, contact_id]
+11:35:30,041  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,042  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+11:35:30,067  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loans_details
+11:35:30,067  INFO TableMetadata:66 - HHH000037: Columns: [last_loan_space, exist_loan_id, year_overdue, outstanding_balance, overdue_rate, outstanding_count, cumulative_overdue, outstanding_sum, loan_detail, month_repay, total_loan_count]
+11:35:30,068  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,068  INFO TableMetadata:69 - HHH000126: Indexes: [exist_loan_id, primary]
+11:35:30,088  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_microcredit_opinion
+11:35:30,088  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, mcbr_id, advice_repay_mthd, coborrower_idno, loan_rate, final_loan_amt, survey_date, operator_a, first_meeting, operator_b, final_loan_period, reject_cause, advice_loan_amt, loan_mthd, counseling_rate, verification, dept_principal, coborrower_name, specific_measures, final_repay_mthd, risk_ctrl_measures, collection_mthd, advice_loan_period]
+11:35:30,089  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,089  INFO TableMetadata:69 - HHH000126: Indexes: [mcbr_id, primary]
+11:35:30,107  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_order_status
+11:35:30,107  INFO TableMetadata:66 - HHH000037: Columns: [status_code, status_name, status_desc, status_id]
+11:35:30,108  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,108  INFO TableMetadata:69 - HHH000126: Indexes: [primary, status_id]
+11:35:30,128  INFO TableMetadata:65 - HHH000261: Table found: test.t_organization
+11:35:30,128  INFO TableMetadata:66 - HHH000037: Columns: [company_id, manager, assistant_manager, fax, status, tel, myid, state, pid, creater, lastmod, short_name, iconcls, created, organization_id, description, modifyer, ename, emp_qty, full_name]
+11:35:30,129  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,129  INFO TableMetadata:69 - HHH000126: Indexes: [organization_id, primary]
+11:35:30,151  INFO TableMetadata:65 - HHH000261: Table found: test.t_permission
+11:35:30,152  INFO TableMetadata:66 - HHH000037: Columns: [isused, sort, permission_id, status, myid, state, creater, lastmod, pid, type, url, iconcls, system_type, created, description, name, modifyer, pname]
+11:35:30,152  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,153  INFO TableMetadata:69 - HHH000126: Indexes: [permission_id, primary]
+11:35:30,172  INFO TableMetadata:65 - HHH000261: Table found: test.t_role
+11:35:30,173  INFO TableMetadata:66 - HHH000037: Columns: [sort, role_id, status, role_code, created, description, name, modifyer, lastmod, creater]
+11:35:30,173  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,173  INFO TableMetadata:69 - HHH000126: Indexes: [role_id, primary]
+11:35:30,192  INFO TableMetadata:65 - HHH000261: Table found: test.t_role_and_permission
+11:35:30,192  INFO TableMetadata:66 - HHH000037: Columns: [role_id, permission_id, status, created, role_perm_id, modifyer, lastmod, creater]
+11:35:30,193  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,193  INFO TableMetadata:69 - HHH000126: Indexes: [role_perm_id, primary]
+11:35:30,215  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_dict
+11:35:30,216  INFO TableMetadata:66 - HHH000037: Columns: [permissionid, sort, status, state, dict_type, code_id, creater, lastmod, iconcls, created, description, dict_name, modifyer, dict_code, parent_id]
+11:35:30,216  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,216  INFO TableMetadata:69 - HHH000126: Indexes: [primary, code_id]
+11:35:30,235  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_log
+11:35:30,235  INFO TableMetadata:66 - HHH000037: Columns: [object_type, object_id, name, user_id, mac, log_date, event_record, type, event_name, log_id, ip]
+11:35:30,235  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,236  INFO TableMetadata:69 - HHH000126: Indexes: [primary, log_id]
+11:35:30,254  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_parameter
+11:35:30,254  INFO TableMetadata:66 - HHH000037: Columns: [updater, create_date, status, description, pram_id, update_date, parm_name, parm_value, parm_code, creator]
+11:35:30,254  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,255  INFO TableMetadata:69 - HHH000126: Indexes: [pram_id, primary]
+11:35:30,275  INFO TableMetadata:65 - HHH000261: Table found: test.t_user_and_role
+11:35:30,276  INFO TableMetadata:66 - HHH000037: Columns: [user_role_id, role_id, status, created, modifyer, user_id, lastmod, creater]
+11:35:30,276  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+11:35:30,276  INFO TableMetadata:69 - HHH000126: Indexes: [user_role_id, primary]
+11:35:30,296  INFO TableMetadata:65 - HHH000261: Table found: test.t_users
+11:35:30,297  INFO TableMetadata:66 - HHH000037: Columns: [isemployee, first_visit, myid, tel, previous_visit, creater, lang, password, created, description, name, user_id, isonline, status, theme, answer, lastmod, ip, title_id, email, organization_id, last_visits, duty_id, modifyer, account, question_id, login_count]
+11:35:30,297  INFO TableMetadata:68 - HHH000108: Foreign keys: [fka115ca7d29e9dfec]
+11:35:30,298  INFO TableMetadata:69 - HHH000126: Indexes: [fka115ca7d29e9dfec, primary, user_id]
+11:35:30,303  INFO SchemaUpdate:240 - HHH000232: Schema update complete
+11:35:30,361  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-07-16 11:35:27",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:2,
+	ConnectCount:2,
+	Connections:[
+		{ID:612934836, ConnectTime:"2015-07-16 11:35:28", UseCount:2, LastActiveTime:"2015-07-16 11:35:30"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+11:35:30,685  INFO ProcessEngineConfigurationImpl:871 - Found 1 auto-discoverable Process Engine Configurators
+11:35:30,686  INFO ProcessEngineConfigurationImpl:893 - Found 1 Process Engine Configurators in total:
+11:35:30,686  INFO ProcessEngineConfigurationImpl:895 - class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:35:30,686  INFO ProcessEngineConfigurationImpl:905 - Executing beforeInit() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:35:31,642  INFO ProcessEngineConfigurationImpl:912 - Executing configure() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+11:35:31,834  INFO DefaultManagementAgent:225 - JMX Connector thread started and listening at: service:jmx:rmi:///jndi/rmi://WIN-PF24A8T22DC:1099/jmxrmi/activiti
+11:35:31,948  INFO ProcessEngineImpl:82 - ProcessEngine default created
+11:35:32,110  INFO TransactionalTestExecutionListener:279 - Began transaction (1): transaction manager [org.springframework.orm.hibernate4.HibernateTransactionManager@8081e3e]; rollback [true]
+11:36:47,121  INFO TransactionalTestExecutionListener:299 - Rolled back transaction after test execution for test context [TestContext@5a3fda0d testClass = TestLoanOrderHisService, testInstance = test.service.TestLoanOrderHisService@1604b9c5, testMethod = findAttachmentByULA@TestLoanOrderHisService, testException = java.lang.IndexOutOfBoundsException: Index: 0, Size: 0, mergedContextConfiguration = [MergedContextConfiguration@10403fce testClass = TestLoanOrderHisService, locations = '{classpath:/test-spring-hibernate.xml, classpath:/test-activiti-context.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]]
+11:36:47,138  INFO GenericApplicationContext:1042 - Closing org.springframework.context.support.GenericApplicationContext@5c1a1cb1: startup date [Thu Jul 16 11:35:27 CST 2015]; root of context hierarchy
+11:36:47,140  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@25b94a21: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:36:47,152  INFO DruidDataSource:1253 - {dataSource-1} closed
+13:05:39,231  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-spring-hibernate.xml]
+13:05:39,382  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+13:05:39,499  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-activiti-context.xml]
+13:05:39,521  INFO GenericApplicationContext:510 - Refreshing org.springframework.context.support.GenericApplicationContext@2513014: startup date [Thu Jul 16 13:05:39 CST 2015]; root of context hierarchy
+13:05:39,679  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [test-config.properties]
+13:05:39,721  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@37f54031: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+13:05:39,987  INFO DruidDataSource:642 - {dataSource-1} inited
+13:05:40,151  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+13:05:40,156  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+13:05:40,158  INFO Environment:239 - HHH000206: hibernate.properties not found
+13:05:40,159  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+13:05:40,698  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+13:05:40,705  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+13:05:40,717  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+13:05:40,721  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+13:05:40,755  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+13:05:41,152  INFO SchemaUpdate:182 - HHH000228: Running hbm2ddl schema update
+13:05:41,153  INFO SchemaUpdate:193 - HHH000102: Fetching database metadata
+13:05:41,156  INFO SchemaUpdate:205 - HHH000396: Updating schema
+13:05:41,192  INFO TableMetadata:65 - HHH000261: Table found: test.t_area
+13:05:41,192  INFO TableMetadata:66 - HHH000037: Columns: [area_type, area_id, py_name, zipcode, area_name, special, parent_id]
+13:05:41,192  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,193  INFO TableMetadata:69 - HHH000126: Indexes: [area_id, primary]
+13:05:41,217  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_account_info
+13:05:41,218  INFO TableMetadata:66 - HHH000037: Columns: [bank_name, create_date, account_id, act_nature, cus_id, act_medium, cus_type, account_num, creator, account_name]
+13:05:41,218  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,218  INFO TableMetadata:69 - HHH000126: Indexes: [account_id, primary]
+13:05:41,260  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_accounts_journal
+13:05:41,260  INFO TableMetadata:66 - HHH000037: Columns: [car_id, bankaccount_no, income01, income02, analysis, income03, income04, income05, income06, mon_name_02, mon_name_01, average_income, mon_name_04, mon_name_03, mon_name_06, mon_name_05, bank_flow_id, bankaccount_type]
+13:05:41,260  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk52965364385511ca]
+13:05:41,260  INFO TableMetadata:69 - HHH000126: Indexes: [fk52965364385511ca, primary, bank_flow_id]
+13:05:41,286  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_address
+13:05:41,286  INFO TableMetadata:66 - HHH000037: Columns: [city_id, area_id, host_id, province_id, addr_type, addr_details, addr_id, host_type]
+13:05:41,287  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,287  INFO TableMetadata:69 - HHH000126: Indexes: [primary, addr_id]
+13:05:41,316  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_assets
+13:05:41,317  INFO TableMetadata:66 - HHH000037: Columns: [asset_id, vehicle, the_same_industry, real_estate]
+13:05:41,317  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,317  INFO TableMetadata:69 - HHH000126: Indexes: [asset_id, primary]
+13:05:41,342  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_attachment
+13:05:41,342  INFO TableMetadata:66 - HHH000037: Columns: [create_date, att_type, att_desc, att_name, att_data, att_id, order_id, order_type, creator]
+13:05:41,342  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,343  INFO TableMetadata:69 - HHH000126: Indexes: [primary, att_id]
+13:05:41,368  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_audit_info_record
+13:05:41,369  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, web_audit_record, query_114, contact_method, name, audit_item, phone_audit_record, audit_id]
+13:05:41,369  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk1ef677d8e420ac87]
+13:05:41,369  INFO TableMetadata:69 - HHH000126: Indexes: [fk1ef677d8e420ac87, primary, audit_id]
+13:05:41,397  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_auditinforecord_and_attachment
+13:05:41,397  INFO TableMetadata:66 - HHH000037: Columns: [audit_id, att_id, audit_att_id]
+13:05:41,397  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,398  INFO TableMetadata:69 - HHH000126: Indexes: [primary, audit_att_id]
+13:05:41,423  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_company
+13:05:41,423  INFO TableMetadata:66 - HHH000037: Columns: [area_size, tele, business_scope, com_id, loaner_id, founded_time, creator, create_date, address, name, reg_id, emp_amount, reg_capital, corp_nature]
+13:05:41,424  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,424  INFO TableMetadata:69 - HHH000126: Indexes: [com_id, primary]
+13:05:41,452  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_contacts
+13:05:41,452  INFO TableMetadata:66 - HHH000037: Columns: [contact_status, birthday, curr_addr, contact_id, familyarea, tel, ch_name, en_name, workplace, familycity, years_of_work, creator, comparea, comp_addr, gender_type, create_date, id_type, compprovince, age, cus_id, compaddrdetails, zip, familyaddrdetails, familyprovince, fixed_tel, relationship, annual_salary, comp_tel, email, job_title, cus_type, compcity, id_no]
+13:05:41,453  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,453  INFO TableMetadata:69 - HHH000126: Indexes: [contact_id, primary]
+13:05:41,479  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_audit_report
+13:05:41,480  INFO TableMetadata:66 - HHH000037: Columns: [firs_id, asset_id, loan_order_id, exist_loan_id, car_id, fina_id, loan_city, law_query_status, com_credit_status, card_info_id]
+13:05:41,480  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, fk179ad858cc9768df, fk179ad858618670a7]
+13:05:41,480  INFO TableMetadata:69 - HHH000126: Indexes: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, car_id, primary, fk179ad858618670a7, fk179ad858cc9768df]
+13:05:41,506  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_cards_details
+13:05:41,506  INFO TableMetadata:66 - HHH000037: Columns: [card_in_use, overdue_card_count, detail, max_qishu, max_limit, credit_total_amount, month_repay, use_rate, overdue_ratio, card_count, validate_year, credit_limit, year_overdue, overdue_rate, cumulative_overdue, card_info_id]
+13:05:41,507  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,507  INFO TableMetadata:69 - HHH000126: Indexes: [primary, card_info_id]
+13:05:41,532  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_investigation
+13:05:41,533  INFO TableMetadata:66 - HHH000037: Columns: [query_notes, credit_card_approval, internet_query, car_id, self_query, query_interval, credit_ref_id, loan_approval]
+13:05:41,533  INFO TableMetadata:68 - HHH000108: Foreign keys: [fkd8a04cc2385511ca]
+13:05:41,534  INFO TableMetadata:69 - HHH000126: Indexes: [fkd8a04cc2385511ca, primary, credit_ref_id]
+13:05:41,565  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_final_audit_report
+13:05:41,566  INFO TableMetadata:66 - HHH000037: Columns: [loan_period_type, loan_order_id, loan_interest_rate, visit_fee, actual_loan_amount, fina_pers_sugg, month_repay, contract_loan_amount, description, fina_personnel, month_service_fee_rate, fina_id, fina_date]
+13:05:41,566  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,566  INFO TableMetadata:69 - HHH000126: Indexes: [fina_id, primary]
+13:05:41,593  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_first_audit_report
+13:05:41,594  INFO TableMetadata:66 - HHH000037: Columns: [qulification_status, loan_order_id, com_oper_status, firs_dep_sugg, visit_status, marriage_type, firs_date, is_local_res, credit_status, firs_id, com_oper_duration, phone_check_status, firs_pers_sugg, description, firs_personnel, industry_type, note]
+13:05:41,594  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,594  INFO TableMetadata:69 - HHH000126: Indexes: [firs_id, primary]
+13:05:41,622  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order
+13:05:41,622  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, invstr_id, product_id, act_no, contract_no, sign_site, fm_phone, proc_id, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, subject_type, invst_order_id, updater, dep_menager, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, update_date]
+13:05:41,622  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk81a3b90a61f59991]
+13:05:41,623  INFO TableMetadata:69 - HHH000126: Indexes: [fk81a3b90a61f59991, primary, invst_order_id, invest_order_id]
+13:05:41,650  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order_his
+13:05:41,651  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, act_no, contract_no, fm_phone, sign_site, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, inv_ord_his_id, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, chg_date, changer, chg_contents]
+13:05:41,651  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk27d8e6dd61f59991]
+13:05:41,651  INFO TableMetadata:69 - HHH000126: Indexes: [inv_ord_his_id, primary, fk27d8e6dd61f59991]
+13:05:41,677  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_products
+13:05:41,677  INFO TableMetadata:66 - HHH000037: Columns: [prod_desc, low_lend_edu, hig_lend_edu, ars, prod_id, lending_cycle, prod_status, repayment_mode, ytm]
+13:05:41,677  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,678  INFO TableMetadata:69 - HHH000126: Indexes: [prod_id, primary]
+13:05:41,706  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor
+13:05:41,707  INFO TableMetadata:66 - HHH000037: Columns: [birthday, area_id, bank_acc_name, invstr_id, comp_scale, street, ch_name, has_child, en_name, years_of_work, fam_inc_sta, city_id, id_location, gender_type, investor_status, job_type, company_name, id_type, description, comm_addr, invstr_status, marital_status, invstr_type, industry, company_scale_type, zip, province_id, industry_id, mobile_tel, investor_type, marriage_type, fixed_tel, nationality, email, degree_type, id_issue_date, job_title, investor_id, bank_no, id_expire_date, family_status, id_no]
+13:05:41,707  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,707  INFO TableMetadata:69 - HHH000126: Indexes: [invstr_id, primary, investor_id]
+13:05:41,734  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor_and_contacts
+13:05:41,734  INFO TableMetadata:66 - HHH000037: Columns: [id, contact_id, investor_id]
+13:05:41,734  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,735  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+13:05:41,759  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investorder_and_products
+13:05:41,760  INFO TableMetadata:66 - HHH000037: Columns: [id, invest_edu, end_date, prod_id, begin_date, invest_order_id]
+13:05:41,760  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,760  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+13:05:41,788  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order
+13:05:41,788  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, loan_amount, loan_order_id, loan_type, curr_addr, has_child, loaner_id, domi_addr, purpose, house_install_pay, creator, income_src, gender_type, create_date, apply_date, name, age, process_status, subject_type, rent, loan_city, loan_min, repay_method, status_id, mobile_tel, hukou_addr, mortgage_status, fixed_tel, marriage_type, salesman, annual_salary, order_desc, email, qq_no, loan_period, finish_date, id_no]
+13:05:41,789  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk8dce5f45a87ecc16]
+13:05:41,789  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_id, fk8dce5f45a87ecc16, primary]
+13:05:41,813  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order_his
+13:05:41,814  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, role_id, loan_order_hi_id, agent_time, assignee, comment, order_status]
+13:05:41,814  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,814  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_hi_id, primary]
+13:05:41,854  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner
+13:05:41,855  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, mobile_tel, loaner_id, has_child, hukou_addr, mortgage_status, marriage_type, fixed_tel, house_install_pay, income_src, annual_salary, gender_type, create_date, email, family_tel, qq_no, name, age, rent, id_no]
+13:05:41,855  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,856  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_id]
+13:05:41,882  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_info_his
+13:05:41,883  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, bank_no_first, has_child, loaner_id, loaner_status_type, house_install_pay, change_people, income_src, gender_type, create_date, age, name, rent, change_contents, mobile_tel, hukou_addr, fixed_tel, marriage_type, mortgage_status, change_tiem, loaner_hi_id, annual_salary, email, bank_no_second, qq_no, id_no]
+13:05:41,883  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,883  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_hi_id]
+13:05:41,915  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_accountinfo
+13:05:41,915  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, account_id]
+13:05:41,915  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,916  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+13:05:41,939  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_company
+13:05:41,940  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, com_id]
+13:05:41,940  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,940  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+13:05:41,965  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_contacts
+13:05:41,965  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, contact_id]
+13:05:41,966  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:41,966  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+13:05:42,024  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loans_details
+13:05:42,024  INFO TableMetadata:66 - HHH000037: Columns: [last_loan_space, exist_loan_id, year_overdue, outstanding_balance, overdue_rate, outstanding_count, cumulative_overdue, outstanding_sum, loan_detail, month_repay, total_loan_count]
+13:05:42,024  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,025  INFO TableMetadata:69 - HHH000126: Indexes: [exist_loan_id, primary]
+13:05:42,069  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_microcredit_opinion
+13:05:42,070  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, mcbr_id, advice_repay_mthd, coborrower_idno, loan_rate, final_loan_amt, survey_date, operator_a, first_meeting, operator_b, final_loan_period, reject_cause, advice_loan_amt, loan_mthd, counseling_rate, verification, dept_principal, coborrower_name, specific_measures, final_repay_mthd, risk_ctrl_measures, collection_mthd, advice_loan_period]
+13:05:42,070  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,070  INFO TableMetadata:69 - HHH000126: Indexes: [mcbr_id, primary]
+13:05:42,094  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_order_status
+13:05:42,095  INFO TableMetadata:66 - HHH000037: Columns: [status_code, status_name, status_desc, status_id]
+13:05:42,095  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,096  INFO TableMetadata:69 - HHH000126: Indexes: [primary, status_id]
+13:05:42,122  INFO TableMetadata:65 - HHH000261: Table found: test.t_organization
+13:05:42,122  INFO TableMetadata:66 - HHH000037: Columns: [company_id, manager, assistant_manager, fax, status, tel, myid, state, pid, creater, lastmod, short_name, iconcls, created, organization_id, description, modifyer, ename, emp_qty, full_name]
+13:05:42,123  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,123  INFO TableMetadata:69 - HHH000126: Indexes: [organization_id, primary]
+13:05:42,149  INFO TableMetadata:65 - HHH000261: Table found: test.t_permission
+13:05:42,149  INFO TableMetadata:66 - HHH000037: Columns: [isused, sort, permission_id, status, myid, state, creater, lastmod, pid, type, url, iconcls, system_type, created, description, name, modifyer, pname]
+13:05:42,150  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,150  INFO TableMetadata:69 - HHH000126: Indexes: [permission_id, primary]
+13:05:42,175  INFO TableMetadata:65 - HHH000261: Table found: test.t_role
+13:05:42,175  INFO TableMetadata:66 - HHH000037: Columns: [sort, role_id, status, role_code, created, description, name, modifyer, lastmod, creater]
+13:05:42,175  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,176  INFO TableMetadata:69 - HHH000126: Indexes: [role_id, primary]
+13:05:42,213  INFO TableMetadata:65 - HHH000261: Table found: test.t_role_and_permission
+13:05:42,213  INFO TableMetadata:66 - HHH000037: Columns: [role_id, permission_id, status, created, role_perm_id, modifyer, lastmod, creater]
+13:05:42,213  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,214  INFO TableMetadata:69 - HHH000126: Indexes: [role_perm_id, primary]
+13:05:42,239  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_dict
+13:05:42,239  INFO TableMetadata:66 - HHH000037: Columns: [permissionid, sort, status, state, dict_type, code_id, creater, lastmod, iconcls, created, description, dict_name, modifyer, dict_code, parent_id]
+13:05:42,239  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,239  INFO TableMetadata:69 - HHH000126: Indexes: [primary, code_id]
+13:05:42,265  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_log
+13:05:42,265  INFO TableMetadata:66 - HHH000037: Columns: [object_type, object_id, name, user_id, mac, log_date, event_record, type, event_name, log_id, ip]
+13:05:42,266  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,266  INFO TableMetadata:69 - HHH000126: Indexes: [primary, log_id]
+13:05:42,291  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_parameter
+13:05:42,292  INFO TableMetadata:66 - HHH000037: Columns: [updater, create_date, status, description, pram_id, update_date, parm_name, parm_value, parm_code, creator]
+13:05:42,292  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,292  INFO TableMetadata:69 - HHH000126: Indexes: [pram_id, primary]
+13:05:42,320  INFO TableMetadata:65 - HHH000261: Table found: test.t_user_and_role
+13:05:42,321  INFO TableMetadata:66 - HHH000037: Columns: [user_role_id, role_id, status, created, modifyer, user_id, lastmod, creater]
+13:05:42,321  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+13:05:42,322  INFO TableMetadata:69 - HHH000126: Indexes: [user_role_id, primary]
+13:05:42,353  INFO TableMetadata:65 - HHH000261: Table found: test.t_users
+13:05:42,354  INFO TableMetadata:66 - HHH000037: Columns: [isemployee, first_visit, myid, tel, previous_visit, creater, lang, password, created, description, name, user_id, isonline, status, theme, answer, lastmod, ip, title_id, email, organization_id, last_visits, duty_id, modifyer, account, question_id, login_count]
+13:05:42,354  INFO TableMetadata:68 - HHH000108: Foreign keys: [fka115ca7d29e9dfec]
+13:05:42,355  INFO TableMetadata:69 - HHH000126: Indexes: [fka115ca7d29e9dfec, primary, user_id]
+13:05:42,359  INFO SchemaUpdate:240 - HHH000232: Schema update complete
+13:05:42,416  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-07-16 13:05:39",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:2,
+	ConnectCount:2,
+	Connections:[
+		{ID:440919592, ConnectTime:"2015-07-16 13:05:40", UseCount:2, LastActiveTime:"2015-07-16 13:05:42"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+13:05:42,695  INFO ProcessEngineConfigurationImpl:871 - Found 1 auto-discoverable Process Engine Configurators
+13:05:42,696  INFO ProcessEngineConfigurationImpl:893 - Found 1 Process Engine Configurators in total:
+13:05:42,696  INFO ProcessEngineConfigurationImpl:895 - class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+13:05:42,696  INFO ProcessEngineConfigurationImpl:905 - Executing beforeInit() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+13:05:43,646  INFO ProcessEngineConfigurationImpl:912 - Executing configure() of class org.activiti.management.jmx.JMXConfigurator (priority:10000)
+13:05:43,836  INFO DefaultManagementAgent:225 - JMX Connector thread started and listening at: service:jmx:rmi:///jndi/rmi://WIN-PF24A8T22DC:1099/jmxrmi/activiti
+13:05:43,939  INFO ProcessEngineImpl:82 - ProcessEngine default created
+13:05:44,087  INFO TransactionalTestExecutionListener:279 - Began transaction (1): transaction manager [org.springframework.orm.hibernate4.HibernateTransactionManager@749ce18a]; rollback [true]
+13:05:44,249  INFO TransactionalTestExecutionListener:299 - Rolled back transaction after test execution for test context [TestContext@2aa30a60 testClass = TestLoanOrderHisService, testInstance = test.service.TestLoanOrderHisService@35fe3a7e, testMethod = findAttachmentByULA@TestLoanOrderHisService, testException = java.lang.IndexOutOfBoundsException: Index: 0, Size: 0, mergedContextConfiguration = [MergedContextConfiguration@45b241e3 testClass = TestLoanOrderHisService, locations = '{classpath:/test-spring-hibernate.xml, classpath:/test-activiti-context.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]]
+13:05:44,254  INFO GenericApplicationContext:1042 - Closing org.springframework.context.support.GenericApplicationContext@2513014: startup date [Thu Jul 16 13:05:39 CST 2015]; root of context hierarchy
+13:05:44,255  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@37f54031: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderServiceImpl,investorServiceImpl,investProductsServiceImpl,loanerInfoHistoryService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,orderStatusService,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+13:05:44,262  INFO DruidDataSource:1253 - {dataSource-1} closed
+14:31:47,335  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-spring-hibernate.xml]
+14:31:47,490  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+14:31:47,954  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-activiti-context.xml]
+14:31:47,986  INFO GenericApplicationContext:510 - Refreshing org.springframework.context.support.GenericApplicationContext@7c6aa5ee: startup date [Tue Aug 18 14:31:47 CST 2015]; root of context hierarchy
+14:31:48,166  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [test-config.properties]
+14:31:48,223  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@45b784e4: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderService,investOrderWorkFlowService,investorServiceImpl,investorSupervisionService,investProductService,loanContractServiceImpl,loanerInfoHistoryService,loanerJointService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,microcreditOpinionServiceImpl,orderStatusService,organizationServiceImpl,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+14:31:48,499  INFO DruidDataSource:642 - {dataSource-1} inited
+14:31:48,649  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+14:31:48,655  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+14:31:48,657  INFO Environment:239 - HHH000206: hibernate.properties not found
+14:31:48,658  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+14:31:49,952  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+14:31:49,961  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+14:31:49,973  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+14:31:49,978  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+14:31:50,013  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+14:31:50,416  INFO SchemaUpdate:182 - HHH000228: Running hbm2ddl schema update
+14:31:50,417  INFO SchemaUpdate:193 - HHH000102: Fetching database metadata
+14:31:50,420  INFO SchemaUpdate:205 - HHH000396: Updating schema
+14:31:50,455  INFO TableMetadata:65 - HHH000261: Table found: test.t_area
+14:31:50,455  INFO TableMetadata:66 - HHH000037: Columns: [area_type, area_id, py_name, zipcode, area_name, special, parent_id]
+14:31:50,455  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,456  INFO TableMetadata:69 - HHH000126: Indexes: [area_id, primary]
+14:31:50,482  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_account_info
+14:31:50,482  INFO TableMetadata:66 - HHH000037: Columns: [bank_name, primary_backup, create_date, account_id, act_nature, cus_id, act_medium, cus_type, account_num, creator, account_name]
+14:31:50,483  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,483  INFO TableMetadata:69 - HHH000126: Indexes: [account_id, primary]
+14:31:50,518  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_accounts_journal
+14:31:50,519  INFO TableMetadata:66 - HHH000037: Columns: [car_id, bankaccount_no, income01, income02, analysis, income03, income04, income05, income06, mon_name_02, mon_name_01, average_income, mon_name_04, mon_name_03, mon_name_06, mon_name_05, bank_flow_id, bankaccount_type]
+14:31:50,520  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk52965364385511ca]
+14:31:50,520  INFO TableMetadata:69 - HHH000126: Indexes: [fk52965364385511ca, primary, bank_flow_id]
+14:31:50,553  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_address
+14:31:50,553  INFO TableMetadata:66 - HHH000037: Columns: [city_id, area_id, host_id, province_id, addr_type, addr_details, addr_id, host_type]
+14:31:50,554  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,554  INFO TableMetadata:69 - HHH000126: Indexes: [primary, addr_id]
+14:31:50,588  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_assets
+14:31:50,589  INFO TableMetadata:66 - HHH000037: Columns: [asset_id, vehicle, the_same_industry, real_estate]
+14:31:50,590  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,591  INFO TableMetadata:69 - HHH000126: Indexes: [asset_id, primary]
+14:31:50,626  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_attachment
+14:31:50,627  INFO TableMetadata:66 - HHH000037: Columns: [create_date, att_type, att_desc, att_name, att_data, att_id, order_id, file_type, order_type, creator]
+14:31:50,628  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,629  INFO TableMetadata:69 - HHH000126: Indexes: [primary, att_id]
+14:31:50,673  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_audit_info_record
+14:31:50,674  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, web_audit_record, query_114, contact_method, name, audit_item, phone_audit_record, audit_id]
+14:31:50,675  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk1ef677d8e420ac87]
+14:31:50,676  INFO TableMetadata:69 - HHH000126: Indexes: [fk1ef677d8e420ac87, primary, audit_id]
+14:31:50,706  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_auditinforecord_and_attachment
+14:31:50,707  INFO TableMetadata:66 - HHH000037: Columns: [audit_id, att_id, audit_att_id]
+14:31:50,707  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,708  INFO TableMetadata:69 - HHH000126: Indexes: [primary, audit_att_id]
+14:31:50,738  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_company
+14:31:50,739  INFO TableMetadata:66 - HHH000037: Columns: [area_size, tele, business_scope, com_id, loaner_id, founded_time, creator, create_date, address, name, reg_id, emp_amount, reg_capital, corp_nature]
+14:31:50,740  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,740  INFO TableMetadata:69 - HHH000126: Indexes: [com_id, primary]
+14:31:50,781  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_contacts
+14:31:50,782  INFO TableMetadata:66 - HHH000037: Columns: [contact_status, birthday, curr_addr, contact_id, familyarea, tel, ch_name, en_name, workplace, familycity, years_of_work, creator, comparea, comp_addr, gender_type, create_date, id_type, compprovince, age, cus_id, compaddrdetails, zip, familyaddrdetails, familyprovince, fixed_tel, relationship, annual_salary, comp_tel, email, job_title, cus_type, compcity, id_no]
+14:31:50,783  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,783  INFO TableMetadata:69 - HHH000126: Indexes: [contact_id, primary]
+14:31:50,818  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_audit_report
+14:31:50,819  INFO TableMetadata:66 - HHH000037: Columns: [firs_id, asset_id, loan_order_id, exist_loan_id, car_id, fina_id, loan_city, law_query_status, com_credit_status, card_info_id]
+14:31:50,819  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, fk179ad858cc9768df, fk179ad858618670a7]
+14:31:50,820  INFO TableMetadata:69 - HHH000126: Indexes: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, car_id, primary, fk179ad858618670a7, fk179ad858cc9768df]
+14:31:50,854  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_cards_details
+14:31:50,855  INFO TableMetadata:66 - HHH000037: Columns: [card_in_use, overdue_card_count, detail, max_qishu, max_limit, credit_total_amount, month_repay, use_rate, overdue_ratio, card_count, validate_year, credit_limit, year_overdue, overdue_rate, cumulative_overdue, card_info_id]
+14:31:50,856  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,857  INFO TableMetadata:69 - HHH000126: Indexes: [primary, card_info_id]
+14:31:50,890  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_investigation
+14:31:50,891  INFO TableMetadata:66 - HHH000037: Columns: [query_notes, credit_card_approval, internet_query, car_id, self_query, query_interval, credit_ref_id, loan_approval]
+14:31:50,891  INFO TableMetadata:68 - HHH000108: Foreign keys: [fkd8a04cc2385511ca]
+14:31:50,892  INFO TableMetadata:69 - HHH000126: Indexes: [fkd8a04cc2385511ca, primary, credit_ref_id]
+14:31:50,922  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_final_audit_report
+14:31:50,922  INFO TableMetadata:66 - HHH000037: Columns: [loan_period_type, loan_order_id, loan_interest_rate, visit_fee, actual_loan_amount, fina_pers_sugg, month_repay, contract_loan_amount, description, fina_personnel, month_service_fee_rate, fina_id, fina_date]
+14:31:50,923  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,923  INFO TableMetadata:69 - HHH000126: Indexes: [fina_id, primary]
+14:31:50,952  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_first_audit_report
+14:31:50,952  INFO TableMetadata:66 - HHH000037: Columns: [qulification_status, loan_order_id, com_oper_status, firs_dep_sugg, visit_status, marriage_type, firs_date, is_local_res, credit_status, firs_id, com_oper_duration, phone_check_status, firs_pers_sugg, description, firs_personnel, industry_type, note]
+14:31:50,952  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:50,953  INFO TableMetadata:69 - HHH000126: Indexes: [firs_id, primary]
+14:31:50,984  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order
+14:31:50,984  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, invstr_id, product_id, act_no, contract_no, sign_site, fm_phone, proc_id, act_medium, id_card, invest_order_id, investor_name, creator, create_date, act_nature, mob_tel, process_status, subject_type, invst_order_id, updater, dep_menager, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, organization_id, investor_id, update_date]
+14:31:50,985  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk81a3b90a61f59991]
+14:31:50,985  INFO TableMetadata:69 - HHH000126: Indexes: [fk81a3b90a61f59991, primary, invst_order_id, invest_order_id]
+14:31:51,016  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order_his
+14:31:51,016  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, role_id, act_no, contract_no, fm_phone, sign_site, agent_time, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, inv_ord_his_id, id_crad, dm_sign_date, handle_result, assignee, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, chg_date, comment, changer, chg_contents]
+14:31:51,017  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk27d8e6dd61f59991]
+14:31:51,017  INFO TableMetadata:69 - HHH000126: Indexes: [inv_ord_his_id, primary, fk27d8e6dd61f59991]
+14:31:51,046  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_products
+14:31:51,046  INFO TableMetadata:66 - HHH000037: Columns: [prod_desc, low_lend_edu, hig_lend_edu, ars, prod_id, lending_cycle, prod_status, repayment_mode, ytm, prod_name]
+14:31:51,047  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,047  INFO TableMetadata:69 - HHH000126: Indexes: [prod_id, primary]
+14:31:51,078  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor
+14:31:51,078  INFO TableMetadata:66 - HHH000037: Columns: [birthday, area_id, bank_acc_name, invstr_id, comp_scale, street, ch_name, has_child, en_name, years_of_work, fam_inc_sta, city_id, id_location, gender_type, investor_status, job_type, company_name, id_type, description, comm_addr, invstr_status, marital_status, invstr_type, industry, company_scale_type, zip, province_id, industry_id, mobile_tel, investor_type, marriage_type, fixed_tel, nationality, email, degree_type, id_issue_date, job_title, investor_id, bank_no, id_expire_date, family_status, id_no]
+14:31:51,079  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,079  INFO TableMetadata:69 - HHH000126: Indexes: [invstr_id, primary, investor_id]
+14:31:51,104  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor_and_contacts
+14:31:51,105  INFO TableMetadata:66 - HHH000037: Columns: [id, contact_id, investor_id]
+14:31:51,105  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,106  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:31:51,131  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investorder_and_products
+14:31:51,132  INFO TableMetadata:66 - HHH000037: Columns: [id, invest_edu, end_date, prod_id, begin_date, interest_date, invest_order_id]
+14:31:51,132  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk4450ea58d88556b]
+14:31:51,133  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary, fk4450ea58d88556b]
+14:31:51,163  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_contract
+14:31:51,164  INFO TableMetadata:66 - HHH000037: Columns: [loaner_act_name, loan_order_id, contract_status, remark, contract_sign_site, contract_no, loan_bg_date, monthly_repayment, purpose, loaner_bank_name, lc_id, agent_sign_date, loaner_sign_date, lj_postal_addr, repayment_bg_date, loan_periods, contract_sign_date, lj_idno, monthly_repayment_date, loaner_joint, agent_idno, loan_ed_date, loan_interest, loaner_idno, lender_idno, agent, loan_edu, loaner_tel, lj_sign_date, loaner_act_num, repayment_ed_date, lender_sign_date, lj_tel, loaner_postal_addr, monthly_rate, loaner, lender]
+14:31:51,164  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,165  INFO TableMetadata:69 - HHH000126: Indexes: [primary]
+14:31:51,193  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_cust_repayment_detail
+14:31:51,193  INFO TableMetadata:66 - HHH000037: Columns: [real_repmt_date, periods, default_interest, remark, contract_no, real_repmt_amt, rpmt_status, operator, overdue_days, late_fee, plan_repmt_date, free_interest_fee, repmt_act, plan_repmt_amt, rd_id]
+14:31:51,193  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,194  INFO TableMetadata:69 - HHH000126: Indexes: [primary]
+14:31:51,224  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order
+14:31:51,225  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, loan_amount, loan_order_id, loan_type, curr_addr, has_child, loaner_id, domi_addr, purpose, house_install_pay, creator, income_src, gender_type, create_date, apply_date, name, age, process_status, subject_type, rent, loan_city, loan_min, repay_method, status_id, mobile_tel, hukou_addr, mortgage_status, fixed_tel, marriage_type, salesman, annual_salary, order_desc, email, organization_id, qq_no, loan_period, finish_date, id_no]
+14:31:51,225  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk8dce5f45a87ecc16]
+14:31:51,226  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_id, fk8dce5f45a87ecc16, primary]
+14:31:51,252  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order_his
+14:31:51,252  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, processing_result, role_id, loan_order_hi_id, agent_time, assignee, comment, is_involved_loan_car, order_status]
+14:31:51,253  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,253  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_hi_id, primary]
+14:31:51,280  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner
+14:31:51,281  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, mobile_tel, loaner_id, has_child, hukou_addr, mortgage_status, marriage_type, fixed_tel, house_install_pay, income_src, annual_salary, gender_type, create_date, email, family_tel, qq_no, name, age, rent, id_no]
+14:31:51,281  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,281  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_id]
+14:31:51,309  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_info_his
+14:31:51,310  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, bank_no_first, has_child, loaner_id, loaner_status_type, house_install_pay, change_people, income_src, gender_type, create_date, age, name, rent, change_contents, mobile_tel, hukou_addr, fixed_tel, marriage_type, mortgage_status, change_tiem, loaner_hi_id, annual_salary, email, bank_no_second, qq_no, id_no]
+14:31:51,310  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,310  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_hi_id]
+14:31:51,336  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_joint
+14:31:51,337  INFO TableMetadata:66 - HHH000037: Columns: [area_size, cur_addr, loan_order_id, corp_addr, corp_tel, lj_id, mobile_tel, has_child, marriage_type, fixed_tel, founded_time, residence, email, family_tel, qq_no, name, lj_emp_amt, age, gender, reg_capital, corp_name, id_no, corp_nature]
+14:31:51,337  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,337  INFO TableMetadata:69 - HHH000126: Indexes: [lj_id, primary]
+14:31:51,363  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_accountinfo
+14:31:51,363  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, account_id]
+14:31:51,363  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,363  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:31:51,389  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_company
+14:31:51,390  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, com_id]
+14:31:51,390  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,390  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:31:51,415  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_contacts
+14:31:51,415  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, contact_id]
+14:31:51,415  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,415  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:31:51,445  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loans_details
+14:31:51,446  INFO TableMetadata:66 - HHH000037: Columns: [last_loan_space, exist_loan_id, year_overdue, outstanding_balance, overdue_rate, outstanding_count, cumulative_overdue, outstanding_sum, loan_detail, month_repay, total_loan_count]
+14:31:51,446  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,447  INFO TableMetadata:69 - HHH000126: Indexes: [exist_loan_id, primary]
+14:31:51,481  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_microcredit_opinion
+14:31:51,482  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, mcbr_id, advice_repay_mthd, coborrower_idno, loan_rate, final_loan_amt, survey_date, operator_a, first_meeting, operator_b, final_loan_period, reject_cause, advice_loan_amt, loan_mthd, counseling_rate, verification, dept_principal, coborrower_name, specific_measures, final_repay_mthd, risk_ctrl_measures, collection_mthd, advice_loan_period]
+14:31:51,483  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,484  INFO TableMetadata:69 - HHH000126: Indexes: [mcbr_id, primary]
+14:31:51,513  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_order_status
+14:31:51,514  INFO TableMetadata:66 - HHH000037: Columns: [status_code, status_name, status_desc, status_id]
+14:31:51,515  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,516  INFO TableMetadata:69 - HHH000126: Indexes: [primary, status_id]
+14:31:51,553  INFO TableMetadata:65 - HHH000261: Table found: test.t_organization
+14:31:51,553  INFO TableMetadata:66 - HHH000037: Columns: [company_id, manager, assistant_manager, fax, status, tel, myid, state, pid, creater, lastmod, short_name, iconcls, created, organization_id, description, modifyer, ename, emp_qty, region_type, full_name]
+14:31:51,554  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,554  INFO TableMetadata:69 - HHH000126: Indexes: [organization_id, primary]
+14:31:51,580  INFO TableMetadata:65 - HHH000261: Table found: test.t_permission
+14:31:51,581  INFO TableMetadata:66 - HHH000037: Columns: [isused, sort, permission_id, status, myid, state, creater, lastmod, pid, type, url, iconcls, system_type, created, description, name, modifyer, pname]
+14:31:51,581  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,581  INFO TableMetadata:69 - HHH000126: Indexes: [permission_id, primary]
+14:31:51,606  INFO TableMetadata:65 - HHH000261: Table found: test.t_role
+14:31:51,606  INFO TableMetadata:66 - HHH000037: Columns: [sort, role_id, status, role_code, created, description, name, modifyer, lastmod, creater]
+14:31:51,606  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,607  INFO TableMetadata:69 - HHH000126: Indexes: [role_id, primary]
+14:31:51,631  INFO TableMetadata:65 - HHH000261: Table found: test.t_role_and_permission
+14:31:51,632  INFO TableMetadata:66 - HHH000037: Columns: [role_id, permission_id, status, created, role_perm_id, modifyer, lastmod, creater]
+14:31:51,632  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,632  INFO TableMetadata:69 - HHH000126: Indexes: [role_perm_id, primary]
+14:31:51,653  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_dict
+14:31:51,653  INFO TableMetadata:66 - HHH000037: Columns: [permissionid, sort, status, state, dict_type, code_id, creater, lastmod, iconcls, created, description, dict_name, modifyer, dict_code, parent_id]
+14:31:51,653  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,653  INFO TableMetadata:69 - HHH000126: Indexes: [primary, code_id]
+14:31:51,672  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_log
+14:31:51,673  INFO TableMetadata:66 - HHH000037: Columns: [object_type, object_id, name, user_id, mac, log_date, event_record, type, event_name, log_id, ip]
+14:31:51,673  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,673  INFO TableMetadata:69 - HHH000126: Indexes: [primary, log_id]
+14:31:51,692  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_parameter
+14:31:51,692  INFO TableMetadata:66 - HHH000037: Columns: [updater, create_date, status, description, pram_id, update_date, parm_name, parm_value, parm_code, creator]
+14:31:51,693  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,693  INFO TableMetadata:69 - HHH000126: Indexes: [pram_id, primary]
+14:31:51,713  INFO TableMetadata:65 - HHH000261: Table found: test.t_user_and_role
+14:31:51,714  INFO TableMetadata:66 - HHH000037: Columns: [user_role_id, role_id, status, created, modifyer, user_id, lastmod, creater]
+14:31:51,714  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:31:51,714  INFO TableMetadata:69 - HHH000126: Indexes: [user_role_id, primary]
+14:31:51,736  INFO TableMetadata:65 - HHH000261: Table found: test.t_users
+14:31:51,736  INFO TableMetadata:66 - HHH000037: Columns: [isemployee, first_visit, myid, tel, previous_visit, creater, lang, password, created, description, name, user_id, isonline, status, theme, answer, lastmod, ip, title_id, email, organization_id, last_visits, duty_id, modifyer, account, question_id, login_count]
+14:31:51,736  INFO TableMetadata:68 - HHH000108: Foreign keys: [fka115ca7d29e9dfec]
+14:31:51,737  INFO TableMetadata:69 - HHH000126: Indexes: [fka115ca7d29e9dfec, primary, user_id]
+14:31:52,101  INFO SchemaUpdate:240 - HHH000232: Schema update complete
+14:31:52,157  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-08-18 14:31:48",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:2,
+	ConnectCount:2,
+	Connections:[
+		{ID:1687174603, ConnectTime:"2015-08-18 14:31:49", UseCount:2, LastActiveTime:"2015-08-18 14:31:52"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+14:31:53,997  INFO TransactionalTestExecutionListener:279 - Began transaction (1): transaction manager [org.springframework.orm.hibernate4.HibernateTransactionManager@2f75dd3b]; rollback [true]
+14:31:54,101  INFO TransactionalTestExecutionListener:299 - Rolled back transaction after test execution for test context [TestContext@5df65f65 testClass = TestLoanOrderHisService, testInstance = test.service.TestLoanOrderHisService@59f11014, testMethod = findAttachmentByULA@TestLoanOrderHisService, testException = [null], mergedContextConfiguration = [MergedContextConfiguration@6156bf2d testClass = TestLoanOrderHisService, locations = '{classpath:/test-spring-hibernate.xml, classpath:/test-activiti-context.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]]
+14:31:54,106  INFO GenericApplicationContext:1042 - Closing org.springframework.context.support.GenericApplicationContext@7c6aa5ee: startup date [Tue Aug 18 14:31:47 CST 2015]; root of context hierarchy
+14:31:54,107  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@45b784e4: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderService,investOrderWorkFlowService,investorServiceImpl,investorSupervisionService,investProductService,loanContractServiceImpl,loanerInfoHistoryService,loanerJointService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,microcreditOpinionServiceImpl,orderStatusService,organizationServiceImpl,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+14:31:54,114  INFO DruidDataSource:1253 - {dataSource-1} closed
+14:32:25,403  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-spring-hibernate.xml]
+14:32:25,550  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+14:32:25,682  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [test-activiti-context.xml]
+14:32:25,704  INFO GenericApplicationContext:510 - Refreshing org.springframework.context.support.GenericApplicationContext@3132c615: startup date [Tue Aug 18 14:32:25 CST 2015]; root of context hierarchy
+14:32:25,883  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [test-config.properties]
+14:32:25,937  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@45b784e4: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderService,investOrderWorkFlowService,investorServiceImpl,investorSupervisionService,investProductService,loanContractServiceImpl,loanerInfoHistoryService,loanerJointService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,microcreditOpinionServiceImpl,orderStatusService,organizationServiceImpl,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+14:32:26,225  INFO DruidDataSource:642 - {dataSource-1} inited
+14:32:26,380  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+14:32:26,385  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+14:32:26,387  INFO Environment:239 - HHH000206: hibernate.properties not found
+14:32:26,389  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+14:32:26,957  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+14:32:26,965  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+14:32:26,977  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+14:32:26,981  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+14:32:27,015  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+14:32:27,408  INFO SchemaUpdate:182 - HHH000228: Running hbm2ddl schema update
+14:32:27,409  INFO SchemaUpdate:193 - HHH000102: Fetching database metadata
+14:32:27,412  INFO SchemaUpdate:205 - HHH000396: Updating schema
+14:32:27,445  INFO TableMetadata:65 - HHH000261: Table found: test.t_area
+14:32:27,445  INFO TableMetadata:66 - HHH000037: Columns: [area_type, area_id, py_name, zipcode, area_name, special, parent_id]
+14:32:27,445  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,445  INFO TableMetadata:69 - HHH000126: Indexes: [area_id, primary]
+14:32:27,472  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_account_info
+14:32:27,472  INFO TableMetadata:66 - HHH000037: Columns: [bank_name, primary_backup, create_date, account_id, act_nature, cus_id, act_medium, cus_type, account_num, creator, account_name]
+14:32:27,472  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,472  INFO TableMetadata:69 - HHH000126: Indexes: [account_id, primary]
+14:32:27,501  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_accounts_journal
+14:32:27,501  INFO TableMetadata:66 - HHH000037: Columns: [car_id, bankaccount_no, income01, income02, analysis, income03, income04, income05, income06, mon_name_02, mon_name_01, average_income, mon_name_04, mon_name_03, mon_name_06, mon_name_05, bank_flow_id, bankaccount_type]
+14:32:27,501  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk52965364385511ca]
+14:32:27,501  INFO TableMetadata:69 - HHH000126: Indexes: [fk52965364385511ca, primary, bank_flow_id]
+14:32:27,527  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_address
+14:32:27,527  INFO TableMetadata:66 - HHH000037: Columns: [city_id, area_id, host_id, province_id, addr_type, addr_details, addr_id, host_type]
+14:32:27,527  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,528  INFO TableMetadata:69 - HHH000126: Indexes: [primary, addr_id]
+14:32:27,552  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_assets
+14:32:27,553  INFO TableMetadata:66 - HHH000037: Columns: [asset_id, vehicle, the_same_industry, real_estate]
+14:32:27,553  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,553  INFO TableMetadata:69 - HHH000126: Indexes: [asset_id, primary]
+14:32:27,573  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_attachment
+14:32:27,574  INFO TableMetadata:66 - HHH000037: Columns: [create_date, att_type, att_desc, att_name, att_data, att_id, order_id, file_type, order_type, creator]
+14:32:27,574  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,574  INFO TableMetadata:69 - HHH000126: Indexes: [primary, att_id]
+14:32:27,595  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_audit_info_record
+14:32:27,595  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, web_audit_record, query_114, contact_method, name, audit_item, phone_audit_record, audit_id]
+14:32:27,595  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk1ef677d8e420ac87]
+14:32:27,596  INFO TableMetadata:69 - HHH000126: Indexes: [fk1ef677d8e420ac87, primary, audit_id]
+14:32:27,619  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_auditinforecord_and_attachment
+14:32:27,619  INFO TableMetadata:66 - HHH000037: Columns: [audit_id, att_id, audit_att_id]
+14:32:27,619  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,620  INFO TableMetadata:69 - HHH000126: Indexes: [primary, audit_att_id]
+14:32:27,640  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_company
+14:32:27,640  INFO TableMetadata:66 - HHH000037: Columns: [area_size, tele, business_scope, com_id, loaner_id, founded_time, creator, create_date, address, name, reg_id, emp_amount, reg_capital, corp_nature]
+14:32:27,640  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,641  INFO TableMetadata:69 - HHH000126: Indexes: [com_id, primary]
+14:32:27,663  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_contacts
+14:32:27,663  INFO TableMetadata:66 - HHH000037: Columns: [contact_status, birthday, curr_addr, contact_id, familyarea, tel, ch_name, en_name, workplace, familycity, years_of_work, creator, comparea, comp_addr, gender_type, create_date, id_type, compprovince, age, cus_id, compaddrdetails, zip, familyaddrdetails, familyprovince, fixed_tel, relationship, annual_salary, comp_tel, email, job_title, cus_type, compcity, id_no]
+14:32:27,663  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,664  INFO TableMetadata:69 - HHH000126: Indexes: [contact_id, primary]
+14:32:27,686  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_audit_report
+14:32:27,686  INFO TableMetadata:66 - HHH000037: Columns: [firs_id, asset_id, loan_order_id, exist_loan_id, car_id, fina_id, loan_city, law_query_status, com_credit_status, card_info_id]
+14:32:27,687  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, fk179ad858cc9768df, fk179ad858618670a7]
+14:32:27,687  INFO TableMetadata:69 - HHH000126: Indexes: [fk179ad858a8a7bf27, fk179ad8581e2c6bef, fk179ad858658d57d3, car_id, primary, fk179ad858618670a7, fk179ad858cc9768df]
+14:32:27,707  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_cards_details
+14:32:27,707  INFO TableMetadata:66 - HHH000037: Columns: [card_in_use, overdue_card_count, detail, max_qishu, max_limit, credit_total_amount, month_repay, use_rate, overdue_ratio, card_count, validate_year, credit_limit, year_overdue, overdue_rate, cumulative_overdue, card_info_id]
+14:32:27,707  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,708  INFO TableMetadata:69 - HHH000126: Indexes: [primary, card_info_id]
+14:32:27,729  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_credit_investigation
+14:32:27,729  INFO TableMetadata:66 - HHH000037: Columns: [query_notes, credit_card_approval, internet_query, car_id, self_query, query_interval, credit_ref_id, loan_approval]
+14:32:27,729  INFO TableMetadata:68 - HHH000108: Foreign keys: [fkd8a04cc2385511ca]
+14:32:27,729  INFO TableMetadata:69 - HHH000126: Indexes: [fkd8a04cc2385511ca, primary, credit_ref_id]
+14:32:27,750  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_final_audit_report
+14:32:27,751  INFO TableMetadata:66 - HHH000037: Columns: [loan_period_type, loan_order_id, loan_interest_rate, visit_fee, actual_loan_amount, fina_pers_sugg, month_repay, contract_loan_amount, description, fina_personnel, month_service_fee_rate, fina_id, fina_date]
+14:32:27,751  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,752  INFO TableMetadata:69 - HHH000126: Indexes: [fina_id, primary]
+14:32:27,775  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_first_audit_report
+14:32:27,775  INFO TableMetadata:66 - HHH000037: Columns: [qulification_status, loan_order_id, com_oper_status, firs_dep_sugg, visit_status, marriage_type, firs_date, is_local_res, credit_status, firs_id, com_oper_duration, phone_check_status, firs_pers_sugg, description, firs_personnel, industry_type, note]
+14:32:27,775  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,775  INFO TableMetadata:69 - HHH000126: Indexes: [firs_id, primary]
+14:32:27,803  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order
+14:32:27,804  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, invstr_id, product_id, act_no, contract_no, sign_site, fm_phone, proc_id, act_medium, id_card, invest_order_id, investor_name, creator, create_date, act_nature, mob_tel, process_status, subject_type, invst_order_id, updater, dep_menager, id_crad, dm_sign_date, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, organization_id, investor_id, update_date]
+14:32:27,804  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk81a3b90a61f59991]
+14:32:27,804  INFO TableMetadata:69 - HHH000126: Indexes: [fk81a3b90a61f59991, primary, invst_order_id, invest_order_id]
+14:32:27,832  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_order_his
+14:32:27,833  INFO TableMetadata:66 - HHH000037: Columns: [dept_mgr, bank_name, role_id, act_no, contract_no, fm_phone, sign_site, agent_time, act_medium, invest_order_id, creator, create_date, act_nature, mob_tel, inv_ord_his_id, id_crad, dm_sign_date, handle_result, assignee, act_name, fm_sign_date, financing_mgr, order_status, order_desc, sign_date, investor_id, chg_date, comment, changer, chg_contents]
+14:32:27,833  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk27d8e6dd61f59991]
+14:32:27,834  INFO TableMetadata:69 - HHH000126: Indexes: [inv_ord_his_id, primary, fk27d8e6dd61f59991]
+14:32:27,856  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_invest_products
+14:32:27,857  INFO TableMetadata:66 - HHH000037: Columns: [prod_desc, low_lend_edu, hig_lend_edu, ars, prod_id, lending_cycle, prod_status, repayment_mode, msf, ytm, prod_name]
+14:32:27,857  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,858  INFO TableMetadata:69 - HHH000126: Indexes: [prod_id, primary]
+14:32:27,885  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor
+14:32:27,886  INFO TableMetadata:66 - HHH000037: Columns: [birthday, area_id, bank_acc_name, invstr_id, comp_scale, street, ch_name, has_child, en_name, years_of_work, fam_inc_sta, city_id, id_location, gender_type, investor_status, job_type, company_name, id_type, description, comm_addr, invstr_status, marital_status, invstr_type, industry, company_scale_type, zip, province_id, industry_id, mobile_tel, investor_type, marriage_type, fixed_tel, nationality, email, degree_type, id_issue_date, job_title, investor_id, bank_no, id_expire_date, family_status, id_no]
+14:32:27,886  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,887  INFO TableMetadata:69 - HHH000126: Indexes: [invstr_id, primary, investor_id]
+14:32:27,907  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investor_and_contacts
+14:32:27,908  INFO TableMetadata:66 - HHH000037: Columns: [id, contact_id, investor_id]
+14:32:27,908  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,909  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:32:27,931  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_investorder_and_products
+14:32:27,932  INFO TableMetadata:66 - HHH000037: Columns: [id, invest_edu, end_date, prod_id, begin_date, interest_date, invest_order_id]
+14:32:27,932  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk4450ea58d88556b]
+14:32:27,933  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary, fk4450ea58d88556b]
+14:32:27,958  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_contract
+14:32:27,959  INFO TableMetadata:66 - HHH000037: Columns: [loaner_act_name, loan_order_id, contract_status, remark, contract_sign_site, contract_no, loan_bg_date, monthly_repayment, purpose, loaner_bank_name, lc_id, agent_sign_date, loaner_sign_date, lj_postal_addr, repayment_bg_date, loan_periods, contract_sign_date, lj_idno, monthly_repayment_date, loaner_joint, agent_idno, loan_ed_date, loan_interest, loaner_idno, lender_idno, agent, loan_edu, loaner_tel, lj_sign_date, loaner_act_num, repayment_ed_date, lender_sign_date, lj_tel, loaner_postal_addr, monthly_rate, loaner, lender]
+14:32:27,960  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,960  INFO TableMetadata:69 - HHH000126: Indexes: [primary]
+14:32:27,983  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_cust_repayment_detail
+14:32:27,983  INFO TableMetadata:66 - HHH000037: Columns: [real_repmt_date, periods, default_interest, remark, contract_no, real_repmt_amt, rpmt_status, operator, overdue_days, late_fee, plan_repmt_date, free_interest_fee, repmt_act, plan_repmt_amt, rd_id]
+14:32:27,984  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:27,984  INFO TableMetadata:69 - HHH000126: Indexes: [primary]
+14:32:28,014  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order
+14:32:28,015  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, loan_amount, loan_order_id, loan_type, curr_addr, has_child, loaner_id, domi_addr, purpose, house_install_pay, creator, income_src, gender_type, create_date, apply_date, name, age, process_status, subject_type, rent, loan_city, loan_min, repay_method, status_id, mobile_tel, hukou_addr, mortgage_status, fixed_tel, marriage_type, salesman, annual_salary, order_desc, email, organization_id, qq_no, loan_period, finish_date, id_no]
+14:32:28,016  INFO TableMetadata:68 - HHH000108: Foreign keys: [fk8dce5f45a87ecc16]
+14:32:28,016  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_id, fk8dce5f45a87ecc16, primary]
+14:32:28,039  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loan_order_his
+14:32:28,039  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, processing_result, role_id, loan_order_hi_id, agent_time, assignee, comment, is_involved_loan_car, order_status]
+14:32:28,040  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,040  INFO TableMetadata:69 - HHH000126: Indexes: [loan_order_hi_id, primary]
+14:32:28,061  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner
+14:32:28,061  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, mobile_tel, loaner_id, has_child, hukou_addr, mortgage_status, marriage_type, fixed_tel, house_install_pay, income_src, annual_salary, gender_type, create_date, email, family_tel, qq_no, name, age, rent, id_no]
+14:32:28,062  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,062  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_id]
+14:32:28,084  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_info_his
+14:32:28,084  INFO TableMetadata:66 - HHH000037: Columns: [cur_addr, bank_no_first, has_child, loaner_id, loaner_status_type, house_install_pay, change_people, income_src, gender_type, create_date, age, name, rent, change_contents, mobile_tel, hukou_addr, fixed_tel, marriage_type, mortgage_status, change_tiem, loaner_hi_id, annual_salary, email, bank_no_second, qq_no, id_no]
+14:32:28,084  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,085  INFO TableMetadata:69 - HHH000126: Indexes: [primary, loaner_hi_id]
+14:32:28,107  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loaner_joint
+14:32:28,108  INFO TableMetadata:66 - HHH000037: Columns: [area_size, cur_addr, loan_order_id, corp_addr, corp_tel, lj_id, mobile_tel, has_child, marriage_type, fixed_tel, founded_time, residence, email, family_tel, qq_no, name, lj_emp_amt, age, gender, reg_capital, corp_name, id_no, corp_nature]
+14:32:28,108  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,108  INFO TableMetadata:69 - HHH000126: Indexes: [lj_id, primary]
+14:32:28,129  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_accountinfo
+14:32:28,129  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, account_id]
+14:32:28,130  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,130  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:32:28,150  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_company
+14:32:28,151  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, com_id]
+14:32:28,152  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,152  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:32:28,176  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loanorder_and_contacts
+14:32:28,176  INFO TableMetadata:66 - HHH000037: Columns: [id, loan_order_id, contact_id]
+14:32:28,177  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,177  INFO TableMetadata:69 - HHH000126: Indexes: [id, primary]
+14:32:28,200  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_loans_details
+14:32:28,200  INFO TableMetadata:66 - HHH000037: Columns: [last_loan_space, exist_loan_id, year_overdue, outstanding_balance, overdue_rate, outstanding_count, cumulative_overdue, outstanding_sum, loan_detail, month_repay, total_loan_count]
+14:32:28,201  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,201  INFO TableMetadata:69 - HHH000126: Indexes: [exist_loan_id, primary]
+14:32:28,224  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_microcredit_opinion
+14:32:28,225  INFO TableMetadata:66 - HHH000037: Columns: [loan_order_id, mcbr_id, advice_repay_mthd, coborrower_idno, loan_rate, final_loan_amt, survey_date, operator_a, first_meeting, operator_b, final_loan_period, reject_cause, advice_loan_amt, loan_mthd, counseling_rate, verification, dept_principal, coborrower_name, specific_measures, final_repay_mthd, risk_ctrl_measures, collection_mthd, advice_loan_period]
+14:32:28,225  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,225  INFO TableMetadata:69 - HHH000126: Indexes: [mcbr_id, primary]
+14:32:28,244  INFO TableMetadata:65 - HHH000261: Table found: test.t_bp_order_status
+14:32:28,245  INFO TableMetadata:66 - HHH000037: Columns: [status_code, status_name, status_desc, status_id]
+14:32:28,245  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,245  INFO TableMetadata:69 - HHH000126: Indexes: [primary, status_id]
+14:32:28,267  INFO TableMetadata:65 - HHH000261: Table found: test.t_organization
+14:32:28,268  INFO TableMetadata:66 - HHH000037: Columns: [company_id, manager, assistant_manager, fax, status, tel, myid, state, pid, creater, lastmod, short_name, iconcls, created, organization_id, description, modifyer, ename, emp_qty, region_type, full_name]
+14:32:28,268  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,268  INFO TableMetadata:69 - HHH000126: Indexes: [organization_id, primary]
+14:32:28,288  INFO TableMetadata:65 - HHH000261: Table found: test.t_permission
+14:32:28,289  INFO TableMetadata:66 - HHH000037: Columns: [isused, sort, permission_id, status, myid, state, creater, lastmod, pid, type, url, iconcls, system_type, created, description, name, modifyer, pname]
+14:32:28,289  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,289  INFO TableMetadata:69 - HHH000126: Indexes: [permission_id, primary]
+14:32:28,312  INFO TableMetadata:65 - HHH000261: Table found: test.t_role
+14:32:28,312  INFO TableMetadata:66 - HHH000037: Columns: [sort, role_id, status, role_code, created, description, name, modifyer, lastmod, creater]
+14:32:28,313  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,313  INFO TableMetadata:69 - HHH000126: Indexes: [role_id, primary]
+14:32:28,333  INFO TableMetadata:65 - HHH000261: Table found: test.t_role_and_permission
+14:32:28,334  INFO TableMetadata:66 - HHH000037: Columns: [role_id, permission_id, status, created, role_perm_id, modifyer, lastmod, creater]
+14:32:28,334  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,334  INFO TableMetadata:69 - HHH000126: Indexes: [role_perm_id, primary]
+14:32:28,355  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_dict
+14:32:28,355  INFO TableMetadata:66 - HHH000037: Columns: [permissionid, sort, status, state, dict_type, code_id, creater, lastmod, iconcls, created, description, dict_name, modifyer, dict_code, parent_id]
+14:32:28,356  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,356  INFO TableMetadata:69 - HHH000126: Indexes: [primary, code_id]
+14:32:28,375  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_log
+14:32:28,375  INFO TableMetadata:66 - HHH000037: Columns: [object_type, object_id, name, user_id, mac, log_date, event_record, type, event_name, log_id, ip]
+14:32:28,375  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,375  INFO TableMetadata:69 - HHH000126: Indexes: [primary, log_id]
+14:32:28,396  INFO TableMetadata:65 - HHH000261: Table found: test.t_sys_parameter
+14:32:28,397  INFO TableMetadata:66 - HHH000037: Columns: [updater, create_date, status, description, pram_id, update_date, parm_name, parm_value, parm_code, creator]
+14:32:28,397  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,397  INFO TableMetadata:69 - HHH000126: Indexes: [pram_id, primary]
+14:32:28,416  INFO TableMetadata:65 - HHH000261: Table found: test.t_user_and_role
+14:32:28,417  INFO TableMetadata:66 - HHH000037: Columns: [user_role_id, role_id, status, created, modifyer, user_id, lastmod, creater]
+14:32:28,417  INFO TableMetadata:68 - HHH000108: Foreign keys: []
+14:32:28,417  INFO TableMetadata:69 - HHH000126: Indexes: [user_role_id, primary]
+14:32:28,438  INFO TableMetadata:65 - HHH000261: Table found: test.t_users
+14:32:28,438  INFO TableMetadata:66 - HHH000037: Columns: [isemployee, first_visit, myid, tel, previous_visit, creater, lang, password, created, description, name, user_id, isonline, status, theme, answer, lastmod, ip, title_id, email, organization_id, last_visits, duty_id, modifyer, account, question_id, login_count]
+14:32:28,439  INFO TableMetadata:68 - HHH000108: Foreign keys: [fka115ca7d29e9dfec]
+14:32:28,439  INFO TableMetadata:69 - HHH000126: Indexes: [fka115ca7d29e9dfec, primary, user_id]
+14:32:28,441  INFO SchemaUpdate:240 - HHH000232: Schema update complete
+14:32:28,494  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-08-18 14:32:26",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:2,
+	ConnectCount:2,
+	Connections:[
+		{ID:829518996, ConnectTime:"2015-08-18 14:32:26", UseCount:2, LastActiveTime:"2015-08-18 14:32:28"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+14:32:30,273  INFO TransactionalTestExecutionListener:279 - Began transaction (1): transaction manager [org.springframework.orm.hibernate4.HibernateTransactionManager@3e741ee]; rollback [true]
+14:32:30,380  INFO TransactionalTestExecutionListener:299 - Rolled back transaction after test execution for test context [TestContext@259f6325 testClass = TestLoanOrderHisService, testInstance = test.service.TestLoanOrderHisService@326256f, testMethod = findAttachmentByULA@TestLoanOrderHisService, testException = [null], mergedContextConfiguration = [MergedContextConfiguration@3d639c06 testClass = TestLoanOrderHisService, locations = '{classpath:/test-spring-hibernate.xml, classpath:/test-activiti-context.xml}', classes = '{}', contextInitializerClasses = '[]', activeProfiles = '{}', contextLoader = 'org.springframework.test.context.support.DelegatingSmartContextLoader', parent = [null]]]
+14:32:30,385  INFO GenericApplicationContext:1042 - Closing org.springframework.context.support.GenericApplicationContext@3132c615: startup date [Tue Aug 18 14:32:25 CST 2015]; root of context hierarchy
+14:32:30,386  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@45b784e4: defining beans [baseDAO,accountInfoService,accountsJournalServiceImpl,addressService,assetsServiceImpl,attachmentServiceImpl,auditinforecordAndAttachmentService,auditInfoRecordService,commonServiceImpl,companyService,contactsService,creditAuditReportServiceImpl,creditCardsDetailsServiceImpl,creditInvestigationServiceImpl,finalAuditReportServiceImpl,firstAuditReportService,investorAndContactsServiceImpl,investorderAndProductsServiceImpl,investOrderHisServiceImpl,investOrderService,investOrderWorkFlowService,investorServiceImpl,investorSupervisionService,investProductService,loanContractServiceImpl,loanerInfoHistoryService,loanerJointService,loanerService,loanorderAndAccountinfoService,loanorderAndCompanyService,loanorderAndContactsService,loanOrderHisService,loanOrderService,loanOrderWorkFlowService,loansDetailsServiceImpl,loginService,microcreditOpinionServiceImpl,orderStatusService,organizationServiceImpl,parameterService,roleService,sysParameterServiceImpl,userService,workFlowBaseServiceImpl,workFlowService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,dataSource,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,processEngineConfiguration,loanServiceTaskDelegate,processEngine,repositoryService,runtimeService,taskService,historyService,formService,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+14:32:30,395  INFO DruidDataSource:1253 - {dataSource-1} closed

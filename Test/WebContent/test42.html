@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>JS实现很酷的EMAIL地址添加功能</title>
+<style type="text/css">
+ul{ list-style:none; margin:0; padding:0;}
+li{ margin:0; padding:0;}
+#content{width:100%;}
+#sendmail{float:left; width:60%;}
+#friendlist{float:left; width:30%;}
+#bxAddrFly{position:absolute;height:18px; width:46px;background:#EEE; border:1px #ccc solid;display:none;}
+#tbAddrTree{ width:126px; float:left; padding:5px;border:1px #7F9DB9 solid;}
+#tbAddrTree li{ width:100%; float:left;}
+#tbAddrTree a{backgroud: #fff;width: 100%;color:#494949;text-decoration: none;float:left;}
+#tbAddrTree a:hover{background: #e5edf6;}
+</style>
+<script type="text/javascript">
+var ev={};
+var flyDiv="bxAddrFly";
+var inceptDiv="SendAddress";
+var addEvent="addAddress()";
+function oo(obj){return (document.getElementById) ? document.getElementById(obj): document.all[obj];}
+function isNone(str){return str==null||str==""?true:false}
+var Browser = new Object();
+Browser.isFirefox = (navigator.userAgent.toLowerCase().indexOf("firefox")!=-1);
+if (Browser.isFirefox) { extendEventObject();}
+function extendEventObject() {
+window.constructor.prototype.__defineGetter__("event", function(){
+var o = arguments.callee.caller;
+var e;
+while(o != null){
+e = o.arguments[0];
+if(e && (e.constructor == Event || e.constructor == MouseEvent)) return e;
+o = o.caller;
+}
+return null;
+});
+Event.prototype.__defineGetter__("srcElement", function () {
+var node = this.target;
+while (node.nodeType != 1) node = node.parentNode;
+return node;
+});
+}
+window.onload = function(){
+var addrTree = oo('tbAddrTree');
+addrTree.onmouseover = function(){addrTree_event(event)};
+addrTree.onmouseout = function(){addrTree_event(event)};
+addrTree.onclick = function(){addrTree_event(event)};
+}
+function addrTree_event(e){
+var memberID,tr
+var ee = e.srcElement; 
+if(ee.tagName=="A"&&e.type=="mouseover"){ee.style.textDecoration="underline"}
+if(ee.tagName=="A"&&e.type=="mouseout"){ee.style.textDecoration=""}
+if(e.type=="click"&&e.srcElement.tagName=="A"){
+var li=ee.parentNode.parentNode;
+ev.AddInfo="\""+li.getAttribute("memberName")+"\"<\""+li.getAttribute("email")+"\">"
+oo(flyDiv).innerHTML=li.getAttribute("memberName");
+addrTree_add(e.clientX,e.clientY)
+}
+}
+function addrTree_add(ex,ey){
+if(oo(flyDiv).style.display=='none'||oo(flyDiv).style.display==''){oo(flyDiv).style.display='block';}
+var inceptE = oo(inceptDiv);
+var inceptEX = inceptE.offsetTop;   
+var inceptEY = inceptE.offsetLeft;   
+while(inceptE = inceptE.offsetParent){
+inceptEX += inceptE.offsetTop;   
+inceptEY += inceptE.offsetLeft;   
+}
+ev.flyArr=new Array(ex,ey,inceptEX,inceptEY,10);
+fly(flyDiv,addEvent);
+}
+
+function fly(flyObj,flyRun){
+var obj,a=ev.flyArr,x,y
+if(flyObj!=null){
+if(ev.flyObj!=null){
+window.clearTimeout(ev.flyTm);
+ev.flyObj.style.top=-900;
+}
+a[5]=0;
+ev.flyObj=oo(flyObj);
+ev.flyRun=flyRun;
+}
+
+obj=ev.flyObj;
+if(a[4]==null){a[4]=1}
+a[5]+=a[4]/Math.sqrt(Math.pow(a[2]-a[0],2)+Math.pow(a[3]-a[1],2));
+if(a[5]>1){
+obj.style.top=-900;
+eval(ev.flyRun);
+ev.flyObj=null;
+return;
+}
+
+window.clearTimeout(ev.flyTm);
+x=(a[2]-a[0])*a[5]+a[0];
+y=(a[3]-a[1])*a[5]+a[1];
+obj.style.left=x;
+obj.style.top=y;
+document.body.style.overflowX="hidden";
+ev.flyTm=window.setTimeout("fly()",10)
+}
+
+function addAddress()
+{
+var key=ev.AddInfo;
+if (oo(inceptDiv).value.indexOf(key)==-1)
+{
+oo(inceptDiv).value+=key+",";
+}
+}
+</script>
+</head>
+<body>
+<div id="content">
+  <div id="sendmail">
+    <input name="textfield" type="text" id="SendAddress" size="70">
+  </div>
+  <div id="friendlist">
+    <div id="tbAddrTree">
+      <ul>
+        <li membername="张三" email="zhangsan@163.com"><nobr><a>张三</a></nobr></li>
+        <li membername="李四" email="lisi@1126.com"><nobr><a>李四</a></nobr></li>
+        <li membername="王五" email="wangwu@189.com"><nobr><a>王五</a></nobr></li>
+      </ul>
+    </div>
+    <div id="bxAddrFly"> </div>
+  </div>
+</div>
+<br />
+</body>
+</html>

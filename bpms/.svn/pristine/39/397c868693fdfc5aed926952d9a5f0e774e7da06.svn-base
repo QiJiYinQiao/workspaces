@@ -1,0 +1,170 @@
+package com.bpms.model.vo;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class InvestorAndInvestProductModel implements Serializable,Cloneable {
+
+	private static final long serialVersionUID = 5499948588174390487L;
+	
+//	private String investOrderId;
+//	private String investorId;
+//	private String prodId;          //理财产品ID
+	private BigDecimal lowLendEdu;  //最低出借金额
+	private BigDecimal higLendEdu;  //最高出借金额	
+	
+	private String investorName;
+	private String idCrad;
+	private String mobTel;
+	
+	private String prodName;      	//产品名称
+	private Integer lendingCycle;	//出借周期
+	private BigDecimal ars;         //年化收益率
+	private BigDecimal ytm;         //到期收益率
+	private String prodDesc;         //产品描述
+
+	private String repaymentMode;  //还款方式
+	
+	private BigDecimal investEdu;  //投资金额
+	private Date beginDate;   //计息日期
+	private Date endDate;	  //到期日期
+			
+	public InvestorAndInvestProductModel(){}		
+
+	public InvestorAndInvestProductModel(BigDecimal lowLendEdu,
+			BigDecimal higLendEdu, String investorName, String idCrad,
+			String mobTel, String prodName, Integer lendingCycle,
+			BigDecimal ars, BigDecimal ytm, String prodDesc,
+			String repaymentMode, BigDecimal investEdu, Date beginDate,
+			Date endDate) {
+		super();
+		this.lowLendEdu = lowLendEdu;
+		this.higLendEdu = higLendEdu;
+		this.investorName = investorName;
+		this.idCrad = idCrad;
+		this.mobTel = mobTel;
+		this.prodName = prodName;
+		this.lendingCycle = lendingCycle;
+		this.ars = ars;
+		this.ytm = ytm;
+		this.prodDesc = prodDesc;
+		this.repaymentMode = repaymentMode;
+		this.investEdu = investEdu;
+		this.beginDate = beginDate;
+		this.endDate = endDate;
+	}
+
+
+	public String getInvestorName() {
+		return investorName;
+	}
+	public void setInvestorName(String investorName) {
+		this.investorName = investorName;
+	}
+	public String getIdCrad() {
+		return idCrad;
+	}
+	public void setIdCrad(String idCrad) {
+		this.idCrad = idCrad;
+	}
+	public String getMobTel() {
+		return mobTel;
+	}
+	public void setMobTel(String mobTel) {
+		this.mobTel = mobTel;
+	}
+	public String getProdName() {
+		return prodName;
+	}
+	public void setProdName(String prodName) {
+		this.prodName = prodName;
+	}
+	public Integer getLendingCycle() {
+		return lendingCycle;
+	}
+	public void setLendingCycle(Integer lendingCycle) {
+		this.lendingCycle = lendingCycle;
+	}
+	public BigDecimal getArs() {
+		return ars;
+	}
+	public void setArs(BigDecimal ars) {
+		this.ars = ars;
+	}
+	public BigDecimal getYtm() {
+		return ytm;
+	}
+	public void setYtm(BigDecimal ytm) {
+		this.ytm = ytm;
+	}
+	public String getRepaymentMode() {
+		return repaymentMode;
+	}
+	public void setRepaymentMode(String repaymentMode) {
+		this.repaymentMode = repaymentMode;
+	}
+	public BigDecimal getInvestEdu() {
+		return investEdu;
+	}
+	public void setInvestEdu(BigDecimal investEdu) {
+		this.investEdu = investEdu;
+	}
+	public Date getBeginDate() {
+		return beginDate;
+	}
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	public String getProdDesc() {
+		return prodDesc;
+	}
+
+	public void setProdDesc(String prodDesc) {
+		this.prodDesc = prodDesc;
+	}
+
+	public BigDecimal getLowLendEdu() {
+		return lowLendEdu;
+	}
+
+	public void setLowLendEdu(BigDecimal lowLendEdu) {
+		this.lowLendEdu = lowLendEdu;
+	}
+
+	public BigDecimal getHigLendEdu() {
+		return higLendEdu;
+	}
+
+	public void setHigLendEdu(BigDecimal higLendEdu) {
+		this.higLendEdu = higLendEdu;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	public String toString() {
+		return "InvestorAndInvestProductModel [lowLendEdu=" + lowLendEdu
+				+ ", higLendEdu=" + higLendEdu + ", investorName="
+				+ investorName + ", idCrad=" + idCrad + ", mobTel=" + mobTel
+				+ ", prodName=" + prodName + ", lendingCycle=" + lendingCycle
+				+ ", ars=" + ars + ", ytm=" + ytm + ", prodDesc=" + prodDesc
+				+ ", repaymentMode=" + repaymentMode + ", investEdu="
+				+ investEdu + ", beginDate=" + beginDate + ", endDate="
+				+ endDate + "]";
+	}		
+	
+}

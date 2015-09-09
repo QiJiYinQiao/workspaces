@@ -1,0 +1,30 @@
+1441593244075	Move 'user.jsp' to 'user'
+1441595635817	Rename resource 'login.jsp'
+1441595971434	Delete elements
+1441595998226	Delete element
+1441596005167	Delete element
+1441596038404	Delete element
+1441596116899	Delete elements
+1441596133142	Delete elements
+1441596315793	Rename resource 'springMVC-servlet.xml'
+1441604383771	Rename resource 'spring-servlet.xml'
+1441604958245	Delete element
+1441605275473	Move 'config' to 'WEB-INF'
+1441611182560	Delete element
+1441611258918	Delete element
+1441611985989	Rename type 'UserService'
+1441611992788	Rename type 'UserDao'
+1441619295951	Delete element
+1441674605126	Move folder
+1441674700597	Move folder
+1441676395882	Delete element
+1441679595344	Delete elements
+1441680334534	Copy file
+1441680341972	Move 'hello.jsp' to 'WebContent'
+1441680348904	Delete element
+1441680358168	Move 'hello.jsp' to 'login'
+1441680369223	Move 'hello.jsp' to 'WebContent'
+1441680881041	Move 'hello.jsp' to 'pages'
+1441682903557	Delete element
+1441684012226	Move 12 resources to 'WebContent'
+1441763887286	Rename resource 'index.html'

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<style type="text/css">
+		.tro{
+			position:absolute;
+			left:0;
+			top:0;
+			layer-background-color:red;
+			background-color:red;
+			background-color:red;
+			border:0.1px solid red;	
+		}
+	</style>
+</head>
+<body >
+	<div id="i1" class="tro"></div>
+	<div id="i2" class="tro"></div>
+	<div id="i3" class="tro"></div>
+	<div id="i4" class="tro"></div>
+	<div id="i5" class="tro"></div>
+	<div id="i6" class="tro"></div>
+	<div id="i7" class="tro"></div>
+	<div id="i8" class="tro"></div>
+	
+	<script type="text/javascript">
+		var speed = 30;
+		var temp = new Array();
+		var temp2 = new Array();
+		if(document.all){
+			var clipbottom = document.body.offsetHeight,cliptop=0;
+			for(i=1;i<=8;i++){
+				temp[i] = eval("document.all"+i+".style");
+				temp[i].width=document.body.clientWidth/8;
+				temp[i].height=document.body.offsetHeight;
+				temp[i].left=(i-1)*parseInt(temp[i].width);
+			}
+		}
+		function openit(){
+			window.scrollTo(0,0);
+			if(document.all){
+				clipbottom -= speed;
+				for(i=1;i<=8;i=i+2){
+					temp[i].clip="rect(0 auto+"+clipbottom+"0)";
+				}
+				cliptop+=speed;
+				for(i=2;i<8;i=i+2){
+					temp[i].clip="rect("+cliptop+"auto auto)";
+				}
+				if(clipbottom<=0){
+					clearInterval(stopit);
+				}
+			}
+			stopit = setInterval("openit()",100);
+		}
+	</script>
+</body>
+</html>

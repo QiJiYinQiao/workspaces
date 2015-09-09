@@ -1,0 +1,204 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title>受理任务</title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<jsp:include page="../../layout/script.jsp"></jsp:include>
+	<style type="text/css">
+		a{
+			text-decoration:none;
+		}
+	</style>
+	<script type="text/javascript">
+			var $grid;
+			var $taskFormDialog;
+			var $runTaskHandlePersonsGrid;
+			var $runTaskHandlePersonsDialog;
+			$(function() {
+				 	$grid=$("#taskGrid").datagrid({
+					url : "loanOrder/loanOrderAction!findAllClaimTask.action",
+					width : 'auto',
+					height : $(this).height()*0.95,
+					pagination:true,
+					rownumbers:true,
+					border:true,
+					singleSelect:true,
+					nowrap:true,
+					multiSort:false,
+					columns : [ [ {field : 'name',title : '客户姓名',width : parseInt($(this).width()*0.04)},
+					              {field : 'idNo',title : '身份证号',width : parseInt($(this).width()*0.08)},
+					              {field : 'age',title : '年龄',width : parseInt($(this).width()*0.02)},
+					              {field : 'annualSalary',title : '年收入(单位:元)',width : parseInt($(this).width()*0.06)},
+					              {field : 'mortgageStatus',title : '居住情况',width : parseInt($(this).width()*0.1)},
+					              {field : 'loanAmount',title : '申请贷款额度(单位:元)',width : parseInt($(this).width()*0.08)},
+					              {field : 'loanMin',title : '最低接受额度(单位:元)',width : parseInt($(this).width()*0.08)},
+					              {field : 'loanPeriod',title : '申请贷款期限',width : parseInt($(this).width()*0.05)},
+					              {field : 'repayMethod',title : '还款方式',width : parseInt($(this).width()*0.05)},
+					              {field : 'purpose',title : '贷款用途',width : parseInt($(this).width()*0.12)},
+					              {field : 'orderStatus',title : '订单状态',width : parseInt($(this).width()*0.1),
+					            	  formatter:function(value,row,index){
+					            		  return value.statusName;
+					            	  }
+				            	  },
+					              {field : 'operate',title : '操作',width : parseInt($(this).width()*0.25),
+					            	  formatter: function(value,row,index){
+											var result="<a href='javascript:void(0);' onclick='loanOrderInfo("+ index + ");'>查看申请详情</a>　 ";
+			      							result+="<a href='javascript:void(0);' onclick='lookLoanOrderProcessCommentDialog("+index+");'>查看审批意见</a>　 ";
+		      								result+="<a href='javascript:void(0);' onclick='showImage("+index+");'>查看审批流程</a>　 ";
+		      								result+="<a href='javascript:void(0);' onclick='handleTaskDialog("+index+");'>办理任务</a>　 ";
+		      								result+="<a href='javascript:void(0);' onclick='runTaskHandlePersons("+index+");'>指派给他人</a>";
+					      				return result;
+				            	 	 }
+					              }
+					              ] ],
+		              toolbar:'#tb',
+		              onClickCell:function(rowIndex, field, value){
+		            	  $(this).datagrid("selectRow","rowIndex");
+		              }
+					              
+				});
+			});
+
+		//查看详情
+		function loanOrderInfo(index) {
+			var row = getRowData($grid,index);
+			window.open("jsp/loanOrder/loanOrderDetailsForm.jsp?loanerId="+row.loanerId+"&loanOrderId="+row.loanOrderId,
+					"详情", 'height=650, width=1000, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+		}
+
+		// 查看流程图片
+		function showImage (index) {
+			var row = getRowData($grid,index);
+			var src = "loanOrder/loanOrderAction!getDiagramResourceByTaskId.action?taskId="+ row.taskId;
+			$('#imageDialog').dialog("open");
+			$("#image").attr("src", src);
+		}
+		
+		// 候选人列表
+		function runTaskHandlePersons (index) {
+			var row = getRowData($grid,index);
+			$runTaskHandlePersonsDialog = $('#runTaskHandlePersonsDialog').dialog({
+				title:"任务候选人列表",
+				width: 1000,    
+			    height: 650,    
+			    closed: false,    
+			    cache: false,    
+			    modal: true   
+			});
+			$runTaskHandlePersonsGrid = $("#runTaskHandlePersonsGrid").datagrid({
+				url : "loanOrder/loanOrderAction!findRunTaskHandlePersons.action",
+				width : 'auto',
+				height :  $(this).height()-90,
+				queryParams: {"taskId": row.taskId},
+				rownumbers:true,
+				border:false,
+				singleSelect:true,
+				striped:true,
+				columns : [ [ 
+				              {field : 'name',title : '用户名',width : 100,align : 'center'},
+				              {field : 'email',title : '邮箱',width : 150,align : 'center'},
+				              {field : 'tel',title : '电话',width :150,align : 'center'},
+				              {field : 'organization',title : '组织',width :220,align : 'center',
+				            	    formatter:function(value,row){
+					            	  	return value.fullName;  
+									}
+							  }, 
+				              {field : 'description',title : '描述',width : 570,align : 'left'}
+				              ] ],
+				toolbar : [ {
+					iconCls : 'icon-save',
+					text : '指定',
+					handler : updateCliamTask
+				}]
+			});
+		}
+		
+		// 修改处理人
+		function updateCliamTask(){
+			var row  = $grid.datagrid("getSelected");
+			var user = $runTaskHandlePersonsGrid.datagrid("getSelected");
+			if(user==null) {
+				$.messager.alert('提示','请选择要指派的人！','warning');
+				return;
+			}
+			$.ajax({
+				url : "loanOrder/loanOrderAction!updateClaimTask.action",
+				data : {"taskId" : row.taskId,"userId":user.userId},
+				success : function(rsp) {
+					if(rsp.status){
+						parent.$.messager.show({
+							title : rsp.title,
+							msg : rsp.message,
+							timeout : 1000 * 2
+						});
+						$grid.datagrid('reload');
+						$runTaskHandlePersonsDialog.dialog('close');
+					}else{
+						parent.$.messager.alert(rsp.title,rsp.message,'warning');
+					}
+				}
+			});
+		}
+		
+		// 处理任务
+		function handleTaskDialog(index) {
+			var row = getRowData($grid,index);
+			$.ajax({
+				type : "POST",
+				url : "loanOrder/loanOrderAction!findTaskFormKeyByTaskId.action",
+				data : {"taskId":row.taskId},
+				success : function(jspName) {
+					$taskFormDialog = $("#taskForm").dialog({
+							title : '稽核信息记录表',
+							width : 1000,
+							height : 650,
+							modal:true,
+							href : "jsp/loanOrder/"+jspName
+						}); 
+					}
+			});
+		}
+		
+		// 查看流程批注
+		function  lookLoanOrderProcessCommentDialog (index) {
+			var row = getRowData($grid,index);
+			parent.$.modalDialog.openner= $grid;
+			parent.$.modalDialog({
+				title : '审批意见查看',
+				width : 1000,
+				height : 650,
+				href : "jsp/loanOrder/loanOrderProcessComment.jsp"});
+		}
+	</script>
+  </head>
+  <body>
+      <div data-options="region:'center',border : false">
+	  		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
+					业务管理-->贷款业务管理-->受理任务
+			</div>
+			<table id="taskGrid" title="受理任务"></table>
+			<!-- 流程图 -->
+		    <div id="imageDialog" class="easyui-dialog" title="流程图片" data-options="border:false,closed:true,fit:true">
+				<img id="image" src="" >
+			</div>
+			<!-- 任务办理的表单 -->
+			<div id="taskForm"></div>
+			<!-- 指派给他人列表 -->
+			<div id="runTaskHandlePersonsDialog">
+				<table id="runTaskHandlePersonsGrid"></table>
+			</div>
+		</div>
+  </body>
+</html>

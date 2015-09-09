@@ -1,0 +1,390 @@
+package com.bpms.action;
+
+import java.util.List;
+
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.model.vo.InvestorAndInvestProductModel;
+import com.bpms.service.InvestOrderService;
+import com.bpms.service.InvestOrderWorkFlowService;
+import com.bpms.service.WorkFlowService;
+import com.bpms.util.PageUtil;
+import com.bpms.view.model.DataModel;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+/**
+ * @ClassName: InvestOrderAction 
+ * @Description: 投资订单的Action 
+ * @author PANCHUANHE    
+ * @date 2015年7月20日 上午10:43:31
+ */
+@Namespace("/investOrder")
+@Action(value = "investOrderAction", results={
+		@Result(name="investorAndInvestProductsDetailsView",location="/jsp/investOrder/investorAndInvestProductsDetailsView.jsp"),
+		//跳转到“合同详情”界面
+		@Result(name="investorOrderContractDetailsView",location="/jsp/investOrder/investorOrderContractDetailsView.jsp",type="dispatcher"),
+		@Result(name="gotoTaskDeptZlForm",location="/jsp/investOrder/taskDeptZlForm.jsp",type="dispatcher"),
+		@Result(name="gotoTaskSalesCustCommForm",location="/jsp/investOrder/taskSalesCustCommForm.jsp",type="dispatcher"),
+		@Result(name="gotoTaskOrderResubmit",location="/jsp/investOrder/taskOrderResubmit.jsp",type="dispatcher")
+})
+public class InvestOrderAction extends BaseAction implements ModelDriven<InvestOrder> {
+	private static final long serialVersionUID = 1L;
+	@Autowired
+	private InvestOrderService investOrderServiceImpl;//投资订单service
+	@Autowired
+	private InvestOrderWorkFlowService investOrderWorkFlowService;//投资工作流service	
+	@Autowired
+	private WorkFlowService workFlowService;	
+	
+	//投资订单实例
+	private InvestOrder investOrder;
+	/** 备注信息. */
+	private String comment;
+
+	/** 返回值. */
+	private String result;
+
+	/** 是否通过 */
+	private String processingResult;
+	
+	//投资订单字符串
+	private String investOrderIds;
+	
+	/**
+	 * @author: xujianwei
+	 * @time:2015年7月22日 下午5:37:38
+	 * @Title:saveStartProcessInstance
+	 * @Description:TODO 开启投资订单流程（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String saveStartProcessInstance(){
+		try {
+			OutputJson(getMessage(investOrderWorkFlowService
+					.saveStartProcessInstance(investOrder)));
+		} catch (ActivitiObjectNotFoundException e) {
+			OutputJson(new DataModel("提示", "您还没有部署投资申请流程!!", false));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @author: xujianwei
+	 * @time:2015年7月22日 下午5:30:00
+	 * @Title:saveInvestOrder
+	 * @Description:TODO 投资订单生成（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String saveInvestOrder(){
+		boolean bl = investOrderServiceImpl.persistenceInvestOrder(investOrder);
+		DataModel json = null;
+		if(bl){
+			json = new DataModel("提示","恭喜你,保存成功!",bl);
+		}else{
+			json = new DataModel("提示","出错了,保存失败",bl);
+		}
+		OutputJson(json);
+		return null;
+	}
+	
+	/**
+	 * @Title: checkWorkFlowImg 
+	 * @Description: 查看流程图
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String checkWorkFlowImg(){
+		try {
+			investOrderWorkFlowService.checkWorkFlowImgByInvestOrderId(investOrder.getInvestOrderId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * @Title: findListByInvestorAndInvestOrder 
+	 * @Description: 根据订单和投资人查询列表
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String findListByInvestorAndInvestOrder(){
+		//分页信息
+		PageUtil pageUtil = new PageUtil(page,rows);
+	    GridModel gridModel = new GridModel();
+	    gridModel.setRows(investOrderServiceImpl.findListByInvestorAndInvestOrder(pageUtil));
+	    gridModel.setTotal(investOrderServiceImpl.count());
+	    OutputJson(gridModel);
+		return null;
+	};
+	/**
+	 * @Title: doDeleteInvestOrder 
+	 * @Description: 订单删除
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String doDeleteInvestOrder(){
+		boolean bl = investOrderServiceImpl.doDeleteInvestOrder(investOrder.getInvestOrderId());
+		DataModel json = null;
+		if(bl){
+			json = new DataModel("提示","恭喜你，删除成功!",bl);
+		}else{
+			json = new DataModel("提示","出错了,删除失败!",bl);
+		}
+		OutputJson(json);
+		return null;
+	}
+	/**
+	 * @Title: findAllMyTaskList 
+	 * @Description: TODO 待办任务列表
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String findAllTaskList(){
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(investOrderWorkFlowService.findAllTask(getFirstResult(), getMaxResults()));
+		gridModel.setTotal(investOrderWorkFlowService.findAllTaskCount());
+		OutputJson(gridModel);
+		return null;
+	}
+	/**
+	 * @Title: saveMyTask 
+	 * @Description: TODO 签收任务
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String saveMyTask(){
+		try {
+			investOrderWorkFlowService.saveMyTask(investOrder.getTaskId());
+			OutputJson(new DataModel("提示","恭喜你,签收成功!",true));
+		} catch (Exception e) {
+			e.printStackTrace();
+			OutputJson(new DataModel("提示","出错了,签收失败!",false));
+		}
+		return null;
+	}
+	
+
+	/**
+	 * 
+	 * @author: zhangjian
+	 * @time:2015年7月228日 
+	 * @Title:受理任务页面中，点击办理任务时，会走这个InvestOrderAction
+	 * @return
+	 * @throws:
+	 */
+	public String findTaskFormKeyByTaskId(){
+		OutputJson(workFlowService.findTaskFormKeyByTaskId(investOrder.getTaskId()));
+		return null;
+	}	
+	
+	
+	
+	/**
+	 * @author zhangjian
+	 * @description 获取当前用户所有的受理任务
+	 * @return 用户所有的受理任务的json信息
+	 */
+	public String findAllClaimTask(){
+		
+//		Map<String, Object> map = new HashMap<String, Object>();
+//		if (null != searchValue && !"".equals(searchValue)) {
+//			map.put(searchName, Constants.GET_SQL_LIKE + searchValue
+//					+ Constants.GET_SQL_LIKE);
+//		}
+//		PageUtil pageUtil = new PageUtil(page, rows, searchAnds,
+//				searchColumnNames, searchConditions, searchVals);		
+		
+		//获取当前"角色（比如，销客专员）"已经受理的所有投资订单investOrder
+		List<InvestOrder> rows = investOrderWorkFlowService.findAllClaimTask(getFirstResult(), getMaxResults());
+
+		//获取当前"角色（比如，销客专员）"已经受理的所有投资订单investOrder的"总数量"
+		Long total = investOrderWorkFlowService.findAllClaimTaskCount();
+		this.OutputJson2(new GridModel(rows, total));		
+		return null;
+	}
+	
+	
+	/**
+	 * @author zhangjian 
+	 * @description 根据investOrderId, 查询投资者的合同详细信息。
+	 * @return String 
+	 */
+	public String findInvestorOrderContractDetails(){
+		
+		String investOrderId = this.investOrder.getInvestOrderId(); 
+		
+		//查询“合同信息”,“开户行”和“合同备注信息(即，订单描述)”的数据。
+		InvestOrder investOrderObj = investOrderServiceImpl.findByInvestOrderId(investOrderId);
+		ServletActionContext.getRequest().setAttribute("investOrderObj", investOrderObj);							
+		
+		//查询“理财产品”的数据。				
+		List<InvestorAndInvestProductModel> investProductList = investOrderServiceImpl.findInvestorAndInvestProductsDetails(investOrderId);
+		ServletActionContext.getRequest().setAttribute("investProductList", investProductList);		
+		
+		return "investorOrderContractDetailsView";
+	}
+	
+	/**
+	 * @author zhangjian
+	 * @description 根据investOrderId, 查询投资者的理财产品详情信息。
+	 * @return
+	 */
+	public String findInvestorAndInvestProductsDetails(){		
+		List<InvestorAndInvestProductModel> InvestorAndInvestProductRows = investOrderServiceImpl.findInvestorAndInvestProductsDetails(investOrder.getInvestOrderId());
+		ServletActionContext.getRequest().setAttribute("InvestorAndInvestProductRows", InvestorAndInvestProductRows);					
+		return "investorAndInvestProductsDetailsView";
+	}
+	
+	/**
+	 * 
+	 * @time:2015年7月30日 下午2:40:36
+	 * @Title:findByInvestOrderId
+	 * @Description:TODO 根据订单id查询订单详情以作修改（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String findByInvestOrderId(){
+		OutputJson(investOrderServiceImpl.findByInvestOrderId(investOrder.getInvestOrderId()));
+		return null;
+	}
+	/**
+	 * 提交任务办理
+	 * 
+	 * @return
+	 */
+	public String submitTask() {
+		try {
+			investOrderWorkFlowService.saveSubmitTask(investOrder, comment, result,
+					processingResult);
+			OutputJson(getMessage(true));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @time:2015年7月29日 上午9:37:37
+	 * @Title:gotoTaskDeptZlForm
+	 * @Description:TODO 跳转到部门助理受理任务页面（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String gotoTaskDeptZlForm(){
+		return "gotoTaskDeptZlForm";
+	}
+
+	/**
+	 * 
+	 * @Title:gotoTaskSalesCustCommForm
+	 * @Description:作用： 跳转到销客专员受理任务页面
+	 * @return
+	 * @throws:
+	 */
+	public String gotoTaskSalesCustCommForm(){
+		return "gotoTaskSalesCustCommForm";
+	}
+	
+	/**
+	 * 
+	 * @time:2015年7月30日 上午11:30:23
+	 * @Title:gotoTaskOrderReset
+	 * @Description:TODO 跳转到订单重提或撤销处理页面（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String gotoTaskOrderResubmit(){
+		return "gotoTaskOrderResubmit";
+	}
+	
+	/**
+	 * @Title: findInvestOrderListByOrderStatus 
+	 * @Description: TODO 根据订单状态查询投资订单
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String findInvestOrderListByOrderStatus(){
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(investOrderServiceImpl.findInvestOrderListByOrderStatus());
+		OutputJson(gridModel);
+		return null;
+	}
+	/**
+	 * @Title: findInvestOrderListByInvestOrderIds 
+	 * @Description: TODO 根据ids查询列表
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String findInvestOrderListByInvestOrderIds(){
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(investOrderServiceImpl.findInvestOrderListByInvestOrderIds(investOrderIds));
+		OutputJson(gridModel);
+		return null;
+	}
+	@Override
+	public InvestOrder getModel() {
+		if(null == investOrder){
+			investOrder = new InvestOrder();
+		}
+		return investOrder;
+	}
+	public InvestOrder getInvestOrder() {
+		return investOrder;
+	}
+	public void setInvestOrder(InvestOrder investOrder) {
+		this.investOrder = investOrder;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public String getResult() {
+		return result;
+	}
+
+	public void setResult(String result) {
+		this.result = result;
+	}
+
+	public String getProcessingResult() {
+		return processingResult;
+	}
+
+	public void setProcessingResult(String processingResult) {
+		this.processingResult = processingResult;
+	}
+
+	public String getInvestOrderIds() {
+		return investOrderIds;
+	}
+
+	public void setInvestOrderIds(String investOrderIds) {
+		this.investOrderIds = investOrderIds;
+	}
+    
+	
+
+}

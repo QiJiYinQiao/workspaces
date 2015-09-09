@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		div{
+			margin: 3px;
+			width: 40px;
+			height: 40px;
+			position: absolute;
+			left: 0px;
+			top: 30px;
+			background: green;
+			display: none;
+		}
+		div.newcolor{
+			background:blue;
+		}
+		
+	</style>
+	<script src="other_lib.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			$(function(){
+				$("#start").click(function(){
+					var divs = $("div")
+						.show("slow")
+						.animate({left: "+=200"},5000);
+				jQuery.queue(divs[0],"fx",function(){
+						$(this).addClass("newcolor");
+						jQuery.dequeue(this);
+					});
+				divs.animate({left:"-=200",width:"+=50"},1500);
+				jQuery.queue(divs[0],"fx",function(){
+					$(this).removeClass("newcolor");
+					jQuery.dequeue(this);
+				});
+				divs.slideUp(1000,function(){
+					divs.show(2000);
+				});
+				});
+				$("#stop").click(function(){
+					jQuery.queue($("div")[0],"fx",[]);
+					$("div").stop();
+				});
+				
+			});	
+	</script>
+</head>
+<body >
+	<button id="start">Start</button>
+	<button id="stop">Stop</button>
+	<div></div>
+	
+	
+	
+</body>
+</html>

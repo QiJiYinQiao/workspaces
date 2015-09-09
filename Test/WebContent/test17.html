@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		$("#result1").append($("p:first").hasClass("selected").toString());
+		$("#result2").append($("p:last").hasClass("selected").toString());
+		$("#result3").append($("p").hasClass("selected").toString());
+	});
+	</script>
+</head>
+<body >
+	<p>This paragraph is black and is the ffirst paragraph.</p>
+	<p class="selected">This paragraph is red and is the second paragraph.</p>
+	<div id="result1">First paragraph has selected class:</div>
+	<div id="result2">Secoun paragraph has selected class:</div>
+	<div id="result3">At least one paragraph has selected class;</div>
+
+</body>
+</html>

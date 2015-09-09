@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+org.activiti.designer.preferences.save.imageAddOverlayBackgroundColor=0,0,0
+org.activiti.designer.preferences.save.imageAddOverlayBorderColor=255,255,255
+org.activiti.designer.preferences.save.imageAddOverlayPosition=1
+org.activiti.designer.preferences.save.imageAddOverlayTextColor=255,255,255
+org.activiti.designer.preferences.save.imageFormat=true

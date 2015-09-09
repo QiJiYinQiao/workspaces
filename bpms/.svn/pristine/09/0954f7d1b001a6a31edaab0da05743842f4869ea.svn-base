@@ -1,0 +1,64 @@
+package com.bpms.action;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.bpms.websocket.WebSocketMessageInboundPool;
+
+import net.sf.json.JSONObject;
+import nl.justobjects.pushlet.core.Dispatcher;
+import nl.justobjects.pushlet.core.Event;
+import nl.justobjects.pushlet.core.SessionManager;
+
+public class FirePush extends HttpServlet {
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		JSONObject result = new JSONObject();
+		result.element("type", "message");
+		result.element("data","新任务！" );
+		WebSocketMessageInboundPool.sendMessageToUser("1", result.toString());
+		// myUnicast();
+		// myMulticast();
+		// myBroadcast();
+	}
+
+	private void myUnicast() {
+		if (SessionManager.getInstance().hasSession("1")) {
+			Event event = Event.createDataEvent("unClaimLoanOrderEvent");
+			try {
+				event.setField("unClaimMsg", URLEncoder.encode("有新任务!", "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			Dispatcher.getInstance().unicast(event, "1"); // 向ID为piero的用户推送
+
+			System.out.println("success....");
+		} else {
+			System.out.println("piero do not login....%%%%%%%%%%%%");
+		}
+	}
+
+	private void myMulticast() {
+		Event event = Event.createDataEvent("myevent1");
+		event.setField("key1", "houhou....");
+		Dispatcher.getInstance().multicast(event); // 向所有和myevent1名称匹配的事件推送
+
+		System.out.println("wa success....");
+	}
+
+	private void myBroadcast() {
+		Event event = Event.createDataEvent("myevent1"); // 向所有的事件推送，不要求和这儿的myevent1名称匹配
+		event.setField("key1", "dig hole....");
+		Dispatcher.getInstance().broadcast(event);
+
+		System.out.println("asw success....");
+	}
+}

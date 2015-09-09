@@ -1,0 +1,14 @@
+Homepage=http://www.baidu.com|
+Domain = baidu.com|
+Strat!
+Getting web by url:http://www.baidu.com
+Get web successfully!http://www.baidu.com
+
+
+
+
+
+Finished!
+Start time = 1431323296331  Finish time = 1431323299230  Cost time = 2899ms
+Total url number = 1Successed:1Failed:0
+

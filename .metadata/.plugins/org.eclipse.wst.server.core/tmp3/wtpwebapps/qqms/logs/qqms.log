@@ -1,0 +1,200 @@
+11:43:33,224  INFO ContextLoader:273 - Root WebApplicationContext: initialization started
+11:43:33,283  INFO XmlWebApplicationContext:510 - Refreshing Root WebApplicationContext: startup date [Thu Aug 20 11:43:33 CST 2015]; root of context hierarchy
+11:43:33,321  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [spring.xml]
+11:43:33,401  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+11:43:33,456  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [spring-hibernate.xml]
+11:43:33,683  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [config.properties]
+11:43:33,734  INFO XmlWebApplicationContext:1374 - Bean 'org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0' of type [class org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:33,758  INFO XmlWebApplicationContext:1374 - Bean 'druid-stat-pointcut' of type [class org.springframework.aop.support.JdkRegexpMethodPointcut] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:33,882  INFO XmlWebApplicationContext:1374 - Bean 'org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1' of type [class org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:34,031  INFO DruidDataSource:642 - {dataSource-1} inited
+11:43:34,031  INFO XmlWebApplicationContext:1374 - Bean 'dataSource' of type [class com.alibaba.druid.pool.DruidDataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:34,226  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+11:43:34,234  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+11:43:34,236  INFO Environment:239 - HHH000206: hibernate.properties not found
+11:43:34,238  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+11:43:34,893  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+11:43:34,902  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+11:43:34,918  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+11:43:34,924  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+11:43:34,964  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+11:43:35,356  INFO XmlWebApplicationContext:1374 - Bean 'sessionFactory' of type [class org.springframework.orm.hibernate4.LocalSessionFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,359  INFO XmlWebApplicationContext:1374 - Bean 'sessionFactory' of type [class org.hibernate.internal.SessionFactoryImpl] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,397  INFO EhCacheManagerFactoryBean:110 - Initializing EhCache CacheManager
+11:43:35,434  WARN CacheManager:730 - One or more caches require a DiskStore but there is no diskStore element configured. Using the default disk store path of C:\Users\Sun\AppData\Local\Temp\. Please explicitly configure the diskStore element in ehcache.xml.
+11:43:35,565  INFO XmlWebApplicationContext:1374 - Bean 'cacheManager' of type [class org.springframework.cache.ehcache.EhCacheManagerFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,566  INFO XmlWebApplicationContext:1374 - Bean 'cacheManager' of type [class net.sf.ehcache.CacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,569  INFO XmlWebApplicationContext:1374 - Bean 'shiroCacheManager' of type [class org.apache.shiro.cache.ehcache.EhCacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,572  INFO EhCacheManager:159 - Cache with name 'com.qqms.shiro.MyShiroRealm.authorizationCache' does not yet exist.  Creating now.
+11:43:35,587  INFO EhCacheManager:166 - Added EhCache named [com.qqms.shiro.MyShiroRealm.authorizationCache]
+11:43:35,588  INFO XmlWebApplicationContext:1374 - Bean 'myShiroRealm' of type [class com.qqms.shiro.MyShiroRealm] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,595  INFO XmlWebApplicationContext:1374 - Bean 'securityManager' of type [class org.apache.shiro.web.mgt.DefaultWebSecurityManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,628  INFO XmlWebApplicationContext:1374 - Bean 'formAuthenticationFilter' of type [class org.apache.shiro.web.filter.authc.FormAuthenticationFilter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,658  INFO XmlWebApplicationContext:1374 - Bean 'sessionDAO' of type [class org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,662  INFO XmlWebApplicationContext:1374 - Bean 'com.qqms.listener.SessionHandler#5e4a6933' of type [class com.qqms.listener.SessionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,667  INFO XmlWebApplicationContext:1374 - Bean 'sessionValidationScheduler' of type [class org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,669  INFO XmlWebApplicationContext:1374 - Bean 'sessionManager' of type [class org.apache.shiro.web.session.mgt.DefaultWebSessionManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,674  INFO EhCacheManager:159 - Cache with name 'shiro-kickout-session' does not yet exist.  Creating now.
+11:43:35,688  INFO EhCacheManager:166 - Added EhCache named [shiro-kickout-session]
+11:43:35,689  INFO XmlWebApplicationContext:1374 - Bean 'kickoutSessionControlFilter' of type [class com.qqms.shiro.KickoutSessionControlFilter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,690  INFO XmlWebApplicationContext:1374 - Bean 'util:map#129c28c3' of type [class org.springframework.beans.factory.config.MapFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,691  INFO XmlWebApplicationContext:1374 - Bean 'util:map#129c28c3' of type [class java.util.LinkedHashMap] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:43:35,714  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@68c4ed7f: defining beans [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,publicDao,backupScheduleService,baseService,dbBackUpService,emccontactServiceImpl,excelService,functionService,investorService,loanerService,loanOrderService,loginService,logsService,orderStatusService,organizationService,permissionAssignmentService,systemCodeService,systemParameterService,userService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,dataSource,cacheManager,myShiroRealm,securityManager,lifecycleBeanPostProcessor,shiroCacheManager,formAuthenticationFilter,sessionManager,sessionDAO,sessionValidationScheduler,kickoutSessionControlFilter,shiroFilter,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:43:35,752  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-08-20 11:43:33",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:1,
+	ConnectCount:1,
+	Connections:[
+		{ID:1755572470, ConnectTime:"2015-08-20 11:43:34", UseCount:1, LastActiveTime:"2015-08-20 11:43:34"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+11:43:36,149  INFO SimpleThreadPool:258 - Job execution threads will use class loader of thread: localhost-startStop-1
+11:43:36,161  INFO SchedulerSignalerImpl:63 - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+11:43:36,161  INFO QuartzScheduler:215 - Quartz Scheduler v.1.6.6 created.
+11:43:36,162  INFO RAMJobStore:141 - RAMJobStore initialized.
+11:43:36,163  INFO StdSchedulerFactory:1235 - Quartz scheduler 'DefaultQuartzScheduler' initialized from default resource file in Quartz package: 'quartz.properties'
+11:43:36,163  INFO StdSchedulerFactory:1239 - Quartz scheduler version: 1.6.6
+11:43:36,165  INFO QuartzScheduler:461 - Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED started.
+11:43:36,168  INFO ContextLoader:313 - Root WebApplicationContext: initialization completed in 2942 ms
+11:43:36,344  INFO XmlConfigurationProvider:42 - Parsing configuration file [struts-default.xml]
+11:43:36,402  INFO XmlConfigurationProvider:42 - Parsing configuration file [struts-plugin.xml]
+11:43:36,428  INFO XmlConfigurationProvider:42 - Parsing configuration file [struts.xml]
+11:43:36,431  INFO BeanSelectionProvider:42 - Choosing bean (spring) for (com.opensymphony.xwork2.ObjectFactory)
+11:43:36,431  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.FileManagerFactory)
+11:43:36,431  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.XWorkConverter)
+11:43:36,431  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.CollectionConverter)
+11:43:36,431  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.ArrayConverter)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.DateConverter)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.NumberConverter)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.StringConverter)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ConversionPropertiesProcessor)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ConversionFileProcessor)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ConversionAnnotationProcessor)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.TypeConverterCreator)
+11:43:36,432  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.TypeConverterHolder)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.TextProvider)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.LocaleProvider)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.ActionProxyFactory)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ObjectTypeDeterminer)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.dispatcher.mapper.ActionMapper)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (jakarta) for (org.apache.struts2.dispatcher.multipart.MultiPartRequest)
+11:43:36,433  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.views.freemarker.FreemarkerManager)
+11:43:36,434  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.components.UrlRenderer)
+11:43:36,434  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.validator.ActionValidatorManager)
+11:43:36,434  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.ValueStackFactory)
+11:43:36,435  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.reflection.ReflectionProvider)
+11:43:36,435  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.reflection.ReflectionContextFactory)
+11:43:36,435  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.PatternMatcher)
+11:43:36,435  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.dispatcher.StaticContentLoader)
+11:43:36,435  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.UnknownHandlerManager)
+11:43:36,435  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.views.util.UrlHelper)
+11:43:36,436  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.TextParser)
+11:43:36,448  INFO StrutsSpringObjectFactory:42 - Initializing Struts-Spring integration...
+11:43:36,448  INFO SpringObjectFactory:42 - Setting autowire strategy to name
+11:43:36,448  INFO StrutsSpringObjectFactory:42 - ... initialized Struts-Spring integration successfully
+11:35:47,424  INFO ContextLoader:273 - Root WebApplicationContext: initialization started
+11:35:47,491  INFO XmlWebApplicationContext:510 - Refreshing Root WebApplicationContext: startup date [Mon Sep 07 11:35:47 CST 2015]; root of context hierarchy
+11:35:47,530  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [spring.xml]
+11:35:47,636  INFO ClassPathBeanDefinitionScanner:222 - JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning
+11:35:47,687  INFO XmlBeanDefinitionReader:315 - Loading XML bean definitions from class path resource [spring-hibernate.xml]
+11:35:47,939  INFO PropertyPlaceholderConfigurer:172 - Loading properties file from class path resource [config.properties]
+11:35:47,998  INFO XmlWebApplicationContext:1374 - Bean 'org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0' of type [class org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:48,017  INFO XmlWebApplicationContext:1374 - Bean 'druid-stat-pointcut' of type [class org.springframework.aop.support.JdkRegexpMethodPointcut] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:48,209  INFO XmlWebApplicationContext:1374 - Bean 'org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1' of type [class org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:48,350  INFO DruidDataSource:642 - {dataSource-1} inited
+11:35:48,350  INFO XmlWebApplicationContext:1374 - Bean 'dataSource' of type [class com.alibaba.druid.pool.DruidDataSource] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:48,666  INFO Version:37 - HCANN000001: Hibernate Commons Annotations {4.0.1.Final}
+11:35:48,679  INFO Version:41 - HHH000412: Hibernate Core {4.1.9.Final}
+11:35:48,746  INFO Environment:239 - HHH000206: hibernate.properties not found
+11:35:48,752  INFO Environment:342 - HHH000021: Bytecode provider name : javassist
+11:35:49,503  INFO Dialect:123 - HHH000400: Using dialect: org.hibernate.dialect.MySQLDialect
+11:35:49,519  INFO LobCreatorBuilder:94 - HHH000423: Disabling contextual LOB creation as JDBC driver reported JDBC version [3] less than 4
+11:35:49,536  INFO TransactionFactoryInitiator:68 - HHH000399: Using default transaction strategy (direct JDBC transactions)
+11:35:49,543  INFO ASTQueryTranslatorFactory:48 - HHH000397: Using ASTQueryTranslatorFactory
+11:35:49,588  WARN UUIDHexGenerator:59 - HHH000409: Using org.hibernate.id.UUIDHexGenerator which does not generate IETF RFC 4122 compliant UUID values; consider using org.hibernate.id.UUIDGenerator instead
+11:35:49,995  INFO XmlWebApplicationContext:1374 - Bean 'sessionFactory' of type [class org.springframework.orm.hibernate4.LocalSessionFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:49,998  INFO XmlWebApplicationContext:1374 - Bean 'sessionFactory' of type [class org.hibernate.internal.SessionFactoryImpl] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,034  INFO EhCacheManagerFactoryBean:110 - Initializing EhCache CacheManager
+11:35:50,076  WARN CacheManager:730 - One or more caches require a DiskStore but there is no diskStore element configured. Using the default disk store path of C:\Users\Sun\AppData\Local\Temp\. Please explicitly configure the diskStore element in ehcache.xml.
+11:35:50,200  INFO XmlWebApplicationContext:1374 - Bean 'cacheManager' of type [class org.springframework.cache.ehcache.EhCacheManagerFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,202  INFO XmlWebApplicationContext:1374 - Bean 'cacheManager' of type [class net.sf.ehcache.CacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,205  INFO XmlWebApplicationContext:1374 - Bean 'shiroCacheManager' of type [class org.apache.shiro.cache.ehcache.EhCacheManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,207  INFO EhCacheManager:159 - Cache with name 'com.qqms.shiro.MyShiroRealm.authorizationCache' does not yet exist.  Creating now.
+11:35:50,221  INFO EhCacheManager:166 - Added EhCache named [com.qqms.shiro.MyShiroRealm.authorizationCache]
+11:35:50,223  INFO XmlWebApplicationContext:1374 - Bean 'myShiroRealm' of type [class com.qqms.shiro.MyShiroRealm] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,229  INFO XmlWebApplicationContext:1374 - Bean 'securityManager' of type [class org.apache.shiro.web.mgt.DefaultWebSecurityManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,261  INFO XmlWebApplicationContext:1374 - Bean 'formAuthenticationFilter' of type [class org.apache.shiro.web.filter.authc.FormAuthenticationFilter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,291  INFO XmlWebApplicationContext:1374 - Bean 'sessionDAO' of type [class org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,295  INFO XmlWebApplicationContext:1374 - Bean 'com.qqms.listener.SessionHandler#5fab4353' of type [class com.qqms.listener.SessionHandler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,299  INFO XmlWebApplicationContext:1374 - Bean 'sessionValidationScheduler' of type [class org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,301  INFO XmlWebApplicationContext:1374 - Bean 'sessionManager' of type [class org.apache.shiro.web.session.mgt.DefaultWebSessionManager] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,306  INFO EhCacheManager:159 - Cache with name 'shiro-kickout-session' does not yet exist.  Creating now.
+11:35:50,319  INFO EhCacheManager:166 - Added EhCache named [shiro-kickout-session]
+11:35:50,320  INFO XmlWebApplicationContext:1374 - Bean 'kickoutSessionControlFilter' of type [class com.qqms.shiro.KickoutSessionControlFilter] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,321  INFO XmlWebApplicationContext:1374 - Bean 'util:map#52428547' of type [class org.springframework.beans.factory.config.MapFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,322  INFO XmlWebApplicationContext:1374 - Bean 'util:map#52428547' of type [class java.util.LinkedHashMap] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+11:35:50,341  INFO DefaultListableBeanFactory:596 - Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1ca82d8e: defining beans [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,publicDao,backupScheduleService,baseService,dbBackUpService,emccontactServiceImpl,excelService,functionService,investorService,loanerService,loanOrderService,loginService,logsService,orderStatusService,organizationService,permissionAssignmentService,systemCodeService,systemParameterService,userService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,dataSource,cacheManager,myShiroRealm,securityManager,lifecycleBeanPostProcessor,shiroCacheManager,formAuthenticationFilter,sessionManager,sessionDAO,sessionValidationScheduler,kickoutSessionControlFilter,shiroFilter,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:35:50,377  INFO HibernateTransactionManager:339 - Using DataSource [{
+	CreateTime:"2015-09-07 11:35:48",
+	ActiveCount:0,
+	PoolingCount:1,
+	CreateCount:1,
+	DestroyCount:0,
+	CloseCount:1,
+	ConnectCount:1,
+	Connections:[
+		{ID:636637707, ConnectTime:"2015-09-07 11:35:49", UseCount:1, LastActiveTime:"2015-09-07 11:35:49"}
+	]
+}] of Hibernate SessionFactory for HibernateTransactionManager
+11:35:50,809  INFO SimpleThreadPool:258 - Job execution threads will use class loader of thread: localhost-startStop-1
+11:35:50,821  INFO SchedulerSignalerImpl:63 - Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+11:35:50,821  INFO QuartzScheduler:215 - Quartz Scheduler v.1.6.6 created.
+11:35:50,822  INFO RAMJobStore:141 - RAMJobStore initialized.
+11:35:50,822  INFO StdSchedulerFactory:1235 - Quartz scheduler 'DefaultQuartzScheduler' initialized from default resource file in Quartz package: 'quartz.properties'
+11:35:50,823  INFO StdSchedulerFactory:1239 - Quartz scheduler version: 1.6.6
+11:35:50,825  INFO QuartzScheduler:461 - Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED started.
+11:35:50,827  INFO ContextLoader:313 - Root WebApplicationContext: initialization completed in 3396 ms
+11:35:51,009  INFO XmlConfigurationProvider:42 - Parsing configuration file [struts-default.xml]
+11:35:51,064  INFO XmlConfigurationProvider:42 - Parsing configuration file [struts-plugin.xml]
+11:35:51,092  INFO XmlConfigurationProvider:42 - Parsing configuration file [struts.xml]
+11:35:51,094  INFO BeanSelectionProvider:42 - Choosing bean (spring) for (com.opensymphony.xwork2.ObjectFactory)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.FileManagerFactory)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.XWorkConverter)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.CollectionConverter)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.ArrayConverter)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.DateConverter)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.NumberConverter)
+11:35:51,095  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.impl.StringConverter)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ConversionPropertiesProcessor)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ConversionFileProcessor)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ConversionAnnotationProcessor)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.TypeConverterCreator)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.TypeConverterHolder)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.TextProvider)
+11:35:51,096  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.LocaleProvider)
+11:35:51,097  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.ActionProxyFactory)
+11:35:51,097  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.conversion.ObjectTypeDeterminer)
+11:35:51,097  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.dispatcher.mapper.ActionMapper)
+11:35:51,097  INFO BeanSelectionProvider:42 - Choosing bean (jakarta) for (org.apache.struts2.dispatcher.multipart.MultiPartRequest)
+11:35:51,097  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.views.freemarker.FreemarkerManager)
+11:35:51,098  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.components.UrlRenderer)
+11:35:51,098  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.validator.ActionValidatorManager)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.ValueStackFactory)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.reflection.ReflectionProvider)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.reflection.ReflectionContextFactory)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.PatternMatcher)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.dispatcher.StaticContentLoader)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.UnknownHandlerManager)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (org.apache.struts2.views.util.UrlHelper)
+11:35:51,099  INFO BeanSelectionProvider:42 - Choosing bean (struts) for (com.opensymphony.xwork2.util.TextParser)
+11:35:51,112  INFO StrutsSpringObjectFactory:42 - Initializing Struts-Spring integration...
+11:35:51,112  INFO SpringObjectFactory:42 - Setting autowire strategy to name
+11:35:51,112  INFO StrutsSpringObjectFactory:42 - ... initialized Struts-Spring integration successfully
+11:48:32,563  INFO XmlWebApplicationContext:1042 - Closing Root WebApplicationContext: startup date [Mon Sep 07 11:35:47 CST 2015]; root of context hierarchy
+11:48:32,564  INFO DefaultListableBeanFactory:444 - Destroying singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@1ca82d8e: defining beans [org.springframework.beans.factory.config.PropertyPlaceholderConfigurer#0,publicDao,backupScheduleService,baseService,dbBackUpService,emccontactServiceImpl,excelService,functionService,investorService,loanerService,loanOrderService,loginService,logsService,orderStatusService,organizationService,permissionAssignmentService,systemCodeService,systemParameterService,userService,org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,org.springframework.context.annotation.internalPersistenceAnnotationProcessor,dataSource,cacheManager,myShiroRealm,securityManager,lifecycleBeanPostProcessor,shiroCacheManager,formAuthenticationFilter,sessionManager,sessionDAO,sessionValidationScheduler,kickoutSessionControlFilter,shiroFilter,sessionFactory,transactionManager,transactionAdvice,org.springframework.aop.config.internalAutoProxyCreator,transactionPointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#0,druid-stat-interceptor,druid-stat-pointcut,org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor#1,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor]; root of factory hierarchy
+11:48:32,569  INFO EhCacheManagerFactoryBean:164 - Shutting down EhCache CacheManager
+11:48:32,581  INFO DruidDataSource:1253 - {dataSource-1} closed

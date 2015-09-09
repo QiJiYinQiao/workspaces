@@ -1,0 +1,153 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta charset="utf-8">
+<script src="js/external/jquery/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.simplemodal-1.4.4.js"></script>
+<script type="text/javascript" src="js/jquery.cookie.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<link rel="stylesheet" href="js/jquery-ui.css">
+<style type="text/css">
+	#myList {width:80px;background:#EEE;padding:5px;}
+	#myList a{text-decoration:none;color:#0077B0;}
+	#myList a:hover{text-decoration:underline;}
+	#myList .qlink{font-size:12px;color:#666;margin-left:10px;}
+	
+	#sortable { list-style-type: none; margin: 0; padding: 0; width: 450px; }
+ 	#sortable li 
+ 	{ 
+		margin: 3px 3px 3px 0; 
+		padding: 1px; 
+		float: left; 
+		width: 100px; 
+		height: 90px; 
+		font-size: 4em; 
+		text-align: center; 
+ 	}
+ 	
+ 	  #progressbar {
+    margin-top: 20px;
+  }
+ 
+  .progress-label {
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #fff;
+  }
+ 
+  .ui-dialog-titlebar-close {
+    display: none;
+  }
+</style>
+<script type="text/javascript">
+	/* $(function(){
+		$("#myList").sortable();
+	}); */
+	$(document).ready(function(){
+		var progressTimer,
+	      progressbar = $( "#progressbar" ),
+	      progressLabel = $( ".progress-label" ),
+	      dialogButtons = [{
+	        text: "Cancel Download",
+	        click: closeDownload
+	      }],
+	      dialog = $( "#dialog" ).dialog({
+	        autoOpen: false,
+	        closeOnEscape: false,
+	        resizable: false,
+	        buttons: dialogButtons,
+	        open: function() {
+	          progressTimer = setTimeout( progress, 2000 );
+	        },
+	        beforeClose: function() {
+	          downloadButton.button( "option", {
+	            disabled: false,
+	            label: "Start Download"
+	          });
+	        }
+	      }),
+	      downloadButton = $( "#downloadButton" )
+	        .button()
+	        .on( "click", function() {
+	          $( this ).button( "option", {
+	            disabled: true,
+	            label: "Downloading..."
+	          });
+	          dialog.dialog( "open" );
+	        });
+	 
+	    progressbar.progressbar({
+	      value: false,
+	      change: function() {
+	        progressLabel.text( "Current Progress: " + progressbar.progressbar( "value" ) + "%" );
+	      },
+	      complete: function() {
+	        progressLabel.text( "Complete!" );
+	        dialog.dialog( "option", "buttons", [{
+	          text: "Close",
+	          click: closeDownload
+	        }]);
+	        $(".ui-dialog button").last().focus();
+	      }
+	    });
+	 
+	    function progress() {
+	      var val = progressbar.progressbar( "value" ) || 0;
+	 
+	      progressbar.progressbar( "value", val + Math.floor( Math.random() * 3 ) );
+	 
+	      if ( val <= 99 ) {
+	        progressTimer = setTimeout( progress, 50 );
+	      }
+	    }
+	 
+	    function closeDownload() {
+	      clearTimeout( progressTimer );
+	      dialog
+	        .dialog( "option", "buttons", dialogButtons )
+	        .dialog( "close" );
+	      progressbar.progressbar( "value", false );
+	      progressLabel
+	        .text( "Starting download..." );
+	      downloadButton.focus();
+	    }
+	    
+	    $( "#accordion" ).accordion({
+	        collapsible: true
+	      });
+	    
+	});
+</script>
+</head>
+
+<body>
+	<div id="dialog" title="File Download">
+  <div class="progress-label">Starting download...</div>
+  <div id="progressbar"></div>
+</div>
+<button id="downloadButton">Start Download</button>
+
+	<div id="accordion">
+  <a>sun</a>
+  <div>
+    <p>Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.</p>
+  </div>
+  <h3>Section 2</h3>
+  <div>
+    <p>Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In suscipit faucibus urna. </p>
+  </div>
+  <h3>Section 3</h3>
+  <div>
+    <p>Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis. Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui. </p>
+    <ul>
+      <li>List item one</li>
+      <li>List item two</li>
+      <li>List item three</li>
+    </ul>
+  </div>
+  <h3>Section 4</h3>
+  <div>
+    <p>Cras dictum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia mauris vel est. </p><p>Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. </p>
+  </div>
+</div>
+</body>
+</html>

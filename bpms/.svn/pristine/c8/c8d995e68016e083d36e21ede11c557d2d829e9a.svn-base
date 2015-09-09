@@ -1,0 +1,304 @@
+package com.bpms.model;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
+
+/**
+ * 微贷业务呈报意见表
+ * 
+ * @author liuhh
+ *
+ */
+@Entity
+@Table(name = "t_bp_microcredit_opinion")
+public class MicrocreditOpinion implements java.io.Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private String mcbrId;
+	private String loanOrderId;
+	private String coborrowerName;
+	private String coborrowerIdno;
+	private BigDecimal adviceLoanAmt;
+	private String adviceLoanPeriod;
+	private String adviceRepayMthd;
+	private String loanMthd;
+	private BigDecimal loanRate;
+	private BigDecimal counselingRate;
+	private String collectionMthd;
+	private String operatorA;
+	private String operatorB;
+	private String riskCtrlMeasures;
+	private String specificMeasures;
+	private String firstMeeting;
+	private String verification;
+	private String deptPrincipal;
+	private BigDecimal finalLoanAmt;
+	private String finalLoanPeriod;
+	private String finalRepayMthd;
+	private Date surveyDate;
+	private String rejectCause;
+
+	public MicrocreditOpinion() {
+	}
+
+	public MicrocreditOpinion(String mcbrId) {
+		this.mcbrId = mcbrId;
+	}
+
+	public MicrocreditOpinion(String mcbrId, String loanOrderId,
+			String coborrowerName, String coborrowerIdno,
+			BigDecimal adviceLoanAmt, String adviceLoanPeriod,
+			String adviceRepayMthd, String loanMthd, BigDecimal loanRate,
+			BigDecimal counselingRate, String collectionMthd, String operatorA,
+			String operatorB, String riskCtrlMeasures, String specificMeasures,
+			String firstMeeting, String verification, String deptPrincipal,
+			BigDecimal finalLoanAmt, String finalLoanPeriod,
+			String finalRepayMthd, Date surveyDate, String rejectCause) {
+		super();
+		this.mcbrId = mcbrId;
+		this.loanOrderId = loanOrderId;
+		this.coborrowerName = coborrowerName;
+		this.coborrowerIdno = coborrowerIdno;
+		this.adviceLoanAmt = adviceLoanAmt;
+		this.adviceLoanPeriod = adviceLoanPeriod;
+		this.adviceRepayMthd = adviceRepayMthd;
+		this.loanMthd = loanMthd;
+		this.loanRate = loanRate;
+		this.counselingRate = counselingRate;
+		this.collectionMthd = collectionMthd;
+		this.operatorA = operatorA;
+		this.operatorB = operatorB;
+		this.riskCtrlMeasures = riskCtrlMeasures;
+		this.specificMeasures = specificMeasures;
+		this.firstMeeting = firstMeeting;
+		this.verification = verification;
+		this.deptPrincipal = deptPrincipal;
+		this.finalLoanAmt = finalLoanAmt;
+		this.finalLoanPeriod = finalLoanPeriod;
+		this.finalRepayMthd = finalRepayMthd;
+		this.surveyDate = surveyDate;
+		this.rejectCause = rejectCause;
+	}
+
+	@Id
+	@GenericGenerator(name = "systemUUID", strategy = "uuid")
+	@GeneratedValue(generator = "systemUUID")
+	@Column(name = "MCBR_ID", unique = true, nullable = false, length = 40)
+	public String getMcbrId() {
+		return this.mcbrId;
+	}
+
+	public void setMcbrId(String mcbrId) {
+		this.mcbrId = mcbrId;
+	}
+
+	@Column(name = "LOAN_ORDER_ID", length = 40)
+	public String getLoanOrderId() {
+		return this.loanOrderId;
+	}
+
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+
+	@Column(name = "COBORROWER_NAME", length = 20)
+	public String getCoborrowerName() {
+		return this.coborrowerName;
+	}
+
+	public void setCoborrowerName(String coborrowerName) {
+		this.coborrowerName = coborrowerName;
+	}
+
+	@Column(name = "COBORROWER_IDNO", length = 32)
+	public String getCoborrowerIdno() {
+		return this.coborrowerIdno;
+	}
+
+	public void setCoborrowerIdno(String coborrowerIdno) {
+		this.coborrowerIdno = coborrowerIdno;
+	}
+
+	@Column(name = "ADVICE_LOAN_AMT", precision = 20, scale = 5)
+	public BigDecimal getAdviceLoanAmt() {
+		return this.adviceLoanAmt;
+	}
+
+	public void setAdviceLoanAmt(BigDecimal adviceLoanAmt) {
+		this.adviceLoanAmt = adviceLoanAmt;
+	}
+
+	@Column(name = "ADVICE_LOAN_PERIOD", length = 1)
+	public String getAdviceLoanPeriod() {
+		return this.adviceLoanPeriod;
+	}
+
+	public void setAdviceLoanPeriod(String adviceLoanPeriod) {
+		this.adviceLoanPeriod = adviceLoanPeriod;
+	}
+
+	@Column(name = "ADVICE_REPAY_MTHD", length = 50)
+	public String getAdviceRepayMthd() {
+		return this.adviceRepayMthd;
+	}
+
+	public void setAdviceRepayMthd(String adviceRepayMthd) {
+		this.adviceRepayMthd = adviceRepayMthd;
+	}
+
+	@Column(name = "LOAN_MTHD", length = 50)
+	public String getLoanMthd() {
+		return this.loanMthd;
+	}
+
+	public void setLoanMthd(String loanMthd) {
+		this.loanMthd = loanMthd;
+	}
+
+	@Column(name = "LOAN_RATE", precision = 8, scale = 5)
+	public BigDecimal getLoanRate() {
+		return this.loanRate;
+	}
+
+	public void setLoanRate(BigDecimal loanRate) {
+		this.loanRate = loanRate;
+	}
+
+	@Column(name = "COUNSELING_RATE", precision = 5)
+	public BigDecimal getCounselingRate() {
+		return this.counselingRate;
+	}
+
+	public void setCounselingRate(BigDecimal counselingRate) {
+		this.counselingRate = counselingRate;
+	}
+
+	@Column(name = "COLLECTION_MTHD", length = 50)
+	public String getCollectionMthd() {
+		return this.collectionMthd;
+	}
+
+	public void setCollectionMthd(String collectionMthd) {
+		this.collectionMthd = collectionMthd;
+	}
+
+	@Column(name = "OPERATOR_A", length = 40)
+	public String getOperatorA() {
+		return this.operatorA;
+	}
+
+	public void setOperatorA(String operatorA) {
+		this.operatorA = operatorA;
+	}
+
+	@Column(name = "OPERATOR_B", length = 40)
+	public String getOperatorB() {
+		return this.operatorB;
+	}
+
+	public void setOperatorB(String operatorB) {
+		this.operatorB = operatorB;
+	}
+
+	@Column(name = "RISK_CTRL_MEASURES", length = 128)
+	public String getRiskCtrlMeasures() {
+		return this.riskCtrlMeasures;
+	}
+
+	public void setRiskCtrlMeasures(String riskCtrlMeasures) {
+		this.riskCtrlMeasures = riskCtrlMeasures;
+	}
+
+	@Column(name = "SPECIFIC_MEASURES", length = 1024)
+	public String getSpecificMeasures() {
+		return this.specificMeasures;
+	}
+
+	public void setSpecificMeasures(String specificMeasures) {
+		this.specificMeasures = specificMeasures;
+	}
+
+	@Column(name = "FIRST_MEETING", length = 32)
+	public String getFirstMeeting() {
+		return this.firstMeeting;
+	}
+
+	public void setFirstMeeting(String firstMeeting) {
+		this.firstMeeting = firstMeeting;
+	}
+
+	@Column(name = "VERIFICATION", length = 32)
+	public String getVerification() {
+		return this.verification;
+	}
+
+	public void setVerification(String verification) {
+		this.verification = verification;
+	}
+
+	@Column(name = "DEPT_PRINCIPAL", length = 20)
+	public String getDeptPrincipal() {
+		return this.deptPrincipal;
+	}
+
+	public void setDeptPrincipal(String deptPrincipal) {
+		this.deptPrincipal = deptPrincipal;
+	}
+
+	@Column(name = "FINAL_LOAN_AMT", precision = 20, scale = 5)
+	public BigDecimal getFinalLoanAmt() {
+		return this.finalLoanAmt;
+	}
+
+	public void setFinalLoanAmt(BigDecimal finalLoanAmt) {
+		this.finalLoanAmt = finalLoanAmt;
+	}
+
+	@Column(name = "FINAL_LOAN_PERIOD", length = 1)
+	public String getFinalLoanPeriod() {
+		return this.finalLoanPeriod;
+	}
+
+	public void setFinalLoanPeriod(String finalLoanPeriod) {
+		this.finalLoanPeriod = finalLoanPeriod;
+	}
+
+	@Column(name = "FINAL_REPAY_MTHD", length = 50)
+	public String getFinalRepayMthd() {
+		return this.finalRepayMthd;
+	}
+
+	public void setFinalRepayMthd(String finalRepayMthd) {
+		this.finalRepayMthd = finalRepayMthd;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "SURVEY_DATE", length = 19)
+	public Date getSurveyDate() {
+		return this.surveyDate;
+	}
+
+	public void setSurveyDate(Date surveyDate) {
+		this.surveyDate = surveyDate;
+	}
+
+	@Column(name = "REJECT_CAUSE", length = 1024)
+	public String getRejectCause() {
+		return this.rejectCause;
+	}
+
+	public void setRejectCause(String rejectCause) {
+		this.rejectCause = rejectCause;
+	}
+
+}

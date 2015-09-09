@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	<script src="other_lib.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			$(function(){
+				$("div").data("test",{first:16,last:"pizza!"});
+				$("span:first").text($("div").data("test").first);
+				$("span:last").text($("div").data("test").last);
+				
+				
+				alert($("div").data());
+				alert($("div").data("test"));
+			});	
+	</script>
+</head>
+<body >
+	<div>
+		The values stored were 
+		<span></span>
+		and
+		<span></span>
+	</div>
+	
+</body>
+</html>

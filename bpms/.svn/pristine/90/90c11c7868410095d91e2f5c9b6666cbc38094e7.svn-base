@@ -1,0 +1,60 @@
+package com.bpms.service.impl;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.LoanOrder;
+import com.bpms.model.vo.LoanOrderModel;
+import com.bpms.service.DebtMatchingService;
+import com.bpms.util.Collections;
+
+
+/**
+ * @ClassName: DebtMatchingServiceImpl 
+ * @Description: 债券匹配Service实现类
+ * @author ZHANGJIAN 
+ * @date 2015年8月19日  
+ */
+@Service("debtMatchingService")
+public class DebtMatchingServiceImpl implements DebtMatchingService {
+	
+	@Autowired
+	public BaseDAO<LoanOrder> baseDAO;
+
+	@Override
+	public LoanOrderModel findLoanOrderByLoanOrderId(String loanOrderId) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT sp.PARM_VALUE AS '利率',");
+		sql.append("lc.LOAN_ED_DATE as '到期日期',");
+		sql.append("t.`NAME` as '姓名',");
+		sql.append("t.ID_NO as '证件号码',");
+		sql.append("t.LOAN_AMOUNT as '贷款金额',");
+		sql.append("t.LOAN_PERIOD as '贷款期限',");
+		sql.append("t.REPAY_METHOD as '还款方式'");
+		sql.append(" FROM T_BP_LOAN_ORDER t,T_SYS_PARAMETER sp,T_BP_LOAN_CONTRACT lc WHERE 1=1");
+		sql.append(" AND t.LOAN_ORDER_ID = '"+loanOrderId+"'");
+		sql.append(" AND sp.PARM_CODE = 'loan_rate'");
+		sql.append(" AND t.LOAN_ORDER_ID = lc.LOAN_ORDER_ID");
+		List<Object[]> list = baseDAO.findBySQL(sql.toString());
+		//需要返回的实体类
+		LoanOrderModel model = new LoanOrderModel();
+		if(Collections.listIsNotEmpty(list)){
+			Object[] obj = list.get(0);
+			model.setRate(obj[0] == null?"":String.valueOf(obj[0]));
+			model.setLoanEdDate(obj[1] == null?null:(Date)obj[1]);
+			model.setName(obj[2] == null?"":String.valueOf(obj[2]));
+			model.setIdNo(obj[3] == null?"":String.valueOf(obj[3]));
+			model.setLoanAmount(obj[4] == null?new BigDecimal(0):(BigDecimal)obj[4]);
+			model.setLoanPeriod(obj[5] == null?0:(Integer)obj[5]);
+			model.setRepayMethod(obj[6] == null?"":String.valueOf(obj[6]));
+		}
+		return model;
+	}
+
+}

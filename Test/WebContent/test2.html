@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+	    div1{
+			text-align:center;
+			border:2px solid #a1a1a1;
+			padding:10px 40px;
+			background:#dddddd;
+			width:350px;
+			border-radius:25px;
+			-moz-border-radius:105px;/*老的firefox*/
+		}
+		
+		div2{
+			width:300px;
+			height:100px;
+			background-color:#ff9900;
+		    /*-moz-box-shadow:10px 10px 5px #888888;/*老的firefox*/
+			box-shadow:50px 50px 50px #FEDCb7;
+			/*左 上 阴影透明度 0不透明  阴影颜色 */
+		}
+		div{
+			border:15px solid transparent;
+			width:300px;
+			padding:10px 20px;
+		}
+		
+		#round{
+			-moz-border-image:url(img/bg_orange.png) 30 30 round; /* Old Firefox */
+			-webkit-border-image:url(img/bg_orange.png) 30 30 round ;/* Safari and Chrom */
+			-o-border-image:url(img/bg_orange.png) 30 30 round; 	/* Opera */
+		}
+		
+		#stretch{
+			-moz-border-image:url(img/bg_orange.png) 30 30 stretch;
+			-webkit-border-image:url(img/bg_orange.png) 30 30 stretch;
+			-o-border-image:url(img/bg_orange.png) 30 30 stretch;
+			border-image:url (img/bg_orange.png) 30 30 stretch;
+		}  
+		
+		body{
+			background:url(img/bg_green.png);
+			background-size:100 100px;
+			background-repeat:no-repeat;
+			padding-top:80px;
+		}
+		
+		div{
+			border:1px solid black;
+			padding:35px;
+			background-image:url('img/bg_green.png');
+			background-repeat:no-repeat;
+			background-position:left;
+		}
+		
+		#div1{
+			background-origin:border-box;
+		}
+		
+		#div2{
+			background-origin:content-box;
+		}
+		
+		body{
+			background-image:url(img/bg_green.png),url(img/bg_orange);
+		}
+		
+		h1{
+			text-shadow: 5px 5px 5px #FF0000;
+		}
+		
+		p.test{
+			width:11em;
+			border:1px solid #000000;
+			word-wrap:break-word;
+		}
+		
+	</style>
+</head>
+<body>
+	<!-- <div id="round">这里图片奖铺满整个边框</div><br>
+	<div id="stretch">这里图片被拉伸填充该区域</div>
+	<p>这是我们使用的图片</p>
+	<img src="img/bg_orange.png" > -->
+	<p class="test">This paragraph contains a very long word:this is very very very.The long word will break bnd wrap to the next line. </p>
+	
+	<p>上面是背景图片</p>
+	
+	<p>原始图片:<img src="img/bg_green.png" alt="circle" ></p>
+	
+	<div id="div1">
+		这是文本，11111111啊啊啊啊啊啊啊啊地方
+		sdfffsdf胜多负少
+		上的反思反思的反思的飞洒的发生大幅撒的发生大幅斯蒂芬萨菲
+		上的发生的防守打法是否了解了解了科技管理会计法律根据德国
+	</div>
+	
+	<div id="div2">
+		这是文本，11111111啊啊啊啊啊啊啊啊地方
+		sdfffsdf胜多负少
+		上的反思反思的反思的飞洒的发生大幅撒的发生大幅斯蒂芬萨菲
+		上的发生的防守打法是否了解了解了科技管理会计法律根据德国
+	</div>
+	
+	<h1>文本阴影效果</h1>
+</body>
+</html>

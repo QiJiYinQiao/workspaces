@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>JS实现很酷的EMAIL地址添加功能</title>
+ 		<title>dynamicForm sample</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css"  href="css/webuploader.css">
+		<link rel="stylesheet" type="text/css"  href="js/jquery-ui.css">
+		<script src="js/external/jquery/jquery.js"></script>
+		<script src="js/webuploader.js"></script>
+		<script src="js/jquery-ui.js"></script>
+		<style type="text/css">
+			/* input{
+				border: 1px solid #95b8e7;
+				border-radius: 5px;
+				height: 20px;
+				font-size:16px;
+			    background-color:#F0F8FF;
+				background-color:red;
+				width:20px;
+				text-align: center;
+			} */
+			
+			  label {
+				display: inline-block; width: 5em;
+			  }
+			  fieldset div {
+			    margin-bottom: 2em;
+			  }
+			  fieldset .help {
+			    display: inline-block;
+			  }
+			  .ui-tooltip {
+			    width: 210px;
+			    background: #111;
+    			color: white;
+			  }
+			
+		</style>
+		<script type="text/javascript">
+		 $(function() {
+			    var tooltips = $( "[title]" ).tooltip({
+			      position: {
+			        my: "right middle",
+			        /* at: "right+5 top-5" */
+			      },
+			    	track: true,
+			    });
+			    tooltips.tooltip( "open" );
+			    $( "<button>" )
+			      .text( "Show help" )
+			      .button()
+			      .click(function() {
+			        tooltips.tooltip( "close" );
+			      })
+			      .insertAfter( "form" );
+			  });
+		</script>
+			 
+</head>
+<body>
+	<form>
+	  <fieldset>
+	    <div>
+	      <label for="firstname">Firstname</label>
+	      <input id="firstname" name="firstname" title="Please provide your firstname.">
+	    </div>
+	    <div>
+	      <label for="lastname">Lastname</label>
+	      <input id="lastname" name="lastname" title="Please provide also your lastname.">
+	    </div>
+	    <div>
+	      <label for="address">Address</label>
+	      <input id="address" name="address" title="Your home or work address.">
+	    </div>
+	  </fieldset>
+	</form>
+	
+</body>
+</html>

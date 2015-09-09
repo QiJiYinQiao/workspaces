@@ -1,0 +1,1518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Spring</title>
+  <link rel="alternate" href="https://spring.io/blog" />
+  <link rel="self" href="https://spring.io/blog.atom" />
+  <id>http://spring.io/blog.atom</id>
+  <icon>https://spring.io/favicon.ico</icon>
+  <updated>2015-09-08T15:51:00Z</updated>
+  <entry>
+    <title>Spring REST Docs 1.0.0.RC1</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/08/spring-rest-docs-1-0-0-rc1" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Andy Wilkinson</name>
+    </author>
+    <id>tag:spring.io,2015-09-08:2231</id>
+    <updated>2015-09-08T15:51:00Z</updated>
+    <content type="html">&lt;p&gt;I&amp;rsquo;m delighted to announce that &lt;a href="https://github.com/spring-projects/spring-restdocs"&gt;Spring REST Docs&lt;/a&gt; 1.0.0.RC1 has been released and is available from our &lt;a href="https://repo.spring.io/milestone"&gt;milestone repository&lt;/a&gt;.&lt;/p&gt;&lt;h2&gt;&lt;a href="#what-rsquo-s-new" class="anchor" name="what-rsquo-s-new"&gt;&lt;/a&gt;What&amp;rsquo;s new&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Support for &lt;a href="http://docs.spring.io/autorepo/docs/spring-restdocs/1.0.0.RC1/reference/html5/#documenting-your-api-path-parameters"&gt;documenting path parameters&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Support for documenting multipart requests&lt;/li&gt;
+  &lt;li&gt;Support for &lt;a href="http://docs.spring.io/autorepo/docs/spring-restdocs/1.0.0.RC1/reference/html5/#documenting-your-api-constraints"&gt;documenting constraints declared using the Bean Validation API&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Improved extensibility&lt;/li&gt;
+  &lt;li&gt;Improved configurability, including &lt;a href="http://docs.spring.io/autorepo/docs/spring-restdocs/1.0.0.RC1/reference/html5/#documenting-your-api-customizing"&gt;template-based snippet rendering that allows you to take complete control over the generated snippets&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;h2&gt;&lt;a href="#getting-started" class="anchor" name="getting-started"&gt;&lt;/a&gt;Getting started&lt;/h2&gt;&lt;p&gt;To get started with Spring REST Docs, please refer to the &lt;a href="http://docs.spring.io/autorepo/docs/spring-restdocs/1.0.0.RC1/reference/html5/#getting-started"&gt;getting started section&lt;/a&gt; of the &lt;a href="http://docs.spring.io/autorepo/docs/spring-restdocs/1.0.0.RC1/reference/html5/"&gt;reference documentation&lt;/a&gt;.&lt;/p&gt;&lt;h2&gt;&lt;a href="#upgrading" class="anchor" name="upgrading"&gt;&lt;/a&gt;Upgrading&lt;/h2&gt;&lt;p&gt;If you&amp;rsquo;re upgrading to Spring REST Docs from 1.0.0.M1, you&amp;rsquo;ll need to change your dependency from &lt;code&gt;spring-restdocs&lt;/code&gt; to &lt;code&gt;spring-restdocs-mockmvc&lt;/code&gt;.&lt;/p&gt;&lt;h2&gt;&lt;a href="#schedule" class="anchor" name="schedule"&gt;&lt;/a&gt;Schedule&lt;/h2&gt;&lt;p&gt;Spring REST Docs 1.0.0.RELEASE is planned for early October. Please grab the RC and &lt;a href="https://github.com/spring-projects/spring-restdocs/issues"&gt;let us know&lt;/a&gt; about any problems you encounter.&lt;/p&gt;&lt;h2&gt;&lt;a href="#springone-2015" class="anchor" name="springone-2015"&gt;&lt;/a&gt;SpringOne 2015&lt;/h2&gt;&lt;p&gt;I&amp;rsquo;ll be talking about &lt;a href="https://2015.event.springone2gx.com/schedule/sessions/documenting_restful_apis.html"&gt;documenting RESTful APIs&lt;/a&gt;, including some live coding with Spring REST Docs, at this year&amp;rsquo;s &lt;a href="http://springone2gx.com"&gt;SpringOne&lt;/a&gt; in Washington, DC. I&amp;rsquo;d love to see you there.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>This Week in Spring - September 8, 2015</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/08/this-week-in-spring-september-8-2015" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2015-09-08:2229</id>
+    <updated>2015-09-08T06:00:00Z</updated>
+    <content type="html">&lt;p&gt;Welcome to another installation of &lt;em&gt;This Week in Spring&lt;/em&gt;! This week I left Tokyo, Japan, and have been in Shanghai, China, speaking to a few large-scale startups - including &lt;a href="http://Ele.me"&gt;Ele.me&lt;/a&gt;, the largest food delivery service and application in a &lt;em&gt;very&lt;/em&gt; crowded Chinese market with more than 2 million orders every day - about building cloud-native applications using Spring Boot, Spring Cloud and Cloud Foundry! Tomorrow, it&amp;rsquo;s off to Oslo, Norway, &lt;a href="http://2015.javazone.no/"&gt;for the amazing JavaZone&lt;/a&gt; conference. I love this conference and have, in the last two years, been unable to attend because it was concurrent with SpringOne2GX! Happily, this year it is not, and I&amp;rsquo;ll be passing through on my way to Washington DC and SpringOne2GX 2015, this Monday!&lt;/p&gt;&lt;p&gt;The Spring team is hard at work this week &lt;a href="http://springone2gx.com/"&gt;preparing for SpringOne2GX 2015&lt;/a&gt;, starting next Monday, and so this week&amp;rsquo;s seen a &lt;em&gt;ton&lt;/em&gt; of exciting new releases! We&amp;rsquo;re all excited for the next week and we hope to see you there!&lt;/p&gt;&lt;p&gt;Finally, it is my pleasure to share that my dear friend Kenny Bastani, who I asked to be the co-author of the upcoming book, O&amp;rsquo;Reilly&amp;rsquo;s upcoming &lt;a href="http://shop.oreilly.com/product/0636920038252.do"&gt;&lt;em&gt;Cloud Native Java&lt;/em&gt;&lt;/a&gt;, joins my team this week as the first new Spring Developer Advocate. I hope &lt;a href="http://twitter.com/kennybastani"&gt;you&amp;rsquo;ll join me in welcoming him to the community and family&lt;/a&gt;!&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Spring Data ninja Christoph Strobl put together a nice post on &lt;a href="http://spring.io/blog/2015/09/04/what-s-new-in-spring-data-release-gosling"&gt;what&amp;rsquo;s coming in Spring Data Gosling &lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring ninja St谷phane Nicoll just &lt;a href="http://spring.io/blog/2015/09/01/spring-framework-4-2-1-available-now"&gt;announced Spring framework 4.2.1 is now available&lt;/a&gt;!&lt;/li&gt;
+  &lt;li&gt;Spring Boot co-founder and all around nice guy &lt;a href="http://spring.io/blog/2015/09/04/spring-boot-1-3-0-m5-available-now"&gt;Phil Webb just announced that Spring Boot 1.3.0 M5 is now available&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Security lead &lt;a href="http://spring.io/blog/2015/09/02/spring-ldap-2-0-4-released"&gt;Rob Winch just announced some updates to Spring Security LDAP&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Web ninja &lt;a href="http://spring.io/blog/2015/09/01/spring-web-flow-2-4-2-released"&gt;Rossen Stoyanchev announced Spring Web Flow 2.4.2&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Statemachine lead Janne Valkealahti &lt;a href="http://spring.io/blog/2015/09/01/spring-statemachine-1-0-0-rc1-released"&gt;just announced 1.0.0.RC1 - get the bits and kick the tires&lt;/a&gt;!&lt;/li&gt;
+  &lt;li&gt;Our pal Ken Kreuger has put &lt;a href="https://www.udemy.com/microservices-with-spring-cloud/"&gt;together a Spring Cloud tutorial on Udemy&lt;/a&gt;!&lt;/li&gt;
+  &lt;li&gt;Dave Burke&amp;rsquo;s put together a nice post on one of &lt;a href="http://nixmash.com/java/using-spring-boot-commandlinerunner/"&gt;my favorite Spring Boot features, &lt;code&gt;CommandLineRunner&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;This Czech-language post on running Spring Boot &lt;a href="http://www.java-skoleni.cz/novinky/jak-spustit-spring-boot-aplikaci-na-openshift.html"&gt;applications on Openshift looks pretty interesting!&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Speaking of which, Red Hat &lt;em&gt;also&lt;/em&gt; did a blog on &lt;a href="https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/"&gt;running Spring Boot applications on Openshift this week&lt;/a&gt;! It is nice to see the likes of Red Hat talking about our cloud native technology stack.&lt;/li&gt;
+  &lt;li&gt;Tomasz Nurkiewicz has put together a really cool &lt;a href="http://www.nurkiewicz.com/2015/09/displaying-progress-of-spring.html"&gt;blog on monitoring the startup progress of a Spring Boot application&lt;/a&gt;. Of course Spring Boot applications typically take less than three seconds from &lt;code&gt;java -jar ..&lt;/code&gt; to handling requests, as he points out, but it can be helpful to get visibility into this progress!&lt;/li&gt;
+  &lt;li&gt;This video on &lt;a href="https://www.youtube.com/watch?v=pgQ9Bs-6l2k"&gt;Spring Boot web looked pretty interesting&lt;/a&gt;!&lt;/li&gt;
+&lt;/ul&gt;</content>
+  </entry>
+  <entry>
+    <title>What's New In Spring Data Release Gosling?</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/04/what-s-new-in-spring-data-release-gosling" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Christoph Strobl</name>
+    </author>
+    <id>tag:spring.io,2015-09-02:2227</id>
+    <updated>2015-09-04T08:01:00Z</updated>
+    <content type="html">&lt;p&gt;Over 300 issues fixed across 12 projects makes it pretty hard to keep track on what has happened since the last release. So here&amp;rsquo;s a more detailed excerpt of some of the new features we&amp;rsquo;ve been cooking during the last iteration.&lt;/p&gt;&lt;h2&gt;&lt;a href="#ad-hoc-jpa-fetch-graphs" class="anchor" name="ad-hoc-jpa-fetch-graphs"&gt;&lt;/a&gt;Ad-hoc JPA fetch graphs.&lt;/h2&gt;&lt;p&gt;Since the Dijkstra release train we have been able to refer to the named entity graph declared on the entity through the &lt;code&gt;@EntityGraph&lt;/code&gt; annotation in JPA-backed repositories. In the example below this forces firstname and lastname to be loaded eagerly, while all others remain lazily loaded.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@Entity&#xD;
+@NamedEntityGraphs(&#xD;
+  @NamedEntityGraph(name = &amp;quot;with-tags&amp;quot;,&#xD;
+    attributeNodes = { @NamedAttributeNode(&amp;quot;tags&amp;quot;) }))&#xD;
+class Product {&#xD;
+&#xD;
+  @ManyToMany&#xD;
+  Set&amp;lt;Tag&amp;gt; tags;&#xD;
+&#xD;
+  // other properties omitted&#xD;
+}&#xD;
+&#xD;
+interface ProductRepository extends Repository&amp;lt;Customer, Long&amp;gt; {&#xD;
+&#xD;
+  @EntityGraph(&amp;quot;with-tags&amp;quot;)&#xD;
+  Product findOneById(Long id);&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The Gosling release now takes our JPA 2.1 story one step forward, extending it to ad-hoc fetch graph definitions. By explicitly specifying properties via &lt;code&gt;@EntityGraph(attributePaths = ＃)&lt;/code&gt; on the query method you don&amp;rsquo;t need to have the &lt;code&gt;NamedEntityGraph&lt;/code&gt; annotation on your entity.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@Entity&#xD;
+class Product {&#xD;
+&#xD;
+  @ManyToMany&#xD;
+  Set&amp;lt;Tag&amp;gt; tags;&#xD;
+&#xD;
+  // other properties omitted&#xD;
+}&#xD;
+&#xD;
+interface ProductRepository extends Repository&amp;lt;Customer, Long&amp;gt; {&#xD;
+&#xD;
+  @EntityGraph(attributePaths = {&amp;quot;tags&amp;quot;})&#xD;
+  Product findOneById(Long id);&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h2&gt;&lt;a href="#querydsl-web-support" class="anchor" name="querydsl-web-support"&gt;&lt;/a&gt;Querydsl web support&lt;/h2&gt;&lt;p&gt;The Spring Data web support already lets you declare parameters of type &lt;code&gt;Pageable&lt;/code&gt; in your controller handler methods. The newly introduced Querydsl integration extends that to allow you to receive a ready to use &lt;code&gt;Predicate&lt;/code&gt; derived directly from the HTTP request&amp;rsquo;s query string. The feature is automatically enabled when &lt;code&gt;@EnableSpringDataWebSupport&lt;/code&gt; is configured and Querydsl is found on the classpath.&lt;/p&gt;&lt;p&gt;If &lt;code&gt;Predicate&lt;/code&gt; is used without further configuration we&amp;rsquo;ll try to resolve the root type for &lt;code&gt;Predicate&lt;/code&gt; resolution from the method&amp;rsquo;s return type, although in most cases it might be better to explicitly declare the desired type reference via &lt;code&gt;@QuerydslPredicate(root = ＃)&lt;/code&gt;. Having that in place, query string attributes are bound to matching properties of the type which creates e.g.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;QUser.user.firstname.eq(&amp;quot;Dave&amp;quot;).and(QUser.user.lastname.eq(&amp;quot;Matthews&amp;quot;)) 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;from &lt;code&gt;?firstname=Dave&amp;amp;lastname=Matthews&lt;/code&gt; using the default property type dependent binding.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@SpringBootApplication&#xD;
+public class Application {&#xD;
+&#xD;
+  public static void main(String[] args) {&#xD;
+    SpringApplication.run(Application.class, args);&#xD;
+  }&#xD;
+&#xD;
+  @Controller&#xD;
+  @RequiredArgsConstructor(onConstructor = @__(@Autowired))&#xD;
+  static class UserController {&#xD;
+&#xD;
+    private final UserRepository repository;&#xD;
+&#xD;
+    @RequestMapping(value = &amp;quot;/&amp;quot;, method = RequestMethod.GET)&#xD;
+    String index(Model model,&#xD;
+                 @QuerydslPredicate(root = User.class) Predicate predicate,&#xD;
+                 Pageable pageable) {&#xD;
+&#xD;
+      model.addAttribute(&amp;quot;users&amp;quot;, repository.findAll(predicate, pageable));&#xD;
+      return &amp;quot;index&amp;quot;;&#xD;
+    }&#xD;
+  }&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now it does not always make sense to use the default (equals) binding, but rather a dedicated binding per property or a type specific one. To achieve this just override the defaults by providing a &lt;code&gt;QuerydslBinderCustomizer&lt;/code&gt; that can either be registered via &lt;code&gt;@QuerydslPredicate(bindings = ＃)&lt;/code&gt; or is simply implemented by to the repository.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;interface UserRepository extends CrudRepository&amp;lt;User, String&amp;gt;,&#xD;
+    QueryDslPredicateExecutor&amp;lt;User&amp;gt;,&#xD;
+    QuerydslBinderCustomizer&amp;lt;QUser&amp;gt; {&#xD;
+&#xD;
+  // Query methods go here&#xD;
+&#xD;
+  @Override&#xD;
+  default public void customize(QuerydslBindings bindings, QUser user) {&#xD;
+&#xD;
+    bindings.bind(user.nationality).first(&#xD;
+      (path, value) -&amp;gt; path.equalsIgnoreCase(value)); // 1&#xD;
+    bindings.bind(String.class).first(&#xD;
+      (StringPath path, String value) -&amp;gt; path.containsIgnoreCase(value)); // 2&#xD;
+    bindings.excluding(user.password);&#xD;
+  }&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As you can see we leverage Java 8 lambdas along side Querydsl&amp;rsquo;s type-safe property references to define the binding for a dedicated property (1) or for all properties of a given type (2). Using &lt;code&gt;QuerydslBindings.excluding&lt;/code&gt; allows you remove paths from being queryable.&lt;/p&gt;&lt;p&gt;Find a complete working example in the &lt;a href="https://github.com/spring-projects/spring-data-examples/tree/master/web/querydsl"&gt;Spring Data examples repository&lt;/a&gt; and check out the &lt;a href="http://docs.spring.io/spring-data/jpa/docs/1.9.0.RELEASE/reference/html/#core.web.type-safe"&gt;reference documentation&lt;/a&gt; for details.&lt;/p&gt;&lt;h2&gt;&lt;a href="#spring-data-rest" class="anchor" name="spring-data-rest"&gt;&lt;/a&gt;Spring Data REST&lt;/h2&gt;&lt;h3&gt;&lt;a href="#querydsl-support" class="anchor" name="querydsl-support"&gt;&lt;/a&gt;Querydsl support&lt;/h3&gt;&lt;p&gt;The Querydsl support introduced in Spring Data Commons (see &lt;a href="#querydsl-web-support"&gt;above&lt;/a&gt;) has been integrated into Spring Data REST. That means that you can filter your collection resources by appending simple property query parameters to the request URI.&lt;/p&gt;&lt;p&gt;In the Spring Data REST example exposing Starbucks store locations, note how StoreRepository now implements both &lt;code&gt;QueryDslPredicateExecutor&lt;/code&gt; as well as &lt;code&gt;QuerydslBinderCustomizer&amp;lt;QStore&amp;gt;&lt;/code&gt; just as described above.&lt;/p&gt;&lt;p&gt;The collection resource for stores exposed by Spring Data REST will let you then issue requests like these:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint bash"&gt;$ http :8080/api/stores?address.city=York&#xD;
+&#xD;
+{&#xD;
+    &amp;quot;_embedded&amp;quot;: {&#xD;
+        &amp;quot;stores&amp;quot;: [&#xD;
+            {&#xD;
+                &amp;quot;_links&amp;quot;: {&#xD;
+                    ＃&#xD;
+                }, &#xD;
+                &amp;quot;address&amp;quot;: {&#xD;
+                    &amp;quot;city&amp;quot;: &amp;quot;New York&amp;quot;, &#xD;
+                    &amp;quot;location&amp;quot;: { &amp;quot;x&amp;quot;: -73.938421, &amp;quot;y&amp;quot;: 40.851 }, &#xD;
+                    &amp;quot;street&amp;quot;: &amp;quot;803 W 181st St&amp;quot;, &#xD;
+                    &amp;quot;zip&amp;quot;: &amp;quot;10033-4516&amp;quot;&#xD;
+                }, &#xD;
+                &amp;quot;name&amp;quot;: &amp;quot;Washington Hgts/181st St&amp;quot;&#xD;
+            }, &#xD;
+            {&#xD;
+                &amp;quot;_links&amp;quot;: {&#xD;
+                    ＃&#xD;
+                }, &#xD;
+                &amp;quot;address&amp;quot;: {&#xD;
+                    &amp;quot;city&amp;quot;: &amp;quot;New York&amp;quot;, &#xD;
+                    &amp;quot;location&amp;quot;: { &amp;quot;x&amp;quot;: -73.939822, &amp;quot;y&amp;quot;: 40.84135 }, &#xD;
+                    &amp;quot;street&amp;quot;: &amp;quot;4001 Broadway&amp;quot;, &#xD;
+                    &amp;quot;zip&amp;quot;: &amp;quot;10032-1508&amp;quot;&#xD;
+                }, &#xD;
+                &amp;quot;name&amp;quot;: &amp;quot;168th &amp;amp; Broadway&amp;quot;&#xD;
+            }, &#xD;
+            ＃&#xD;
+        ]&#xD;
+    }, &#xD;
+    &amp;quot;_links&amp;quot;: {&#xD;
+        ＃&#xD;
+    }, &#xD;
+    &amp;quot;page&amp;quot;: {&#xD;
+        &amp;quot;number&amp;quot;: 0, &#xD;
+        &amp;quot;size&amp;quot;: 20, &#xD;
+        &amp;quot;totalElements&amp;quot;: 209, &#xD;
+        &amp;quot;totalPages&amp;quot;: 11&#xD;
+    }&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Note how only returns stores whose city ends with &amp;ldquo;York&amp;rdquo;, just as defined in the implementation of &lt;code&gt;QuerydslBinderCustomizer&lt;/code&gt; in &lt;code&gt;StoresRepository&lt;/code&gt;.&lt;/p&gt;&lt;p&gt;We&amp;rsquo;re currently looking into options to advertise this querying mechanism more obviously, e.g. using template variables and even provide advanced mapping facilities to customize the request parameter names to be used.&lt;/p&gt;&lt;h3&gt;&lt;a href="#custom-hal-browser" class="anchor" name="custom-hal-browser"&gt;&lt;/a&gt;Custom HAL Browser&lt;/h3&gt;&lt;p&gt;The Gosling release of Spring Data REST ships with an additional module that wraps Mike Kelly&amp;rsquo;s &lt;a href="https://github.com/mikekelly/hal-browser"&gt;HAL browser&lt;/a&gt; and tweaks it with a few customizations to leverage the API metadata we expose. To use the browser with your application simply add the &lt;code&gt;spring-data-rest-hal-browser&lt;/code&gt; module to your project and your API root will serve the browser for requests accepting &lt;code&gt;text/html&lt;/code&gt;. The standard HAL responses are of course still served by default or if you use a JSON based &lt;code&gt;Accept&lt;/code&gt; header.&lt;/p&gt;&lt;p&gt;&lt;a href="https://raw.githubusercontent.com/spring-projects/spring-data-docs/master/whats-new-in-spring-data-gosling/hal-browser.png?token=AAH2Qd7efEBIcN92b1sItqsWewiO8-SOks5V8n76wA%3D%3D"&gt;&lt;br/&gt;&lt;img src="https://raw.githubusercontent.com/spring-projects/spring-data-docs/master/whats-new-in-spring-data-gosling/hal-browser.png?token=AAH2Qd7efEBIcN92b1sItqsWewiO8-SOks5V8n76wA%3D%3D" alt="HAL browser" title="HAL browser" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style="text-align: center; font-size: 0.9em"&gt;Fig 1. - HAL Browser (click to enlarge)&lt;/p&gt;&lt;p&gt;While the Spring Data REST module makes it easy to add the browser to your app, it also tweaks the browser slightly. When you click the button to trigger a non-&lt;code&gt;GET&lt;/code&gt; request, the browser would normally open a modal dialogue that expects some raw JSON input. While that&amp;rsquo;s of course great if you know what you&amp;rsquo;re doing, it&amp;rsquo;s a bit error prone and not really convenient, as you have to know about the data structure the server expects.&lt;/p&gt;&lt;p&gt;Spring Data REST exposes JSON schema documents for the types exposed by the system leveraging the &lt;code&gt;profile&lt;/code&gt; link relation which makes the schema generically discoverable without tying the discovery logic to Spring Data REST itself. The browser instance we ship will lookup that schema metadata and 每 if it can find some 每 hand this to JSON Editor to replace the default dialogue with a form completely derived from the JSON Schema.&lt;/p&gt;&lt;p&gt;&lt;a href="https://raw.githubusercontent.com/spring-projects/spring-data-docs/master/whats-new-in-spring-data-gosling/json-editor-post-form.png?token=AAH2QeqM7VMT-M7dDkod9Tmp1EtKrAgVks5V8n_lwA%3D%3D"&gt;&lt;br/&gt;&lt;img src="https://raw.githubusercontent.com/spring-projects/spring-data-docs/master/whats-new-in-spring-data-gosling/json-editor-post-form.png?token=AAH2QeqM7VMT-M7dDkod9Tmp1EtKrAgVks5V8n_lwA%3D%3D" alt="JSON Editor based POST form" title="JSON Editor based POST form" /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p style="text-align: center; font-size: 0.9em"&gt;Fig 2. - JSON Editor based POST for (click to enlarge)&lt;/p&gt;&lt;p&gt;See how the form allows adding line items as the schema exposes it to be an array. The price and order date fields are marked as read-only, the location field allows choosing values from an enumeration with internationalized values.&lt;/p&gt;&lt;p&gt;The sample project can be found &lt;a href="https://github.com/olivergierke/spring-restbucks"&gt;on GitHub&lt;/a&gt;.&lt;/p&gt;&lt;h3&gt;&lt;a href="#internationalizing-links-and-enums" class="anchor" name="internationalizing-links-and-enums"&gt;&lt;/a&gt;Internationalizing links and enums&lt;/h3&gt;&lt;p&gt;As you could see in the screenshots above the &lt;code&gt;restbucks:orders&lt;/code&gt; link was accompanied by a human readable description. The descriptions are pulled from an optional resource bundle &lt;code&gt;rest-messages&lt;/code&gt; using &lt;code&gt;_links.$rel.title&lt;/code&gt; keys to define a readable value. The sample uses a &lt;code&gt;rest-messages.properties&lt;/code&gt; as a fallback resource bundle but also contains a &lt;code&gt;rest-messages_de.properties&lt;/code&gt; to return German labels for clients that send an &lt;code&gt;Accept-Language&lt;/code&gt; header set to &lt;code&gt;de&lt;/code&gt;.&lt;/p&gt;&lt;p&gt;The same resource bundle can be used to internationalize enum values so that they can be used on the client in a human readable manner. To not break existing applications, this has to be explicitly activated via &lt;a href="http://docs.spring.io/spring-data/rest/docs/2.4.0.RELEASE/api/org/springframework/data/rest/core/config/RepositoryRestConfiguration.html#setEnableEnumTranslation-boolean-"&gt;&lt;code&gt;RepositoryRestConfiguration.setEnableEnumTranslation(＃)&lt;/code&gt;&lt;/a&gt;. Details about the translation can be configured on &lt;a href="http://docs.spring.io/spring-data/rest/docs/2.4.0.RELEASE/api/org/springframework/data/rest/core/config/EnumTranslationConfiguration.html"&gt;&lt;code&gt;EnumTranslationConfiguration&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;&lt;h2&gt;&lt;a href="#spring-data-gemfire-amp-apache-geode" class="anchor" name="spring-data-gemfire-amp-apache-geode"&gt;&lt;/a&gt;Spring Data GemFire &amp;amp; Apache Geode&lt;/h2&gt;&lt;p&gt;Support for Pivotal GemFire 8.1 and Apache Geode are the most notable additions to Spring Data GemFire 1.7. Pivotal GemFire was submitted to the &lt;a href="https://wiki.apache.org/incubator/GeodeProposal"&gt;Apache Incubator&lt;/a&gt; earlier this year and the Spring Data team responded quickly to include &lt;a href="https://spring.io/blog/2015/06/12/spring-data-gemfire-supports-apache-geode"&gt;support&lt;/a&gt; in Spring Data GemFire.&lt;/p&gt;&lt;p&gt;In addition, several other features were added to simplify the development of GemFire and Apache Geode applications using Spring. For instance, developers can now define application domain object specific expiration policies using annotations:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@TimeToLiveExpiration(&#xD;
+  timeout = &amp;quot;@expirationSettings[&amp;#39;spel.defined.timeout&amp;#39;]&amp;quot; action=&amp;quot;DESTROY&amp;quot;)&#xD;
+@IdleTimeoutExpiration(&#xD;
+  timeout = &amp;quot;1800&amp;quot; action=&amp;quot;${property.placeholder.defined.action}&amp;quot;)&#xD;
+class ApplicationDomainObject { ＃ }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The expiration-based annotations support both &lt;a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#expressions"&gt;SpEL&lt;/a&gt; and Spring &lt;a href="http://docs.spring.io/spring/docs/1.7.0.RELEASE/spring-framework-reference/htmlsingle/#beans-factory-placeholderconfigurer"&gt;Property Placeholder&lt;/a&gt; values. To enable annotation-based expiration policies, you only need configure Spring Data GemFire&amp;rsquo;s &lt;a href="http://gemfire.docs.pivotal.io/latest/javadocs/japi/com/gemstone/gemfire/cache/CustomExpiry.html"&gt;CustomExpiry&lt;/a&gt; implementation, &lt;a href="http://docs.spring.io/spring-data-gemfire/docs/1.7.0.RELEASE/api/org/springframework/data/gemfire/support/AnnotationBasedExpiration.html"&gt;AnnotationBasedExpiration&lt;/a&gt;, on your GemFire regions for either, or both, TTL and TTI:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint xml"&gt;&amp;lt;gfe:partitioned-region id=&amp;quot;Example&amp;quot; persistent=&amp;quot;false&amp;quot; ＃&amp;gt;&#xD;
+  &amp;lt;gfe:custom-entry-ttl&amp;gt;&#xD;
+    &amp;lt;bean class=&amp;quot;＃.gemfire.support.AnnotationBasedExpiration&amp;quot; factory-method=&amp;quot;forTimeToLive&amp;quot;/&amp;gt;&#xD;
+  &amp;lt;/gfe:custom-entry-ttl&amp;gt;&#xD;
+  &amp;lt;gfe:custom-entry-tti ref=&amp;quot;ttiExpiration&amp;quot;/&amp;gt;&#xD;
+&amp;lt;/gfe:partitioned-region&amp;gt;&#xD;
+&#xD;
+&amp;lt;bean id=&amp;quot;ttiExpiration&amp;quot; class=&amp;quot;＃.gemfire.support.AnnotationBasedExpiration&amp;quot; factory-method=&amp;quot;forIdleTimeout&amp;quot;&amp;gt;&#xD;
+  &amp;lt;constructor-arg ref=&amp;quot;defaultExpirationAttributes&amp;quot;/&amp;gt;&#xD;
+&amp;lt;/bean&amp;gt;&#xD;
+&#xD;
+&amp;lt;bean id=&amp;quot;defaultExpirationAttributes&amp;quot; class=&amp;quot;＃.ExpirationAttributes&amp;quot;&amp;gt;&#xD;
+  &amp;lt;constructor-arg value=&amp;quot;600&amp;quot;/&amp;gt;&#xD;
+  &amp;lt;constructor-arg value=&amp;quot;#{T(＃.ExpirationAction).DESTROY}&amp;quot;/&amp;gt;&#xD;
+&amp;lt;/bean&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;See the reference guide to &lt;a href="http://docs.spring.io/spring-data-gemfire/docs/1.7.0.RELEASE/reference/html/#bootstrap:region:expiration"&gt;learn more&lt;/a&gt;. Next, support was added for repository query method OQL extensions via annotations:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;interface CustomerRepository implements CrudRepository&amp;lt;Cutomer, Long&amp;gt; {&#xD;
+&#xD;
+  @Trace&#xD;
+  @Limit(25)&#xD;
+  @Import(&amp;quot;org.exmple.Customer&amp;quot;)&#xD;
+  @Hint(&amp;quot;CustomerLastNameIdx&amp;quot;)&#xD;
+  List&amp;lt;Customer&amp;gt; findByLastNameOrderByLastNameAsc(String lastName);&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;@Trace&lt;/code&gt; enables individual OQL statement debugging. &lt;code&gt;@Limit&lt;/code&gt; restrains the number of results in the query result set and &lt;code&gt;@Import&lt;/code&gt; enables applications to distinguish between similarly named object types. For example, your application might define both &lt;code&gt;org.example.app.core.Customer&lt;/code&gt; and &lt;code&gt;org.example.app.vendor.xyz.Customer&lt;/code&gt; types. See GemFire&amp;rsquo;s &lt;a href="http://gemfire81.docs.pivotal.io/latest/userguide/index.html#developing/query_select/the_import_statement.html#concept_2E9F15B2FE9041238B54736103396BF7"&gt;doc&lt;/a&gt; for more details. &lt;code&gt;@Hint&lt;/code&gt; enables the use of OQL hints to identify indexes applicable to the query. Learn more about OQL extensions &lt;a href="http://docs.spring.io/spring-data-gemfire/docs/1.7.0.RELEASE/reference/html/#gemfire-repositories.oql-extension"&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Finally, Spring Data GemFire offers support for GemFire &lt;a href="http://gemfire81.docs.pivotal.io/latest/userguide/index.html#managing/cache_snapshots/chapter_overview.html"&gt;Cache and Region Snapshots&lt;/a&gt; using the Spring Data GemFire XML Data Namespace:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint xml"&gt;&amp;lt;gfe:partitioned-region id=&amp;quot;Example&amp;quot; persistent=&amp;quot;false&amp;quot; ＃ /&amp;gt;&#xD;
+&#xD;
+&amp;lt;gfe-data:snapshot-service id=&amp;quot;exampleRegionSnapshotService&amp;quot; region-ref=&amp;quot;Example&amp;quot;&amp;gt;&#xD;
+  &amp;lt;gfe-data:snapshot-import location=&amp;quot;/path/to/import/example.snapshot&amp;quot;/&amp;gt;&#xD;
+  &amp;lt;gfe-data:snapshot-export locator=&amp;quot;/path/to/export/example.snapshot&amp;quot;/&amp;gt;&#xD;
+&amp;lt;/gfe-data:snapshot-service&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can learn more about how Spring Data GemFire supports ZIP files on import, the use of Spring &lt;code&gt;ApplicationEvents&lt;/code&gt; to trigger import and export snapshots as well as how to appropriately filter data imported and exported &lt;a href="http://docs.spring.io/spring-data-gemfire/docs/1.7.0.RELEASE/reference/html/#bootstrap:snapshot"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;!--&#xD;
+That is all on the GemFire side for now.  See the [changelog](https://github.com/spring-projects/spring-data-gemfire/blob/master/docs/src/info/changelog.txt) for more specifics. As always, contributions and feedback are welcomed on GitHub ([PR](https://github.com/spring-projects/spring-data-gemfire/pulls)), in [JIRA](https://jira.spring.io/browse/SGF) and on the [forums](http://stackoverflow.com/questions/tagged/spring-data-gemfire).&#xD;
+--&gt;&lt;h2&gt;&lt;a href="#spring-data-keyvalue-amp-map-based-repositories" class="anchor" name="spring-data-keyvalue-amp-map-based-repositories"&gt;&lt;/a&gt;Spring Data KeyValue &amp;amp; Map based repositories&lt;/h2&gt;&lt;p&gt;It&amp;rsquo;s been quite a long time since we&amp;rsquo;ve been asked to provide a very simple &lt;code&gt;Map&lt;/code&gt; based implementation for Spring Data repositories for various 每 mostly testing 每 purposes. The requests eventually concluded in revitalizing the &lt;a href="http://docs.spring.io/spring-data/keyvalue/docs/1.0.0.RELEASE/reference/html/"&gt;KeyValue module&lt;/a&gt; in a slightly different way than it existed in before.&lt;/p&gt;&lt;p&gt;Spring Data KeyValue now consists of a basic &lt;code&gt;Map&lt;/code&gt; based repository implementation that will use Spring Expression Language (SpEL) for querying values by default, provide sorting, pagination and Querydsl integration based on its collection module. It also exposes dedicated APIs to allow key-value stores to leverage store specific optimizations in storage, retrieval and most importantly query execution if needed.&lt;/p&gt;&lt;p&gt;The default query mechanism used by Spring Data KeyValue repositories is based on SpEL and allows you to define and run complex queries. This approach shows off its real power when run in &lt;a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html#expressions-spel-compilation"&gt;&lt;code&gt;COMPILED&lt;/code&gt; mode&lt;/a&gt; as it effectively compiles the filter expressions to be executed on the values. Alternatively you also can use Querydsl expressions for typesafe querying.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@Configuration&#xD;
+@EnableMapRepositories(&amp;quot;com.acme.repositories&amp;quot;)&#xD;
+class AppConfig {}&#xD;
+&#xD;
+@KeySpace(&amp;quot;user&amp;quot;)&#xD;
+class User {&#xD;
+&#xD;
+  String @Id id;&#xD;
+  String firstname;&#xD;
+}&#xD;
+&#xD;
+interface UserRepository extends CrudRepository&amp;lt;User, String&amp;gt; {&#xD;
+  List&amp;lt;String&amp;gt; findByFirstnameStartingWith(String firstname);&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We currently have extensions of that API cooking for Ehcache, &lt;a href="https://github.com/hazelcast-incubator/spring-data-integrations-commons/tree/develop"&gt;Hazelcast&lt;/a&gt; and &lt;a href="https://github.com/spring-projects/spring-data-aerospike"&gt;Aerospike&lt;/a&gt; and are looking forward to evaluate options to also integrate Redis and maybe port some of the Gemfire APIs to use that.&lt;/p&gt;&lt;h2&gt;&lt;a href="#what-rsquo-s-next" class="anchor" name="what-rsquo-s-next"&gt;&lt;/a&gt;What&amp;rsquo;s next?&lt;/h2&gt;&lt;p&gt;Up next is &lt;a href="http://www.springone2gx.com/"&gt;SpringOne2GX in Washington, DC&lt;/a&gt;- we&amp;rsquo;d be happy to see you there - the best place to get in touch with the team, learn about new features and simply have a good time. Meanwhile we are already preparing the next service release for the Fowler Release Train and started working on new features for the Hopper release train (Sshh&amp;hellip; We&amp;rsquo;ll give a sneak peak on Hopper in the &lt;a href="https://2015.event.springone2gx.com/schedule/sessions/what_s_new_in_2015_for_spring_data.html"&gt;※What＊s new in Spring Data?§ talk&lt;/a&gt; at SpringOne).&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Boot 1.3.0.M5 Available Now</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/04/spring-boot-1-3-0-m5-available-now" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Phil Webb</name>
+    </author>
+    <id>tag:spring.io,2015-09-04:2228</id>
+    <updated>2015-09-04T02:02:00Z</updated>
+    <content type="html">&lt;p&gt;Spring Boot v1.3.0.M5 is available now from the &lt;a href="http://repo.springsource.org/milestone/"&gt;Spring milestone repository&lt;/a&gt;. Just in time for SpringOne 2GX, this release closes &lt;a href="https://github.com/spring-projects/spring-boot/issues?q=milestone%3A1.3.0.M5+is%3Aissue+is%3Aclosed"&gt;almost 50 issues&lt;/a&gt; and merges &lt;a href="https://github.com/spring-projects/spring-boot/pulls?utf8=%E2%9C%93&amp;q=is%3Apr+is%3Aclosed+milestone%3A1.3.0.M3"&gt;15 pull-requests&lt;/a&gt;! Thanks &lt;em&gt;again&lt;/em&gt; to everyone that has contributed.&lt;/p&gt;&lt;p&gt;Highlights of the new release include:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Lots of bug fixes and stabilization as we head towards RC1&lt;/li&gt;
+  &lt;li&gt;Support for javax &lt;code&gt;@WebServlet&lt;/code&gt;, &lt;code&gt;@WebFilter&lt;/code&gt; and &lt;code&gt;@WebListener&lt;/code&gt; annotations&lt;/li&gt;
+  &lt;li&gt;Auto-configuration for Hazelcast&lt;/li&gt;
+  &lt;li&gt;Improved &amp;ldquo;root first&amp;rdquo; exception logging&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;For a complete list of changes, and upgrade instructions, see the &lt;a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.3-Release-Notes"&gt;Spring Boot 1.3 Release Notes&lt;/a&gt; on the wiki and the updated &lt;a href="http://docs.spring.io/spring-boot/docs/1.3.0.M5/reference/htmlsingle/"&gt;reference documentation&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;a href="http://projects.spring.io/spring-boot/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-boot"&gt;GitHub&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-boot/issues"&gt;Issues&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle"&gt;Documentation&lt;/a&gt;&lt;/p&gt;&lt;h1&gt;&lt;a href="#springone-2gx-2015-is-around-the-corner" class="anchor" name="springone-2gx-2015-is-around-the-corner"&gt;&lt;/a&gt;SpringOne 2GX 2015 is around the corner!&lt;/h1&gt;&lt;p&gt;Book your place at &lt;a href="http://www.springone2gx.com"&gt;SpringOne2GX in Washington, DC&lt;/a&gt; soon. It&amp;rsquo;s simply the best opportunity to find out first hand all that&amp;rsquo;s going on and to provide direct feedback. Join Brian and St谷phane for an &lt;a href="https://2015.event.springone2gx.com/schedule/sessions/intro_to_spring_boot_for_the_web_tier.html"&gt;intro to Spring Boot for the web tier&lt;/a&gt;.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring LDAP 2.0.4 Released</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/02/spring-ldap-2-0-4-released" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Rob Winch</name>
+    </author>
+    <id>tag:spring.io,2015-09-02:2226</id>
+    <updated>2015-09-02T16:20:52Z</updated>
+    <content type="html">&lt;p&gt;I＊m pleased to announce the release of Spring LDAP 2.0.4.RELEASE. The highlights of this release include:&lt;/p&gt;&lt;p&gt;&lt;a href="https://jira.spring.io/browse/LDAP-333"&gt;LDAP-333&lt;/a&gt; - Support for Spring Data Commons 1.11 (Spring Data Gosling)&lt;br/&gt;&lt;a href="https://jira.spring.io/browse/LDAP-334"&gt;LDAP-334 &lt;/a&gt; - Compatibility with Spring IO Platform 2.0&lt;br/&gt;&lt;a href="https://jira.spring.io/browse/LDAP-335"&gt;LDAP-335&lt;/a&gt; - Fix NoClassDefFoundError: RepositoryConfigurationExtension&lt;/p&gt;&lt;p&gt;For additional information on the release, refer to the &lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10071&amp;version=15001"&gt;changelog&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;a href="http://projects.spring.io/spring-ldap/"&gt;Project Site&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-ldap/docs/2.0.4.RELEASE/reference/"&gt;Reference&lt;/a&gt; | &lt;a href="https://jira.spring.io/browse/LDAP"&gt;Issues&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Web Flow 2.4.2 released</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/01/spring-web-flow-2-4-2-released" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Rossen Stoyanchev</name>
+    </author>
+    <id>tag:spring.io,2015-09-01:2225</id>
+    <updated>2015-09-01T14:18:00Z</updated>
+    <content type="html">&lt;p&gt;A minor maintenance release of Spring Web Flow is now available for use. The release addresses compatibility issues against Spring Security 4.0 and the Mojarra and Apache MyFaces JSF implementations. For a list of the addressed issues see the &lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10050&amp;version=14796"&gt;release notes&lt;/a&gt; JIRA report.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Statemachine 1.0.0.RC1 Released</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/01/spring-statemachine-1-0-0-rc1-released" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Janne Valkealahti</name>
+    </author>
+    <id>tag:spring.io,2015-08-31:2221</id>
+    <updated>2015-09-01T12:31:39Z</updated>
+    <content type="html">&lt;p&gt;We＊re pleased to announce a first release candicate of &lt;a href="http://projects.spring.io/spring-statemachine/"&gt;Spring Statemachine&lt;/a&gt; 1.0.0.RC1.&lt;/p&gt;&lt;p&gt;Focus of this release is to get core framework more stable and finally add jepsen tests for a distributed state machine. We also added a first version of a testing support. Resolved github tickets can be found from &lt;a href="https://github.com/spring-projects/spring-statemachine/issues?q=milestone%3A1.0.0.RC1+is%3Aclosed"&gt;RC1 issues&lt;/a&gt;. We&amp;rsquo;re relatively close to issue a release version, meaning if nothing major pop-up, next release will be a &lt;code&gt;1.0.0.RELEASE&lt;/code&gt;. If something urgent turns up we will do &lt;code&gt;1.0.0.RC2&lt;/code&gt; prior to a release.&lt;/p&gt;&lt;p&gt;Now that we&amp;rsquo;re here, let&amp;rsquo;s crack it and see what new features we have in this release.&lt;/p&gt;&lt;p&gt;Beyond usual bug fixes here is a list of main new features:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Testing support&lt;/li&gt;
+  &lt;li&gt;Jepsen tests for a Distributed State Machine&lt;/li&gt;
+&lt;/ul&gt;&lt;h1&gt;&lt;a href="#testing-support" class="anchor" name="testing-support"&gt;&lt;/a&gt;Testing support&lt;/h1&gt;&lt;p&gt;Testing a state machine is not easiest task to accomplish and thus we&amp;rsquo;re introcuding new &lt;code&gt;spring-statemachine-test&lt;/code&gt; module which will ease a process of making unit tests for a Spring Statemachine. Due to dependencies it&amp;rsquo;s not used in a core system but what comes for a &lt;code&gt;recipes&lt;/code&gt; and a &lt;code&gt;Zookeeper&lt;/code&gt; integration it is already used to test those modules.&lt;/p&gt;&lt;p&gt;Testing a simple state machine in a tests will look simple as:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint"&gt;StateMachine&amp;lt;String, String&amp;gt; machine = buildMachine();&#xD;
+StateMachineTestPlan&amp;lt;String, String&amp;gt; plan =&#xD;
+  StateMachineTestPlanBuilder.&amp;lt;String, String&amp;gt;builder()&#xD;
+    .defaultAwaitTime(2)&#xD;
+    .stateMachine(machine)&#xD;
+    .step()&#xD;
+      .expectStates(&amp;quot;SI&amp;quot;)&#xD;
+      .and()&#xD;
+    .step()&#xD;
+      .sendEvent(&amp;quot;E1&amp;quot;)&#xD;
+      .expectStateChanged(1)&#xD;
+      .expectStates(&amp;quot;S1&amp;quot;)&#xD;
+      .and()&#xD;
+    .build();&#xD;
+plan.test();&#xD;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;if having a state machine defined as:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint"&gt;StateMachine&amp;lt;String, String&amp;gt; buildMachine()&#xD;
+    throws Exception {&#xD;
+  StateMachineBuilder.Builder&amp;lt;String, String&amp;gt; builder =&#xD;
+    StateMachineBuilder.builder();&#xD;
+&#xD;
+  builder.configureConfiguration()&#xD;
+    .withConfiguration()&#xD;
+      .taskExecutor(new SyncTaskExecutor())&#xD;
+      .autoStartup(true);&#xD;
+&#xD;
+  builder.configureStates()&#xD;
+    .withStates()&#xD;
+      .initial(&amp;quot;SI&amp;quot;)&#xD;
+      .state(&amp;quot;S1&amp;quot;);&#xD;
+&#xD;
+  builder.configureTransitions()&#xD;
+    .withExternal()&#xD;
+      .source(&amp;quot;SI&amp;quot;).target(&amp;quot;S1&amp;quot;)&#xD;
+      .event(&amp;quot;E1&amp;quot;);&#xD;
+&#xD;
+   return builder.build();&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h1&gt;&lt;a href="#jepsen-tests" class="anchor" name="jepsen-tests"&gt;&lt;/a&gt;Jepsen tests&lt;/h1&gt;&lt;p&gt;Our support for using distributed states with a Zookeeker turned out to be relatively difficult to test with a normal set of unit tests and thus we hit a wall with a test coverage. I&amp;rsquo;d like to use this moment to tell something about testing distributed systems with jepsen.&lt;/p&gt;&lt;p&gt;&lt;a href="https://github.com/aphyr/jepsen"&gt;Jepsen&lt;/a&gt; testing framework by Kyle Kingsbury (aka &lt;a href="https://twitter.com/aphyr"&gt;@aphyr&lt;/a&gt;) is a system what can be used to test distibuted systems and have a features like synchronizing events sent into a nodes and causing a brain splits on a network. Jepsen will be a core of our system to make sure that our distributed support will do what it it supposed to do. This is a first class system to test Spring Distributed Statemachine backed by a &lt;code&gt;Zookeeper&lt;/code&gt;.&lt;/p&gt;&lt;p&gt;There&amp;rsquo;s going to be a separate blog post for this but preliminary results can be found from our reference docs &lt;a href="http://docs.spring.io/spring-statemachine/docs/1.0.0.RC1/reference/htmlsingle/#appendices-zookeeper"&gt;Distributed State Machine Technical Paper&lt;/a&gt;. Stay stuned about that blog post!&lt;/p&gt;&lt;p&gt;In here we take a peek from our jepsen tests to show what happens when a cluster suffers a split which is causing a zookeeper ensemble to totally break and what happes when a network is break and healed.&lt;/p&gt;&lt;p&gt;&lt;img src="http://docs.spring.io/spring-statemachine/docs/1.0.0.RC1/reference/htmlsingle/images/sm-tech-partition-half-2.png" alt="Zookeeper Sample" /&gt;&lt;/p&gt;&lt;p&gt;In above graph we have a 5 node cluster sharing a same state machine configuration backed by a &lt;code&gt;Zookeeper&lt;/code&gt; ensemble where each node is connecting to its own local instance. First an event &lt;code&gt;C&lt;/code&gt; is sent into all machines(only one will handle a distributed state change) which will initiate distributed transition from state &lt;code&gt;S21&lt;/code&gt; into &lt;code&gt;S211&lt;/code&gt;. Network is then break and graph is showing how each machine eventually will end up into an error state. When network and &lt;code&gt;Zookeeper&lt;/code&gt; ensemble is later healed, all machines will re-join an ensemble and sync their states. Finally event &lt;code&gt;K&lt;/code&gt; is send, again to all machines, to show that all machines are working properly after network problems has been healed.&lt;/p&gt;&lt;p&gt;As mentioned in our documentation, if existing zookeer leader is kept in minority all instances are disconnected from ensemble, thus causing all state machines to enter into an error state. This situation is then resolved automatically later when network is healed and zookeeper emsemble fixes itself and state machines connected to it can reset their own states.&lt;/p&gt;&lt;h1&gt;&lt;a href="#springone-2gx-2015-is-around-the-corner" class="anchor" name="springone-2gx-2015-is-around-the-corner"&gt;&lt;/a&gt;SpringOne 2GX 2015 is around the corner!&lt;/h1&gt;&lt;p&gt;Book your place at &lt;a href="http://www.springone2gx.com"&gt;SpringOne2GX in Washington, DC soon&lt;/a&gt;. It&amp;rsquo;s simply the best opportunity to find out first hand all that&amp;rsquo;s going on and to provide direct feedback.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Framework 4.2.1 Available Now</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/01/spring-framework-4-2-1-available-now" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>St谷phane Nicoll</name>
+    </author>
+    <id>tag:spring.io,2015-09-01:2224</id>
+    <updated>2015-09-01T12:25:00Z</updated>
+    <content type="html">&lt;p&gt;It is my pleasure to announce that Spring Framework 4.2.1 is available from repo.spring.io and Maven Central. This first maintenance release in the 4.2 line contains &lt;a href="https://jira.spring.io/secure/ReleaseNote.jspa?projectId=10000&amp;version=15226"&gt;a wide range of fixes for regressions and other issues&lt;/a&gt; reported against 4.2 GA.&lt;/p&gt;&lt;p&gt;4.2.1 also contains minor enhancements: refinement of our Jackson support (see &lt;a href="https://spring.io/blog/2014/12/02/latest-jackson-integration-improvements-in-spring"&gt;S谷bastien&amp;rsquo;s updated blog post&lt;/a&gt;), meta-annotation processing improvements (&lt;code&gt;@AliasFor&lt;/code&gt;), third-party dependencies alignment (including Hibernate 5.0 GA).&lt;/p&gt;&lt;p&gt;We strongly recommend an immediate upgrade to 4.2.1 for all 4.x users. The Spring Framework team is now working towards Spring Framework 4.2.2 in early October, which will be the foundation for the upcoming Spring Boot 1.3 GA release. We will also release 4.1.8 at the same time: if there is anything you＊d like to get fixed in the 4.1.x branch still, now is the time to raise it!&lt;/p&gt;&lt;p&gt;&lt;a href="http://projects.spring.io/spring-framework/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-framework"&gt;GitHub&lt;/a&gt; | &lt;a href="https://jira.spring.io/browse/SPR"&gt;Issues&lt;/a&gt; | &lt;a href="https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/htmlsingle/"&gt;Documentation&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Join Sam Brannen and Nicolas Fr?nkel to discover &lt;a href="https://2015.event.springone2gx.com/schedule/sessions/get_the_most_out_of_testing_with_spring_4_2.html"&gt;what&amp;rsquo;s new in Spring Framework 4.2&amp;rsquo;s testing support&lt;/a&gt; at SpringOne2GX in Washington in two weeks. It&amp;rsquo;s not too late to get a ticket if you want to learn about all of the latest and greatest first hand.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>This Week in Spring - September 1, 2015</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/01/this-week-in-spring-september-1-2015" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2015-09-01:2223</id>
+    <updated>2015-09-01T12:08:00Z</updated>
+    <content type="html">&lt;p&gt;Welcome to another installment of &lt;em&gt;This Week in Spring&lt;/em&gt;! The Spring team is hard at work on all the latest and greatest ahead of the SpringOne2GX event in Washington DC! Time is &lt;em&gt;really&lt;/em&gt; flying! I can&amp;rsquo;t &lt;em&gt;beleive&lt;/em&gt; what we&amp;rsquo;re staring down September already! This week I&amp;rsquo;m in Tokyo, Japan, participating in the Spring User Group&amp;rsquo;s &lt;em&gt;huge&lt;/em&gt; &lt;em&gt;Spring in Summer&lt;/em&gt; event where &lt;a href="https://speakerdeck.com/joshlong/the-macro-of-microservices"&gt;I gave a keynote&lt;/a&gt; and two talks, on Spring Boot and Spring Cloud. The one day event attracted some of the company&amp;rsquo;s largest websites and was a &lt;em&gt;lot&lt;/em&gt; of fun!&lt;/p&gt;&lt;p&gt;Anyway, without further ado, let&amp;rsquo;s get to it!&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href="https://spring.io/blog/2015/09/01/spring-data-release-train-gosling-goes-ga"&gt;Spring Data Gosling goes GA!&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring ninja Greg Turnquist just announced the first installment of &lt;a href="https://spring.io/blog/2015/09/01/react-js-and-spring-data-rest-part-1-basic-features"&gt;his tutorial on using Spring with React.js&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Erik, of the &lt;em&gt;Programming with Erik&lt;/em&gt; blog, has put together &lt;a href="http://www.programwitherik.com/trying-out-spring-boot-with-ember-and-a-site-update/"&gt;an interesting post on using Spring Boot with Ember.js&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;I dig this blog that answers the question, &lt;a href="https://www.openprogrammer.info/2015/08/25/why-jhipster-angularjs-spring-boot-liquibase-mongodb-elasticsearch/"&gt;&lt;em&gt;Why JHipster?&lt;/em&gt;&lt;/a&gt; (JHipster is a &lt;code&gt;yeoman&lt;/code&gt; code-generator for Angular.js frontends and Spring Boot backends)&lt;/li&gt;
+  &lt;li&gt;The Kotan code blog has a &lt;a href="http://www.kotancode.com/2015/08/26/securing-a-spring-boot-microservice/"&gt;nice post on securing Spring Boot webservices&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;This Russian-language post looks at &lt;a href="http://habrahabr.ru/post/265511/"&gt;how to use Java FX and Spring Boot&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;This blog looks at &lt;a href="http://samchu.logdown.com/posts/292630-use-springcloud-to-synchronize-all-nodes-configuration"&gt;the Spring Cloud configuration server&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Biju Kunjummen has a nice post on using &lt;a href="https://dzone.com/articles/spring-boot-static-web-resource-handling-w-yeoman"&gt;Spring Boot static web resource handling with Yeoman for single page applications&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Springfox - not associated with any project from Pivotal - &lt;a href="http://springfox.github.io/springfox/docs/snapshot/"&gt;is an evolution of the Spring MVC and Swagger integration&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Endy Muhardin has published a video &lt;a href="https://www.youtube.com/watch?v=Ptf1JdD-9jg"&gt;on using Spring Boot support for JPA&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Krishna Srinivasan has put together &lt;a href="http://www.javabeat.net/spring-boot-actuator/"&gt;a nice guide on using the Spring Boot Actuator framework&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Toolsuite Lead Martin Lippert&amp;rsquo;s entry into the Eclipse newsletter &lt;a href="http://www.eclipse.org/community/eclipse_newsletter/2015/august/article2.php"&gt;on the value of STS for Spring is a pretty good, succinct, read&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Our pal, Shin Tanimoto, has put together &lt;a href="http://www.slideshare.net/shintanimoto/spring-boot10"&gt;an &lt;em&gt;amazing&lt;/em&gt; Japanese-language slidedeck on using Spring Boot&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Data Release Train Gosling Goes GA</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/01/spring-data-release-train-gosling-goes-ga" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Oliver Gierke</name>
+    </author>
+    <id>tag:spring.io,2015-09-01:2222</id>
+    <updated>2015-09-01T11:34:00Z</updated>
+    <content type="html">&lt;p&gt;On behalf of the Spring Data team I&amp;rsquo;d like to announce the general availability of the Spring Data release train Gosling. Over the last 6 months we&amp;rsquo;ve fixed 344 tickets in total, &lt;a href="https://jira.spring.io/issues/?filter=15230"&gt;56 of that&lt;/a&gt; after the latest release candidate.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Upgraded Spring baseline to 4.1.&lt;/li&gt;
+  &lt;li&gt;Easier implementability of custom repository code (per repo, see the &lt;a href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.custom-behaviour-for-all-repositories"&gt;reference documentation&lt;/a&gt;) .&lt;/li&gt;
+  &lt;li&gt;Improved compatibility with Hibernate 5 (JPA module).&lt;/li&gt;
+  &lt;li&gt;SpEl support for &lt;code&gt;@Query&lt;/code&gt; methods in MongoDB (see this &lt;a href="https://github.com/spring-projects/spring-data-examples/tree/master/mongodb/security"&gt;example&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;Support to create Querydsl &lt;code&gt;Predicates&lt;/code&gt; from web requests (see the &lt;a href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#core.web.type-safe"&gt;reference documentation&lt;/a&gt;).&lt;/li&gt;
+  &lt;li&gt;A &lt;a href="https://docs.spring.io/spring-data/keyvalue/docs/1.0.0.RELEASE/reference/html/"&gt;new Spring Data KeyValue module&lt;/a&gt; for &lt;code&gt;Map&lt;/code&gt;-backed repositories using SpEL as query language.&lt;/li&gt;
+  &lt;li&gt;Improved POST forms for the HAL browser in Spring Data REST.&lt;/li&gt;
+  &lt;li&gt;Support for internationalization of enum values and link titles in Spring Data REST.&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;The &lt;a href="https://github.com/spring-projects/spring-data-examples"&gt;Spring Data examples&lt;/a&gt; have already been upgraded to the new version. Find a more detailed list of what has change in this train in &lt;a href="https://github.com/spring-projects/spring-data-commons/wiki/Release-Train-Gosling"&gt;our wiki&lt;/a&gt;. Spring Data ninja Christoph Strobl has a &lt;a href="https://spring.io/blog/2015/09/04/what-s-new-in-spring-data-release-gosling"&gt;blog post&lt;/a&gt; covering some of the introduced features in more depth.&lt;/p&gt;&lt;p&gt;To upgrade to the new release train use the BOM we ship as described in our &lt;a href="https://github.com/spring-projects/spring-data-examples/tree/master/bom"&gt;examples repository&lt;/a&gt; and configure its version to &lt;code&gt;Gosling-RELEASE&lt;/code&gt;. If you&amp;rsquo;re using Spring Boot, upgrading to the release train is as easy as setting the Maven property &lt;code&gt;spring-data-releasetrain.version&lt;/code&gt; to that version. Note, that to use Spring Data REST with Boot 1.2, you also need to upgrade to Spring HATEOAS 0.19.0.RELEASE (by setting the &lt;code&gt;spring-hateoas.version&lt;/code&gt; property) and Jackson 2.5 or better (current 2.6.1 preferred, via the &lt;code&gt;jackson.version&lt;/code&gt; property).&lt;/p&gt;&lt;p&gt;The &lt;a href="https://github.com/spring-projects/spring-data-commons/wiki/Release-Train-Hopper"&gt;next release train&lt;/a&gt; is going to be named &lt;a href="https://en.wikipedia.org/wiki/Grace_Hopper"&gt;Hopper&lt;/a&gt; and include the new major versions of the Neo4j, Couchbase and Solr modules. Target release time is mid autumn.&lt;/p&gt;&lt;p&gt;For reference, here is the list of all modules of the train:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Spring Data Commons 1.11 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-commons/1.11.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/commons/docs/1.11.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/commons/docs/1.11.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/commons/docs/1.11.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data JPA 1.9 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-jpa/1.9.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/jpa/docs/1.9.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/jpa/docs/1.9.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/jpa/docs/1.9.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data MongoDB 1.8 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-mongodb/1.8.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/mongodb/docs/1.8.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/mongodb/docs/1.8.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/mongodb/docs/1.8.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Neo4j 3.4 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-neo4j/3.4.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/neo4j/docs/3.4.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/neo4j/docs/3.4.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/neo4j/docs/3.4.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Solr 1.5 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-solr/1.5.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/solr/docs/1.5.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/solr/docs/1.5.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/solr/docs/1.5.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Couchbase 1.4 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-couchbase/1.4.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/couchbase/docs/1.4.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/couchbase/docs/1.4.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/couchbase/docs/1.4.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Cassandra 1.3 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-cassandra/1.3.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/cassandra/docs/1.3.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/cassandra/docs/1.3.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/cassandra/docs/1.3.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Elasticsearch 1.3 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-elasticsearch/1.3.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/elasticsearch/docs/1.3.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/elasticsearch/docs/1.3.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/elasticsearch/docs/1.3.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Gemfire 1.7 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-gemfire/1.7.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/gemfire/docs/1.7.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/gemfire/docs/1.7.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/gemfire/docs/1.7.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data Redis 1.6 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-redis/1.6.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/redis/docs/1.6.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/redis/docs/1.6.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/redis/docs/1.6.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data REST 2.4 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-rest-webmvc/2.4.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/rest/docs/2.4.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/rest/docs/2.4.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/rest/docs/2.4.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Spring Data KeyValue 1.0 GA - &lt;a href="https://repo.spring.io/libs-release/org/springframework/data/spring-data-keyvalue/1.0.0.RELEASE"&gt;Artifacts&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/keyvalue/docs/1.0.0.RELEASE/api"&gt;JavaDocs&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/keyvalue/docs/1.0.0.RELEASE/reference/html"&gt;Documentation&lt;/a&gt; - &lt;a href="https://docs.spring.io/spring-data/keyvalue/docs/1.0.0.RELEASE/changelog.txt"&gt;Changelog&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;We&amp;rsquo;re going to cover a lot of the new features of Spring Data release train Gosling in the &lt;a href="https://2015.event.springone2gx.com/schedule/sessions/what_s_new_in_2015_for_spring_data.html"&gt;&amp;ldquo;What&amp;rsquo;s new in Spring Data?&amp;rdquo; talk&lt;/a&gt; at SpringOne2GX in Washington in two weeks. It&amp;rsquo;s not too late to get a ticket if you want to learn about all of the latest and greatest first hand.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>React.js and Spring Data REST: Part 1 - Basic Features</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/09/01/react-js-and-spring-data-rest-part-1-basic-features" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Greg Turnquist</name>
+    </author>
+    <id>tag:spring.io,2015-08-28:2220</id>
+    <updated>2015-09-01T11:33:06Z</updated>
+    <content type="html">&lt;div id="preamble"&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Welcome Spring community,&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This is the first of several blog entries. In this session, you will see how to get a bare-bones Spring Data REST application up and running quickly. Then you will build a simple UI on top of it using Facebook&amp;#8217;s React.js toolset.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_step_0_setting_up_your_environment"&gt;Step 0 - Setting up your environment&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Feel free to &lt;a href="https://github.com/gregturn/react-and-spring-data-rest/tree/master/basic"&gt;grab the code&lt;/a&gt; from this repository and follow along.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;If you want to do it yourself, visit &lt;a href="http://start.spring.io" class="bare"&gt;http://start.spring.io&lt;/a&gt; and pick these items:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;Rest Repositories&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;Thymeleaf&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+JPA&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+H2&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This demo uses Java 8, Maven Project, and the latest stable release of Spring Boot. This will give you a clean, empty project. From there, you can add the various files shown explicitly in this session, and/or borrow from the repository listed above.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_in_the_beginning"&gt;In the beginning&amp;#8230;&amp;#8203;&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;In the beginning there was data. And it was good. But then people wanted to access the data through various means. Over the years, people cobbled together lots of MVC controllers, many using Spring&amp;#8217;s powerful REST support. But doing over and over cost a lot of time.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Spring Data REST addresses how simple this problem can be if some assumptions are made:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+The developer uses a Spring Data project that supports the repository model.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+The system uses well accepted, industry standard protocols, like HTTP verbs, standardized media types, and IANA-approved link names.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="sect2"&gt;&#xD;
+&lt;h3 id="_declaring_your_domain"&gt;Declaring your domain&lt;/h3&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;The cornerstone of any Spring Data REST-based application are the domain objects. For this session, you will build an application to track the employees for a company. Kick that off by creating a data type like this:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/java/com/greglturnquist/payroll/Employee.java&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@Data&#xD;
+@Entity&#xD;
+public class Employee {&#xD;
+&#xD;
+	private @Id @GeneratedValue Long id;&#xD;
+	private String firstName;&#xD;
+	private String lastName;&#xD;
+	private String description;&#xD;
+&#xD;
+	private Employee() {}&#xD;
+&#xD;
+	public Employee(String firstName, String lastName, String description) {&#xD;
+		this.firstName = firstName;&#xD;
+		this.lastName = lastName;&#xD;
+		this.description = description;&#xD;
+	}&#xD;
+}&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;@Entity&lt;/code&gt; is a JPA annotation that denotes the whole class for storage in a relational table.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;@Id&lt;/code&gt; and &lt;code&gt;@GeneratedValue&lt;/code&gt; are JPA annotation to note the primary key and that is generated automatically when needed.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;@Data&lt;/code&gt; and &lt;code&gt;@RequiredArgsConstructor&lt;/code&gt; are Project Lombok annotations to autogenerate getters, setters, constructors, toString, hash, equals, and other things. It cuts down on the boilerplate.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This entity is used to track employee information. In this case, their name and job description.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock note"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Note&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+Spring Data REST isn&amp;#8217;t confined to JPA. It supports many NoSQL data stores, but you won&amp;#8217;t be covering those here.&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_defining_the_repository"&gt;Defining the repository&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Another key piece of a Spring Data REST application is to create a corresponding repository definition.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/java/com/greglturnquist/payroll/EmployeeRepository.java&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;public interface EmployeeRepository extends CrudRepository&amp;lt;Employee, Long&amp;gt; {&#xD;
+&#xD;
+}&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+The repository extends Spring Data Commons' &lt;code&gt;CrudRepository&lt;/code&gt; and plugs in the type of the domain object and its primary key&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;That is all that is needed! In fact, you don&amp;#8217;t even have to annotate this invisible if its top-level and visible. If you use your IDE and open up &lt;code&gt;CrudRepository&lt;/code&gt;, you&amp;#8217;ll find a fist full of pre-built methods already defined.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock note"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Note&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+You can define &lt;a href="http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.definition"&gt;your own repository&lt;/a&gt; if you wish. Spring Data REST supports that as well.&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_pre_loading_the_demo"&gt;Pre-loading the demo&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;To work this this application, you need to pre-load it with some data like this:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/java/com/greglturnquist/payroll/DatabaseLoader.java&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@Component&#xD;
+public class DatabaseLoader implements CommandLineRunner {&#xD;
+&#xD;
+	private final EmployeeRepository repository;&#xD;
+&#xD;
+	@Autowired&#xD;
+	public DatabaseLoader(EmployeeRepository repository) {&#xD;
+		this.repository = repository;&#xD;
+	}&#xD;
+&#xD;
+	@Override&#xD;
+	public void run(String... strings) throws Exception {&#xD;
+		this.repository.save(new Employee("Frodo", "Baggins", "ring bearer"));&#xD;
+	}&#xD;
+}&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+This class is marked with Spring&amp;#8217;s &lt;code&gt;@Component&lt;/code&gt; annotation so that it is automatically picked up by &lt;code&gt;@SpringBootApplication&lt;/code&gt;.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+It implements Spring Boot&amp;#8217;s &lt;code&gt;CommandLineRunner&lt;/code&gt; so that it gets run after all the beans are created and registered.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+It uses constructor injection and autowiring to get Spring Data&amp;#8217;s automatically created &lt;code&gt;EmployeeRepository&lt;/code&gt;.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+The &lt;code&gt;run()&lt;/code&gt; method is invoked with command line arguments, loading up your data.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;One of the biggest, most powerful features Spring Data is its ability to write JPA queries for you. This not only cuts down on your development time, but also reduces the risk of bugs and errors. Spring Data &lt;a href="http://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods.details"&gt;looks at the name of methods&lt;/a&gt; in a repository class and figures out the operation you need including saving, deleting, and finding.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;That is how we can write an empty interface and inherit already build save, find, and delete operations.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_adjusting_the_root_uri"&gt;Adjusting the root URI&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;By default, Spring Data REST hosts a root collection of links at &lt;code&gt;/&lt;/code&gt;. Because you will host a web UI on the same path, you need to change the root URI.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/application.properties&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre&gt;spring.data.rest.base-path=/api&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_launching_the_backend"&gt;Launching the backend&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;The last step needed to get a fully operationl REST API off the ground is to write a &lt;code&gt;public static void main&lt;/code&gt; using Spring Boot:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/java/com/greglturnquist/payroll/ReactAndSpringDataRestApplication.java&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@SpringBootApplication&#xD;
+public class ReactAndSpringDataRestApplication {&#xD;
+&#xD;
+	public static void main(String[] args) {&#xD;
+		SpringApplication.run(ReactAndSpringDataRestApplication.class, args);&#xD;
+	}&#xD;
+}&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Assuming the previous class as well as your Maven build file were generated from &lt;a href="http://start.spring.io" class="bare"&gt;http://start.spring.io&lt;/a&gt;, you can now launch it either by running that &lt;code&gt;main()&lt;/code&gt; method inside your IDE, or type &lt;code&gt;./mvnw spring-boot:run&lt;/code&gt; on the command line. (mvnw.bat for Windows users).&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock note"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Note&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+If you aren&amp;#8217;t up-to-date on Spring Boot and how it works, you should consider watch one of &lt;a href="https://www.youtube.com/watch?v=sbPSjI4tt10"&gt;Josh Long&amp;#8217;s introductory presentations&lt;/a&gt;. Did it? Press on!&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_touring_your_rest_service"&gt;Touring your REST service&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;With the app running, you can check things out on the command line using &lt;a href="http://curl.haxx.se/"&gt;cURL&lt;/a&gt; (or any other tool you like).&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre&gt;$ curl localhost:8080/api&#xD;
+{&#xD;
+  "_links" : {&#xD;
+    "employees" : {&#xD;
+      "href" : "http://localhost:8080/api/employees"&#xD;
+    },&#xD;
+    "profile" : {&#xD;
+      "href" : "http://localhost:8080/api/profile"&#xD;
+    }&#xD;
+  }&#xD;
+}&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;When you ping the root node, you get back a collection of links wrapped up in a &lt;a href="http://stateless.co/hal_specification.html"&gt;HAL-formatted JSON document&lt;/a&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;strong&gt;_links&lt;/strong&gt; is a the collection of links available.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;strong&gt;employees&lt;/strong&gt; points to an aggregate root for the employee objects defined by the &lt;code&gt;EmployeeRepository&lt;/code&gt; interface.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;strong&gt;profile&lt;/strong&gt; is an IANA-standard relation and points to discoverable metadata about the entire service. We&amp;#8217;ll explore this in a later session.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;You can further dig into this service by navigating the &lt;strong&gt;employees&lt;/strong&gt; link.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre&gt;$ curl localhost:8080/api/employees&#xD;
+{&#xD;
+  "_embedded" : {&#xD;
+    "employees" : [ {&#xD;
+      "firstName" : "Frodo",&#xD;
+      "lastName" : "Baggins",&#xD;
+      "description" : "ring bearer",&#xD;
+      "_links" : {&#xD;
+        "self" : {&#xD;
+          "href" : "http://localhost:8080/api/employees/1"&#xD;
+        }&#xD;
+      }&#xD;
+    } ]&#xD;
+  }&#xD;
+}&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;At this stage, you are viewing the entire collection of employees.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;What&amp;#8217;s included along with the data you pre-loaded earlier is a &lt;strong&gt;_links&lt;/strong&gt; attribute with a &lt;strong&gt;self&lt;/strong&gt; link. This is the canonical link for that particular employee. What is canonical? It means free of context. For example, the same user could be fetched through a link like /api/orders/1/processor, in which the employee is assocated with processing a particular order. Here, there is no relationship to other entities.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock important"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Important&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+Links are a critical facet of REST. They provide the power to navigate to related items. It makes it possible for other parties to navigate around your API without having to rewrite things everytime there is a change. Updates in the client is a common problem when the clients hard code paths to resources. Restructuring resources can cause big upheavals in code. If links are used and instead the navigation route is maintained, then it becomes easy and flexible to make such adjustments.&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;You can decide to view that one employee if you wish.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre&gt;$ curl localhost:8080/api/employees/1&#xD;
+{&#xD;
+  "firstName" : "Frodo",&#xD;
+  "lastName" : "Baggins",&#xD;
+  "description" : "ring bearer",&#xD;
+  "_links" : {&#xD;
+    "self" : {&#xD;
+      "href" : "http://localhost:8080/api/employees/1"&#xD;
+    }&#xD;
+  }&#xD;
+}&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Little change here, except that there is no need for the &lt;strong&gt;_embedded&lt;/strong&gt; wrapper since there is only domain object.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;That&amp;#8217;s all and good, but you are probably itching to create some new entries.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre&gt;$ curl -X POST localhost:8080/api/employees -d '{"firstName": "Bilbo", "lastName": "Baggins", "description": "burglar"}' -H 'Content-Type:application/json'&#xD;
+{&#xD;
+  "firstName" : "Bilbo",&#xD;
+  "lastName" : "Baggins",&#xD;
+  "description" : "burglar",&#xD;
+  "_links" : {&#xD;
+    "self" : {&#xD;
+      "href" : "http://localhost:8080/api/employees/2"&#xD;
+    }&#xD;
+  }&#xD;
+}&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;You can also PUT, PATCH, and DELETE as shown in &lt;a href="https://spring.io/guides/gs/accessing-data-rest/"&gt;this related guide&lt;/a&gt;. But let&amp;#8217;s not dig into that. You have already spent way too much time interacting with this REST service manually. Don&amp;#8217;t you want to build a slick UI instead?&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_setting_up_a_custom_ui_controller"&gt;Setting up a custom UI controller&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Spring Boot makes it super simple to stand up a custom web page. First, you need a Spring MVC controller.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/java/com/greglturnquist/payroll/HomeController.java&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-java" data-lang="java"&gt;@Controller&#xD;
+public class HomeController {&#xD;
+&#xD;
+	@RequestMapping(value = "/")&#xD;
+	public String index() {&#xD;
+		return "index";&#xD;
+	}&#xD;
+&#xD;
+}&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;@Controller&lt;/code&gt; marks this class as a Spring MVC controller.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;@RequestMapping&lt;/code&gt; flags the &lt;code&gt;index()&lt;/code&gt; method to support the &lt;code&gt;/&lt;/code&gt; route.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+It returns &lt;code&gt;index&lt;/code&gt; as the name of the template, which Spring Boot&amp;#8217;s autoconfigured view resolver will map to &lt;code&gt;src/main/resources/templates/index.html&lt;/code&gt;.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_defining_an_html_template"&gt;Defining an HTML template&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;You are using Thymeleaf, although you won&amp;#8217;t really use many of its features.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/templates/index.html&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-html" data-lang="html"&gt;&amp;lt;!DOCTYPE html&amp;gt;&#xD;
+&amp;lt;html xmlns:th="http://www.thymeleaf.org"&amp;gt;&#xD;
+&amp;lt;head lang="en"&amp;gt;&#xD;
+    &amp;lt;meta charset="UTF-8"/&amp;gt;&#xD;
+    &amp;lt;title&amp;gt;ReactJS + Spring Data REST&amp;lt;/title&amp;gt;&#xD;
+    &amp;lt;script async="" data-main="/run.js" src="/bower_components/requirejs/require.js"&amp;gt;&amp;lt;/script&amp;gt;&#xD;
+    &amp;lt;link rel="stylesheet" href="/main.css" /&amp;gt;&#xD;
+&amp;lt;/head&amp;gt;&#xD;
+&amp;lt;body&amp;gt;&#xD;
+&#xD;
+    &amp;lt;div id="react"&amp;gt;&amp;lt;/div&amp;gt;&#xD;
+&#xD;
+&amp;lt;/body&amp;gt;&#xD;
+&amp;lt;/html&amp;gt;&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;The key part in this template is the &lt;code&gt;&amp;lt;div id="react"&amp;gt;&amp;lt;/div&amp;gt;&lt;/code&gt; component in the middle. It is where you will direct React to plug in the rendered output.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_loading_javascript_modules"&gt;Loading JavaScript modules&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This tutorial won&amp;#8217;t go into extensive detail on how it uses require.js to load JavaScript modules. But thanks to the &lt;strong&gt;frontend-maven-plugin&lt;/strong&gt;, you don&amp;#8217;t &lt;em&gt;have&lt;/em&gt; to install any of the node.js tools to build and run the code.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;The following JavaScript modules will be used:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+require.js&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+react.js&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+rest.js&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+requirejs-react-js&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;If you&amp;#8217;re interested, the paths for the JavaScript moodules are defined in &lt;a href="https://github.com/gregturn/react-and-spring-data-rest/blob/master/basic/src/main/resources/static/run.js"&gt;run.js&lt;/a&gt;. The main JavaScript app is loaded by the web page through &lt;a href="https://github.com/gregturn/react-and-spring-data-rest/blob/master/basic/src/main/resources/static/main.js"&gt;main.js&lt;/a&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;With all that in place, you can focus on the React bits which are fetched after the DOM is loaded. It&amp;#8217;s broken down into parts as below:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Since you are using require.js to load things, go ahead and fetch the modules you need:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/static/app.jsx&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;var React = require('react');&#xD;
+var client = require('./client');&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;React&lt;/code&gt; is the main library from Facebook for building this app.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;client&lt;/code&gt; is custom code that configures rest.js to include support for HAL, URI Templates, and other things. It also sets the default &lt;strong&gt;Accept&lt;/strong&gt; request header to &lt;strong&gt;application/hal+json&lt;/strong&gt;. You can &lt;a href="https://github.com/gregturn/react-and-spring-data-rest/blob/master/basic/src/main/resources/static/client.js"&gt;read the code here&lt;/a&gt;.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_diving_into_react"&gt;Diving into React&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;React is based on defining components. Oftentimes, one component can hold multiple instances of another in a parent-child relationship. It&amp;#8217;s easy for this concept to extend several layers.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;To start things off, it&amp;#8217;s very handy to have a top level container for all components. (This will become more evident as you expand upon the code throughout this series.) Right now, you only have the employee list. But you might need some other related components later on, so let&amp;#8217;s start with this:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/static/app.jsx - App component&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;var App = React.createClass({&#xD;
+    getInitialState: function () {&#xD;
+        return ({employees: []});&#xD;
+    },&#xD;
+    componentDidMount: function () {&#xD;
+        client({method: 'GET', path: '/api/employees'}).done(response =&amp;gt; {&#xD;
+            this.setState({employees: response.entity._embedded.employees});&#xD;
+        });&#xD;
+    },&#xD;
+    render: function () {&#xD;
+        return (&#xD;
+            &amp;lt;EmployeeList employees={this.state.employees}/&amp;gt;&#xD;
+        )&#xD;
+    }&#xD;
+})&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;React.createClass({&amp;#8230;&amp;#8203;})&lt;/code&gt; is the method to create a React component.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;getInitialState&lt;/code&gt; is the API to initialize state data (data that is expected to vary).&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;componentDidMount&lt;/code&gt; is the API invoked after React renders a component in the DOM.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;&#xD;
+&lt;code&gt;render&lt;/code&gt; is the API to "draw" the component on the screen.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock note"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Note&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+In React, uppercase is the convention for naming components.&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;In the &lt;strong&gt;App&lt;/strong&gt; component, an array of employees is fetched from the Spring Data REST backend and stored in this component&amp;#8217;s &lt;strong&gt;state&lt;/strong&gt; data.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div id="NOTE" class="exampleblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;React components have two types of data: &lt;strong&gt;state&lt;/strong&gt; and &lt;strong&gt;properties&lt;/strong&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;&lt;strong&gt;State&lt;/strong&gt; is data that the component is expected to handle itself. It is also data that can fluctuate and change. To read the state, you use &lt;code&gt;this.state&lt;/code&gt;. To update it, you use &lt;code&gt;this.setState()&lt;/code&gt;. Every time &lt;code&gt;this.setState()&lt;/code&gt; is called, React updates the state, calculates a diff between the previous state and the new state, and injects a set of changes to the DOM on the page. This results a fast and efficient updates to your UI.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;The common convention is to initialize state with all your attributes empty in &lt;code&gt;getInitialState&lt;/code&gt;. Then you lookup data from the server using &lt;code&gt;componentDidMount&lt;/code&gt; and populate your attributes. From there on, updates can be driven by user action or other events.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;&lt;strong&gt;Properties&lt;/strong&gt; encompass data that is passed into the component. Properties do NOT change but are instead fixed values. To set them, you assign them to attributes when creating a new component and you&amp;#8217;ll soon see.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock warning"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Warning&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+JavaScript doesn&amp;#8217;t lock down data structures like other languages. You can try to subvert properties by assigning values, but this doesn&amp;#8217;t work with React&amp;#8217;s differential engine and should be avoided.&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;In this code, the function loads data via &lt;code&gt;client&lt;/code&gt;, a &lt;a href="https://promisesaplus.com/"&gt;Promise compliant&lt;/a&gt; instance of rest.js. When it is done retrieving from &lt;code&gt;/api/employees&lt;/code&gt;, it then invokes the function inside &lt;code&gt;done()&lt;/code&gt; and set&amp;#8217;s the state based on it&amp;#8217;s HAL document (&lt;code&gt;response.entity._embedded.employees&lt;/code&gt;). You might remember the structure of &lt;code&gt;curl /api/employees&lt;/code&gt; &lt;a href="#_touring_your_rest_service"&gt;earlier&lt;/a&gt; and see how it maps onto this structure.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;When the state is updated, the &lt;code&gt;render()&lt;/code&gt; function is invoked by the framework. The employee state data is included in creation of the &lt;code&gt;&amp;lt;EmployeeList /&amp;gt;&lt;/code&gt; React component as an input parameter.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Below is the definition for an &lt;code&gt;EmployeeList&lt;/code&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/static/app.jsx - EmployeeList component&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;var EmployeeList = React.createClass({&#xD;
+    render: function () {&#xD;
+        var employees = this.props.employees.map(employee =&amp;gt;&#xD;
+            &amp;lt;Employee key={employee._links.self.href} employee={employee}/&amp;gt;&#xD;
+        );&#xD;
+        return (&#xD;
+            &amp;lt;table&amp;gt;&#xD;
+                &amp;lt;tr&amp;gt;&#xD;
+                    &amp;lt;th&amp;gt;First Name&amp;lt;/th&amp;gt;&#xD;
+                    &amp;lt;th&amp;gt;Last Name&amp;lt;/th&amp;gt;&#xD;
+                    &amp;lt;th&amp;gt;Description&amp;lt;/th&amp;gt;&#xD;
+                &amp;lt;/tr&amp;gt;&#xD;
+                {employees}&#xD;
+            &amp;lt;/table&amp;gt;&#xD;
+        )&#xD;
+    }&#xD;
+})&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Using JavaScript&amp;#8217;s map function, &lt;code&gt;this.props.employees&lt;/code&gt; is transformed from an array of employee records into an array of &lt;code&gt;&amp;lt;Element /&amp;gt;&lt;/code&gt; React components (which you&amp;#8217;ll see a little further down).&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&amp;lt;Employee key={employee._links.self.href} data={employee} /&amp;gt;&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This shows a new React component (note the uppercase format) being created along with two properties: &lt;strong&gt;key&lt;/strong&gt; and &lt;strong&gt;data&lt;/strong&gt;. These are supplied the values from &lt;code&gt;employee._links.self.href&lt;/code&gt; and &lt;code&gt;employee&lt;/code&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="admonitionblock important"&gt;&#xD;
+&lt;table&gt;&#xD;
+&lt;tr&gt;&#xD;
+&lt;td class="icon"&gt;&#xD;
+&lt;div class="title"&gt;Important&lt;/div&gt;&#xD;
+&lt;/td&gt;&#xD;
+&lt;td class="content"&gt;&#xD;
+Whenever you work with Spring Data REST, the &lt;strong&gt;self&lt;/strong&gt; link IS the key for a given resource. React needs a unique identifer for child nodes, and &lt;code&gt;_links.self.href&lt;/code&gt; is perfect.&#xD;
+&lt;/td&gt;&#xD;
+&lt;/tr&gt;&#xD;
+&lt;/table&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Finally, you return an HTML table wrapped around the array of &lt;code&gt;employees&lt;/code&gt; built with mapping.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-html" data-lang="html"&gt;&amp;lt;table&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;th&amp;gt;First Name&amp;lt;/th&amp;gt;&#xD;
+        &amp;lt;th&amp;gt;Last Name&amp;lt;/th&amp;gt;&#xD;
+        &amp;lt;th&amp;gt;Description&amp;lt;/th&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+    {employees}&#xD;
+&amp;lt;/table&amp;gt;&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This simple layout of state, properties, and HTML shows how React lets you declaritively create a simple and easy-to-understand component.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div id="NOTE" class="exampleblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Does this code contain both HTML &lt;em&gt;and&lt;/em&gt; JavaScript? Yes. If you noticed the file extension, this is &lt;a href="https://facebook.github.io/jsx/"&gt;JSX&lt;/a&gt;. There is no requirement to use it. React can be written using pure JavaScript, but the JSX syntax is quite terse.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;JSX also includes bits and pieces of &lt;a href="http://es6-features.org/#Constants"&gt;ES6&lt;/a&gt;. The one used in the code is the &lt;a href="http://es6-features.org/#ExpressionBodies"&gt;arrow function&lt;/a&gt;. It avoids creating a nested function() with its own scoped &lt;strong&gt;this&lt;/strong&gt;, and avoids needing a &lt;a href="http://stackoverflow.com/a/962040/28214"&gt;&lt;strong&gt;self&lt;/strong&gt; variable&lt;/a&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Worried about mixing logic with your structure? React&amp;#8217;s APIs encourage nice, declarative structure combined with state and properties. Instead of mixing a bunch of unrelated JavaScript and HTML, React encourages building simple components with small bits of related state and properties that work well together. It lets you look at a single component and understand the design. Then they are easy to combine together for bigger structures.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Next, you need to actually define what an &lt;code&gt;&amp;lt;Employee /&amp;gt;&lt;/code&gt; is.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/static/app.jsx - Employee component&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;var Employee = React.createClass({&#xD;
+    render: function () {&#xD;
+        return (&#xD;
+            &amp;lt;tr&amp;gt;&#xD;
+                &amp;lt;td&amp;gt;{this.props.employee.firstName}&amp;lt;/td&amp;gt;&#xD;
+                &amp;lt;td&amp;gt;{this.props.employee.lastName}&amp;lt;/td&amp;gt;&#xD;
+                &amp;lt;td&amp;gt;{this.props.employee.description}&amp;lt;/td&amp;gt;&#xD;
+            &amp;lt;/tr&amp;gt;&#xD;
+        )&#xD;
+    }&#xD;
+})&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;This component is very simple. It has a single HTML table row wrapped around the employee&amp;#8217;s three properties. The property itself is &lt;code&gt;this.props.employee&lt;/code&gt;. Notice how passing in a JavaScript object makes it easy to pass along data fetched from the server?&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Because this component doesn&amp;#8217;t manage any state nor does it deal with user input, there is nothing else to do. This might tempt you to cram it into the &lt;code&gt;&amp;lt;EmployeeList /&amp;gt;&lt;/code&gt; up above. Don&amp;#8217;t do it! Instead, splitting your app up into small components that each do one job will make it easier to build up functionality in the future.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;The last step is to render the whole thing.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="title"&gt;src/main/resources/static/app.jsx - rendering code&lt;/div&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre class="highlight"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;React.render(&#xD;
+    &amp;lt;App /&amp;gt;,&#xD;
+    document.getElementById('react')&#xD;
+)&lt;/code&gt;&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;&lt;code&gt;React.render()&lt;/code&gt; accepts two arguments: a React component you defined as well as a DOM node to inject it into. Remember how you saw the &lt;code&gt;&amp;lt;div id="react"&amp;gt;&amp;lt;/div&amp;gt;&lt;/code&gt; item earlier from the HTML page? This is where it gets picked up and plugged in.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;With all this in place, re-run the application (&lt;code&gt;./mvnw spring-boot:run&lt;/code&gt;) and visit &lt;a href="http://localhost:8080" class="bare"&gt;http://localhost:8080&lt;/a&gt;.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="imageblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;img src="https://github.com/gregturn/react-and-spring-data-rest/raw/master/basic/images/basic-1.png" alt="basic 1"&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;You can see the initial employee loaded up by the system.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Remember using cURL to create new entries? Do that again.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="listingblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;pre&gt;curl -X POST localhost:8080/api/employees -d '{"firstName": "Bilbo", "lastName": "Baggins", "description": "burglar"}' -H 'Content-Type:application/json'&lt;/pre&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Refresh the browser, and you should see the new entry:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="imageblock"&gt;&#xD;
+&lt;div class="content"&gt;&#xD;
+&lt;img src="https://github.com/gregturn/react-and-spring-data-rest/raw/master/basic/images/basic-2.png" alt="basic 2"&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;And now you can see both of them listed on the web site.&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;
+&lt;div class="sect1"&gt;&#xD;
+&lt;h2 id="_review"&gt;Review&lt;/h2&gt;&#xD;
+&lt;div class="sectionbody"&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;In this session:&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;You defined a domain object and a corresponding repository.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;You let Spring Data REST export it with full blown hypermedia controls.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;You created two simple React components in a parent-child relationship.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;You fetched server data and rendered them in as a simple, static HTML structure.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;Issues?&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="ulist"&gt;&#xD;
+&lt;ul&gt;&#xD;
+&lt;li&gt;The web page wasn&amp;#8217;t dynamic. You had to refresh the browser to fetch new records.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;The web page didn&amp;#8217;t use any hypermedia controls or metadata. Instead, it was hardcoded to fetch data from &lt;code&gt;/api/employees&lt;/code&gt;.&#xD;
+&lt;/li&gt;&#xD;
+&lt;li&gt;It&amp;#8217;s read only. While you can alter records using cURL, the web page offers none of that.&#xD;
+&lt;/li&gt;&#xD;
+&lt;/ul&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;div class="paragraph"&gt;&#xD;
+&lt;p&gt;These are things we can address in the next session. Until then, happy coding!&lt;/p&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;&#xD;
+&lt;/div&gt;</content>
+  </entry>
+  <entry>
+    <title>This Week in Spring - August 25th, 2015</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/25/this-week-in-spring-august-25th-2015" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2015-08-25:2219</id>
+    <updated>2015-08-25T21:22:14Z</updated>
+    <content type="html">&lt;p&gt;Welcome to another installment of &lt;em&gt;This Week in Spring&lt;/em&gt;! This week I&amp;rsquo;m in Rio de Janeiro, Brazil for the lovely QCon Rio conference, and then I&amp;rsquo;m off to Tokyo, Japan for a &lt;em&gt;Spring in Summer&lt;/em&gt; conference for local Spring users!&lt;/p&gt;&lt;p&gt;The team is abuzz with excitement leading up to this year&amp;rsquo;s SpringOne2GX 2016, the biggest and best SpringOne2GX, ever! This year, you&amp;rsquo;re going to see us do &lt;em&gt;WAY&lt;/em&gt; more with &lt;em&gt;WAY&lt;/em&gt; less and get it to production, to boot! This is exciting for everyone of us and it will be for audience members, as well!&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;our pal Kenny Bastani put together a followup post &lt;a href="http://www.kennybastani.com/2015/08/polyglot-persistence-spring-cloud-docker.html"&gt;in his series on Spring Cloud about polyglot persistence with Spring Cloud&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="https://spring.io/blog/2015/08/20/spring-for-apache-hadoop-2-3-milestone-2-released"&gt;Spring for Hadoop lead Thomas Risberg just announced 2.3M2&lt;/a&gt;, complete with support for running batch tasklets, improved Spring Boot integration, and improved YARN support&lt;/li&gt;
+  &lt;li&gt;Singaporean Guest bloggers Han Lim and Tony Nguyen have written up a &lt;em&gt;very&lt;/em&gt; cool blog on &lt;a href="https://spring.io/blog/2015/08/19/migrating-a-spring-web-mvc-application-from-jsp-to-angularjs"&gt;migrating from &lt;code&gt;.jsp&lt;/code&gt;-based applications to Angular.js&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;John Thompson has a nice &lt;a href="https://dzone.com/articles/spring-boot-example-of-spring-integration-and-acti"&gt;post on using Spring Boot with ActiveMQ over on DZone&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Saravanan Subramanian has a &lt;a href="https://dzone.com/articles/getting-started-with-rabbitmq-cloud-based-message"&gt;nice post on getting started with RabbitMQ&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kathy Thomas has a written up and shared a presentation on building a &lt;a href="https://dzone.com/articles/building-your-own-cloud-with-suse-openstack-and-st"&gt;custom PaaS with SUSE OpenStack and Stackato Cloud Foundry &lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Our pal Nicolas Frankel has a nice &lt;a href="http://blog.frankel.ch/more-devops-for-spring-boot"&gt;post on introducting more devops-friendly features with Spring Boot&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;I liked this blog on &lt;a href="https://dzone.com/articles/set-up-a-springdata-project-using-apache-cassandra"&gt;using Spring Data Cassandra&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;This is a good French language post on &lt;a href="http://soat.developpez.com/tutoriels/spring/automatiser-execution-tache-scheduler/"&gt;using Spring Batch to run jobs, in lieu of CRON&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Neo4j have just announced &lt;a href="http://neo4j.com/blog/spring-data-neo4j-4-0-0-rc2-release/"&gt;Spring Data Neo4j 4.0.0.RC2 is available&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Make sure you didn&amp;rsquo;t &lt;a href="https://www.youtube.com/watch?v=A1UbUNcveik&amp;feature=youtu.be"&gt;miss the latest installment of &lt;em&gt;Cloud Foundry After Dark&lt;/em&gt;&lt;/a&gt;!&lt;/li&gt;
+&lt;/ul&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring for Apache Hadoop 2.3 Milestone 2 released</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/20/spring-for-apache-hadoop-2-3-milestone-2-released" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Thomas Risberg</name>
+    </author>
+    <id>tag:spring.io,2015-08-20:2216</id>
+    <updated>2015-08-20T14:03:00Z</updated>
+    <content type="html">&lt;p&gt;We are pleased to announce the Spring for Apache Hadoop 2.3 M2 milestone release.&lt;/p&gt;&lt;p&gt;The most important enhancements in this release: &lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;New batch tasklets: Support for running a simple Spark app [&lt;a href="https://jira.spring.io/browse/SHDP-397"&gt;SHDP-397&lt;/a&gt;] and for running a simple Sqoop2 Job [&lt;a href="https://jira.spring.io/browse/SHDP-506"&gt;SHDP-506&lt;/a&gt;]&lt;/li&gt;
+  &lt;li&gt;Better boot support: Add jobHistoryAddress to SpringHadoopProperties for Boot configuration [&lt;a href="https://jira.spring.io/browse/SHDP-517"&gt;SHDP-517&lt;/a&gt;]&lt;/li&gt;
+  &lt;li&gt;YARN: Support dots in yarn container group names [&lt;a href="https://jira.spring.io/browse/SHDP-515"&gt;SHDP-515&lt;/a&gt;]&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;See the release &lt;a href="http://docs.spring.io/spring-hadoop/docs/2.3.0.M2/changelog.txt"&gt;changelog&lt;/a&gt; for details.&lt;/p&gt;&lt;p&gt;The new support for running a Spark job on YARN via a Spring Batch tasklet opens possibilities for integrating Spark tasks in a larger Spring Batch flow We will show a simple example of this at the upcoming &lt;a href="http://springone2gx.com/"&gt;SpringOne 2GX&lt;/a&gt; conference during our &lt;a href="https://2015.event.springone2gx.com/schedule/sessions/hadoop_workflows_and_distributed_yarn_apps_using_spring_technologies.html"&gt;&amp;ldquo;Hadoop Workflows and Distributed YARN Apps using Spring technologies&amp;rdquo;&lt;/a&gt; presentation. In this presentation we&amp;rsquo;ll also explore how Hadoop based apps can take advantage of a cloud-native development approach.&lt;/p&gt;&lt;p&gt;We continue to provide version specific artifacts with their respective transitive dependencies in the Spring IO milestone repository:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;2.3.0.M2 (default - Apache Hadoop stable 2.7.1)&lt;/li&gt;
+  &lt;li&gt;2.3.0.M2-hadoop26 (Apache Hadoop 2.6.0)&lt;/li&gt;
+  &lt;li&gt;2.3.0.M2-phd30 (Pivotal HD 3.0)&lt;/li&gt;
+  &lt;li&gt;2.3.0.M2-cdh5 (Cloudera CDH 5.4)&lt;/li&gt;
+  &lt;li&gt;2.3.0.M2-hdp23 (Hortonworks HDP 2.3)&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;Please provide feedback so we can prioritize the work on new features scheduled for 2.3 (see previous &lt;a href="https://spring.io/blog/2015/05/21/spring-for-apache-hadoop-2-2-rc1-released"&gt;blog post&lt;/a&gt; for a list) and any additional feature requests. You can use JIRA issues or GitHub issues (see project page for links).&lt;/p&gt;&lt;p&gt;The project page is at - &lt;a href="http://projects.spring.io/spring-hadoop/"&gt;http://projects.spring.io/spring-hadoop/&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Migrating a Spring Web MVC application from JSP to AngularJS</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/19/migrating-a-spring-web-mvc-application-from-jsp-to-angularjs" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Michael Isvy</name>
+    </author>
+    <id>tag:spring.io,2015-05-21:2133</id>
+    <updated>2015-08-19T03:27:39Z</updated>
+    <content type="html">&lt;h1&gt;&lt;a href="#note-on-authors" class="anchor" name="note-on-authors"&gt;&lt;/a&gt;Note on authors&lt;/h1&gt;&lt;p&gt;This post is a guest post by &lt;a href="https://twitter.com/tagore79"&gt;Han Lim&lt;/a&gt; and &lt;a href="https://twitter.com/sgdevblog"&gt;Tony Nguyen&lt;/a&gt;. Han and Tony have done a great presentation at our Singapore Spring User Group on Spring + Angular JS. This blog is based on their presentation.&lt;/p&gt;&lt;h1&gt;&lt;a href="#abstract" class="anchor" name="abstract"&gt;&lt;/a&gt;Abstract&lt;/h1&gt;&lt;p&gt;In this article, we try to describe our experiences moving from server-side rendering view technologies like JSP, Struts and Velocity to client-side rendering view technologies using AngularJS, a popular Javascript framework for modern browsers. We will talk about some of the things to look out for when you are making this change and potential pitfalls you may encounter. If you are experienced in Spring Web MVC and JSP development and would like to find out how Spring MVC can work together with a client-side Javascript like AngularJS, this article may just be for you.&lt;/p&gt;&lt;p&gt;There is also an appendix that gives some additional insights on AngularJS that may seem strange or unfamiliar to people coming from the JSP world.&lt;/p&gt;&lt;h2&gt;&lt;a href="#sample-petclinic-for-reference" class="anchor" name="sample-petclinic-for-reference"&gt;&lt;/a&gt;Sample Petclinic for reference&lt;/h2&gt;&lt;p&gt;We have created a fork of the Spring Petclinic application and experimented with converting it to AngularJS (with a new design courtesy of &lt;a href="https://twitter.com/andrewabogado"&gt;Andrew Abogado&lt;/a&gt;). Our fork can be found &lt;a href="https://github.com/singularity-sg/spring-petclinic"&gt;here&lt;/a&gt;. &lt;/p&gt;&lt;h1&gt;&lt;a href="#preparation" class="anchor" name="preparation"&gt;&lt;/a&gt;Preparation&lt;/h1&gt;&lt;p&gt;When you start to migrate from a server-side templating engine like JSP or &lt;a href="http://www.thymeleaf.org/"&gt;Thymeleaf&lt;/a&gt; to a Javascript-based templating engine on the client side, you will need to adopt a paradigm shift towards a client-server architecture. You have to cease thinking of the view as being a part of the web application and instead conceive the web application as 2 separate client-side and server-side applications. The AngularJS application thus becomes an application on its own that runs on your web browser and it communicate with the backend services provided by Spring MVC. The only commonality between the the Spring MVC application and the AngularJS is probably going to be the fact that they are deployed in the same Java WAR file and that the index file is served out of a JSP. &lt;/p&gt;&lt;p&gt;An illustration of this is in the diagram below which shows how a Spring application becomes a provider of RESTful Web Services, servicing various front end applications including an AngularJS browser-based application as well as a possibility to provide services for mobile clients like tablets or smartphones. These services could include OAuth, Authentication and other business logic services which should be obfuscated from public view. One should bear in mind that any data or business logic that is published in the form of JSON or javascript files are exposed for the client-side to see. Thus, if there is any business sensitive logic or workflow that should not be exposed, it should only be performed on the backend.&lt;/p&gt;&lt;p&gt;Another difference to note about using AngularJS instead of JSP is that we would prefer not to use HTML forms and the traditional form submissions to pass data to the server side. Instead, we will prefer to encapsulate form submissions in a JSON object which is sent over to the backend RESTful service via a AngularJS HTTP Post method call. In fact, we will prefer to use full range of HTTP verbs that is encouraged in developing RESTful services.&lt;/p&gt;&lt;p&gt;If you need to perform validation on user inputs, it can be done on the front end using AngularJS&amp;rsquo;s built-in validation or your own custom input validation. You should always validate your data before posting it to the server. It is also prudent to validate the same data at the server side as well to ensure that clients that do not check their data do not compromise the integrity of the data on the server side. &lt;/p&gt;&lt;p&gt;&lt;img src="https://github.com/michaelisvy/blog-images/raw/master/01-han-tony-angularjs/architecture.png" alt="Architecture" /&gt;&lt;/p&gt;&lt;h1&gt;&lt;a href="#application-structure" class="anchor" name="application-structure"&gt;&lt;/a&gt;Application structure&lt;/h1&gt;&lt;p&gt;Let us now discuss how you could organize your Spring + AngularJS application. At WDS (our company), we use Maven as our dependency and package management tool for Java/Spring and that influenced how we decided to place our AngularJS javascript application. The AngularJS application is created within &lt;code&gt;src/main/webapp&lt;/code&gt; and the main files are&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint"&gt;components/ # the various components are stored here.&#xD;
+js/app.js   # where we bootstrap the application&#xD;
+plugins/	# additional external plugins e.g. jquery.&#xD;
+services/   # common services are stored here.&#xD;
+images/&#xD;
+videos/
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can see an image capture of the folder structure in Eclipse below. &lt;/p&gt;&lt;p&gt;&lt;img src="https://github.com/michaelisvy/blog-images/raw/master/01-han-tony-angularjs/folder-structure.png" alt="folders" /&gt;&lt;/p&gt;&lt;p&gt;Resources here are organized per the &lt;code&gt;feature-grouping&lt;/code&gt; method. There are also ways to group your resources based on types, e.g. grouping all your controllers, services and views into its namesake folder. There are pros and cons for each of those options.&lt;/p&gt;&lt;p&gt;There are also some Javascript-based package managers like &lt;a href="https://www.npmjs.com/"&gt;&lt;em&gt;npm&lt;/em&gt;&lt;/a&gt; or &lt;a href="http://bower.io/"&gt;&lt;em&gt;bower&lt;/em&gt;&lt;/a&gt; that you might want to consider using to simplify the management of your external dependencies. If you are using &lt;em&gt;bower&lt;/em&gt;, you will have a folder created called bower_components where all the dependency resources will be installed. You will then need to include them in your templates as you would do for any Javascript library. As for &lt;em&gt;npm&lt;/em&gt;, you can use it to manage all your Javascript server side system tools like Grunt (a sort of &lt;em&gt;Ant&lt;/em&gt;-like task runner)&lt;/p&gt;&lt;h1&gt;&lt;a href="#using-angularjs-directives-vs-jsp-custom-tags" class="anchor" name="using-angularjs-directives-vs-jsp-custom-tags"&gt;&lt;/a&gt;Using AngularJS directives vs JSP custom tags&lt;/h1&gt;&lt;p&gt;If you have used Spring&amp;rsquo;s custom form tags in your JSPs for developing your forms, you may be wondering if AngularJS provides the same kind of convenience for mapping form inputs to objects. The answer is yes! As a matter of fact, it is easy to bind any HTML element to a Javascript object. The only difference is that now the binding occurs on the client-side instead of the server-side.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint html"&gt;&amp;lt;form:form method=&amp;quot;POST&amp;quot; commandName=&amp;quot;user&amp;quot;&amp;gt;&#xD;
+&amp;lt;table&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;User Name :&amp;lt;/td&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;&amp;lt;form:input path=&amp;quot;name&amp;quot; /&amp;gt;&amp;lt;/td&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;Password :&amp;lt;/td&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;&amp;lt;form:password path=&amp;quot;password&amp;quot; /&amp;gt;&amp;lt;/td&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;Country :&amp;lt;/td&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;&#xD;
+            &amp;lt;form:select path=&amp;quot;country&amp;quot;&amp;gt;&#xD;
+            &amp;lt;form:option value=&amp;quot;0&amp;quot; label=&amp;quot;Select&amp;quot; /&amp;gt;&#xD;
+            &amp;lt;form:options items=&amp;quot;${countryList}&amp;quot; itemValue=&amp;quot;countryId&amp;quot; itemLabel=&amp;quot;countryName&amp;quot; /&amp;gt;&#xD;
+            &amp;lt;/form:select&amp;gt;&#xD;
+        &amp;lt;/td&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+&amp;lt;/table&amp;gt;&#xD;
+&amp;lt;/form:form&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here is an example of the same form in AngularJS&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint html"&gt;&amp;lt;form name=&amp;quot;UserForm&amp;quot; data-ng-controller=&amp;quot;ExampleUserController&amp;quot;&amp;gt;&#xD;
+  &amp;lt;table&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;User Name :&amp;lt;/td&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;&amp;lt;input data-ng-model=&amp;quot;user.name&amp;quot; /&amp;gt;&amp;lt;/td&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;Password :&amp;lt;/td&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;&amp;lt;input type=&amp;quot;password&amp;quot; data-ng-model=&amp;quot;user.password&amp;quot; /&amp;gt;&amp;lt;/td&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+    &amp;lt;tr&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;Country :&amp;lt;/td&amp;gt;&#xD;
+        &amp;lt;td&amp;gt;&#xD;
+            &amp;lt;select data-ng-model=&amp;quot;user.country&amp;quot; data-ng-options=&amp;quot;country as country.label for country in countries&amp;quot;&amp;gt;&#xD;
+               &amp;lt;option value=&amp;quot;&amp;quot;&amp;gt;Select&amp;lt;option /&amp;gt;&#xD;
+            &amp;lt;/select&amp;gt;&#xD;
+        &amp;lt;/td&amp;gt;&#xD;
+    &amp;lt;/tr&amp;gt;&#xD;
+&amp;lt;/table&amp;gt;&#xD;
+&amp;lt;/form&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Form inputs in AngularJS are augmented with additional capabilities like the &lt;code&gt;ngRequired&lt;/code&gt; directive that makes the field mandatory based on certain conditions. There are also built-in validation for checking ranges, dates, patterns etc.. You can find out more at AngularJS&amp;rsquo;s official documentation found &lt;a href="https://docs.angularjs.org/api/ng/input"&gt;here&lt;/a&gt; which provides all the relevant form input directives.&lt;/p&gt;&lt;h1&gt;&lt;a href="#considerations-when-moving-from-jsp-to-angularjs" class="anchor" name="considerations-when-moving-from-jsp-to-angularjs"&gt;&lt;/a&gt;Considerations when moving from JSP to AngularJS&lt;/h1&gt;&lt;p&gt;In order to successfully migrate your JSP-based application to one that uses AngularJS, there are a few factors to consider.&lt;/p&gt;&lt;h2&gt;&lt;a href="#converting-your-spring-controllers-to-restful-services" class="anchor" name="converting-your-spring-controllers-to-restful-services"&gt;&lt;/a&gt;Converting your Spring controllers to RESTful services&lt;/h2&gt;&lt;p&gt;You will need to transform your controllers so instead of forwarding the response to a templating engine to render a view to the client, you will provide services that will be serialized into JSON data instead. The following is an example of how a standard Spring MVC controller &lt;code&gt;RequestMapping&lt;/code&gt; uses the &lt;code&gt;ModelAndView&lt;/code&gt; object to render a view with the Owner as described in the url mapping.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@RequestMapping(&amp;quot;/api/owners/{ownerId}&amp;quot;)&#xD;
+public ModelAndView showOwner(@PathVariable(&amp;quot;ownerId&amp;quot;) int ownerId) {&#xD;
+    ModelAndView mav = new ModelAndView(&amp;quot;owners/ownerDetails&amp;quot;);&#xD;
+    mav.addObject(this.clinicService.findOwnerById(ownerId));&#xD;
+    return mav;&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;A controller RequestMapping like that can be converted into an equivalent RESTful service that returns the owner based on the ownerId. Your template can then be moved into AngularJS which will then bind the owner object to the AngularJS template.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint java"&gt;@RequestMapping(value = &amp;quot;/api/owners/{id}&amp;quot;, method = RequestMethod.GET)&#xD;
+public @ResponseBody Owner find(@PathVariable Integer id) {&#xD;
+    return this.clinicService.findOwnerById(id);&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In order for Spring MVC to convert your returned object (which need to be Serializable) to a JSON object, you can use the Jackson2 serialization library which is part of the Spring MVC dependency. In the example below, we had to customize the date serialization format by Jackson2 so we added the xml snippet in our Spring Context xml file to describe the date format for our JSON ObjectMapper Factory so that it knows that the Jackson2 ObjectMapper requires a date of such format. You can see the snippet that performs this Spring context configuration below. If there&amp;rsquo;s no customization of the date format (or any other serialization requirements), you can use the default ones which means that you do not even need to include this section as Spring MVC by default will component scan the ObjectMapper and inject it into your controller class via autowiring.&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint xml"&gt;&amp;lt;bean id=&amp;quot;objectMapper&amp;quot; class=&amp;quot;org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean&amp;quot; p:indentOutput=&amp;quot;true&amp;quot; p:simpleDateFormat=&amp;quot;yyyy-MM-dd&amp;#39;T&amp;#39;HH:mm:ss.SSSZ&amp;quot;&amp;gt;&amp;lt;/bean&amp;gt;&#xD;
+&amp;lt;mvc:annotation-driven conversion-service=&amp;quot;conversionService&amp;quot; &amp;gt;&#xD;
+ &amp;lt;mvc:message-converters&amp;gt;&#xD;
+  &amp;lt;bean class=&amp;quot;org.springframework.http.converter.json.MappingJackson2HttpMessageConverter&amp;quot; &amp;gt;&#xD;
+   &amp;lt;property name=&amp;quot;objectMapper&amp;quot; ref=&amp;quot;objectMapper&amp;quot; /&amp;gt;&#xD;
+  &amp;lt;/bean&amp;gt;&#xD;
+ &amp;lt;/mvc:message-converters&amp;gt;&#xD;
+&amp;lt;/mvc:annotation-driven&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Once you have converted your controllers into RESTful services, you can then access these resources from your AngularJS application.&lt;/p&gt;&lt;p&gt;One nice way to access RESTful services in AngularJS is to use the built-in &lt;code&gt;ngResource&lt;/code&gt; directive that allows you to access your RESTful services in an elegant and concise manner. An example of the Javascript code to access RESTful services using this directive can be illustrated by the following:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint javascript"&gt;var Owner = [&amp;#39;$resource&amp;#39;,&amp;#39;context&amp;#39;, function($resource, context) {&#xD;
+ return $resource(context + &amp;#39;/api/owners/:id&amp;#39;);&#xD;
+}];&#xD;
+ &#xD;
+app.factory(&amp;#39;Owner&amp;#39;, Owner);&#xD;
+ &#xD;
+var OwnerController = [&amp;#39;$scope&amp;#39;,&amp;#39;$state&amp;#39;,&amp;#39;Owner&amp;#39;,function($scope,$state,Owner) {&#xD;
+ $scope.$on(&amp;#39;$viewContentLoaded&amp;#39;, function(event){&#xD;
+  $(&amp;#39;html, body&amp;#39;).animate({&#xD;
+      scrollTop: $(&amp;quot;#owners&amp;quot;).offset().top&#xD;
+  }, 1000);&#xD;
+ });&#xD;
+ &#xD;
+ $scope.owners = Owner.query();&#xD;
+}];
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The above snippet shows how a &amp;ldquo;resource&amp;rdquo; can be created by declaring an Owner resource and then initialising it as an Owner service. The controller can then use this service to query for Owners from the RESTful endpoint. In this way, you can easily create the resources that your application require and map it easily to your business domain model. This declaration is done once only in the app.js file. You can actually take a look at this actual file in action &lt;a href="https://github.com/singularity-sg/spring-petclinic/blob/master/src/main/webapp/services/services.js"&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;When moving to RestAPI, it is important to remember that the RestAPI is the public interface rather than the website content. The JSON model is &lt;strong&gt;fully visible&lt;/strong&gt; to users.&lt;br/&gt;For example, if we need to display user profiles, password masking should be done on the JSON object rather than in the template. In order to do this, sometimes we need to create DTO objects for our RestAPI. &lt;/p&gt;&lt;h2&gt;&lt;a href="#synchronizing-states-between-the-backend-and-your-angularjs-application" class="anchor" name="synchronizing-states-between-the-backend-and-your-angularjs-application"&gt;&lt;/a&gt;Synchronizing states between the backend and your AngularJS application&lt;/h2&gt;&lt;p&gt;Synchronizing states is something that needs to be managed when you are developing a client-server architecture. You will need to give some thought to how your application updates its state from the backend or refresh its view whenever some state changes.&lt;/p&gt;&lt;h2&gt;&lt;a href="#authentication" class="anchor" name="authentication"&gt;&lt;/a&gt;Authentication&lt;/h2&gt;&lt;p&gt;Having your client-side code exposed to the public makes it even more important to think through how you would like to authenticate your users and maintain a session with your application. One important consideration in deciding your authentication method is to choose between a stateful session or a stateless one depending on your application architecture. &lt;/p&gt;&lt;p&gt;You can check Dave Syer&amp;rsquo;s series of blogs on how to integrate AngularJS with Spring Security &lt;a href="https://spring.io/blog/2015/01/12/spring-and-angular-js-a-secure-single-page-application"&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;h2&gt;&lt;a href="#testing" class="anchor" name="testing"&gt;&lt;/a&gt;Testing&lt;/h2&gt;&lt;p&gt;AngularJS comes with the necessary tools to help you perform testing at all layers of your Javascript development from unit to functional testing. Planning how you test and perform builds incorporating those tests will determine the quality of your front end client. We use a maven plugin called &lt;code&gt;frontend-maven-plugin&lt;/code&gt; to assist us in our build tests.&lt;/p&gt;&lt;h2&gt;&lt;a href="#conclusion" class="anchor" name="conclusion"&gt;&lt;/a&gt;Conclusion&lt;/h2&gt;&lt;p&gt;Migrating to AngularJS from JSP may seem daunting but it can be very rewarding in the long run as it makes for a more maintainable and testable user interface. The trend towards client side rendered views also encourages building more responsive web applications that were previously hampered by the design in server side rendering. The advent of HTML 5 and CSS3 has ushered us to a new era in View rendering technologies, with different competing frameworks like EmberJs, ReactJs, BackboneJs etc.. However, in terms of momentum, AngularJS has been getting a lot of attention and having used it for a while, we can see why. We hope that this article contain useful tips for the people who intend to take the plunge. You can examine the fork of the Spring Petclinic that has some code examples to see how we did it. &lt;/p&gt;&lt;h1&gt;&lt;a href="#appendix" class="anchor" name="appendix"&gt;&lt;/a&gt;Appendix&lt;/h1&gt;&lt;h2&gt;&lt;a href="#a-brief-introduction-to-angularjs" class="anchor" name="a-brief-introduction-to-angularjs"&gt;&lt;/a&gt;A brief introduction to AngularJS&lt;/h2&gt;&lt;p&gt;AngularJS is a Javascript framework created at Google that touts itself as a &amp;ldquo;Superheroic Web MVW Framework&amp;rdquo; (where the &amp;ldquo;W&amp;rdquo; in the &amp;ldquo;MVW&amp;rdquo; being a tongue-in-cheek reference to &amp;ldquo;Whatever&amp;rdquo; for all the various &lt;a href="http://blogs.k10world.com/technology/difference-between-mvc-vs-mvp-vs-mvvm/"&gt;MVx architectures&lt;/a&gt;. As it is based on an MVx architecture, AngularJS provides a structure to Javascript development and thus gives Javascript an elevated status compared to traditional Spring + JSP applications that only use Javascript to provide that bit of interactivity on the user interface. &lt;/p&gt;&lt;p&gt;With AngularJS, your Javascript-based view layer also inherits features like Dependency-Injection, HTML-vocabulary extension (via the use of custom directives), unit-testing and functional testing integration as well as DOM-selectors ala JQuery (using &lt;a href="https://thinkster.io/a-better-way-to-learn-angularjs/jqlite-angular-element-and-the-dom"&gt;jqlite&lt;/a&gt; as it provides only a subset of JQuery but you could also easily use JQuery if you prefer). AngularJS also introduces scopes to your Javascript code so that variables declared in your code are bound only to the scope that is required.This prevents variables pollution that inadvertently arises when the size of your Javascript grows. &lt;/p&gt;&lt;p&gt;When you are developing a Spring Web MVC application using JSP, you will likely use the Spring-provided form tags to bind your form inputs to a server side model. Similarly, AngularJS provides a way to bind form inputs to models on the client side. In fact, it provides instantaneous 2-way data-binding from the form input to your model on the Javascript application. That means that not only do you have the benefits of having your view updated with changes inside your Javascript model, any changes you make to your UI will also update the Javascript model (and consequently any other views that is bound to that model). It is almost magical to see all the views that are bound to the same JS model on the app update the model automatically. &lt;/p&gt;&lt;p&gt;Moreover, since your model can be set to a particular scope, only views that belong to the same scope will be affected, allowing you to sandbox code that should be local only to a particular portion of your view. (This is done via an AngularJS attribute called &lt;code&gt;ng-controller&lt;/code&gt; that is set in your HTML templates). You can see the difference in a later section comparing JSP tags and AngularJS directives.&lt;/p&gt;&lt;h2&gt;&lt;a href="#two-way-data-binding" class="anchor" name="two-way-data-binding"&gt;&lt;/a&gt;Two-way Data Binding&lt;/h2&gt;&lt;p&gt;In a Spring-JSP web application, there is one way data binding from Spring model to jsp view. Any change to the model will be reflected to Jsp view but not the reverse. This is the nature of web applications. If we build a desktop application, it is possible to do reverse data binding with Swing UI. &lt;/p&gt;&lt;p&gt;However, for a web application exposing REST resources, there may be no direct data binding. Data is sent from the server to the browser as JSON objects. Without AngularJS and the like, developers need to write javascript code in order to bind javascript object to html controls. &lt;/p&gt;&lt;p&gt;Because manual data binding is a tedious task, some developers try to automate the task by creating a Javascript framework for data binding. It is worth remembering that this data binding happens on the client side and the model for data binding is a Javascript object rather than a server side model. &lt;/p&gt;&lt;p&gt;Angular pushes this idea further by creating a two-way binding. Changing values in an HTML control will be reflected in the object in real time. &lt;/p&gt;&lt;p&gt;&lt;img src="https://github.com/michaelisvy/blog-images/raw/master/01-han-tony-angularjs/scope.png" alt="Scope" /&gt;&lt;/p&gt;&lt;p&gt;Binding is a useful concept if you need to deal with complex UI components like AJAX tables. &lt;/p&gt;&lt;p&gt;For example: we need to render a list of users and roles in an AngularJs application, with the following html template:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint html"&gt;&amp;lt;tr ng-repeat=&amp;quot;user in users&amp;quot;&amp;gt;&#xD;
+	&amp;lt;td&amp;gt;{{user.username}}&amp;lt;/td&amp;gt;&#xD;
+	&amp;lt;td&amp;gt;{{user.role}}&amp;lt;/td&amp;gt;&#xD;
+&amp;lt;/tr&amp;gt;&#xD;
+...&#xD;
+&amp;lt;a ng-click=&amp;quot;addUser()&amp;quot;&amp;gt;Add new user&amp;lt;/a&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The code to add a user can be this simple:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint javascript"&gt;$scope.addUser = function(){&#xD;
+	newUser = {}&#xD;
+	$scope.users.push(newUser );&#xD;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If the array &lt;code&gt;users&lt;/code&gt; has one more element, the table will automatically have one more row.&lt;/p&gt;&lt;h2&gt;&lt;a href="#angularjs-templates" class="anchor" name="angularjs-templates"&gt;&lt;/a&gt;AngularJS Templates&lt;/h2&gt;&lt;p&gt;Using AngularJS, it is possible to write relatively complex User Interfaces in an organized and elegant manner, always encapsulating the required logic within your components and never running the risk of errant global Javascript variables polluting your scope. It is also very testable, and there are built-in mechanisms to perform tests at the unit and functional level, ensuring that your User Interface codebase goes through the same rigorous testing that your Java/Spring code undergoes, ensuring quality even at the user interface level. &lt;/p&gt;&lt;p&gt;Another advantage of using AngularJS to write your html templates is that the templates are essentially similar to html even with the various front end logic baked into your view. It is possible to incorporate AngularJS logic into your template and still do a client-side validation control. In the JSP world, you can try viewing a JSP file from a browser with all the template logic in place and most likely your browser will give up rendering the page.&lt;br/&gt;You can see how a typical AngularJS template looks like :&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint html"&gt;&amp;lt;div class=&amp;quot;row thumbnail-wrapper&amp;quot;&amp;gt;&#xD;
+  &amp;lt;div data-ng-repeat=&amp;quot;pet in currentOwner.pets&amp;quot; class=&amp;quot;col-md-3&amp;quot;&amp;gt;&#xD;
+    &amp;lt;div class=&amp;quot;thumbnail&amp;quot;&amp;gt;&#xD;
+      &amp;lt;img data-ng-src=&amp;quot;images/pets/pet{{pet.id % 10 + 1}}.jpg&amp;quot; &#xD;
+        class=&amp;quot;img-circle&amp;quot; alt=&amp;quot;My Pet Image&amp;quot;&amp;gt;&#xD;
+      &amp;lt;div class=&amp;quot;caption&amp;quot;&amp;gt;&#xD;
+        &amp;lt;h3 class=&amp;quot;caption-heading&amp;quot; data-ng-bind=&amp;quot;pet.name&amp;quot;&amp;gt;&amp;lt;/h3&amp;gt;&#xD;
+        &amp;lt;p class=&amp;quot;caption-meta&amp;quot; data-ng-bind=&amp;quot;pet.birthdate&amp;quot;&amp;gt;&amp;lt;/p&amp;gt;&#xD;
+        &amp;lt;p class=&amp;quot;caption-meta&amp;quot;&amp;gt;&amp;lt;span class=&amp;quot;caption-label&amp;quot; &#xD;
+           data-ng-bind=&amp;quot;pet.type.name&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/p&amp;gt;&#xD;
+      &amp;lt;/div&amp;gt;&#xD;
+      &amp;lt;div class=&amp;quot;action-bar&amp;quot;&amp;gt;&#xD;
+        &amp;lt;a class=&amp;quot;btn btn-default&amp;quot; data-toggle=&amp;quot;modal&amp;quot; data-target=&amp;quot;#petModal&amp;quot; &#xD;
+          data-ng-click=&amp;quot;editPet(pet.id)&amp;quot;&amp;gt;&#xD;
+          &amp;lt;span class=&amp;quot;glyphicon glyphicon-edit&amp;quot;&amp;gt;&amp;lt;/span&amp;gt; Edit Pet&#xD;
+        &amp;lt;/a&amp;gt;&#xD;
+        &amp;lt;a class=&amp;quot;btn btn-default&amp;quot;&amp;gt;&#xD;
+          &amp;lt;span&amp;gt;&amp;lt;/span&amp;gt; Add Visit&#xD;
+        &amp;lt;/a&amp;gt;&#xD;
+      &amp;lt;/div&amp;gt;&#xD;
+    &amp;lt;/div&amp;gt;&#xD;
+  &amp;lt;/div&amp;gt;&#xD;
+&amp;lt;/div&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can probably spot some non-HTML additions to the template. It includes attributes like &lt;code&gt;data-ng-click&lt;/code&gt; which maps a click on a button to a method name call. There&amp;rsquo;s also &lt;code&gt;data-ng-repeat&lt;/code&gt; which loops through a JSON array and generates the necessary html code to render the same view for each item in the array. Yet with all the logic in place, we are still able to validate and view the html template from the browser.&lt;br/&gt;AngularJS calls all the non-html tags and attributes &amp;ldquo;directives&amp;rdquo; and the purpose of these directives is to enhance the capabilities of HTML. AngularJS also supports both HTML 4 and 5 so if you have templates that are still relying on HTML 4 DOCTYPEs, it should still work fine (although the validators for HTML 4 will not recognize data-ng-x attributes).&lt;/p&gt;&lt;p&gt;One big difference between using AngularJS and JSP is the &lt;strong&gt;rendering time&lt;/strong&gt;. If you use JSPs, the server renders html content. In contrast, if you use AngularJS, the rendering is happening in browser. Therefore, both the templates and JSON objects are to be sent to client side. It is worth to notice that AngularJS may briefly display the template before running DOM manipulation to generate content. For example, if AngularJS has not completed loaded, the date of birth in the page will be shown with an empty value before showing the real value.&lt;/p&gt;&lt;h2&gt;&lt;a href="#scopes-in-angularjs" class="anchor" name="scopes-in-angularjs"&gt;&lt;/a&gt;Scopes in AngularJS&lt;/h2&gt;&lt;p&gt;One important concept to grasp in AngularJS is that of scopes. In the past, whenever I had to write Javascript for my web application, I had to manage the variable names and construct special name-spaced objects in order to store my scoped properties. However, AngularJS does it for you automatically based on its MVx concept. Every directive will inherit a scope from its controller (or if you would like, an isolated scope that does not inherit other scope properties). The properties and variables created in this scope do not pollute the rest of the scopes or global context.&lt;/p&gt;&lt;p&gt;Scopes are used as the &amp;ldquo;glue&amp;rdquo; of an AngularJS application. Controllers in AngularJS use scopes to interact with the views. Scopes are also used to pass models and properties between directives and controllers. The advantage of this is that we are now forced to design our application in a way that components are self-contained and relationships between components have to be considered carefully through a use of a model that can be prototypically inherited from a parent scope.&lt;/p&gt;&lt;p&gt;A scope can be nested in another scope prototypically in the same way Javascript implements its inheritance model via prototyping. However, any property name that is declared in the child scope that is similar to the parent will hide the parent property from the child scope thereafter. An example of this can be described in the code below:&lt;/p&gt;
+&lt;pre&gt;&lt;code class="prettyprint html"&gt;&amp;lt;!DOCTYPE html&amp;gt;&#xD;
+&amp;lt;html&amp;gt;&#xD;
+  &amp;lt;head&amp;gt;&#xD;
+    &amp;lt;script data-require=&amp;quot;angular.js@*&amp;quot; data-semver=&amp;quot;1.4.0-rc.0&amp;quot; src=&amp;quot;https://code.angularjs.org/1.4.0-rc.0/angular.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;&#xD;
+    &amp;lt;link rel=&amp;quot;stylesheet&amp;quot; href=&amp;quot;style.css&amp;quot; /&amp;gt;&#xD;
+    &amp;lt;script src=&amp;quot;script.js&amp;quot;&amp;gt;&amp;lt;/script&amp;gt;&#xD;
+  &amp;lt;/head&amp;gt;&#xD;
+&#xD;
+  &amp;lt;body data-ng-app=&amp;quot;demo&amp;quot;&amp;gt;&#xD;
+    &amp;lt;h1&amp;gt;Scopes in AngularJS&amp;lt;/h1&amp;gt;&#xD;
+    &amp;lt;div data-ng-controller=&amp;quot;parentController&amp;quot;&amp;gt;&#xD;
+      &amp;lt;div data-ng-controller=&amp;quot;childController&amp;quot;&amp;gt;&#xD;
+        &amp;lt;span&amp;gt;This is a demonstration of scopes&amp;lt;/span&amp;gt;&#xD;
+        &amp;lt;div&amp;gt;&#xD;
+          Parent model: &amp;lt;span data-ng-bind=&amp;quot;$parent.model.name&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#xD;
+        &amp;lt;/div&amp;gt;&#xD;
+        &amp;lt;div&amp;gt;&#xD;
+          Current model: &amp;lt;span data-ng-bind=&amp;quot;model.name&amp;quot;&amp;gt;&amp;lt;/span&amp;gt;&#xD;
+        &amp;lt;/div&amp;gt;&#xD;
+        &amp;lt;div&amp;gt;&#xD;
+          &amp;lt;button data-ng-click=&amp;quot;updateModel()&amp;quot;&amp;gt;Click me&amp;lt;/button&amp;gt;&#xD;
+        &amp;lt;/div&amp;gt;&#xD;
+      &amp;lt;/div&amp;gt;&#xD;
+    &amp;lt;/div&amp;gt;&#xD;
+  &amp;lt;/body&amp;gt;&#xD;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;At the very top in the hierarchy of scopes is the $rootScope, a scope that is accessible globally and can be used as the last resort to share properties and models across the whole application. The use of this should be minimized as it introduces a sort of &amp;ldquo;global&amp;rdquo; variable that can pose the same problems when it is overused.&lt;/p&gt;&lt;p&gt;More information about scopes can be gleaned from the AngularJS documentation found &lt;a href="https://docs.angularjs.org/guide/scope"&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;h2&gt;&lt;a href="#directives-in-angularjs" class="anchor" name="directives-in-angularjs"&gt;&lt;/a&gt;Directives in AngularJS&lt;/h2&gt;&lt;p&gt;Directives are one of the most important concepts in AngularJS. They bring all the additional customized markup in the HTML elements, attributes, classes or comments. They are the ones giving the markup new functionalities.&lt;/p&gt;&lt;p&gt;The following code snippet demonstrates a customized directive called &lt;code&gt;wdsCustom&lt;/code&gt; that will replace the markup element &lt;code&gt;&amp;lt;wds-custom company=&amp;quot;wds&amp;quot;&amp;gt;&lt;/code&gt; with markup that contains information about a model called &lt;code&gt;wds&lt;/code&gt;. That model element is declared in the controller scope that wraps the directive. You can have a look at the files &lt;code&gt;app.js&lt;/code&gt;, &lt;code&gt;index.html&lt;/code&gt; and directive template &lt;code&gt;wds-custom-directive.html&lt;/code&gt; to see how this works in the plunkr snippet available &lt;a href="http://embed.plnkr.co/cP179vrMvavJieCXVe1X/preview"&gt;here&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;As this article does not attempt to teach you how to write a directive, you can refer to the official documentation &lt;a href="https://docs.angularjs.org/guide/directive"&gt;here&lt;/a&gt;.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>This Week in Spring - August 18, 2015</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/19/this-week-in-spring-august-18-2015" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2015-08-19:2215</id>
+    <updated>2015-08-19T00:26:46Z</updated>
+    <content type="html">&lt;p&gt;Welcome to another installment of &lt;em&gt;This Week in Spring&lt;/em&gt;! As usual, we&amp;rsquo;ve got a lot to cover so let&amp;rsquo;s get to it! This week I&amp;rsquo;m back in S?o Paulo, Brazil, to visit customers, then it&amp;rsquo;s off &lt;a href="http://qconrio.com/"&gt;to Rio for QCon Rio&lt;/a&gt;! If you&amp;rsquo;re in either city, message me on Twitter &lt;a href="http://twitter.com/starbuxman"&gt;and let&amp;rsquo;s grab a coffee&lt;/a&gt;!&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Today, Pivotal CEO Paul Maritz stepped down [and welcomed Pivotal Labs founder Rob Mee as the new CEO. There&amp;rsquo;s a post by &lt;a href="http://blog.pivotal.io/pivotal/news-2/how-far-weve-come"&gt;Paul&lt;/a&gt; and by &lt;a href="http://blog.pivotal.io/pivotal/news-2/we-transform-how-the-world-builds-software"&gt;Rob&lt;/a&gt;. Thank you, Paul, and welcome Rob!&lt;/li&gt;
+  &lt;li&gt;the amazing Scott Frederick just announced the &lt;a href="http://spring.io/blog/2015/07/29/spring-cloud-connectors-1-2-0-released"&gt;general availability of Spring Cloud Connectors 1.2.0!&lt;/a&gt; - check this out!&lt;/li&gt;
+  &lt;li&gt;Spring ninja St谷phane Nicoll just announced Spring Boot 1.3M4, &lt;a href="https://spring.io/blog/2015/08/18/spring-boot-1-3-0-m4-available-now"&gt;with fixes and improvements aplenty&lt;/a&gt;!&lt;/li&gt;
+  &lt;li&gt;Spring Integration lead Gary Russell just announced a CRAZY packed new Spring Integration 4.2 release including, but not limited to, support for security Context Propagation, STOMP client channel adapters, metrics, new Spring Framework 4.2 event channel adapters, a process barrier component, last modified file list filters, codec, JMS shared subscriptions, (S)FTP improvements, SOAP Action Propagation, &lt;a href="http://spring.io/blog/2015/08/17/spring-integration-4-2-release-candidate-is-available"&gt;and much more&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Not resting on his laurels, Spring Integration and Spring AMQP lead Gary Russel &lt;a href="http://spring.io/blog/2015/08/14/spring-amqp-1-5-0-release-candidate-available"&gt;&lt;em&gt;also&lt;/em&gt; announced Spring AMQP 1.5.0 has been released&lt;/a&gt;!&lt;/li&gt;
+  &lt;li&gt;the SPR blog has a nice post that looks at &lt;a href="http://spr.com/part-4-internationalization-in-spring-boot/"&gt;internationalization in a Spring Boot application&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Stephane Deraco put together &lt;a href="http://stephane-deraco.github.io/intro-spring-boot.html"&gt;a nice introductory look at Spring Boot&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Check out this implementation to have bean dependencies &lt;a href="https://github.com/karlkfi/spring-mvc-params"&gt;resolved as Spring MVC handler parameters&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Check out this two part &lt;a href="http://blog.pivotal.io/pivotal-cloud-foundry/features/going-all-microservices-with-spring-cloud-and-pivotal-cloud-foundry"&gt;podcast I did with Michael Cote on going cloud-native with Spring Boot, Spring Cloud and Cloud Foundry&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Pivotal Cloud Foundry &lt;em&gt;finally&lt;/em&gt; has support for Apache Geode (the project formerly known as Gemfire)&lt;/li&gt;
+  &lt;li&gt;Our pal Petri is back at it again, this time with a post on &lt;a href="http://www.petrikainulainen.net/programming/gradle/getting-started-with-gradle-creating-a-spring-boot-web-application-project/"&gt;using Gradle for a Spring Boot web application &lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Boot 1.3.0.M4 Available Now</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/18/spring-boot-1-3-0-m4-available-now" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>St谷phane Nicoll</name>
+    </author>
+    <id>tag:spring.io,2015-08-18:2214</id>
+    <updated>2015-08-18T09:16:25Z</updated>
+    <content type="html">&lt;p&gt;We&amp;rsquo;ve just released Spring Boot v1.3.0.M4 as we found an annoying regression with CloudFoundry deployment. This release includes &lt;a href="https://github.com/spring-projects/spring-boot/issues?q=milestone%3A1.3.0.M4+is%3Aissue+is%3Aclosed"&gt;additional fixes and improvements&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;For a complete list of changes, see the &lt;a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.3-Release-Notes"&gt;Spring Boot 1.3 Release Notes&lt;/a&gt; on the wiki and the updated &lt;a href="http://docs.spring.io/spring-boot/docs/1.3.0.M4/reference/htmlsingle/"&gt;reference documentation&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;&lt;a href="http://projects.spring.io/spring-boot/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-boot"&gt;GitHub&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-boot/issues"&gt;Issues&lt;/a&gt; | &lt;a href="http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle"&gt;Documentation&lt;/a&gt;&lt;/p&gt;&lt;h1&gt;&lt;a href="#springone-2gx-2015-is-around-the-corner" class="anchor" name="springone-2gx-2015-is-around-the-corner"&gt;&lt;/a&gt;SpringOne 2GX 2015 is around the corner!&lt;/h1&gt;&lt;p&gt;Book your place at &lt;a href="http://www.springone2gx.com"&gt;SpringOne2GX in Washington, DC&lt;/a&gt; soon. It&amp;rsquo;s simply the best opportunity to find out first hand all that&amp;rsquo;s going on and to provide direct feedback.&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Integration 4.2 Release Candidate is Available</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/17/spring-integration-4-2-release-candidate-is-available" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Gary Russell</name>
+    </author>
+    <id>tag:spring.io,2015-08-13:2212</id>
+    <updated>2015-08-17T09:27:00Z</updated>
+    <content type="html">&lt;p&gt;We are pleased to announce that the final release candidate for Spring Integration 4.2 (&lt;code&gt;4.2.0.RC1&lt;/code&gt;) is now available in the &lt;a href="https://repo.spring.io/milestone/"&gt;spring milestone repository&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Features of this release include:&lt;/p&gt;&lt;h2&gt;&lt;a href="#security-context-propagation" class="anchor" name="security-context-propagation"&gt;&lt;/a&gt;Security Context Propagation&lt;/h2&gt;&lt;p&gt;The security context can now be propagated across &lt;code&gt;ExecutorChannel&lt;/code&gt; and &lt;code&gt;QueueChannel&lt;/code&gt;s. The framework takes care of clearing the inherited security context when the downstream flow completes.&lt;/p&gt;&lt;h2&gt;&lt;a href="#stomp-client-channel-adapters" class="anchor" name="stomp-client-channel-adapters"&gt;&lt;/a&gt;STOMP Client Channel Adapters&lt;/h2&gt;&lt;p&gt;STOMP client-side channel adapters based on the support in Spring Framework 4.2 are now available (the initial work announced in milestone 1 is now complete).&lt;/p&gt;&lt;h2&gt;&lt;a href="#metrics" class="anchor" name="metrics"&gt;&lt;/a&gt;Metrics&lt;/h2&gt;&lt;p&gt;&lt;code&gt;MessageChannel&lt;/code&gt;, &lt;code&gt;MessageSource&lt;/code&gt; and &lt;code&gt;MessageHandler&lt;/code&gt; metrics can now be enabled independently of JMX.&lt;/p&gt;&lt;h2&gt;&lt;a href="#file-scanner" class="anchor" name="file-scanner"&gt;&lt;/a&gt;File Scanner&lt;/h2&gt;&lt;p&gt;A new directory scanner is available to more efficiently scan directory hierarchies by reacting to file system events rather than scanning the whole tree on every poll. (Requires Java 7)&lt;/p&gt;&lt;h2&gt;&lt;a href="#event-channel-adapters" class="anchor" name="event-channel-adapters"&gt;&lt;/a&gt;Event Channel Adapters&lt;/h2&gt;&lt;p&gt;The event channel adapters now support the new POJO &lt;code&gt;ApplicationEvent&lt;/code&gt; support in Spring Framework 4.2.&lt;/p&gt;&lt;h2&gt;&lt;a href="#process-barrier" class="anchor" name="process-barrier"&gt;&lt;/a&gt;Process Barrier&lt;/h2&gt;&lt;p&gt;A new component has been introduced allowing an integration flow to be suspended until some asynchronous event occurs. (&lt;a href="https://github.com/spring-projects/spring-integration-samples/pull/141"&gt;Sample app coming soon&lt;/a&gt; where we wait for RabbitMQ publisher confirms before returning an HTTP response).&lt;/p&gt;&lt;h2&gt;&lt;a href="#last-modified-file-list-filter" class="anchor" name="last-modified-file-list-filter"&gt;&lt;/a&gt;Last Modified File List Filter&lt;/h2&gt;&lt;p&gt;A common problem with polling directories is if the file producer creates the file &amp;ldquo;in-place&amp;rdquo;; the file can be picked up while it is still being written. It is generally recommended to create the file with a temporary name and rename it when it is complete. If that cannot be done, however, this new filter prevents a file from being processed until it hasn&amp;rsquo;t been modified for some time period.&lt;/p&gt;&lt;h2&gt;&lt;a href="#codec" class="anchor" name="codec"&gt;&lt;/a&gt;Codec&lt;/h2&gt;&lt;p&gt;A codec abstraction (including a Kryo implementation) has been introduced as an alternative to java serialization.&lt;/p&gt;&lt;h2&gt;&lt;a href="#jms-shared-subscriptions" class="anchor" name="jms-shared-subscriptions"&gt;&lt;/a&gt;JMS Shared Subscriptions&lt;/h2&gt;&lt;p&gt;JMS 2.0 shared subscriptions are now supported by the namespace, simplifying configuration when using XML.&lt;/p&gt;&lt;h2&gt;&lt;a href="#s-ftp-improvements" class="anchor" name="s-ftp-improvements"&gt;&lt;/a&gt;(S)FTP improvements&lt;/h2&gt;&lt;p&gt;Inbound channel adapters can now use an expression for the remote directory.&lt;/p&gt;&lt;h2&gt;&lt;a href="#soap-action-propagation" class="anchor" name="soap-action-propagation"&gt;&lt;/a&gt;SOAP Action Propagation&lt;/h2&gt;&lt;p&gt;It is now easier to implement a web service proxy using Spring Integration.&lt;/p&gt;&lt;h2&gt;&lt;a href="#previous-milestones" class="anchor" name="previous-milestones"&gt;&lt;/a&gt;Previous Milestones&lt;/h2&gt;&lt;p&gt;A reminder of features already announced that were in the &lt;a href="https://spring.io/blog/2015/05/28/spring-integration-4-2-milestone-1-is-available"&gt;milestone 1&lt;/a&gt; and &lt;a href="https://spring.io/blog/2015/07/07/spring-integration-4-2-milestone-2-is-available-and-4-1-6"&gt;milestone 2&lt;/a&gt; releases:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;A significant overhaul of the JMX support in the framework, providing performance and other improvements when JMX is enabled&lt;/li&gt;
+  &lt;li&gt;A mongodb metadata store&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;@SecuredChannel&lt;/code&gt; annotation&lt;/li&gt;
+  &lt;li&gt;Conditional Pollers - the polling interval can be adjusted dynamically, based on the results of (or before executing) the current poll&lt;/li&gt;
+  &lt;li&gt;Cross Origin Resource Sharing (CORS) support in the http inbound gateway&lt;/li&gt;
+  &lt;li&gt;Zookeeper Support for leadership, locks, and metadata&lt;/li&gt;
+  &lt;li&gt;CompletableFuture gateway method return values&lt;/li&gt;
+  &lt;li&gt;Aggregator improvements&lt;/li&gt;
+  &lt;li&gt;(S)FTP improvements&lt;/li&gt;
+  &lt;li&gt;Some performance bottlenecks have been identified and corrected.&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;For complete contents of the milestone releases, see the JIRA release notes for &lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10121&amp;version=14855"&gt;M1&lt;/a&gt; and &lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10121&amp;version=15106"&gt;M2&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For complete contents of this release candidate, see the &lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10121&amp;version=15231"&gt;release notes&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Also refer to the &lt;a href="http://docs.spring.io/spring-integration/docs/4.2.0.RC1/reference/html/whats-new.html"&gt;reference documentation &amp;ldquo;what&amp;rsquo;s new&amp;rdquo; chapter&lt;/a&gt;&lt;/p&gt;&lt;p&gt;See &lt;a href="http://projects.spring.io/spring-integration/"&gt;the project page&lt;/a&gt; for links to documentation, samples and download information.&lt;/p&gt;&lt;p&gt;Please try out these new features and improvements; it is your last chance for feedback before the final release planned for early September, just in time for SpringOne.&lt;/p&gt;&lt;p&gt;Also, don&amp;rsquo;t forget to check out the recent work in the &lt;strong&gt;Spring Integration Extensions projects&lt;/strong&gt; (&lt;a href="https://github.com/spring-projects/spring-integration-kafka"&gt;kafka&lt;/a&gt;, &lt;a href="https://github.com/spring-projects/spring-integration-extensions/tree/master/spring-integration-hazelcast"&gt;hazlecast&lt;/a&gt;).&lt;/p&gt;&lt;h1&gt;&lt;a href="#springone-2gx-2015-is-around-the-corner" class="anchor" name="springone-2gx-2015-is-around-the-corner"&gt;&lt;/a&gt;SpringOne 2GX 2015 is around the corner!&lt;/h1&gt;&lt;p&gt;Book your place at &lt;a href="http://www.springone2gx.com"&gt;SpringOne2GX in Washington, DC soon&lt;/a&gt;. It&amp;rsquo;s simply the best opportunity to find out first hand all that&amp;rsquo;s going on and to provide direct feedback. &lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring AMQP 1.5.0 Release Candidate Available</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/14/spring-amqp-1-5-0-release-candidate-available" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Gary Russell</name>
+    </author>
+    <id>tag:spring.io,2015-08-13:2213</id>
+    <updated>2015-08-14T16:53:00Z</updated>
+    <content type="html">&lt;p&gt;We are pleased to announce that the release candidate for the 1.5 release (&lt;code&gt;1.5.0.RC1&lt;/code&gt;) is now available.&lt;/p&gt;&lt;p&gt;New features and improvements in this release include:&lt;/p&gt;&lt;h2&gt;&lt;a href="#enhanced-ha-queue-support" class="anchor" name="enhanced-ha-queue-support"&gt;&lt;/a&gt;Enhanced HA Queue Support&lt;/h2&gt;&lt;p&gt;The high availability queue support has been enhanced in that you can configure a listener container to connect to the broker that is currently the master for the container&amp;rsquo;s queue. If the connection is lost, the new master is determined and a connection to that broker is established.&lt;/p&gt;&lt;h2&gt;&lt;a href="#rabbittemplate-blocking-receive" class="anchor" name="rabbittemplate-blocking-receive"&gt;&lt;/a&gt;RabbitTemplate Blocking Receive&lt;/h2&gt;&lt;p&gt;It is now possible to use the the &lt;code&gt;RabbitTemplate&lt;/code&gt; to receive ad-hoc messages. Previously, only a non-blocking &lt;code&gt;receive()&lt;/code&gt; was available.&lt;/p&gt;&lt;h2&gt;&lt;a href="#sendandreceive-operations-returns" class="anchor" name="sendandreceive-operations-returns"&gt;&lt;/a&gt;SendAndReceive Operations (returns)&lt;/h2&gt;&lt;p&gt;It is now possible to configure the &lt;code&gt;RabbitTemplate&lt;/code&gt; to throw an exception while waiting for a reply if a message is returned by the broker.&lt;/p&gt;&lt;h2&gt;&lt;a href="#messagelisteneradapter" class="anchor" name="messagelisteneradapter"&gt;&lt;/a&gt;MessageListenerAdapter&lt;/h2&gt;&lt;p&gt;The &lt;code&gt;MessageListenerAdapter&lt;/code&gt; can be configured to invoke different methods, based on the queue the message was received from.&lt;/p&gt;&lt;h2&gt;&lt;a href="#milestone" class="anchor" name="milestone"&gt;&lt;/a&gt;Milestone&lt;/h2&gt;&lt;p&gt;As a reminder, the following new features were previously announced when &lt;a href="https://spring.io/blog/2015/05/08/spring-amqp-1-4-5-release-and-1-5-0-m1-available"&gt;milestone 1&lt;/a&gt; was released:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Class-level &lt;code&gt;@RabbitListener&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Auto-Declare Queues and Bindings for &lt;code&gt;@RabbitListener&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Configurable Exchange/Routing Key for Replies&lt;/li&gt;
+  &lt;li&gt;RabbitManagementTemplate REST abstraction&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;Complete information about the contents of this release can be seen in the &lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10450&amp;version=15010"&gt;JIRA release notes&lt;/a&gt;. Also see the &lt;a href="http://docs.spring.io/spring-amqp/docs/1.5.0.RC1/reference/html/_introduction.html#_changes_in_1_5_since_1_4"&gt;&amp;ldquo;what&amp;rsquo;s new&amp;rdquo; section in the reference manual&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Please try out these new features and improvements; it is your last chance for feedback before the final release planned for early September, just in time for SpringOne.&lt;/p&gt;&lt;h1&gt;&lt;a href="#springone-2gx-2015-is-around-the-corner" class="anchor" name="springone-2gx-2015-is-around-the-corner"&gt;&lt;/a&gt;SpringOne 2GX 2015 is around the corner!&lt;/h1&gt;&lt;p&gt;Book your place at &lt;a href="http://www.springone2gx.com"&gt;SpringOne2GX in Washington, DC soon&lt;/a&gt;. It&amp;rsquo;s simply the best opportunity to find out first hand all that&amp;rsquo;s going on and to provide direct feedback. &lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>This Week in Spring - August 11, 2015</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/12/this-week-in-spring-august-11-2015" />
+    <category term="engineering" label="Engineering" />
+    <author>
+      <name>Josh Long</name>
+    </author>
+    <id>tag:spring.io,2015-08-12:2211</id>
+    <updated>2015-08-12T03:40:12Z</updated>
+    <content type="html">&lt;p&gt;Welcome to another installation of &lt;em&gt;This Week in Spring&lt;/em&gt;! As usual, we&amp;rsquo;ve got a lot to cover so let&amp;rsquo;s get to it!&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Spring ninja Stephane Nicoll just announced &lt;a href="http://spring.io/blog/2015/08/11/spring-boot-1-3-0-m3-available-now"&gt;Spring Boot 1.3.0.M3&lt;/a&gt;, chock full of great features including HTTP session persistence, JMS and AMQP improvements, logging improvements, and auto-configurations for the H2 Database console and embedded MongoDB.&lt;/li&gt;
+  &lt;li&gt;Spring Batch lead &lt;a href="http://spring.io/blog/2015/08/10/spring-batch-3-0-5-release-is-now-available"&gt;Michael Minella just announced Spring Batch 3.0.5&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Check out this cool look &lt;a href="http://www.javacodegeeks.com/2015/08/processing-twitter-feed-using-spring-boot.html"&gt;at using Spring Boot to process Twitter feeds with Neo4j&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;check out this interesting Chinese-language &lt;a href="http://samchu.logdown.com/posts/290211-spring-boot-yaml-uses"&gt;post on using &lt;code&gt;.yml&lt;/code&gt; with Spring Boot&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Disid corporation has &lt;a href="http://spring.io/blog/2015/08/11/spring-roo-1-3-2-rc1-maintenance-release-now-available"&gt;just announced a maintenance release for Spring Roo&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Just saw this post. Our very own &lt;a href="http://blog.pivotal.io/pivotal-cloud-foundry/pivotal-people/meet-cornelia-davis-pivotals-role-model-for-women-in-cloud"&gt;Cornelia Davis, director of platform engineering, was recognized as one of the top 10 women in cloud&lt;/a&gt; by CloudNOW! As she has for years now, &lt;a href="https://2015.event.springone2gx.com/presenters/cornelia_davis.html"&gt;she&amp;rsquo;ll be at SpringOne2GX&lt;/a&gt;..&lt;/li&gt;
+  &lt;li&gt;the All &amp;amp; Sundry blog has a cool post looking at how &lt;a href="http://www.java-allandsundry.com/2015/08/working-with-spring-cloud-and-netflix_8.html"&gt;to use Netflix&amp;rsquo;s Archaius with Spring Cloud&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Speaking of configuration management, check out this post on &lt;a href="http://blog.pivotal.io/pivotal-cloud-foundry/products/app-configuration-management-with-config-servers-in-cloud-foundry"&gt;using configuration servers, including the Spring Cloud Config Server, on Cloud Foundry&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;i dig this post on using &lt;a href="http://www.journaldev.com/8748/spring-4-mvc-security-managing-roles-example-with-in-memorywithout-web-xml-and-without-spring-xml-configuration"&gt;straight Java configuration to configure Spring Security roles&lt;/a&gt; in a Spring MVC web application.&lt;/li&gt;
+  &lt;li&gt;our very own Michael Cote asked me to record a podcast or two with him. &lt;a href="http://blog.pivotal.io/pivotal-conversations/features/injecting-cloud-native-thinking-into-java-with-spring-boot?utm_source=social&amp;account_id&amp;utm_medium=TWITTER&amp;pivotal&amp;utm_campaign=Products&amp;20150808"&gt;The first installment is now available&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;</content>
+  </entry>
+  <entry>
+    <title>Spring Roo 1.3.2 RC1 maintenance release now available</title>
+    <link rel="alternate" href="https://spring.io/blog/2015/08/11/spring-roo-1-3-2-rc1-maintenance-release-now-available" />
+    <category term="news" label="News and Events" />
+    <author>
+      <name>Pieter Humphrey</name>
+    </author>
+    <id>tag:spring.io,2015-08-11:2210</id>
+    <updated>2015-08-11T11:37:00Z</updated>
+    <content type="html">&lt;p&gt;On behalf on the Spring Roo team at DISID Corporation, I am pleased to announce&lt;br/&gt;that Spring Roo 1.3.2 RC1 released candidate is out.&lt;/p&gt;&lt;p&gt;Spring Roo is a rapid application development tool for Java,&lt;br/&gt;allowing you to create full enterprise applications in just minutes.&lt;/p&gt;&lt;p&gt;Spring Roo jar files have been published to Maven Central.&lt;br/&gt;As always, the release is available in the Spring IO repository.&lt;/p&gt;&lt;p&gt;The candidate release fixes the following issues:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Error adding InnerType constructor on ITD Generation &lt;a href="https://jira.spring.io/browse/ROO-3583"&gt;ROO-3583&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;JavaBean implementing Interface defining getters and setters &lt;a href="https://jira.spring.io/browse/ROO-3584"&gt;ROO-3584&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;JavaBean implementing Interface and overriding getter causing null pointer &lt;a href="https://jira.spring.io/browse/ROO-3585"&gt;ROO-3585&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Request loose additional parameters when change language &lt;a href="https://jira.spring.io/browse/ROO-3595"&gt;ROO-3595&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Add support to generate Generic Methods &lt;a href="https://jira.spring.io/browse/ROO-3648"&gt;ROO-3648&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Update Selenium to support later versions of Firefox &lt;a href="https://jira.spring.io/browse/ROO-3634"&gt;ROO-3634&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Add renderLabel attribute in form fields tags &lt;a href="https://jira.spring.io/browse/ROO-3639"&gt;ROO-3639&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;JpaActiveRecord entity implementing interface with getId(): double generation &lt;a href="https://jira.spring.io/browse/ROO-3587"&gt;ROO-3587&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Update Tomcat7 Maven plugin version &lt;a href="https://jira.spring.io/browse/ROO-3652"&gt;ROO-3652&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Generate command &amp;ldquo;selenium all&amp;rdquo; &lt;a href="https://jira.spring.io/browse/ROO-3636"&gt;ROO-3636&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Add support to generate Generic Methods &lt;a href="https://jira.spring.io/browse/ROO-3648"&gt;ROO-3648&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;It is highly recommended that all Spring Roo users upgrade to this version.&lt;/p&gt;&lt;p&gt;For full details on the changes made in the release, please refer to the&lt;br/&gt;&lt;a href="https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10340&amp;version=15266"&gt;Release Note in Jira&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For more project specific information please see the&lt;br/&gt;&lt;a href="http://projects.spring.io/spring-roo/"&gt;Site&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-roo"&gt;GitHub&lt;/a&gt; | &lt;a href="https://jira.spring.io/browse/ROO-3655"&gt;Issues in Jira&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Thanks to the awesome users who came up with useful bug reports and suggestions.&lt;br/&gt;This is a candidate release, please try out the updates and provide feedback.&lt;br/&gt;As always, you&amp;rsquo;ll also find Roo on Twitter - either follow @SpringRoo or just include #SpringRoo in your tweets.&lt;/p&gt;&lt;p&gt;Stay tuned!&lt;/p&gt;</content>
+  </entry>
+</feed>

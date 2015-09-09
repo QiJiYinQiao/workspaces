@@ -1,0 +1,80 @@
+package com.qqms.action;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.opensymphony.xwork2.ModelDriven;
+import com.qqms.model.Investor;
+import com.qqms.service.InvestorService;
+import com.qqms.util.PageUtil;
+import com.qqms.viewModel.GridModel;
+/**
+ * 用户管理Action
+ * @author panchuanhe
+ * @date 2015/05/22
+ */
+@Namespace("/investor")
+@Action(value = "investorAction")
+public class InvestorAction extends BaseAction implements ModelDriven<Investor>{
+	private static final long serialVersionUID = 1L;
+	/**
+     * 注入service层
+     */
+	private InvestorService investorService;
+	private Investor investor;
+	
+	/**
+	 * 查询列表
+	 */
+	public String findAllList()throws Exception{
+		StringBuffer whereHql = new StringBuffer();
+		if(StringUtils.isNotBlank(investor.getName())){
+			whereHql.append(" and t.name like '%"+investor.getName()+"%'");//客户姓名
+		}
+		if(StringUtils.isNotBlank(investor.getJobType())){
+			whereHql.append(" and t.jobType = '"+investor.getJobType()+"'");//工作类型
+		}
+		if(StringUtils.isNotBlank(investor.getIdNo())){
+			whereHql.append(" and t.idNo like '%"+investor.getIdNo()+"%'");//证件号码
+		}
+		if(StringUtils.isNotBlank(investor.getMobileTel())){
+			whereHql.append(" and t.mobileTel like '%"+investor.getMobileTel()+"%'");//手机号码
+		}
+		if(StringUtils.isNotBlank(investor.getEmail())){
+			whereHql.append(" and t.email like '%"+investor.getEmail()+"%'");//邮箱
+		}
+		if(StringUtils.isNotBlank(investor.getDescription())){
+			whereHql.append(" and t.description like '%"+investor.getDescription()+"%'");//描述
+		}
+		PageUtil pageUtil = new PageUtil(page,rows);
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(investorService.findList(whereHql.toString(), pageUtil));
+		gridModel.setTotal(investorService.getCount(whereHql.toString()));
+		OutputJson(gridModel);
+		return null;
+	}
+	
+	
+	public InvestorService getInvestorService() {
+		return investorService;
+	}
+	@Autowired
+	public void setInvestorService(InvestorService investorService) {
+		this.investorService = investorService;
+	}
+	public Investor getModel() {
+		if (null == investor) {
+			investor = new Investor();
+		}
+		return investor;
+	}
+	public Investor getInvestor() {
+		return investor;
+	}
+	public void setInvestor(Investor investor) {
+		this.investor = investor;
+	}
+	
+}

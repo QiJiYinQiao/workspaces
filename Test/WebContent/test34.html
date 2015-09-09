@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		.file-box{ position:absolute;width:340px;border:1px solid red;left:70px;top:60px;} 
+		.txt{ height:22px; border:1px solid #cdcdcd; width:180px;} 
+		.btn{ background-color:#FFF; border:1px solid #CDCDCD;height:24px; width:70px;} 
+		.file{position:absolute; height:24px;left:0px;top:0px; filter:alpha(opacity:0);opacity: 0;width:260px;z-index: 999; }
+	</style>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			$(function(){
+ 				var left = document.getElementById("file-box").offsetLeft;
+				var top = document.getElementById("file-box").offsetTop;
+				var width = document.getElementById("file-box").clientWidth;
+ 				var height = document.getElementById("file-box").clientHeight;
+ 				
+ 				var divinput = document.getElementById("fileField");
+ 				/* divinput.style.left = left-20 + "px";
+ 				divinput.style.top = top-40 + "px";  */
+				alert(left+":"+top+":"+width+":"+height);
+			});	
+	</script>
+</head>
+<body >
+		<div id="file-box" class="file-box"> 
+			<form action="" method="post" enctype="multipart/form-data"> 
+			<input type='text' name='textfield' id='textfield' class='txt' /> 
+			<input type='button' class='btn' value='ä¯ÀÀ...' /> 
+			<input type="file" name="fileField" class="file" id="fileField" size="28" onchange="document.getElementById('textfield').value=this.value" /> 
+			<input type="submit" name="submit" class="btn" value="ÉÏ´«" /> 
+			</form> 
+		</div>
+			
+</body>
+</html>

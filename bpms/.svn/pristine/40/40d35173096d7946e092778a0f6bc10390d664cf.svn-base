@@ -1,0 +1,21 @@
+package com.bpms.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.Organization;
+import com.bpms.service.OrganizationService;
+
+@Service
+public class OrganizationServiceImpl implements OrganizationService {
+
+	@Autowired
+	private BaseDAO<Organization> organizationDao;
+
+	@Override
+	public Organization findOrganizationById(Integer id) {
+		return organizationDao.get(Organization.class, id);
+	}
+
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		.attr("id",function(arr){
+			return "div-id" + arr;
+		})
+		.each(function(){
+			$("span",this).html("(id = ')" + this.id + "')");
+		})
+	});
+	</script>
+</head>
+<body >
+	<div>Zero-th <span></span></div>
+	<div>First<sapn></sapn></div>
+	<div>Second<span></span></div>
+	
+</body>
+</html>

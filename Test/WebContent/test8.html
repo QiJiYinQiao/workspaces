@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		/* $(document).ajaxSend(function(){
+			$(".log").text("Triggered ajaxSend handler.");
+		});
+		 */
+		$(".trigger").click(function(){
+			$(".result").load("ajax/test.html");
+		});
+		
+		$(document).ajaxStart(function(){
+			$(".log").text("Triggered ajaxStart handler!");
+		});
+		
+		$(document).ajaxStop(function(){
+			$(".log").text("Triggered ajaxStop handler..");
+		});
+		
+		
+		$(document).ajaxError(function(){
+			$(".log").text("Triggered ajaxError handler!..");
+		});
+		/* $(document).ajaxSend(function(event,jqxhr,settings){
+			if(settings.url == "test.html"){
+				$(".log").text("Trigger ajaxSend handler!!!!!!!!");
+			}
+		}) */
+		
+		$("form").submit(function(event){
+			alert("submit");
+			alert("$(this)"+$(this).serialize())
+			console.log($(this).serializeArray());
+			event.preventDefault();
+		})
+		
+		var myObject = {
+			a: {
+				one : 1,
+				two : 2,
+				three : 3
+			},
+			b:[1,2,3]
+		};
+		var recursiveEncoded = $.param(myObject);
+		var recursiveDecoded = decodeURIComponent($.param(myObject));
+		
+		alert(recursiveEncoded);
+		alert(recursiveDecoded);
+	});
+	</script>
+</head>
+<body >
+	<form>
+		<div><input type="text" name="a" value="1" id="a"> </div>
+		<div><input type="text" name="b" value="2" id="b"> </div>
+		<div><input type="text" name="c" value="3" id="c"> </div>
+		<div>
+			<textarea name="d" rows="8" cols="40">4</textarea>
+		</div>
+		<div>
+			<select name="e">
+				<option value="5" selected="selected">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+			</select>
+		</div>
+		<div>
+			<input type="checkbox" name="f" value="8" id="f">
+		</div>
+		<div>
+			<input type="submit" name="g" value="submit" id="g">
+		</div>
+	</form>
+	
+</body>
+</html>

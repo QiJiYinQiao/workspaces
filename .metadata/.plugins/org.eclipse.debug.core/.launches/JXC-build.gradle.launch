@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.nodeclipse.enide.gradle.launch.daemon.LaunchConfigurationType">
+<stringAttribute key="KEY_FILE_PATH" value="/JXC/build.gradle"/>
+</launchConfiguration>

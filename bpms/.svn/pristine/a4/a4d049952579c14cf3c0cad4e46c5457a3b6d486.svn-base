@@ -1,0 +1,35 @@
+package com.bpms.service.impl;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.LoanCustRepaymentDetail;
+import com.bpms.service.LoanCustRepaymentDetailService;
+
+/**
+ * 贷款客户还款明细实现类
+ * 
+ * @author liuhh
+ *
+ */
+@Service
+public class LoanCustRepaymentDetailServiceImpl implements
+		LoanCustRepaymentDetailService {
+
+	@Autowired
+	private BaseDAO<LoanCustRepaymentDetail> loanCustRepaymentDetailDao;
+
+	@Override
+	public boolean persistenceLoanCustRepaymentDetail(
+			LoanCustRepaymentDetail loanCustRepaymentDetail) {
+		if (StringUtils.isBlank(loanCustRepaymentDetail.getRdId())) {
+			loanCustRepaymentDetailDao.save(loanCustRepaymentDetail);
+		} else {
+			loanCustRepaymentDetailDao.update(loanCustRepaymentDetail);
+		}
+		return true;
+	}
+
+}

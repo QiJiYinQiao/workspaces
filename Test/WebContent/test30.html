@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	<script src="other_lib.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			$(function(){
+				var div = $("div")[0];
+				$("span:eq(0)").text("" + $("div").data("text1"));
+				jQuery.data(div,"test1","VALUE-1");
+				jQuery.data(div,"test2","VALUE-2");
+				$("span:eq(1)").text("" + jQuery.data(div,"test1"));
+				jQuery.removeData(div,"test1");
+				$("span:eq(2)").text("" + jQuery.data(div,"test1"));
+				$("span:eq(3)").text("" + jQuery.data(div,"test2"));
+				
+			});	
+	</script>
+</head>
+<body >
+	<div>value1 before creation:<span></span></div>
+	<div>value1 after creation:<span></span></div>
+	<div>value1 after remove1: <span></span></div>
+	<div>value2 after removal:<span></span></div>
+	
+</body>
+</html>

@@ -1,0 +1,151 @@
+<%@page import="com.bpms.shiro.ShiroUser"%>
+<%@page import="com.bpms.util.Constants"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+ShiroUser user = Constants.getCurrendUser();
+session.setAttribute("user", String.valueOf(user.getUserId()));
+%>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title>欢迎</title>
+    <meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<jsp:include page="layout/script.jsp"></jsp:include>
+	<!-- <script type="text/javascript" src="js/pushlet/ajax-pushlet-client.js"></script> -->		
+	<script type="text/javascript" src="js/jCallout/jCallout.js"></script>
+	<script type="text/javascript">
+	// websocket对象
+	var websocket;
+	$(function(){
+		initMenu();
+	    initWebSocket();
+		if (jqueryUtil.isLessThanIe8()) {
+			$.messager.show({
+				title : '警告',
+				msg : '您使用的浏览器版本太低！<br/>建议您使用谷歌浏览器来获得更快的页面响应效果！',
+				timeout : 1000 * 30
+			});
+		}
+	});
+	
+	// 初始化菜单
+	function initMenu(){
+			$("#menuTree").tree({
+					url : 'systemAction!findAllFunctionList.action',
+					method : 'get',
+					animate : true,
+					onContextMenu : function(e, node) {
+						e.preventDefault();
+						$(this).tree('select', node.target);
+						$('#mm').menu('show', {
+							left : e.pageX,
+							top : e.pageY
+						});
+					},
+					onClick : function(node) {
+						if (node.attributes.url != "javascript:void(0);") {
+							var parent = $(this).tree("getParent",node.target);
+							var effort = node.text+"("+parent.text.substr(0,2)+")" + "||" + node.iconCls
+									+ "||" + node.attributes.url;
+							addTab(effort);
+							// 点击代办任务的菜单的时候将任务的个数清零
+							if(node.id=='109'){
+								$(node.target).parent().children('.callout').hide();
+							}
+							// 点击受理人的菜单的时候将任务的个数清零
+							else if(node.id=='111'){
+								$(node.target).parent().children('.callout').hide();
+							}
+						}
+					}
+				});
+	}
+	
+	
+	//初始话WebSocket
+	function initWebSocket() {
+		websocket = new WebSocket(encodeURI('ws://localhost:8080/bpms/message'));
+		websocket.onopen = function() {
+			//连接成功
+			console.info("链接成功");
+		}
+		websocket.onerror = function() {
+			//连接失败
+			console.info("链接失败");
+		}
+		websocket.onclose = function() {
+			//连接断开
+			console.info("链接断开");
+		}
+		//消息接收
+		websocket.onmessage = function(message) {
+			var message = JSON.parse(message.data);
+			//接受贷款代办任务的提示信息
+			if (message.type == 'message' && message.dataType== 'unClaimLoanOrder') {
+                var menu = $("#menuTree").tree('find',"109");
+				$(menu.target).jCallout({
+         		   message: message.data,
+         		   position:"right",
+         		   backgroundColor: "red",
+       	           textColor: "#3B3b3B",
+       			   $closeElement: $("")
+         		});
+         		$(menu.target).parent().children('.callout').show();
+         	}
+			
+			// 接受贷款受理人的提示信息
+			if (message.type == 'message' && message.dataType== 'claimLoanOrder') {
+                var menu = $("#menuTree").tree('find',"111");
+				$(menu.target).jCallout({
+         		   message: message.data,
+         		   position:"right",
+         		   backgroundColor: "red",
+        	           textColor: "#3B3b3B",
+        			   $closeElement: $("")
+         		});
+         		$(menu.target).parent().children('.callout').show();
+         	}
+		}
+	};
+
+	</script>
+	<style type="text/css">
+	#menuAccordion a.l-btn span span.l-btn-text {
+	    display: inline-block;
+	    height: 14px;
+	    line-height: 14px;
+	    margin: 0px 0px 0px 10px;
+	    padding: 0px 0px 0px 10px;
+	    vertical-align: baseline;
+	    width: 128px;
+	}
+	#menuAccordion 	a.l-btn span span.l-btn-icon-left {
+	    background-position: left center;
+	    padding: 0px 0px 0px 20px;
+	}
+	#menuAccordion .panel-body {
+		padding:5px;
+	}
+	#menuAccordion span:focus{
+		outline: none;
+	}
+	</style>
+	<link rel="stylesheet" type="text/css" href="js/jCallout/jCallout.css">
+  </head>
+ <body class="easyui-layout">
+	<div data-options="region:'north',border:false" style="height:40px;background:#EEE;padding:10px;overflow: hidden;"  href="layout/north.jsp"></div>
+	<div data-options="region:'west',split:true,title:'导航菜单'" style="width:200px;">
+			<ul id="menuTree"></ul>
+	</div> 
+	<div data-options="region:'south',border:false" style="height:25px;background:#EEE;padding:5px;" href="layout/south.jsp"></div>
+	<div data-options="region:'center',plain:true,title:'欢迎来到钱钱金融CRM客户关系管理系统'" style="overflow: hidden;"  href="layout/center.jsp"></div>
+<%--	<jsp:include page="user/loginAndReg.jsp"></jsp:include>--%>
+</body>
+</html>

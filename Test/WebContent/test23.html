@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		(function(){
+			var sub$ = jQuery.sub();
+			sub$.fn.myCustomMethod = function(){
+				return "just for me";
+			};
+			
+			sun$(document).ready(function(){
+				sub$("body").myCustomMethod()
+			});
+		})();
+		
+		typeof jQuery("body").myCustomMethod//undefined
+		
+		(function(){
+			var myjQuery = jQuery.sub();
+			
+			myjQuery.fn.remove = function(){
+				//New functionality:Trigger a remove event
+				this.trigger("remove");
+			
+				//Be sure to call the original jQuery remove method
+				return jQuery.fn.remove.apply(this,arguments);
+				
+			};
+			
+			myjQuery(function($){
+				$(".menu").click(function(){
+					$(this).fund(".submunu").remove();
+					
+				});
+				
+				//A new remove event is now triggered form this copy of jQuery
+				$(document).on("remove",function(event){
+					$(event.target).parent().hide();
+				});
+			});
+		})();
+		//Regular jQuery doesn't trigger a remove event when removing an element
+		//This functionality is only contained within the modified 'myjQuery'.
+		
+		(function(){
+			//Create a new copy of jQuery using sub()
+			var plugin = jQuery.sub();
+			
+			//Extend that copy with the new plugin methods
+			plugin.fn.extend({
+				open: function(){
+					return this.show();
+				},
+				close:function(){
+					rturn this.hide();
+				}
+			});
+			
+			//Add our plugin to the original jQuery
+			jQuery.fn.myplugin = function(){
+				this.addclass("plugin");
+				
+				//Make sure our plugin returns our special plugin version of jQuery
+				return plugin(this);
+				
+			};
+		
+		})();
+		
+		(function(){
+			//Create a new copy of jQuery using sub()
+			var plugin = jQuery.sub();
+			
+			//Extend that copy with the new plugin methods
+			plugin.fn.extend({
+				open:function(){
+					return this.show();
+				},
+				close:function(){
+					return this.hide();
+				}
+			});
+			
+			//Add our plugin to the original jQuery
+			jQuery.fn.myplugin = function(){
+				this.addClass("plugin");
+				
+				//Make sure our plugin returns our special plugin version of jQuery
+				return plugin(this);
+				
+			};
+			
+		})();
+		
+		$(document).ready(function(){
+			//Call the plugin,open method now exists
+			$("#main").myplugin().open();
+			
+			//Note:Calling just $("#main").open() won't work as oen doesn't exist
+		})
+		
+	
+	});
+	</script>
+</head>
+<body >
+	
+	
+	
+	
+</body>
+</html>

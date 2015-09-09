@@ -1,0 +1,156 @@
+package com.qqms.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+/**
+ * 
+ * 
+ * 财富申请表
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+@Entity
+@Table(name = "TB_FINANCING_ORDER")
+@DynamicUpdate(true)
+@DynamicInsert(true)
+public class FinancingOrder implements java.io.Serializable {
+
+	/** serialVersionUID. */
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID", nullable = false)
+	private Integer id; // 主键
+
+	@Column(name = "NAME", length = 50)
+	private String name; // 名称
+
+	@Column(name = "IDCARD", length = 50)
+	private String idCard; // 身份证号
+
+	@Column(name = "AGE", length = 50)
+	private Integer age; // 年龄
+
+	@Column(name = "ADDRESS", length = 50)
+	private String address; // 地址
+
+	@Column(name = "CUURENT_ADDRESS", length = 50)
+	private String cuurentAddress; // 现居地址
+
+	@Column(name = "PHONE", length = 50)
+	private String phone; // 手机
+
+	@Column(name = "ADDRESS_PHONE", length = 50)
+	private String addressPhone; // 地址电话
+
+	@Column(name = "WORK_UNIT", length = 50)
+	private String workUnit; // 工作单位
+
+	@Column(name = "STATUS", length = 50)
+	private String status;
+
+	@Column(name = "IS__PROCESS_OPEN", length = 50)
+	private String isProcessOpen = "0";// 0未开启,1流程中,2流程结束
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getIdCard() {
+		return idCard;
+	}
+
+	public void setIdCard(String idCard) {
+		this.idCard = idCard;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getCuurentAddress() {
+		return cuurentAddress;
+	}
+
+	public void setCuurentAddress(String cuurentAddress) {
+		this.cuurentAddress = cuurentAddress;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getAddressPhone() {
+		return addressPhone;
+	}
+
+	public void setAddressPhone(String addressPhone) {
+		this.addressPhone = addressPhone;
+	}
+
+	public String getWorkUnit() {
+		return workUnit;
+	}
+
+	public void setWorkUnit(String workUnit) {
+		this.workUnit = workUnit;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getIsProcessOpen() {
+		return isProcessOpen;
+	}
+
+	public void setIsProcessOpen(String isProcessOpen) {
+		this.isProcessOpen = isProcessOpen;
+	}
+
+}

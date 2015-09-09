@@ -1,0 +1,67 @@
+package com.bpms.service;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import com.bpms.model.LoanCustRepaymentDetail;
+import com.bpms.model.vo.CustomerRepaymentInfoModel;
+import com.bpms.util.PageUtil;
+
+/**
+ * 贷款客户款款明细处理
+ * 
+ * @author liuhh
+ *
+ */
+public interface LoanCustRepaymentDetailService {
+	/**
+	 * 持久化信息
+	 */
+	public boolean persistenceLoanCustRepaymentDetail(
+			LoanCustRepaymentDetail loanCustRepaymentDetail);
+	
+	/**
+	 * 客户还款详情
+	 * @param map
+	 * @param pageUtil
+	 * @return
+	 */
+	public List<CustomerRepaymentInfoModel> findLoanCustRepaymentDetail(Map<String, Object> map, PageUtil pageUtil);
+	
+	/**
+	 * 客户还款详情记录总条数
+	 * @param map
+	 * @return
+	 */
+	public Long getCountoFLoanCustRepaymentDetail(Map<String,Object> map);
+
+	/**
+	 * 根据合同号查询客户还款详情
+	 * @param map
+	 * @param pageUtil
+	 * @return
+	 */
+	public List<LoanCustRepaymentDetail> findRepaymentDetailByCno(Map<String, Object> map, PageUtil pageUtil);
+	
+	/**
+	 * 根据合同号查询客户还款详情记录总条数
+	 * @param map
+	 * @return
+	 */
+	public Long getCountRepaymentDetail(Map<String,Object> map);
+	
+	/**
+	 * 导出客户还款明细
+	 * @throws IOException 
+	 * @throws Exception 
+	 */
+	public void exportLoanCustRepaymentDetail() throws IOException, Exception;
+	
+	/**
+	 * 根据ID查询客户还款详情
+	 * @param id
+	 * @return
+	 */
+	public LoanCustRepaymentDetail findCustRepaymentDeatilById(String id);
+}

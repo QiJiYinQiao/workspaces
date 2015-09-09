@@ -1,0 +1,7 @@
+<classpath>
+  <container id="bpms!org.eclipse.jst.j2ee.internal.web.container">
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/shiro-all-1.2.1.jar">
+      <source-attachment-path>D:/shiro-root-1.2.3-source-release</source-attachment-path>
+    </entry>
+  </container>
+</classpath>

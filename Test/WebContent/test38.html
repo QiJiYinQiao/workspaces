@@ -1,0 +1,136 @@
+<!DOCTYPE html >
+<html>
+<head>
+<meta charset="utf-8">
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/canvas2d.js"></script>
+<script type="text/javascript" src="js/GuaGuaLe2.js"></script>
+<script type="text/javascript">
+	$(function(){
+		 var $frontCanvas = new Canvas2D($("#front"));
+         var $backCanvas = new Canvas2D($("#back"));
+
+         $frontCanvas.penColor("gold");
+         $frontCanvas.fontSize(24);
+         $frontCanvas.drawRect({x: 0, y: 0}, {x: $frontCanvas.width(), y: $frontCanvas.height()}, true);
+         $frontCanvas.penColor("red");
+         $frontCanvas.drawText("Hello World", {x: 80, y: 60}, true);
+
+         var $backCanvas = new Canvas2D($("#back"));
+
+         $backCanvas.penColor("silver");
+         $backCanvas.fontSize(24);
+         $backCanvas.drawRect({x: 0, y: 0}, {x: $backCanvas.width(), y: $backCanvas.height()}, true);
+//         $backCanvas.clearRect({x: 0, y: 0}, {x: 100, y: 2});
+
+         var isStart = false;
+         var startp = {};
+         var ps = [];
+         $("#back").mousedown(function (event)
+         {
+             isStart = true;
+             startp = $backCanvas.getCanvasPoint(event.pageX, event.pageY);
+
+             console.log("down");
+         }).mousemove(function (event)
+                 {
+                     if (!isStart)return;
+//                     console.log(event.clientX , event.clientY);
+//                     console.log(event.pageX, event.pageY);
+                     var p = $backCanvas.getCanvasPoint(event.pageX, event.pageY);
+
+//                     var tmp = {};
+                     var k;
+                     //startp p
+                     if (p.x > startp.x)
+                     {
+                         k = (p.y - startp.y) / (p.x - startp.x);
+//                         k = Math.abs(k);
+                         console.log(k);
+                         for (var i = startp.x; i < p.x; i += 5)
+                         {
+//                             tmp.x = i;
+//                             tmp.y = ;
+                             $backCanvas.clearRect({x: i, y: (startp.y + (i - startp.x) * k)}, {});
+//                             ps.push(tmp);
+                         }
+
+                     } else
+                     {
+                         k = (p.y - startp.y) / (p.x - startp.x);
+//                         k = Math.abs(k);
+                         for (var i = startp.x; i > p.x; i -= 5)
+                         {
+//                             tmp.x = i;
+//                             tmp.y = startp.y - ( startp.x - i ) * k;
+//                             ps.push(tmp);
+                             $backCanvas.clearRect({x: i, y: (startp.y + ( i - startp.x  ) * k)}, {});
+                         }
+                     }
+
+                     startp = p;
+
+
+//                     ps.push(p);
+//                     redraw(ps);
+                 }).mouseup(function (event)
+                 {
+                     isStart = false;
+                 });
+
+
+         function redraw(ps)
+         {
+             for (var i = 0; i + 1 < ps.length; i++)
+             {
+                 var start = ps[i];
+//                 var end = ps[i + 1];
+
+                 $backCanvas.clearRect(start, {});
+             }
+             startp = ps[ps.length - 1];
+             ps = [];
+
+
+         }
+	})；
+</script>
+<style type="text/css">
+	body
+	{
+		/* background:url("s_bd.jpg") repeat 0 0;	 */
+		background-color: black;
+	}
+	
+	.container
+	{
+		position:relative;
+		width:400px;
+		height:160px;
+		margin:100px auto 0;
+		background:url(s_title.png) no-repeat 0 0;
+		background-size:100% 100%;
+	}
+	
+	#frount,#back
+	{
+		position:absolute;
+		width:200px;
+		left:50%;
+		top:100%;
+		margin-left:-130px;
+		height:80px;
+		border-radius:5px;
+		border:1px solid #444;
+	}
+	
+</style>
+</head>
+
+<body>
+	<div class="container">
+		<canvas id="back" width="200" height="80"></canvas>
+		<canvas id="front" width="200" height="80"></canvas>
+	</div>
+</body>
+</html>

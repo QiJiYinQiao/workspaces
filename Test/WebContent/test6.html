@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<title>
+		对话框移动----消失
+	</title>
+</head>
+<body bgcolor="#fef4d9" onload="showWindow()">
+	<script type="text/javascript">
+		var popwindow;
+		var popwindowwidth=200;			//窗口宽度
+		var popwindowheight=200;		//窗口高度
+		var popwindowtop=200;			//窗口上边距
+		
+		var popwindowURL = "test5.html";
+		var popwindowleft = popwindowheight-50;	//窗口左边距
+		var marginright;
+		var pagecenter;
+		var timer;
+		function showWindow(){
+			popwindow = window.open(popwindowURL,"popwindow","toolbar=no,width="+popwindowwidth+",height="+popwindowheight+",top"+popwindowtop+",left="+(-popwindowwidth)+"");
+			marginright = screen.height+50;		//定义出现位置
+			pagecenter=Math.floor(marginright/2)-Math.floor(popwindowwidth/2); //窗口停留位置
+			
+			movewindow();
+		}
+		
+		function movewindow(){
+			if(popwindowleft<=pagecenter){
+				popwindow.moveTo(popwindowleft,popwindowtop); //移动位置
+				popwindowleft+=40;	//位置累加
+				timer=setTimeout("movewindow()",500);
+			}else{
+				clearTimeout(timer);
+				timer=setTimeout("movewindow2()",4000);
+			}
+		}
+		
+		function movewindow2(){
+			if(popwindowleft<=marginright){
+				popwindow.moveTo(popwindowleft,popwindowtop);
+				popwindowleft+=40;
+				timer=setTimeout("movewindow2()",500);
+			}else{
+				clearTimeout(timer);
+				popwindow.close();
+			}
+		}
+	</script>
+	
+</body>
+</html>

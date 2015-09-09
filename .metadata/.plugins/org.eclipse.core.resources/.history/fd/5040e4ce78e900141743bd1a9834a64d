@@ -1,0 +1,15 @@
+package com.test;
+
+import java.io.File;
+
+public class Test1 {
+	public static int i = 0;
+	public static int j = 0;
+	public static void main(String[] args) {
+		for(i<9;i++){
+			for(j<9;j++){
+				System.out.println("*");
+			}
+		}
+	}
+}

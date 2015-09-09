@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    <title>贷款业务管理</title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<script src="js/external/jquery/jquery.js"></script>
+	<script type="text/javascript" src="js/dynamicForm.js"></script>
+	<script type="text/javascript">
+			var $dg;
+			var $grid;
+			//贷款申请
+			function loanApplication(){
+				$('#loan_application').dialog("open");
+			}
+			var i = 0;
+			//添加信息
+			function addInfo(str){
+				var strId = str.split("-")[0];
+				var strName = str.split("-")[1];
+				console.info(strId+":"+strName);
+				var copy_info = $("#"+strId).clone().html();
+				copy_info = copy_info.replace("<tbody>","<table id='"+strId+i+"'>");
+				copy_info = copy_info.replace("</tbody>","<tr><td colspan = '3'><a href='javascript:void(0);' class='easyui-linkbutton' iconCls='icon-del' plain='true' onclick='delInfo("+strId+i+''+");'>删除"+strName+"</a></td></tr></table>");
+ 				//copy_info += "<a href='javascript:void(0);' class='easyui-linkbutton' iconCls='icon-add' plain='true' onclick='delContacter("+i+");'>删除联系人</a>"
+				console.info(copy_info);
+ 				$("#"+strId.replace("_table","")).append(copy_info);
+ 				i++;
+ 				//$("#basic_info_table").clone().appendTo("#basic_info");
+			}
+			
+			//删除信息
+			function delInfo(id){
+				$(id).remove();
+			}
+			
+			//上传附件
+			function uploadForm(){
+				$("#upload_form").dialog("open");
+				$("#upload_form input:first").click().attr("checked","checked");
+			}
+			
+			//附件类型 添加/删除事件 
+			function credentialChoose(obj,val){
+				/* alert("sd"+obj.checked);
+ 				var inner = "<div>" + $("#upload_form_div").clone().html() + "</div>";
+ 				console.info(inner);
+ 				$("#upload_form").appendChild(inner); */ 
+ 				//console.info($("#upload_form_div").clone());
+ 				var vals = val.split("-");
+ 				//console.info($("#1 span:first").html()+"::::"+vals);
+ 				var divId = "cred"+vals[0];
+			 	if(obj.checked){
+					//$("#upload_form_div").clone().attr("id",divId).appendTo("#upload_form_div_add");
+					var fartherDiv = "<div id='farther"+divId+"'></div>"
+					$("#upload_form_div_add").append(fartherDiv);
+					$("#upload_form_div").clone().attr("id",divId).appendTo("#farther"+divId);
+					$("#"+divId+"  span:first").html(vals[1]);
+				}else{
+					$("#farther"+divId).remove();
+				} 
+				
+			}
+			
+			//增加一条同类型附件
+			function addACredential(obj){
+				var pDiv = obj.parentElement;
+				//console.info(pDiv.parentElement.id);
+				//console.info($(pDiv).attr("id")+"::::"+$(pDiv)+":::::"+pDiv.id);
+				//$("<div>123123</div>").appendTo("#"+pDiv.parentElement.id);
+				$(pDiv.parentElement).append("<div>"+$(pDiv).html()+"</div>");
+				var pDivId = pDiv.id;
+				console.info($("#"+pDivId));
+				$("#"+pDivId).appendTo("#"+pDiv.parentElement.id);
+				
+			}
+			
+			
+			//删除一条同类型附件
+			function removeACredential(obj){
+				var pDiv = obj.parentElement;
+				//alert($(obj).parent().parent().length);
+				var ppDiv = $(obj).parent().parent();
+				//alert(ppDiv.children().length);
+				if(ppDiv.children().length==1){
+					//$("#upload_form input:gt")
+				}
+				$(pDiv).remove();
+			}
+			
+		</script>
+  </head>
+  <body>
+      <div data-options="region:'center',border : false">
+  		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
+				<a href="javascript:void(0);" class="easyui-linkbutton" onclick="loanApplication();">填写申请</a>&nbsp;&nbsp;
+				<a href="javascript:void(0);" class="easyui-linkbutton" onclick="uploadForm();">上传附件</a>
+		</div>
+		<div id="lookLoanOrderApply" class="easyui-dialog" title="申请状态" data-options="border:false,closed:true" style="width: 1400px;height: 500px;">
+			<table id="lookLoanOrderdg" title="批注信息"></table>
+		</div>
+	    <div id="imageDialog" class="easyui-dialog" title="流程图片" data-options="border:false,closed:true,fit:true">
+			<img id="image" src="" >
+		</div>
+		
+	    <div id="upload_form" class="easyui-dialog" title="附件上传" data-options="border:false,width:800,height:600,left:300,top:100">
+			<input type="checkbox" checked="checked" name="credential_type" value="1" onclick="credentialChoose(this,this.value+'-身份证明');">身份证明
+			<input type="checkbox" name="credential_type" value="2" onclick="credentialChoose(this,this.value+'-户口本');">户口本
+			<input type="checkbox" name="credential_type" value="3" onclick="credentialChoose(this,this.value+'-合同');">合同
+			<input type="checkbox" name="credential_type" value="4" onclick="credentialChoose(this,this.value+'-结婚证明');">结婚证明
+		
+			<div id="upload_form_div_add">
+				<div id="upload_form_father_idDiv" style="display: none;">
+					<div id="upload_form_div">
+						<span>身份证明</span><input type="text"><input type="file"> 
+						<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
+						<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
+						<input type="button" value="&nbsp;-&nbsp;" id="deleteLocation_0" title="Delete this location"
+                       onclick="$(document).dynamicForm('remove', '_upload_form_father_', this);" />
+                		<input type="button" value="&nbsp;+&nbsp;" id="addLocation_0" title="Add a location"
+                       onclick="$(document).dynamicForm('add', '_upload_form_father_', this);" />
+					</div>
+				</div>
+			</div>
+			
+			
+			<div>
+				注：重复上传相同名称的附件会覆盖之前上传的附件
+			
+			<a href="javascript:void(0);" class="easyui-linkbutton"  plain="true" onclick="addRowsOpenDlg();">确定上传</a>
+			</div>
+		</div>
+		
+		
+			</div> 
+			<a href="javascript:void(0);" class="easyui-linkbutton" style="float: right;" plain="true" onclick="save();">确认保存</a>
+  
+  	<script type="text/javascript">
+  	 $(document).ready(function() {
+         $(document).dynamicForm('set', '#upload_form_father_idDiv', '#upload_form_div')
+                 .dynamicForm('init');
+     });
+  	</script>
+  </body>
+</html>

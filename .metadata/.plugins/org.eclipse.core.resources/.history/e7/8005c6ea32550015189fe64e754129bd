@@ -1,0 +1,5 @@
+package com.sun.dao;
+
+public class UserDao {
+
+}

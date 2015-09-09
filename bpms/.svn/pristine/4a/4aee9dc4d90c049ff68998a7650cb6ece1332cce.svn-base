@@ -1,0 +1,54 @@
+package com.bpms.service;
+
+import java.util.List;
+
+import com.bpms.model.InvestProduct;
+import com.bpms.util.PageUtil;
+
+/**
+ * 
+ * 理财产品的Service接口
+ * 
+ * @author 张健 2015/07/15
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/07/15 张健 创建.
+ */
+public interface InvestProductService {
+
+	/**
+	 * 获得所有的理财产品信息列表
+	 * @return List<InvestProduct>
+	 */
+	public Object[] getAllInvestProducts(String queryItem, String operType,
+			String userInputCondition, PageUtil pageUtil);
+
+	/**
+	 * 根据理财产品的ID，删除理财产品
+	 * @return Boolean
+	 */		
+	public boolean deleteInvestProductById(String investProductId);
+
+	
+	/**
+	 * 根据理财产品的ID，获得单个理财产品的所有信息。
+	 * @param investProductId
+	 * @return List<InvestProduct>
+	 */
+	public InvestProduct findInvestProductDetailsById(String investProductId);
+
+	/**
+	 * 增加或者修改理财产品
+	 * @param model
+	 * @return
+	 */
+	public boolean persistenceInvestProduct(InvestProduct model);
+
+	/**
+	 * 获得所有的投资产品
+	 * @return
+	 */
+	public List<InvestProduct> getAllInvestProducts();
+	
+}

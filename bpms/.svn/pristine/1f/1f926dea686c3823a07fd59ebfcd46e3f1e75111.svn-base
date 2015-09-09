@@ -1,0 +1,69 @@
+package com.bpms.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.LoanContract;
+import com.bpms.service.LoanContractService;
+
+@Service("loanContractServiceImpl")
+public class LoanContractServiceImpl implements LoanContractService {
+
+	@Autowired
+	private BaseDAO<LoanContract> baseDAO;
+
+	@Override
+	public boolean saveLoanContract(LoanContract loanContract) {
+		if (StringUtils.isBlank(loanContract.getLcId())) {
+			baseDAO.save(loanContract);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public String findJinJianNo(String no) {
+		String sql = "SELECT MAX(SUBSTRING(REPLACE(lc.CONTRACT_NO,'"
+				+ no
+				+ "',''),15)) FROM t_bp_loan_contract lc WHERE lc.CONTRACT_NO LIKE '"
+				+ no + "%'";
+		List list = baseDAO.findBySQL(sql);
+		if (list.size() > 0 && null != list.get(0)) {
+			String jinjianNo = (String) list.get(0);
+			return String.format("%08d", (Integer.parseInt(jinjianNo) + 1));
+		} else {
+			return "00000000";
+		}
+	}
+
+	@Override
+	public LoanContract findLoanContract(String id) {
+		String hql = " FROM LoanContract lc WHERE lc.lcId = '" + id + "'";
+		List<LoanContract> list = baseDAO.find(hql);
+		if (list.size() > 0)
+			return list.get(0);
+		else
+			return null;
+	}
+
+	@Override
+	public LoanContract findLoanContractByLoanOrderId(final String loanOrderId) {
+		String hql = "from LoanContract lc where lc.loanOrderId=:loanOrderId";
+		List<LoanContract> list = baseDAO.find(hql,
+				new HashMap<String, Object>() {
+					{
+						put("loanOrderId", loanOrderId);
+					}
+				});
+		if (list.size() > 0)
+			return list.get(0);
+		else
+			return null;
+	}
+
+}

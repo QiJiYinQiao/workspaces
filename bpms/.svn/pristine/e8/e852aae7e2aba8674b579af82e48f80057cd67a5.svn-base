@@ -1,0 +1,320 @@
+package com.bpms.service.impl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import net.sf.json.JSONObject;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.model.InvestOrderHis;
+import com.bpms.model.Role;
+import com.bpms.model.Users;
+import com.bpms.service.InvestOrderHisService;
+import com.bpms.service.InvestOrderService;
+import com.bpms.service.InvestOrderWorkFlowService;
+import com.bpms.service.OrderStatusService;
+import com.bpms.service.UserService;
+import com.bpms.util.Collections;
+import com.bpms.util.Constants;
+import com.bpms.websocket.WebSocketMessageInboundPool;
+
+/**
+ * @ClassName: InvestOrderWorkFlowServiceImpl
+ * @Description: 投资流程ServiceImpl
+ * @author PANCHUANHE
+ * @date 2015年7月20日 下午1:25:10
+ */
+@Service("investOrderWorkFlowService")
+public class InvestOrderWorkFlowServiceImpl extends WorkFlowBaseServiceImpl
+		implements InvestOrderWorkFlowService {
+	@Autowired
+	private InvestOrderService investOrderServiceImple;
+	@Autowired
+	private InvestOrderHisService investOrderHisService;
+	@Autowired
+	private OrderStatusService orderStatusService;
+
+	@Autowired
+	private UserService userService;
+
+	@Override
+	public boolean saveStartProcessInstance(InvestOrder investOrder) {
+		// 获取启动实例的key
+		String proDefKey = investOrder.getClass().getSimpleName();
+		// 定义businessKey
+		String businessKey = proDefKey + "." + investOrder.getInvestOrderId();
+		// 指定流程变量
+		Map<String, Object> variables = new HashMap<String, Object>();
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+		variables.put(Constants.CURRENT_USER_KEY, userId);
+		// 启动流程实例
+		ProcessInstance pi = this.runtimeService.startProcessInstanceByKey(
+				proDefKey, businessKey, variables);
+		return pi != null ? true : false;
+	}
+
+	@Override
+	public void checkWorkFlowImgByInvestOrderId(String investOrderId)
+			throws IOException {
+		// 根据投资订单id组织执行流程实例的businessKey
+		String businessKey = InvestOrder.class.getSimpleName() + "."
+				+ investOrderId;
+		// 根据businessKey获取当前执行的流程实例
+		ProcessInstance pi = this.runtimeService.createProcessInstanceQuery()
+				.processInstanceBusinessKey(businessKey).singleResult();
+		// 获取流程定义的实体对象(对应的.bpmn的东西)
+		ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService
+				.getProcessDefinition(pi.getProcessDefinitionId());
+		// 获取当前执行任务流程数组
+		List<Task> tasks = this.taskService.createTaskQuery()
+				.processInstanceBusinessKey(businessKey).list();
+		// 获取流程图片的名称
+		String resourceName = InvestOrder.class.getSimpleName() + ".png";
+		// 获取图片的文件的流
+		InputStream in = this.repositoryService.getResourceAsStream(
+				pd.getDeploymentId(), resourceName);
+		// 获取图片对象
+		BufferedImage bimg = ImageIO.read(in);
+		// 得到Graphics2D 对象
+		Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+		// 设置颜色和画笔粗细
+		g2d.setColor(Color.RED);
+		g2d.setStroke(new BasicStroke(3));
+		// 遍历执行的任务,画图
+		for (Task task : tasks) {
+			// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+			Execution execution = runtimeService.createExecutionQuery()
+					.executionId(task.getExecutionId()).singleResult();
+			// 根据当前的执行对象的id获取正在执行的活动信息
+			ActivityImpl activityImpl = pd.findActivity(execution
+					.getActivityId());
+			// 绘制矩形
+			Rectangle2D rectangle = new Rectangle2D.Float(activityImpl.getX(),
+					activityImpl.getY(), activityImpl.getWidth(),
+					activityImpl.getHeight());
+			g2d.draw(rectangle);
+		}
+		// 写入response输出流中
+		ImageIO.write(bimg, "png", ServletActionContext.getResponse()
+				.getOutputStream());
+	}
+
+	@Override
+	public List<InvestOrder> findAllTask(Integer firstResult, Integer maxResults) {
+		// 获取当前登陆用户id
+		Integer userId = Constants.getCurrendUser().getUserId();
+		// 需要返回的list
+		List<InvestOrder> InvestOrderList = new ArrayList<InvestOrder>();
+		// 获取任务List集合
+		List<Task> taskList = this.taskService.createTaskQuery()
+				.processDefinitionKey(InvestOrder.class.getSimpleName())
+				.taskCandidateUser(String.valueOf(userId))// 包含登陆人的
+				.listPage(firstResult, maxResults);// 分页
+
+		// 循环任务List
+		if (Collections.listIsNotEmpty(taskList)) {
+			for (Task task : taskList) {
+				InvestOrder investOrder = findInvestOrderByTaskId(task.getId());
+				if(StringUtils.isNotBlank(investOrder.getInvestOrderId())){
+					InvestOrder order = (InvestOrder) investOrder.clone();
+					order.setTaskId(task.getId());// 将任务id放入订单中
+					// 放入List中返回给页面
+					InvestOrderList.add(order);
+				}
+			}
+		}
+		return InvestOrderList;
+	}
+
+	@Override
+	public InvestOrder findInvestOrderByTaskId(String taskId) {
+		// 根据任务id，获取任务
+		Task task = this.taskService.createTaskQuery().taskId(taskId)
+				.singleResult();
+		// 根据任务中的流程实例id，找到该实例对象
+		ProcessInstance processInstance = this.runtimeService
+				.createProcessInstanceQuery()
+				.processInstanceId(task.getProcessInstanceId()).singleResult();
+		String InvestOrderId = "";
+		if (processInstance != null) {
+			// 获取订单id
+			InvestOrderId = processInstance.getBusinessKey().split("\\.")[1];
+		}
+		return investOrderServiceImple.findByInvestOrderId(InvestOrderId);
+	}
+
+	@Override
+	public InvestOrder findInvestOrderByTaskObj(Task task) {
+
+		// 根据任务中的流程实例id，找到该实例对象
+		ProcessInstance processInstance = this.runtimeService
+				.createProcessInstanceQuery()
+				.processInstanceId(task.getProcessInstanceId()).singleResult();
+		String InvestOrderId = "";
+		if (processInstance != null) {
+			// 获取订单id
+			InvestOrderId = processInstance.getBusinessKey().split("\\.")[1];
+		}
+		return investOrderServiceImple.findByInvestOrderId(InvestOrderId);
+
+	}
+
+	@Override
+	public Long findAllTaskCount() {
+		// 获取当前登陆用户id
+		Integer userId = Constants.getCurrendUser().getUserId();
+		return this.taskService.createTaskQuery()
+				.processDefinitionKey(InvestOrder.class.getSimpleName())
+				.taskCandidateUser(String.valueOf(userId)).count();
+	}
+
+	@Override
+	public void saveMyTask(String taskId) {
+		// 获取当前登录人的id
+		Integer userId = Constants.getCurrendUser().getUserId();
+		// 签收任务
+		if (StringUtils.isNotBlank(taskId)) {
+			this.taskService.claim(taskId, String.valueOf(userId));
+		}
+		// 发送消息
+				JSONObject result = new JSONObject();
+				result.element("type", "message");
+				result.element("dataType", "claimInvestOrder");
+				result.element("data", "有新任务！");
+				WebSocketMessageInboundPool.sendMessageToUser(
+						String.valueOf(Constants.getCurrendUser().getUserId()),
+						result.toString());
+	}
+
+	@Override
+	public List<InvestOrder> findAllClaimTask(Integer firstResult,
+			Integer maxResults) {
+		// 定义返回结果
+		List<InvestOrder> investOrderList = new ArrayList<InvestOrder>();
+
+		// 获取当前登陆用户id
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+
+		// 获取当前用户所受理的任务。 目的： --> 得到 投资订单ID，investOrderId
+		List<Task> tasks = this.taskService.createTaskQuery()
+				.processDefinitionKey(InvestOrder.class.getSimpleName()) // 过滤“流程定义ID”为“InvestOrder”的Task
+				.taskAssignee(userId) // 过滤“任务办理人”为“userId”的Task
+				.listPage(firstResult, maxResults); // 对act_ru_task表执行查询，找到符合条件的Task对象，并且加分页。
+
+		// 目的 ---> 根据Task对象，查找相应的流程实例ID，再找到“业务Key”，最终找到“投资订单的ID”
+		// 原因 --->
+		// Business_Key字段仅仅被储在Activiti的23张表中的“act_ru_execution表”和“act_hi_procinst表”
+		// 中。
+		if (Collections.listIsNotEmpty(tasks)) {
+			for (Task task : tasks) {
+				InvestOrder investOrder = this.findInvestOrderByTaskObj(task);
+				if(StringUtils.isNotBlank(investOrder.getInvestOrderId())){
+					InvestOrder investOrderClone = (InvestOrder) investOrder
+							.clone();
+					investOrderClone.setTaskId(task.getId());
+					investOrderList.add(investOrderClone);
+				}
+			}
+		}
+
+		return investOrderList;
+	}
+
+	@Override
+	public Long findAllClaimTaskCount() {
+		// 获取当前登陆用户id
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+		return this.taskService.createTaskQuery()
+				.processInstanceId(InvestOrder.class.getSimpleName())
+				.taskAssignee(userId).count();
+	}
+
+	@Override
+	public void saveSubmitTask(InvestOrder investOrder, String comment,
+			String result, String processingResult) {
+		// 获取当前执行任务
+		Task task = this.taskService.createTaskQuery()
+				.taskId(investOrder.getTaskId()).singleResult();
+
+		// 获取当前登陆用户的信息
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+
+		// 获取当前处理人的角色
+		Role role = taskService.getVariableLocal(task.getId(), "role",
+				Role.class);
+		// 根据订单状态的code,获取对应的订单状态id
+		String orderStatusId = orderStatusService.getOrderStatusByStatusCode(
+				InvestOrder.class.getSimpleName() + "_" + result).getStatusId();
+		// 记录订单履历
+		InvestOrderHis his = new InvestOrderHis();
+		his.setComment(comment);
+		his.setAgentTime(new Date());
+		his.setAssignee(userId);
+		his.setInvestOrderId(investOrder.getInvestOrderId());
+		his.setOrderStatus(orderStatusId);
+		his.setRoleId(String.valueOf(role.getRoleId()));
+		his.setHandleResult(processingResult);
+		investOrderHisService.persistenceInvestOrderHis(his);
+
+		// 设置流程变量
+		Map<String, Object> variables = new HashMap<String, Object>();
+		if (StringUtils.isNotBlank(result) && !result.equals("默认提交")) {
+			variables.put("result", result);
+		}
+		// 修改订单的状态
+		this.investOrderServiceImple.updateInvestOrderStauts(
+				investOrder.getInvestOrderId(), result);
+
+		// 使用任务ID，完成当前人的个人任务，同时设置流程变量
+		taskService.complete(task.getId(), variables);
+
+		// 流程结束了
+		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
+				.processInstanceId(task.getProcessInstanceId())// 使用流程实例ID查询
+				.singleResult();
+
+		// 判断流程是否结束,如果结束修改流程的状态
+		if (pi == null) {
+			// 更新请假单表的状态从1变成2（审核中-->审核完成）
+			InvestOrder investorder = this.investOrderServiceImple
+					.findByInvestOrderId(investOrder.getInvestOrderId());
+			investorder.setProcessStatus("2");
+		}
+	}
+
+	@Override
+	public Users getFinancingManagerByOrderId(String investOrderId) {
+		// TODO Auto-generated method stub
+		String businessKey = InvestOrder.class.getSimpleName() + "."
+				+ investOrderId;
+		Execution ex = this.runtimeService.createExecutionQuery()
+				.processInstanceBusinessKey(businessKey).singleResult();
+		Object variable = this.runtimeService.getVariable(ex.getId(),
+				Constants.CURRENT_USER_KEY);
+		Integer curUserId = Integer.valueOf((String) variable);
+		return userService.findUserById(curUserId);
+
+	}
+}

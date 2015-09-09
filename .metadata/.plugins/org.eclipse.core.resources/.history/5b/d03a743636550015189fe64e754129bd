@@ -1,0 +1,67 @@
+apply plugin: 'java' //指定项目为java项目，项目编译时生成项目的jar包
+apply plugin: 'eclipse-wtp'  //java项目的eclipse开发环境，生成所需的.project, .classpath等文件，因为是j2ee所以使用-wtp
+apply plugin: 'war' //指定web项目，项目编译时生成项目的war包
+
+sourceCompatibility = 1.7	//设置JDK版本
+webAppDirName = 'WebContent'  //设置WebApp根目录
+sourceSets.main.java.srcDir 'src'  //设置JAVA源码所在位置
+
+version = '1.0'
+jar {
+	manifest {
+		attributes 'Implementation-Title':'Gradle Quickstart',
+				   'Implementation-Version':version
+	}
+}
+
+//设置maven库地址
+repositories { 
+	mavenCentral()  //中央库
+	//maven { url 'http://localhost:8081/nexus/content/groups/public' } //自定义库地址
+}
+
+//设置依赖
+dependencies {
+	/**spring版本号**/
+    def springVersion = "+"
+    compile("org.springframework:spring-context:${springVersion}") {
+        exclude(module: "commons-logging")
+    }
+    compile  "org.springframework:spring-webmvc:${springVersion}",
+              "org.springframework:spring-jdbc:${springVersion}",
+              "org.springframework:spring-tx:${springVersion}",
+              "com.alibaba:druid:+",
+              "com.alibaba:fastjson:+",
+              "org.aspectj:aspectjrt:1.6.10",
+              "org.slf4j:slf4j-api:1.6.6",
+              "javax.inject:javax.inject:1",
+              "jstl:jstl:1.2",
+              "org.apache.poi:poi:3.9",
+              "org.apache.poi:poi-excelant:3.9",
+              "commons-fileupload:commons-fileupload:1.2.2",
+			  "commons-io:commons-io:2.4",
+              "dom4j:dom4j:1.6.1",
+              "org.mybatis:mybatis:+",
+              "commons-lang:commons-lang:2.6",
+              "org.mybatis:mybatis-spring:+",
+              "org.slf4j:jcl-over-slf4j:1.6.6",
+              "org.slf4j:slf4j-log4j12:1.6.6",
+              "mysql:mysql-connector-java:+",
+              "json-lib:json-lib:+",
+              "commons-beanutils:commons-beanutils:1.9.2",
+              "commons-collections:commons-collections:3.2.1",
+              "commons-logging:commons-logging:2.4",
+              "ezmorph:ezmorph:1.0.6",
+              "commons-dbcp:commons-dbcp:1.4",
+              "org.mybatis.generator:mybatis-generator-core:1.3.2"
+    compile( "log4j:log4j:1.2.17") {
+        exclude(module: "mail")
+        exclude(module: "jms")
+        exclude(module: "jmxtools")
+        exclude(module: "jmxri")
+    }
+    testCompile  "junit:junit:4.7"
+    providedCompile  "javax.servlet:servlet-api:2.5"
+    providedCompile  "javax.servlet.jsp:jsp-api:2.1"
+}
+

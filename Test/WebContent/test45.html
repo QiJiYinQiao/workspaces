@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>JS实现很酷的EMAIL地址添加功能</title>
+ 		<title>dynamicForm sample</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css"  href="css/webuploader.css">
+		<link rel="stylesheet" type="text/css"  href="js/jquery-ui.css">
+		<script src="js/external/jquery/jquery.js"></script>
+		<script src="js/webuploader.js"></script>
+		<script src="js/jquery-ui.js"></script>
+		<!-- Tooltip classes -->
+		<link rel="stylesheet" href="src/tip-yellow/tip-yellow.css" type="text/css" />
+		<link rel="stylesheet" href="src/tip-violet/tip-violet.css" type="text/css" />
+		<link rel="stylesheet" href="src/tip-darkgray/tip-darkgray.css" type="text/css" />
+		<link rel="stylesheet" href="src/tip-skyblue/tip-skyblue.css" type="text/css" />
+		<link rel="stylesheet" href="src/tip-yellowsimple/tip-yellowsimple.css" type="text/css" />
+		<link rel="stylesheet" href="src/tip-twitter/tip-twitter.css" type="text/css" />
+		<link rel="stylesheet" href="src/tip-green/tip-green.css" type="text/css" />
+	
+		<!-- jQuery and the Poshy Tip plugin files -->
+		<script type="text/javascript" src="src/jquery.poshytip.js"></script>
+		<style type="text/css">
+			
+		</style>
+		<script type="text/javascript">
+		 $(function() {
+			 $('#demo-manual-trigger').poshytip({
+					content: 'Hey, there! This is a tooltip.',
+					className: 'tip-skyblue',
+					showOn: 'none',
+					alignTo: 'target',
+					alignX: 'right',
+					alignY: 'center',
+					offsetX: 5,
+					offsetY: 5
+				});
+			 $('#demo-manual-trigger').poshytip('show');
+			 $('#demo-manual-trigger').poshytip('update', 'I am a new content :)');
+		 });
+		 $('#demo-manual-trigger').poshytip('show');
+		</script>
+			 
+</head>
+<body>
+		<input id="demo-manual-trigger" value="asdfsadfas" />
+</body>
+</html>

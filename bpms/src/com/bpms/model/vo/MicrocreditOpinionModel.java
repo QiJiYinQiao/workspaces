@@ -1,0 +1,185 @@
+package com.bpms.model.vo;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+
+public class MicrocreditOpinionModel implements java.io.Serializable{
+
+	private static final long serialVersionUID = 590561796130507390L;
+	private String mcbrId;
+	private String loanOrderId;
+	private String coborrowerName;
+	private String coborrowerIdno;
+	private BigDecimal adviceLoanAmt;
+	private String adviceLoanPeriod;
+	private String adviceRepayMthd;
+	private String loanMthd;
+	private BigDecimal loanRate;
+	private BigDecimal counselingRate;
+	private String collectionMthd;
+	private String operatorA;
+	private String operatorB;
+	private String riskCtrlMeasures;
+	private String specificMeasures;
+	private String firstMeeting;
+	private String verification;
+	private String deptPrincipal;
+	private BigDecimal finalLoanAmt;
+	private String finalLoanPeriod;
+	private String finalRepayMthd;
+	private Date surveyDate;
+	private String rejectCause;
+	public String getMcbrId() {
+		return mcbrId;
+	}
+	public void setMcbrId(String mcbrId) {
+		this.mcbrId = mcbrId;
+	}
+	public String getLoanOrderId() {
+		return loanOrderId;
+	}
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+	public String getCoborrowerName() {
+		return coborrowerName;
+	}
+	public void setCoborrowerName(String coborrowerName) {
+		this.coborrowerName = coborrowerName;
+	}
+	public String getCoborrowerIdno() {
+		return coborrowerIdno;
+	}
+	public void setCoborrowerIdno(String coborrowerIdno) {
+		this.coborrowerIdno = coborrowerIdno;
+	}
+	public BigDecimal getAdviceLoanAmt() {
+		return adviceLoanAmt;
+	}
+	public void setAdviceLoanAmt(String adviceLoanAmt) {
+		if (StringUtils.isNotBlank(adviceLoanAmt)) {
+			this.adviceLoanAmt = BigDecimal.valueOf(Double
+					.valueOf(adviceLoanAmt));
+		}
+	}
+	public String getAdviceLoanPeriod() {
+		return adviceLoanPeriod;
+	}
+	public void setAdviceLoanPeriod(String adviceLoanPeriod) {
+		this.adviceLoanPeriod = adviceLoanPeriod;
+	}
+	public String getAdviceRepayMthd() {
+		return adviceRepayMthd;
+	}
+	public void setAdviceRepayMthd(String adviceRepayMthd) {
+		this.adviceRepayMthd = adviceRepayMthd;
+	}
+	public String getLoanMthd() {
+		return loanMthd;
+	}
+	public void setLoanMthd(String loanMthd) {
+		this.loanMthd = loanMthd;
+	}
+	public BigDecimal getLoanRate() {
+		return loanRate;
+	}
+	public void setLoanRate(String loanRate) {
+		if (StringUtils.isNotBlank(loanRate)) {
+			this.loanRate = BigDecimal.valueOf(Double
+					.valueOf(loanRate));
+		}
+	}
+	public BigDecimal getCounselingRate() {
+		return counselingRate;
+	}
+	public void setCounselingRate(String counselingRate) {
+		if (StringUtils.isNotBlank(counselingRate)) {
+			this.counselingRate = BigDecimal.valueOf(Double
+					.valueOf(counselingRate));
+		}
+	}
+	public String getCollectionMthd() {
+		return collectionMthd;
+	}
+	public void setCollectionMthd(String collectionMthd) {
+		this.collectionMthd = collectionMthd;
+	}
+	public String getOperatorA() {
+		return operatorA;
+	}
+	public void setOperatorA(String operatorA) {
+		this.operatorA = operatorA;
+	}
+	public String getOperatorB() {
+		return operatorB;
+	}
+	public void setOperatorB(String operatorB) {
+		this.operatorB = operatorB;
+	}
+	public String getRiskCtrlMeasures() {
+		return riskCtrlMeasures;
+	}
+	public void setRiskCtrlMeasures(String riskCtrlMeasures) {
+		this.riskCtrlMeasures = riskCtrlMeasures;
+	}
+	public String getSpecificMeasures() {
+		return specificMeasures;
+	}
+	public void setSpecificMeasures(String specificMeasures) {
+		this.specificMeasures = specificMeasures;
+	}
+	public String getFirstMeeting() {
+		return firstMeeting;
+	}
+	public void setFirstMeeting(String firstMeeting) {
+		this.firstMeeting = firstMeeting;
+	}
+	public String getVerification() {
+		return verification;
+	}
+	public void setVerification(String verification) {
+		this.verification = verification;
+	}
+	public String getDeptPrincipal() {
+		return deptPrincipal;
+	}
+	public void setDeptPrincipal(String deptPrincipal) {
+		this.deptPrincipal = deptPrincipal;
+	}
+	public BigDecimal getFinalLoanAmt() {
+		return finalLoanAmt;
+	}
+	public void setFinalLoanAmt(String finalLoanAmt) {
+		if (StringUtils.isNotBlank(finalLoanAmt)) {
+			this.finalLoanAmt = BigDecimal.valueOf(Double
+					.valueOf(finalLoanAmt));
+		}
+	}
+	public String getFinalLoanPeriod() {
+		return finalLoanPeriod;
+	}
+	public void setFinalLoanPeriod(String finalLoanPeriod) {
+		this.finalLoanPeriod = finalLoanPeriod;
+	}
+	public String getFinalRepayMthd() {
+		return finalRepayMthd;
+	}
+	public void setFinalRepayMthd(String finalRepayMthd) {
+		this.finalRepayMthd = finalRepayMthd;
+	}
+	public Date getSurveyDate() {
+		return surveyDate;
+	}
+	public void setSurveyDate(Date surveyDate) {
+		this.surveyDate = surveyDate;
+	}
+	public String getRejectCause() {
+		return rejectCause;
+	}
+	public void setRejectCause(String rejectCause) {
+		this.rejectCause = rejectCause;
+	}
+	
+}

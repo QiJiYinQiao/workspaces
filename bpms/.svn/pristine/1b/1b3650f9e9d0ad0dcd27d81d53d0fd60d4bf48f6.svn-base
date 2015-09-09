@@ -1,0 +1,66 @@
+package com.bpms.service.impl;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.InvestorderAndProducts;
+import com.bpms.service.InvestorderAndProductsService;
+
+/**
+ * 投资订单和产品的关联关系
+ * 
+ * @author liuhh
+ *
+ */
+@Service
+public class InvestorderAndProductsServiceImpl implements
+		InvestorderAndProductsService {
+
+	@Autowired
+	private BaseDAO<InvestorderAndProducts> investorderAndProductsDao;
+
+	@Override
+	public boolean persistenceInvestorderAndProducts(
+			InvestorderAndProducts investorderAndProducts) {
+		if (StringUtils.isBlank(investorderAndProducts.getId())) {
+			investorderAndProductsDao.save(investorderAndProducts);
+		} else {
+			investorderAndProductsDao.update(investorderAndProducts);
+		}
+		return true;
+	}
+
+	@Override
+	public List<InvestorderAndProducts> findInvestorderAndProductsList(
+			String investOrderId) {
+		// TODO Auto-generated method stub
+		String hql="from InvestorderAndProducts t where 1=1 and t.investOrderId='"+investOrderId+"'";
+		return investorderAndProductsDao.find(hql);
+	}
+
+	@Override
+	public Long counts(String investOrderId) {
+		// TODO Auto-generated method stub
+		String hql="from InvestorderAndProducts t where 1=1 and t.investOrderId='"+investOrderId+"'";
+		return investorderAndProductsDao.count("select count(*) "+hql);
+	}
+	@Override
+	public boolean deleteInvestorderAndProducts(String ids){
+		if (StringUtils.isNotBlank(ids)) {
+			String[] idsArray = ids.split(",");
+			for (int i = 0; i < idsArray.length; i++) {
+				String id = idsArray[i];
+				InvestorderAndProducts iops = investorderAndProductsDao.get(InvestorderAndProducts.class, id);
+				investorderAndProductsDao.delete(iops);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+
+}

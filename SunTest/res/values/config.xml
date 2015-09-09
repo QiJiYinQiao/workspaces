@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	
+    <string name="serverUrl">http://172.18.10.22/SunTest/update.xml</string>
+
+</resources>

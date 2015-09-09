@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		var jqxhr = $.getJSON("example.json",function(){
+			console.log("success");
+		})
+		  .done(function(){
+			  console.log("second success");
+		  })
+		  .fail(function(){
+			  console.log("error");
+		  })
+		  .always(function(){
+			  console.log("complete");
+		  });
+		
+		jqxhr.complete(function(){
+			console.log("second complete");
+		})
+		
+		
+		$.getScript("ajax/test.js",function(data,textStatus,jqxhr){
+			console.log(data);
+			console.log(textStatus);
+			console.log(jqxhr.status);
+			console.log("Load was performed.");
+			});
+		
+		$.getScript("ajax/test.js")
+			.done(function(script,textStatus){
+				console.log(textStatus);
+			})
+			.fail(function(jqxhr,settings,exception){
+				$("div.log").text("Triggered ajaxError handler.");
+			});
+		
+		
+		$("div.log").ajaxError(function(e,jqxhr,settings,exception){
+			if(settings.dataType=="script"){
+				$(this).text("Triggered ajaxError handler.");
+			}
+		});
+		
+		$.ajaxSetup({
+			cache:true
+		});
+		
+		jQuery.cachedScript = function(url,options){
+			//Allow user to set any option except for dataType , cache, and url
+			options = $.extend(options || {},{
+				dataType:"script",
+				cache:true,
+				url:url
+			});
+			
+			//Use $.ajax() since it is more flexible than $.getScript
+			//Return the jqXHR object so we can chain callbacks
+			return jQuery.ajax(options);
+			
+		};
+		
+		$.cacheScript("ajax/test.js").done(function(script,textStatus){
+			console.log(textStatus);
+		});
+		
+		var url = "https://raw.github.com/jquery/jquery-color/master/jquery.color.js;
+		$.getScript(url,function(){
+			$("#go").click(function(){
+				$(".block")
+					.animate({
+						backgroundColor:"rgb(255,180,180)"
+					},1000)
+					.delay(500)
+					.animate({
+						backgroundColor:"olive"
+					},1000)
+					.delay(500)
+					.animate({
+						backgroundColor:"#00f"
+					},1000)
+			});
+		});
+	});
+	</script>
+</head>
+<body >
+	<button id="go">&raquo;Run</button>
+	<div class="block"></div>
+	
+</body>
+</html>

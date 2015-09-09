@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		/* function displayvals(){
+			var singleValues = $("#single").val();
+			var multipleValues = $("#multiple").val() || [];
+			$("p").html("single: " + singleValues + " Multiple: " + nultipleValues.join(","));
+		}
+	
+		$("select").change(displayvals){
+			displayvals();
+		} */
+		
+		$("input")
+			.keyup(function(){
+				var value = $(this).val();
+				$("p").text(value);
+			})
+			.keyup();
+		
+		$("button").click(function(){
+			var text = $(this).text();
+			$("input").val(text);
+		});
+		
+		$("input").on("blur",function(){
+			$(this).val(function(i,val){
+				return val.toUpperCase();
+			});
+		});
+		
+		$("#single").val("Single2");
+		$("#multiple").val(["Multiple2","Multiple3"]);
+		$("input").val(["check1","check2","radio1"]);
+		
+	});
+	</script>
+</head>
+<body >
+	
+	<select id="single">
+		<option>Single</option>
+		<option>Single2</option>
+	</select>	
+
+	<select id="multiple" multiple="multiple">
+		<option selected="selected">Multiple</option>
+		<option>Multiple2</option>
+		<option selected="selected">Multiple3</option>
+	</select>
+
+	<input type="text" value="some text">
+	<p></p>
+	
+	<div>
+		<button>Feed</button>
+		<button>The</button>
+		<button>Input</button>
+	</div>
+	<input type="text" value="clack a button">
+	
+	<p>Type something and then click or tab out of of the input.</p>
+	<input type="text" value="type something">
+	
+	<select id="single">
+		<option>Single</option>
+		<option>Single2</option>
+	</select>
+	
+	<select id="multiple" multiple="multiple">
+		<option selected="selected">Multiple</option>
+		<option>Multiple2</option>
+		<option selected="selected">Multiple3</option>
+	</select>
+	
+	<br>
+	<input type="checkbox" name="checkboxname" value="check1">check1
+	<input type="checkbox" name="checkboxname" value="check2">check2
+	<input type="radio" name="r" value="radio1">radio1
+	<input type="radio" name="r" value="radio2">radio2
+	
+	
+	
+</body>
+</html>

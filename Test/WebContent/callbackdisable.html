@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		function fn1(value){
+			console.log(value);
+		}
+		
+		fucntion fn2(value){
+			console.log("fn2 says: " + value);
+			return false;
+		}
+		
+		var callbacks = $.callbacks("memory");
+		callbacks.add(fn1);
+		callbacks.fire("foo");
+		callbacks.add(fn2);
+		callbacks.fire("bar");
+		callbacks.remove(fn2);
+		callbacks.fire("foobar");
+		
+		/*
+		output:
+			foo
+			fn2 says:foo
+			bar
+			fn2 says:bar
+			foobar
+		*/
+		
+		
+		var callbacks = $.callbacks("once");
+		callbacks.add(fn1);
+		callbacks.fire("foo");
+		callbacks.add(fn2);
+		callbacks.fire("bar");
+		callbacks.remove(fn2);
+		callbacks.fire("foobar");
+		/*
+		output:
+			foo
+		*/
+		
+		var callbacks = $.callbacks("unique");
+		callbacks.add(fn1);
+		callbacks.fire("foo");
+		callbacks.add(fn1);
+		callbacks.add(fn2);
+		callbacks.fire("bar");
+		callbacks.remove(fn2);
+		callbacks.fire("foobar");
+		/*
+			output:
+				foo
+				bar
+				fn2 says:bar
+				foobar
+		*/
+		
+		function fn1(value){
+					console.log(value);
+					return false;
+				}
+		
+		function fn2(value){
+			fn1("fn2 says: " + value);
+			return false;
+		}
+		
+		var callbacks = $.callbacks("stopOnFalse");
+		callbacks.add(fn1);
+		callbacks.fire("foo");
+		callbacks.add(fn2);
+		callbacks.fire("bar");
+		callbacks.remove(fn2);
+		callbacks.fire("foobar");
+		
+		/*
+			output:
+				foo
+				bar
+				foobar
+		*/
+		
+		
+		function fn1(value){
+			console.log(value);
+			return false;
+		}
+		
+		function fn2(value){
+			fn1("fn2 says: " + value);
+			return false;
+		}
+		
+		var callbacks = $.callbacks("unique memory");
+		callbacks.add(fn1);
+		callbacks.fire("foo");
+		callbacks.add(fn1);
+		callbacks.add(fn2);
+		callbacks.fire("bar");
+		callbacks.add(fn2);
+		callbacks.fire("baz");
+		callbcaks.remove(fn2);
+		callbacks.fire("foobar");
+		
+		/*
+			output:
+				foo
+				fn2 says:foo
+				bar 
+				fn2 says:bar
+				baz
+				fn2 says:baz
+				foobar
+		*/
+		
+	});
+	</script>
+</head>
+<body >
+	
+	
+
+</body>
+</html>

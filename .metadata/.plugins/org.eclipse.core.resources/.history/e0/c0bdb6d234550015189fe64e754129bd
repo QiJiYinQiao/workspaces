@@ -1,0 +1,44 @@
+package com.sun.service.impl;
+
+import com.sun.entity.UserEntity;
+import com.sun.service.IUserService;
+
+public class UserServiceImpl implements IUserService {
+
+	@Override
+	public int deleteByPrimaryKey(String id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insert(UserEntity record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int insertSelective(UserEntity record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public UserEntity selectByPrimaryKey(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int updateByPrimaryKeySelective(UserEntity record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int updateByPrimaryKey(UserEntity record) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+}

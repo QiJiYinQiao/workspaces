@@ -1,0 +1,75 @@
+package com.bpms.action;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.LoanOrderHis;
+import com.bpms.model.vo.LoanOrderHisModel;
+import com.bpms.service.CommonService;
+import com.bpms.service.LoanOrderHisService;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 
+ * 个人贷款业务的申请单请求处理器的action
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+@Namespace("/loanOrderHis")
+@Action(value = "loanOrderHisAction")
+public class LoanOrderHisAction extends BaseAction implements
+		ModelDriven<LoanOrderHisModel> {
+
+	/** serialVersionUID. */
+	private static final long serialVersionUID = 3658084064057123814L;
+
+	/** 模型驱动. */
+	private LoanOrderHisModel loanOrderHis = new LoanOrderHisModel();
+
+	/** 自动注入service. */
+	@Autowired
+	private LoanOrderHisService loanOrderHisService;
+	
+	@Autowired
+	private CommonService commonService;
+
+	public void findAllLoanOrderHis() {
+		List<LoanOrderHisModel> list = loanOrderHisService
+				.findAllLoanOrderHist(loanOrderHis.getLoanOrderId());
+		OutputJson(new GridModel(list, (long) list.size()));
+	}
+
+	public void findLoanOrderHis() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		List<LoanOrderHis> list = loanOrderHisService.findLoanOrderHis(loanOrderHis.getLoanOrderId());
+		List<LoanOrderHisModel> listm = new ArrayList<LoanOrderHisModel>();
+		if(list.size()>0){
+			for(LoanOrderHis loh : list){
+				LoanOrderHisModel lhm = new LoanOrderHisModel();
+				PropertyUtils.copyProperties(lhm, loh);
+				String processing_result = commonService.findDictName("processing_result", loh.getProcessingResult());
+				lhm.setProcessingResult(processing_result);
+				listm.add(lhm);
+			}
+		}
+		OutputJson(listm);
+//		OutputJson(loanOrderHisService.findLoanOrderHis(loanOrderHis
+//				.getLoanOrderId()));
+	}
+
+	@Override
+	public LoanOrderHisModel getModel() {
+		return loanOrderHis;
+	}
+
+}

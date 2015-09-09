@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		input{
+			border-bottom:1px solid black;
+			
+			/* background-color:#B0C4DE;border-radius: 5px;border: 0px solid #95b8e7; height: 20px;*/
+			font-size:16px;
+			background-color:#F0F8FF;
+			}
+		table{border-right:1px solid black;border-bottom:1px solid black;text-align: center;font-size: 14px;} 
+		table td{border-left:1px solid black;border-top:1px solid black;} 
+	</style>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			(function($){
+				/* alert($("td").height)
+				$("input").css("height",$("td").height); */
+				alert($("td").css("height"))
+			})(jQuery)
+	</script>
+</head>
+<body >
+	<div align="center">
+		<!-- 标题 -->
+		<div >	
+			<div><h3>个人贷款申请表(适用私营业主)&nbsp;业务员:<input /></h3></div>
+		</div>
+		<!-- 表单 -->
+		<div>
+			<form action="">
+				<table >
+					<tr>
+						<td>借款人姓名</td>
+						<td><input id="borrower_name" type="text"></td>
+						<td>性别</td>
+						<td>
+							<input type="radio" name="sex" value="0" checked="checked">男&nbsp;&nbsp;
+							<input type="radio" name="sex" value="1">女
+						</td>
+						<td>身份证号</td>
+						<td><input type="text" name=""></td>
+						<td>年龄</td>
+						<td><input type="number"></td>
+					</tr>	
+					
+					<tr>
+						<td>户籍地址</td>
+						<td colspan="7"><input id="" type="text"></td>
+					</tr>
+
+					<tr>
+						<td>现住地址</td>
+						<td colspan="7"><input id="" type="text"></td>
+					</tr>
+					
+					<tr>
+						<td>手机</td>
+						<td colspan="2"><input id="" type="tel"></td>
+						<td>住址电话</td>
+						<td ><input id="" type="tel"></td>
+						<td>家庭电话</td>
+						<td ><input id="" type="tel"></td>
+					</tr>	
+					
+				</table>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

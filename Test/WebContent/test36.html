@@ -1,0 +1,318 @@
+<!DOCTYPE html >
+<html>
+<head>
+<style type="text/css">
+	input{border: none;font-size: 14px;height: 22px;width: 100%;}
+	table{border-right:1px solid black;border-bottom:1px solid black;text-align: center;font-size: 14px;} 
+	table td{border-left:1px solid black;border-top:1px solid black;font-size: 14px;height: 25px;text-align: left;width:100px;} 
+	span {color: red;text-align: center;}
+	select {width: 100px;}
+	.bc_gray{background-color: gray;}
+	.input_radio{width:15px;}
+</style>
+</head>
+
+<body>
+	<div>
+		<div>
+			<h1 align="center">钱钱金融客户申请书</h1>
+		</div>
+		<div>
+			<form id="form1" name="form1" method="post" action="">
+				<div align="center">
+					<div>
+						<table style="background-color:#FFFBD1;">
+							<tr>
+								<td class="bc_gray" colspan="8" ><strong>您的个人资料</strong></td>
+							</tr>
+							<tr>
+								<td ><span><span>*</span></span>姓名(中文)</td>
+								<td ><input name="textfield6" type="text"
+									id="textfield6" size="10" /></td>
+								<td >姓名(英文)</td>
+								<td ><input name="textfield7" type="text"
+									id="textfield7" size="10" /></td>
+								<td ><span>*</span>性别</td>
+								<td >
+									<input class="input_radio" type="radio" name="sex" value="0" checked="checked">男&nbsp;
+									<input class="input_radio" type="radio" name="sex" value="1">女
+								</td>
+								<td ><span>*</span>出生日期</td>
+								<td ><input name="textfield9" type="date"
+									id="textfield9" size="10" /></td>
+							</tr>
+							<tr>
+								<td><span>*</span>国籍</td>
+								<td><input name="textfield10" type="text" id="textfield10"
+									size="10" /></td>
+								<td><span>*</span>使用语言</td>
+								<td><input name="textfield11" type="text" id="textfield11"
+									size="10" /></td>
+								<td><span>*</span>母亲姓氏</td>
+								<td><input name="textfield12" type="text" id="textfield12"
+									size="10" /></td>
+								<td><span>*</span>婚姻状况</td>
+								<td>
+									<input class="input_radio" type="radio" name="sex" value="0" >已婚&nbsp;
+									<input class="input_radio" type="radio" name="sex" value="1" checked="checked">未婚
+								</td>
+							</tr>
+							<tr>
+								<td><span>*</span>证件类型</td>
+								<td  colspan="7">
+									<input  class="input_radio" type="radio" name="" value="1"> 身份证 
+									<input  class="input_radio" type="radio" name="" value="1"> 护照 
+									<input  class="input_radio" type="radio" name="" value="1"> 军官证 
+									<input  class="input_radio" type="radio" name="" value="1"> 港澳台居民往来大陆通行证 
+									<input  class="input_radio" type="radio" name="" value="1"> 户口薄
+								</td>
+							</tr>
+							<tr>
+								<td><span>*</span>证件号码</td>
+								<td colspan="7"><div align="left">
+										<input name="textfield14" type="text" id="textfield14"
+											size="60" />
+									</div></td>
+							</tr>
+							<tr>
+								<td><span>*</span>签发日期</td>
+								<td><input name="textfield15" type="date" id="textfield15"
+									size="10" /></td>
+								<td><span>*</span>失效日期</td>
+								<td><input name="textfield16" type="date" id="textfield16"
+									size="10" /></td>
+								<td><span>*</span>发证机构</td>
+								<td><input name="textfield17" type="text" id="textfield17"
+									size="10" /></td>
+								<td><span>*</span>学历</td>
+								<td><input name="textfield18" type="text" id="textfield18"
+									size="10" /></td>
+							</tr>
+							<tr>
+								<td><span>*</span>职业</td>
+								<td colspan="7"><div>
+										<input class="input_radio" type="radio" name="radio6" id="radio6" />
+										自营业主 <input class="input_radio" type="radio" name="radio6" id="radio7" />
+										公司职员 <input class="input_radio" type="radio" name="radio6" id="radio8" />
+										公务员 <input class="input_radio" type="radio" name="radio6" id="radio9" />
+										离/退休人士 <input class="input_radio" type="radio" name="radio7" id="radio10" />
+										<label for="radio6"></label> 自由职业者 <input class="input_radio" type="radio"
+											name="radio8" id="radio11" /> <label for="radio6"></label>
+										其他
+									</div></td>
+							</tr>
+							<tr>
+								<td><span>*</span>行业</td>
+								<td><input name="textfield22" type="text" id="textfield22"
+									size="10" /></td>
+								<td>单位名称</td>
+								<td colspan="2"><input name="textfield21" type="text"
+									id="textfield21" size="20" /></td>
+								<td><span>*</span>工作年限</td>
+								<td colspan="2"><input name="textfield20" type="text"
+									id="textfield20" size="20" /></td>
+							</tr>
+							<tr>
+								<td>单位规模</td>
+								<td colspan="5"><div>
+										<input class="input_radio" type="radio" name="radio9" id="radio12" /> 100人一下 
+										<input class="input_radio" type="radio" name="radio9" id="radio13" /> 100-500人 
+										<input class="input_radio" type="radio" name="radio9" id="radio14" /> 500-1000人 
+										<input class="input_radio" type="radio" name="radio9" id="radio15" /> 1000-300人 
+										<input class="input_radio" type="radio" name="radio9" id="radio16" /> 3000人以上
+									</div></td>
+								<td><span>*</span>职务</td>
+								<td><input name="textfield19" type="text" id="textfield19"
+									size="10" /></td>
+							</tr>
+							<tr>
+								<td><span>*</span>移动电话</td>
+								<td><input name="textfield25" type="tel" id="textfield25"
+									size="10" /></td>
+								<td>固定电话</td>
+								<td colspan="2"><input name="textfield23" type="tel"
+									id="textfield23" size="20" /></td>
+								<td><span>*</span>电子邮箱</td>
+								<td colspan="2"><input name="textfield24" type="email"
+									id="textfield24" size="20" /></td>
+							</tr>
+							<tr>
+								<td rowspan="2">通讯地址</td>
+								<td colspan="7">中国 <label for="textfield4">
+									<select name="">
+										<option >湖北</option> 
+									</select>省 
+									<select name="">
+										<option >武汉</option> 
+									</select> 市
+									<select name="">
+										<option >武昌</option> 
+									</select> 区 
+									<select name="">
+										<option ></option> 
+									</select>街 
+								</td>
+							</tr>
+							<tr>
+								<td colspan="5"><div align="left">
+										<input name="textfield5" type="text" id="textfield5" size="60" />
+									</div></td>
+								<td>邮编</td>
+								<td><input name="textfield26" type="text" id="textfield26"
+									size="10" /></td>
+							</tr>
+							<tr>
+								<td>家庭情况</td>
+								<td colspan="3"><div>
+										<input class="input_radio" type="radio" name="radio12" id="radio19" />
+										无子女 <input class="input_radio" type="radio" name="radio12" id="radio20" />
+										有子女 <input class="input_radio" type="radio" name="radio13" id="radio21" />
+										抚/赡三代
+									</div></td>
+								<td>家庭收入情况</td>
+								<td colspan="3"><div>
+										<input class="input_radio" type="radio" name="radio10" id="radio17" />
+										单薪 <input class="input_radio" type="radio" name="radio11" id="radio18" />
+										双薪
+									</div></td>
+							</tr>
+							<tr>
+								<td class="bc_gray" colspan="8"><strong>紧急联系人资料</strong></td>
+							</tr>
+							<tr>
+								<td><span>*</span>姓名(中文)</td>
+								<td><input name="textfield30" type="text" id="textfield30"
+									size="10" /></td>
+								<td>姓名(英文)</td>
+								<td><input name="textfield29" type="text" id="textfield29"
+									size="10" /></td>
+								<td><span>*</span>性别</td>
+								<td><input name="textfield28" type="text" id="textfield28"
+									size="10" /></td>
+								<td>出生日期</td>
+								<td><input name="textfield27" type="date" id="textfield27"
+									size="10" /></td>
+							</tr>
+							<tr>
+								<td><span>*</span>证件类型</td>
+								<td colspan="7"><div>
+										<input class="input_radio" type="radio" name="radio14" id="radio22" />
+										身份证 <input class="input_radio" type="radio" name="radio14" id="radio23" />
+										护照 <input class="input_radio" type="radio" name="radio14" id="radio24" />
+										军官证 <input class="input_radio" type="radio" name="radio14" id="radio25" />
+										港澳台居民往来大陆通行证 <input class="input_radio" type="radio" name="radio14"
+											id="radio26" /> <label for="radio22"></label> 户口薄
+									</div></td>
+							</tr>
+							<tr>
+								<td><span>*</span>证件号码</td>
+								<td colspan="7"><div align="left">
+										<input name="textfield30" type="text" id="textfield31"
+											size="60" />
+									</div></td>
+							</tr>
+							<tr>
+								<td><span>*</span>移动电话</td>
+								<td><input name="textfield30" type="text" id="textfield32"
+									size="10" /></td>
+								<td>固定电话</td>
+								<td colspan="2"><input name="textfield30" type="text"
+									id="textfield33" size="20" /></td>
+								<td><span>*</span>电子邮箱</td>
+								<td colspan="2"><input name="textfield30" type="text"
+									id="textfield34" size="20" /></td>
+							</tr>
+							<tr>
+								<td rowspan="2">通讯地址</td>
+								<td colspan="7">中国 
+									<select name="">
+										<option >湖北</option> 
+									</select>省 
+									<select name="">
+										<option >武汉</option> 
+									</select> 市
+									<select name="">
+										<option >武昌</option> 
+									</select> 区 
+									<select name="">
+										<option ></option> 
+									</select>街 
+								</td>
+							</tr>
+							<tr>
+								<td colspan="5"><div align="left">
+										<input name="textfield30" type="text" id="textfield35"
+											size="60" />
+									</div></td>
+								<td>邮编</td>
+								<td><input name="textfield30" type="text" id="textfield36"
+									size="10" /></td>
+							</tr>
+							<tr>
+								<td colspan="3"><span>*</span>您希望通过哪种方式接受债权文件?</td>
+								<td colspan="5"><div>
+										<input class="input_radio" type="radio" name="radio15" id="radio27" />
+										信件 <input class="input_radio" type="radio" name="radio15" id="radio28" />
+										电子邮件(感谢支持低碳生活) <input class="input_radio" type="radio" name="radio16"
+											id="radio29" /> 两者都选
+									</div></td>
+							</tr>
+							<tr>
+								<td class="bc_gray" colspan="8"><strong>温馨提示</strong></td>
+							</tr>
+							<tr>
+								<td  colspan="8">标<span>*</span>处为必填标,如您填写的上述信息有任何变更,请尽快以书面的形式通知钱钱金融理财顾问或钱钱客服。</td>
+							</tr>
+							<tr>
+								<td  colspan="8">“发证机关所在地”一览客户为港、奥、台地区居民或国外居民填写方法：其发证机关所在地统一填写北京。</td>
+							</tr>
+							<tr>
+								<td  colspan="8">在钱钱金融无法联系到客户的情况下，会联系紧急联系人，紧急联系人将通知您的财务情况。</td>
+							</tr>
+							<tr>
+								<td  colspan="8">出借人未满18岁，需要提交《监护人声明》，并提供监护人身份证明；出借人为外籍人士，需要提供在中国一年以上居住证明或工作证明。</td>
+							</tr>
+							
+							<tr>
+								<td >
+									理财经理:
+								</td>
+								<td colspan="3" >
+									<input  type="text">
+								</td>
+								<td >
+									部门主管:
+								</td>
+								<td colspan="3" >
+									<input type="text">
+								</td>
+							</tr>
+
+							<tr>
+								<td >
+									日期:
+								</td>
+								<td colspan="3" >
+									<input type="date">
+								</td>
+								<td >
+									日期:
+								</td>
+								<td colspan="3" >
+									<input  type="date">
+								</td>
+							</tr>
+							
+							<tr>
+								<td colspan="8" style="text-align: right;">
+									<input type="submit" style="width: 80px;background-color:#B0C4DE;" name="button" id="button" value="提交" />
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

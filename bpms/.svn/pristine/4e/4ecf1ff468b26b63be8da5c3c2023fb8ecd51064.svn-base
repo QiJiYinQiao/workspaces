@@ -1,0 +1,130 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title></title>
+<style type="text/css">
+ th{
+    text-align: right;
+    padding: 6px 10px 6px 10px;
+ }
+ .table td{
+    text-align: left;
+     padding: 6px 10px 6px 10px; 
+ }
+ .table{
+	border-collapse: collapse;
+	border-spacing: 0;
+	max-width: 100%;
+	width: 550px;
+ }
+</style>
+</head>
+<script type="text/javascript">
+  var repayMethodArr = jqueryUtil.getTextArr("repay_method");//还款方式
+  $(function(){
+	  $("#repayMethod").html(jqueryUtil.showText('${loanOrder.repayMethod}',repayMethodArr));
+	  createInvestOrderGrid();
+  });
+  function createInvestOrderGrid(){
+	  $("#investOrderGrid").datagrid({
+		    url:'investOrder/investOrderAction!findInvestOrderListByInvestOrderIds.action',
+			width: 'auto',
+			height: 350,
+			pagination:false,
+			rownumbers:true,
+			border:true,
+			singleSelect:true,
+			nowrap:true,//如果为true，则在同一行中显示数据。设置为true可以提高加载性能。
+			remoteSort:false,//定义是否从服务器对数据进行排序。
+			striped:true,//是否显示斑马线
+			columns:[[
+			        {field : 'investorName',title : '客户姓名',width :100,align : 'center'},
+	                {field : 'idCrad',title : '证件号码',width : 180,align : 'center'},
+		            {field : 'mobTel',title : '手机号码',width : 150,align : 'center'},
+	                {field : 'financingMgr',title : '理财经理',width : 100,align : 'center'},
+	                {field : 'fmPhone',title : '理财经理电话',width : 150,align : 'center'},
+	                {field : 'bankName',title : '开户行名称',width : 100,align : 'center'},
+	                {field : 'actNo',title : '开户行账号',width : 100,align : 'center'},
+	                {field : 'actName',title : '账户名称',width :100,align : 'center'},
+	                {field : 'fmSignDate',title : '理财经理签署日期',width :150,align : 'center'},
+	                {field : 'deptMgr',title : '部门主管',width :100,align : 'center'} 
+	                
+		   ]],
+		   toolbar:[{
+			   text:'手动匹配',
+			   iconCls:'icon-add',
+			   handler:openInvestOrderDialog
+		   },'-',{
+			   text:'自动匹配',
+			   iconCls:'icon-add',
+			   handler:function(){alert(1)}
+		   },'-',{
+			   text:'清空列表',
+			   iconCls:'icon-cut',
+			   handler:toDeleteAll
+		   },'-',{
+			   text:'匹配成功并保存',
+			   iconCls:'icon-save',
+			   handler:machingSuccessAndSave
+		   }]
+	  });
+  }
+  
+  function machingSuccessAndSave(){
+	  alert("here");
+  }
+  
+  function openInvestOrderDialog(){
+	  var loanOrderId = $("#loanOrderId").val();
+	  $('#investOrderDialog').dialog({    
+		    title: '投资订单信息',    
+		    width: 800,    
+		    height: 500,    
+		    closed: false,    
+		    cache: false,    
+		    href: 'jsp/investOrder/investOrderList.jsp',    
+		    modal: true   
+		}); 
+  }
+  function toDeleteAll(){
+	  $('#investOrderGrid').datagrid('loadData',{total:0,rows:[]});
+	//  $("#investOrderGrid").datagrid("clearSelections");
+  }
+</script>
+<div class="well well-small" style="margin: 5px">
+   <input id="loanOrderId" name="loanOrderId" value="${loanOrder.loanOrderId}" type="hidden"/>
+   <input id="loanerId" name="loanerId" value="${loanOrder.loanerId}" type="hidden"/>
+   <table class="table">
+     <tr>
+        <th>客户名称:</th>
+        <td>${loanOrder.name}</td>
+        <th>证件号码:</th>
+        <td>${loanOrder.idNo}</td>
+     </tr>
+     <tr>
+        <th>贷款金额:</th>
+        <td>${loanOrder.loanAmount}</td>
+        <th>贷款期限:</th>
+        <td>${loanOrder.loanPeriod}</td>
+        <th>到期日期:</th>
+        <td></td>
+     </tr>
+     <tr>
+        <th>利息率:</th>
+        <td>${loanOrder.rate}</td>
+        <th>还款方式:</th>
+        <td id="repayMethod"></td>
+        <th>剩余金额(元):</th>
+        <td></td>
+     </tr>
+   </table>
+</div>
+<div style="margin: 5px">
+ <table id="investOrderGrid"></table>
+</div>
+<div id="investOrderDialog">
+</div>
+</html>

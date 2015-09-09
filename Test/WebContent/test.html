@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script src="lib/sweet-alert.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="lib/sweet-alert.css">
+
+	<style type="text/css">
+		div{
+			width:100px;
+			height:100px;
+			background:yellow;
+			position:relative;
+			animation:mymove 10s infinite;/*FireFox*/
+			-moz-animation:mymove 5s infinite;/*Safari and Chrome*/
+			-o-animation:mymove 5s infinite;/*Opera*/
+		}
+		
+		@keyframes mymove
+		{
+			from {top:0px;}
+			to   {top:600px;}
+		}
+		
+		@-webkit-keyframes mymove /*Safari and Chrome*/
+		{
+			from {top:0px;}
+			to   {top:200px;}
+		}
+		
+		@-o-keyframes mymove /*Opera */
+		{
+			from {top:0px;}
+			to   {top:200px;}
+		}
+	</style>
+</head>
+<body>
+	<div></div>
+	<div style="float: left;"></div>
+
+	<!-- <button style="width:100px;height:100px;" id="calculagraph" value="123">123</button>
+	 -->
+	 <!-- <input type="button" value="123" style="width:100px;height:100px;" id="calculagraph"> -->
+	 <!-- <input id="xyValue"> -->
+<script type="text/javascript">
+/* window.onload = function(){
+	$(".sa-icon sa-warning pulseWarning").css("background","black");
+	swal({
+		title:"Are you sure?",
+		text:"You will not be able to recover this imaginary file!",
+		type:"warning",
+		showCancelButton:true,
+		confirmButtonColor:"#DD6B55",
+		confirmButtonText:"Yes,delete it!",
+		closeOnConfirm:false
+	},
+	function(){
+		
+	}
+	)
+} */
+	/* var sixty = 60;
+	function timeSubtract(){
+		if(sixty == 0){
+			$("#calculagraph").attr("disable","disable");
+			$("#calculagraph").css("background","red");
+		}else{
+			$("#calculagraph").html(sixty);
+			sixty -= 1;
+		}
+	}
+
+	window.onload = function(){
+		var btn = $("#calculagraph").val();
+		swal("This is btn",btn);
+		window.setInterval(timeSubtract, 1000);
+	} */
+	
+	/* function pointerX(){
+		return event.pageX || (event.clientX + (documnet.documentElement.scrollleft
+			|| document.body.scrollLeft
+		))
+	}
+	
+	function pointerY(){
+		return event.pageY || (event.clientY + (document.documentElement.scrollTop
+				|| document.body.scrollTop));
+	}
+	
+	window.onload = function(){
+		
+		
+		$("#xyValue").val(x_px_scr + ":" + y_px_scr);
+	} */
+</script>
+	
+</body>
+</html>

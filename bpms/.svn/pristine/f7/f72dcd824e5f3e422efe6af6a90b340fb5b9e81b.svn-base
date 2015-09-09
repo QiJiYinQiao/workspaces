@@ -1,0 +1,272 @@
+var loadBaseRow = null;
+//渲染基本信息姓名combogrid
+function RenderName(){
+	$("#baseForm input[name='name']").combogrid({    
+	    panelWidth:250,  
+	    mode: 'remote',   
+	    idField:'name',    
+	    textField:'name',    
+	    url:'loaner/loanerAction!findCombgridLoaner.action',
+	    columns:[[    
+	        {field:'name',title:'姓名',width:100},    
+	        {field:'idNo',title:'身份证号',width:150},    
+	    ]] ,
+	    onClickRow:function(index,row){
+	    	//console.info(row);
+	        $("#baseForm").form('load',row); 
+	        //渲染市区
+	        renderCitySelect('hukouCityId','hukouAreaId',row.hukouProvinceId);
+	        renderCitySelect('curCityId','curAreaId',row.curProvinceId);
+	        $("#hukouCityId").combobox("setValue",row.hukouCityId);
+	        $("#hukouAreaId").combobox("setValue",row.hukouAreaId);
+	        $("#curCityId").combobox("setValue",row.curCityId);
+	        $("#curAreaId").combobox("setValue",row.curAreaId);
+	        loadBaseRow = row;
+	       /* //加载该客户的以前的紧急联系人
+	        $("#linkPeople").datagrid("reload",{loanerId:row.loanerId});
+	        //工作单位列表
+	        $("#dwDatagrid").datagrid('reload',{loanerId:row.loanerId});
+	        //开户行信息
+	        $("#bankGrid").datagrid("reload",{loanerId:row.loanerId});*/
+	    }
+	}); 
+}
+
+//基本信息保存
+function toSaveBaseInfo(idh,ids){
+	var isValid = $("#baseForm").form('validate');
+	var name = $("#name").combogrid("getText");
+	if(name==""){
+		$.messager.alert("提示","请填写联系人姓名!","info");
+		return false;
+	}
+	if(!isValid){
+		return false;
+	}
+	$.ajax({
+		cache:true,
+		type:'POST',
+		url:'loaner/loanerAction!persistenceLoaner.action',
+		data:$('#baseForm').serialize(),
+		async:false,
+		dataType:'JSON',
+		success:function(res){
+			if(res.state){//保存成功
+				$("#loanerId").val(res.loanerId);
+				$("#loanOrderId").val(res.loanOrderId);
+				$("#createDate").val(res.createDate);
+				$("#hukouAddr").val(res.hukouAddr);
+				$("#curAddr").val(res.curAddr);
+				$("#sign").val("save");
+				//表单禁用
+				disableForm();
+				parent.$.messager.show({
+					title : '提示',
+					msg : '恭喜你，保存成功!',
+					timeout : 4000 * 2
+				});
+			}else{
+				parent.$.messager.show({
+					title : '提示',
+					msg : '出错了，保存失败!',
+					timeout : 4000 * 2
+				});
+			}
+		}
+	});
+}
+//省
+function renderProvinceSelect(pid,cid,aid){
+	$.ajax({
+		type:"POST",
+		url:'common/commonAction!findAreaDic.action?parentId=1',
+		dataType:"json",
+		async:false,
+		success:function(iJson){
+			var arr = eval(iJson);
+			$('#'+pid).combobox({   
+				data:arr,
+	            valueField:'code',   
+	            textField:'text',
+	            editable:false,
+	            onLoadSuccess:function(){
+	            	var indexOneVal = $("#"+pid).combobox("getValue");//获取一级栏目值
+					if(indexOneVal != null && indexOneVal != ""){
+						//渲染二级栏目下拉框
+						renderCitySelect(cid,aid,indexOneVal);
+		            }
+	            },
+	            onChange:function(newvalue,oldvalue){
+	                //渲染二级栏目下拉框
+	            	renderCitySelect(cid,aid,newvalue);
+	            	$("#"+cid).combobox("setValue","");
+	            	$("#"+aid).combobox("setValue","");
+				}
+	        }); 
+		}
+	});
+}
+//市
+function renderCitySelect(cid,aid,pvalue){
+	$.ajax({
+		type:"POST",
+		url: 'common/commonAction!findAreaDic.action?parentId='+pvalue,
+		dataType:"json",
+		async:false,
+		success:function(iJson){
+			var arr = eval(iJson);
+			$('#'+cid).combobox({   
+				data:arr,
+	            valueField:'code',   
+	            textField:'text',
+	            editable:false,
+	            onLoadSuccess:function(){
+					var indexTwoVal = $("#"+cid).combobox("getValue");//获取二级栏目已选择的值
+					if(indexTwoVal != null && indexTwoVal != ""){
+						renderAreaSelect(aid,indexTwoVal);
+					}
+                },
+	            onChange:function(newvalue,oldvalue){
+	            	renderAreaSelect(aid,newvalue);
+	            	$("#"+aid).combobox("setValue","");
+				}
+	        }); 
+		}
+	});
+	
+}
+//县
+function renderAreaSelect(aid,cvalue){
+	$.ajax({
+		type:"POST",
+		url: 'common/commonAction!findAreaDic.action?parentId='+cvalue,
+		dataType:"json",
+		async:false,
+		success:function(iJson){
+			var arr = eval(iJson);
+			$('#'+aid).combobox({   
+				data:arr,
+	            valueField:'code',   
+	            textField:'text',
+	            editable:false
+	        }); 
+		}
+	});
+}
+//指定清空哪些文本框
+function clearForm(){
+	$("#baseForm").form("clear");
+	$("#linkPeople").datagrid("reload");
+}
+//表单禁用
+function disableForm(){
+	
+	$("#save").hide();//保存按钮影藏
+	$("#edit").show();//修改按钮显示出来
+	$("#rset").hide();//重置按钮隐藏
+	
+	var  myArrays=$("#baseForm input[class^='easyui-']");
+    for(var i = 0;i<myArrays.length;i++){
+       if($(myArrays[i]).hasClass("easyui-aa")){
+     	   $(myArrays[i]).combobox("disable");
+       }else if($(myArrays[i]).hasClass("easyui-combotree")){
+   		   $(myArrays[i]).combotree("disable");
+   	   }else if($(myArrays[i]).hasClass("easyui-combogrid")){
+   		   $(myArrays[i]).combogrid("disable");
+   	   }else if($(myArrays[i]).hasClass("easyui-combobox")){
+   		   $(myArrays[i]).combobox("disable");
+   	   }else if ($(myArrays[i]).hasClass("easyui-textbox")){
+  		   $(myArrays[i]).attr("disabled",true);
+  	   }else{
+  	   }
+     }
+}
+//点击修改,表单放开
+function ableForm(){
+	$("#edit").hide();//修改按钮影藏
+	$("#save").show();//保存按钮显示出来
+	$("#rset").show();
+	var  myArrays=$("#baseForm input[class^='easyui-']");
+    for(var i = 0;i<myArrays.length;i++){
+       if($(myArrays[i]).hasClass("easyui-aa")){
+    	   $(myArrays[i]).combobox("enable");
+       }else if($(myArrays[i]).hasClass("easyui-combotree")){
+   		   $(myArrays[i]).combotree("enable");
+   	   }else if($(myArrays[i]).hasClass("easyui-combogrid")){
+   		   $(myArrays[i]).combogrid("enable");
+   	   }else if($(myArrays[i]).hasClass("easyui-combobox")){
+   		   $(myArrays[i]).combobox("enable");
+   	   }else if ($(myArrays[i]).hasClass("easyui-textbox")){
+  		   $(myArrays[i]).attr("disabled",false);
+  	   }else{
+  		   
+  	   }
+     }
+}
+//申请贷款信息
+function toSaveLoanInfo(){
+	//客户基本信息是否保存的标志
+	var $sign = $("#sign").val();
+	if("edit" == $sign){
+		$.messager.alert("提示","请您填写客户基本资料并保存!","warning");
+		return;
+	}
+	var isValid = $("#loanInfo").form('validate');
+	if(!isValid){
+		return false;
+	}
+	//订单id
+	var $loanOrderId = $("#loanOrderId").val();
+	$.ajax({
+		cache: true,
+		type: "POST",
+		url:"loanOrder/loanOrderAction!saveLoanInfo.action?loanOrderId="+$loanOrderId,
+		data:$('#loanInfo').serialize(),
+		async: false,
+	    error: function(request) {
+	        alert("Connection error");
+	    },
+	    success: function(iJson) {
+	    	var res = JSON.parse(iJson);
+	    	if(res.state){
+	    		$("#saveinfo").hide();//保存按钮消失
+	    		$("#editinfo").show();//修改按钮出现
+	    		$("#resetinfo").hide();//修改按钮消失
+	    		//如果保存成功则表单禁用
+	    		$("#loanInfo textarea").attr("disabled",true);
+	    		var arr = $("#loanInfo input[class^='easyui-']");
+	    		for (var i = 0; i < arr.length; i++) {
+	    			if($(arr[i]).hasClass("easyui-combobox")){
+	    		  		$(arr[i]).combobox("disable");
+	    		  	}else if($(arr[i]).hasClass("easyui-textbox")){
+	    		  		$(arr[i]).attr("disabled",true);
+	    		  	}else{
+	    		  	}
+				}
+	    	}
+	    	parent.$.messager.show({
+				title : '提示',
+				msg : res.msg,
+				timeout : 4000 * 2
+			});
+	    }
+	});
+}
+//申请贷款信息编辑按钮
+function showSavebut(){
+	$("#editinfo").hide();
+	$("#saveinfo").show();
+	$("#resetinfo").show();
+	//如果保存成功则表单禁用
+	$("#loanInfo textarea").attr("disabled",false);
+	var arr = $("#loanInfo input[class^='easyui-']");
+	console.info(arr);
+	for (var i = 0; i < arr.length; i++) {
+		if($(arr[i]).hasClass("easyui-combobox")){
+	  		$(arr[i]).combobox("enable");
+	  	}else if($(arr[i]).hasClass("easyui-textbox")){
+	  		$(arr[i]).attr("disabled",false);
+	  	}else{
+	  	}
+	}
+}

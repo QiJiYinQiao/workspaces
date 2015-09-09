@@ -1,0 +1,138 @@
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<script type="text/javascript">
+	$(function() {
+		$("#upload_form input:first").click().attr("checked","checked");
+		//附件类型 添加/删除事件 
+		function credentialChoose(obj,val){
+				var vals = val.split("-");
+				var divId = "cred"+vals[0];
+		 	if(obj.checked){
+				var fartherDiv = "<div id='farther"+divId+"'></div>"
+				$("#upload_form_div_add").append(fartherDiv);
+				$("#upload_form_div").clone().attr("id",divId).appendTo("#farther"+divId);
+				$("#"+divId+"  span:first").html(vals[1]);
+			}else{
+				$("#farther"+divId).remove();
+			} 
+			
+		}
+		
+		//增加一条同类型附件
+		function addACredential(obj){
+			var pDiv = obj.parentElement;
+			$(pDiv.parentElement).append("<div>"+$(pDiv).html()+"</div>");
+			var pDivId = pDiv.id;
+			console.info($("#"+pDivId));
+			$("#"+pDivId).appendTo("#"+pDiv.parentElement.id);
+			
+		}
+		
+		//删除一条同类型附件
+		function removeACredential(obj){
+			var pDiv = obj.parentElement;
+			var ppDiv = $(obj).parent().parent();
+			if(ppDiv.children().length==1){
+				//$("#upload_form input:gt")
+			}
+			$(pDiv).remove();
+		}
+	});
+</script>
+<style>
+	.easyui-textbox{
+		height: 18px;
+		width: 170px;
+		line-height: 16px;
+	    /*border-radius: 3px 3px 3px 3px;*/
+	    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+	    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+	}
+	
+	textarea:focus, input[type="text"]:focus{
+	    border-color: rgba(82, 168, 236, 0.8);
+	    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+	    outline: 0 none;
+		}
+		table {
+	    background-color: transparent;
+	    border-collapse: collapse;
+	    border-spacing: 0;
+	    max-width: 100%;
+	}
+
+	fieldset {
+	    border: 0 none;
+	    margin: 0;
+	    padding: 0;
+	}
+	legend {
+	    -moz-border-bottom-colors: none;
+	    -moz-border-left-colors: none;
+	    -moz-border-right-colors: none;
+	    -moz-border-top-colors: none;
+	    border-color: #E5E5E5;
+	    border-image: none;
+	    border-style: none none solid;
+	    border-width: 0 0 1px;
+	    color: #999999;
+	    line-height: 20px;
+	    display: block;
+	    margin-bottom: 10px;
+	    padding: 0;
+	    width: 100%;
+	}
+	input, textarea {
+	    font-weight: normal;
+	}
+	table ,th,td{
+		text-align:left;
+		padding: 6px;
+	}
+	input {
+		border: none;
+	}
+</style>
+<div class="easyui-layout" data-options="fit:true,border:false">
+	<div data-options="region:'center',border:false" title="" style="overflow: hidden;padding: 10px;">
+	<form id="form" method="post">
+		客户姓名 <input type="text" value="天宇"/> <br /> 
+		身份证号 <input type="text" value="28373771277371827381"> <br />
+		备注信息 <textarea style="width:200px;height:100px;">sdfsdfsdfsdfasfdsadf </textarea><br />
+		<div id="upload_form">
+		上传附件	<input type="checkbox" checked="checked" name="credential_type" value="1" id="idCard" onclick="credentialChoose(this,this.value+'-身份证明');"><label for="idCard">身份证明</label>
+			<input type="checkbox" name="credential_type" value="2" id="account" onclick="credentialChoose(this,this.value+'-户口本');"><label for="account">户口本</label>
+			<input type="checkbox" name="credential_type" value="3" id="contract" onclick="credentialChoose(this,this.value+'-合同');"><label for="contract">合同</label>
+			<input type="checkbox" name="credential_type" value="4" id="marriageProve" onclick="credentialChoose(this,this.value+'-结婚证明');"><label for="marriageProve">结婚证明</label>
+			
+		<div id="upload_form_div_add">
+			<div id="upload_form_father_idDiv" style="display: none;">
+				<div id="upload_form_div">
+					<span>身份证明</span><input type="text"><input type="file"> 
+					<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
+					<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
+				</div>
+			</div>
+		</div>
+		</div>
+	</form>
+	<a href="javascript:void(0);" class="easyui-linkbutton"  plain="true" onclick="addRowsOpenDlg();">审批通过</a>
+	<a href="javascript:void(0);" class="easyui-linkbutton"  plain="true" onclick="addRowsOpenDlg();">拒贷</a>
+</div>   
+<div>
+	<table id="hisOption" style="overflow: auto;height: 82%;" class="easyui-datagrid" 
+			data-options="rownumbers:true,pagination:true,singleSelect:true,method:'post',onDblClickRow:doubleclick, remoteSort:false,multiSort:false, showFooter: true">
+			<thead>
+			<tr>
+			<th data-options="field:'ck',checkbox:true"></th>
+			<th data-options="field:'id',width:150,align:'center'">编码</th>
+			<th data-options="field:'userName',width:80,align:'center'">用户名</th>
+			<th data-options="field:'time',width:110,align:'center'">生成时间</th>
+			<th data-options="field:'taskId',width:120,align:'center'">任务编号</th>
+			<th data-options="field:'processInstanceId',width:170,align:'center',sortable:true">流程实例ID</th>
+			<th data-options="field:'type',width:100,align:'center',sortable:true">类型</th>
+			<th data-options="field:'fullMessage',width:170,align:'center',sortable:true">批注</th>
+			</tr>
+			</thead>
+	</table>
+</div>   
+</div>

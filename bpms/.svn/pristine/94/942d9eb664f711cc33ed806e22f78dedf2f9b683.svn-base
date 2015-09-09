@@ -1,0 +1,226 @@
+package com.bpms.action;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.AuditInfoRecord;
+import com.bpms.model.Company;
+import com.bpms.model.LoanorderAndCompany;
+import com.bpms.model.vo.CompanyModel;
+import com.bpms.service.AuditInfoRecordService;
+import com.bpms.service.CompanyService;
+import com.bpms.service.LoanorderAndCompanyService;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 
+ * 工作单位 请求处理器的action
+ * 
+ * @author 孙一般 2015/06/23.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/06/23 孙一般 创建.
+ */
+@Namespace("/company")
+@Action(value = "companyAction")
+public class CompanyAction extends BaseAction implements
+		ModelDriven<CompanyModel> {
+
+	private static final long serialVersionUID = 1L;
+	@Autowired
+	private CompanyService companyServiceImpl;
+	@Autowired
+	private LoanorderAndCompanyService loanorderAndCompanyServiceImpl;
+	@Autowired
+	private AuditInfoRecordService auditInfoRecordService;
+	// 订单id
+	private String loanOrderId;
+	// 工作单位vo
+	private CompanyModel companyModel;
+	// 工作单位ids
+	private String comIds;
+
+	/**
+	 * 根据订单ID查询其公司信息
+	 * 
+	 * @param id
+	 *            订单id
+	 * @return List<Company> 公司列表
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 */
+	public String findCompanyByLoanerId() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		List<Company> list = companyServiceImpl.findCompanyByLoanOrderId(loanOrderId);
+		List<CompanyModel> companyModels = new ArrayList<CompanyModel>();
+		for(Company companys : list){
+			CompanyModel companyModel = new CompanyModel();
+			PropertyUtils.copyProperties(companyModel,companys);
+			AuditInfoRecord auditInfo = auditInfoRecordService.findAuditByName(companyModel.getName(), loanOrderId,"audit_company");
+			if(null!=auditInfo){
+				companyModel.setAuditId(auditInfo.getAuditId());
+				companyModel.setPhoneAuditRecord(auditInfo.getPhoneAuditRecord());
+				companyModel.setWebAuditRecord(auditInfo.getWebAuditRecord());
+			}
+			companyModels.add(companyModel);
+		}
+		
+		OutputJson(companyModels);
+		return null;
+	}
+
+	/**
+	 * 保存
+	 */
+	public String saveCompany() {
+		try {
+			boolean fl = companyServiceImpl.saveCompanyModel(companyModel);
+			if (fl) {
+				OutputJson("{\"msg\":\"保存成功\",\"state\":" + true + "}");
+			} else {
+				OutputJson("{\"msg\":\"保存失败\",\"state\":" + false + "}");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 根据贷款人客户id查询列表
+	 */
+	public String findListByLoanerId() {
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(companyServiceImpl.findCompanyByLonaId(companyModel
+				.getLoanerId()));
+		OutputJson(gridModel);
+		return null;
+	}
+
+	/**
+	 * 编辑时，回显工作单位列表,已与本订单绑定的工作单位，设置为默认选中
+	 * 
+	 * @return
+	 */
+	public String findAllListChacked() {
+		GridModel gridModel = new GridModel();
+		// 该贷款人的所有工作单位
+		List<CompanyModel> cmList = companyServiceImpl
+				.findCompanyByLonaId(companyModel.getLoanerId());
+		if (cmList != null && cmList.size() > 0) {
+			// 根据该贷款人的订单id，查询出与该订单绑定的所有工作单位
+			List<LoanorderAndCompany> lacList = loanorderAndCompanyServiceImpl
+					.findListByLoanOrderId(loanOrderId);
+			if (lacList != null && lacList.size() > 0) {
+				for (CompanyModel cm : cmList) {
+					for (LoanorderAndCompany lac : lacList) {
+						// 如果id相同，这该工作单位被本订单绑定
+						if (cm.getComId().equals(lac.getComId())) {
+							cm.setStateChecked("checked");
+						}
+					}
+				}
+			}
+		}
+		gridModel.setRows(cmList);
+		OutputJson(gridModel);
+		return null;
+	}
+
+	/**
+	 * 编辑
+	 */
+	public String doEdit() {
+		if (StringUtils.isNotBlank(companyModel.getComId())) {
+			List<LoanorderAndCompany> lacList = loanorderAndCompanyServiceImpl
+					.findListByComId(companyModel.getComId());
+			for (LoanorderAndCompany loanorderAndCompany : lacList) {
+				// 如果该工作单位被其订单绑定，则该工作单位不能被编辑
+				if (!loanOrderId.equals(loanorderAndCompany.getLoanOrderId())) {
+					OutputJson("{\"msg\":\"该工作单位已被其他订单绑定不能修改,修改失败!\",\"state\":"
+							+ false + "}");
+					return null;
+				}
+			}
+			OutputJson("{\"msg\":\"该工作单位未被其他订单绑定!\",\"state\":" + true + "}");
+			return null;
+		}
+		OutputJson("{\"msg\":\"编辑失败!\",\"state\":" + false + "}");
+		return null;
+	}
+
+	/**
+	 * 删除
+	 */
+	public String doDeleteById() {
+		if (StringUtils.isNotBlank(comIds)) {
+			String[] ids = comIds.split(",");
+			for (int i = 0; i < ids.length; i++) {
+				List<LoanorderAndCompany> lacList = loanorderAndCompanyServiceImpl
+						.findListByComId(ids[i]);
+				for (LoanorderAndCompany loanorderAndCompany : lacList) {
+					// 如果该紧急联系人被其订单绑定，则该紧急联系人不能被删除
+					if (!loanOrderId.equals(loanorderAndCompany
+							.getLoanOrderId())) {
+						OutputJson("{\"msg\":\"该工作单位已被其他订单绑定不能删除,删除失败!\",\"state\":"
+								+ false + "}");
+						return null;
+					} else {
+						// 如果该联系人已经绑定了本订单，那么先解除关系在删除
+						loanorderAndCompanyServiceImpl
+								.deleteByComIdAndLoanOrderId(
+										loanorderAndCompany.getComId(),
+										loanorderAndCompany.getLoanOrderId());
+					}
+				}
+				companyServiceImpl.deleteById(ids[i]);
+			}
+			OutputJson("{\"msg\":\"删除成功!\",\"state\":" + true + "}");
+			return null;
+		}
+		OutputJson("{\"msg\":\"删除失败!\",\"state\":" + false + "}");
+		return null;
+	}
+
+	@Override
+	public CompanyModel getModel() {
+		if (companyModel == null) {
+			companyModel = new CompanyModel();
+		}
+		return companyModel;
+	}
+
+	public CompanyModel getCompanyModel() {
+		return companyModel;
+	}
+
+	public void setCompanyModel(CompanyModel companyModel) {
+		this.companyModel = companyModel;
+	}
+
+	public String getLoanOrderId() {
+		return loanOrderId;
+	}
+
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+
+	public String getComIds() {
+		return comIds;
+	}
+
+	public void setComIds(String comIds) {
+		this.comIds = comIds;
+	}
+
+}

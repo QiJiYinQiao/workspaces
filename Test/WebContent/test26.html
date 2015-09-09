@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		div{
+			margin: 3px;
+			width: 40px;
+			height: 40px;
+			position: absolute;
+			left: 0px;
+			top: 30px;
+			background: green;
+			display: none;
+		}
+		div.newcolor{
+			background:blue;
+		}
+		span{
+			color:red;
+		}
+		
+		
+	</style>
+	<script src="other_lib.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+			$(function(){
+				$(document.body).click(function(){
+					var divs = $("div")
+						.show("slow")
+						.animate({left:"+=200"},2000);
+					jQuery.queue(divs[0],"fx",function(){
+						$(this).addClass("newcolor");
+						jQuery.dequeue(this);
+					});
+					divs.animate({left:"-=200"},500);
+					jQuery.queue(divs[0],"fx",function(){
+						$(this).removeClass("newcolor");
+						jQuery.dequeue(this);
+					});
+					divs.slideUp();
+						
+				});
+				
+			});	
+	</script>
+</head>
+<body >
+	click here...
+	<div></div>
+	
+	
+	
+</body>
+</html>

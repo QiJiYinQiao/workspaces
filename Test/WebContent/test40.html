@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>dynamicForm sample</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" type="text/css"  href="css/easyui.css">
+		<script src="js/external/jquery/jquery.js"></script>
+	 	<script type="text/javascript" src="js/dynamicForm.js"></script>
+	 	<script src="js/jquery.easyui.min.js"></script>
+        <style>
+            * {
+                font: normal normal normal small Arial, Helvetica, sans-serif;
+            }
+
+            h1 {
+                font-weight: bold;
+                font-size: 2em;
+            }
+
+            h3 {
+                font-weight: bold;
+                font-size: 1.5em;
+            }
+
+            .hidden #multipleLocationsTemplate {
+                background:  pink;
+            }
+
+            .anchor_container #multipleLocationsTemplate {
+                background: lightgreen;
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <h1>dynamicForm</h1>
+            <p>This plugin creates the ability to define a template for a dynamic section of a form, which is then
+                dynamically added to a form for completion by the user.</p>
+        </div>
+
+        <br/>
+
+        <div id="templates_container" class="hidden">
+            <h3>Template</h3>
+            <p>You first outline the template for the dynamic section.  This should only contain the fields you want to
+                include in the dynamic section.  You would also normally hide the parent container to ensure that the
+                template itself isn't changed by the user (the pink section below would not be visible to users under
+                normal circumstances).</p>
+            
+            <div id="multipleLocationsTemplate" style="text-align: center; padding:4px 0px 4px 0px;">
+                
+							<input id="emccontactIdType" name="emccontact.idType" type="text" class="easyui-textbox easyui-datebox"/>
+						    手机号
+							<input id="emccontactIdNo" name="emccontact.idNo" type="text" class="easyui-textbox easyui-validatebox" />
+							家庭电话
+							<input id="emccontactRelationship" name="emccontact.relationship" type="text" class="easyui-textbox easyui-validatebox" />
+						
+                
+                <input type="button" value="&nbsp;-&nbsp;" id="deleteLocation_0" title="Delete this location"
+                       onclick="$(document).dynamicForm('remove', '_anchor_', this);" />
+                <input type="button" value="&nbsp;+&nbsp;" id="addLocation_0" title="Add a location"
+                       onclick="$(document).dynamicForm('add', '_anchor_', this);" />
+                <br />
+            </div>
+        </div>
+
+        <br/>
+
+        <div class="anchor_container">
+            <h3>Setting the anchor and initiating the template</h3>
+            <p>Once the template is properly configured, simply add the anchor for where the template should actually be
+                located.  This can be anywhere on the page, and the template and anchor can be seperated if necessary,
+                although doing so does make the page less logical when referring to it in the future.  Using the plus and
+                minus buttons adds new unique copies of the fields to the anchor section - plus adds a new section immediately
+                after the instance of the plus button (ie, not at the end of the form), while the minus button deletes the
+                corresponding instance.</p>
+            <div id="multipleLocations2" class="hidden input_form">
+            	<input id="emccontactIdType" name="emccontact.idType" type="text" class="easyui-textbox easyui-datebox"/>
+						    手机号
+							<input id="emccontactIdNo" name="emccontact.idNo" type="text" class="easyui-textbox easyui-validatebox" />
+							家庭电话
+							<input id="emccontactRelationship" name="emccontact.relationship" type="text" class="easyui-textbox easyui-validatebox" />
+						
+                
+                <input type="button" value="&nbsp;-&nbsp;" id="deleteLocation_0" title="Delete this location"
+                       onclick="$(document).dynamicForm('remove', '_anchor_', this);" />
+                <input type="button" value="&nbsp;+&nbsp;" id="addLocation_0" title="Add a location"
+                       onclick="$(document).dynamicForm('add', '_anchor_', this);" />
+                <br />
+            </div>
+
+            <p>Finally, once the template and anchor exist within the DOM, configure the plugin itself, and initialise it.</p>
+
+            <script type="text/javascript">
+                  $(document).ready(function() {
+                      $(document).dynamicForm('set', '#multipleLocations2', '#multipleLocationsTemplate')
+                              .dynamicForm('init');
+                  });
+            </script>
+
+            <p>For more information on usage and configuration, please visit the
+                <a href="https://github.com/nianja/dynamicForm/wiki/Usage">wiki</a>.</p>
+        </div>
+
+    </body>
+</html>

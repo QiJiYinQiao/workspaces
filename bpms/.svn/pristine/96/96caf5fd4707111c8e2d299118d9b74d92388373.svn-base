@@ -1,0 +1,155 @@
+package com.bpms.service.impl;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.InvestorderAndProducts;
+import com.bpms.model.vo.InvestPerformanceModel;
+import com.bpms.service.InvestorderAndProductsService;
+import com.bpms.util.DateUtils;
+import com.bpms.util.PageUtil;
+
+/**
+ * 投资订单和产品的关联关系
+ * 
+ * @author liuhh
+ *
+ */
+@Service
+public class InvestorderAndProductsServiceImpl implements
+		InvestorderAndProductsService {
+	private Logger log = Logger.getLogger(InvestorderAndProductsServiceImpl.class);
+	@Autowired
+	private BaseDAO<InvestorderAndProducts> investorderAndProductsDao;
+
+	@Override
+	public boolean persistenceInvestorderAndProducts(
+			InvestorderAndProducts investorderAndProducts) {
+		if (StringUtils.isBlank(investorderAndProducts.getId())) {
+			investorderAndProductsDao.save(investorderAndProducts);
+		} else {
+			investorderAndProductsDao.update(investorderAndProducts);
+		}
+		return true;
+	}
+
+	@Override
+	public List<InvestorderAndProducts> findInvestorderAndProductsList(
+			String investOrderId) {
+		// TODO Auto-generated method stub
+		String hql="from InvestorderAndProducts t where 1=1 and t.investOrderId='"+investOrderId+"'";
+		return investorderAndProductsDao.find(hql);
+	}
+
+	@Override
+	public Long counts(String investOrderId) {
+		// TODO Auto-generated method stub
+		String hql="from InvestorderAndProducts t where 1=1 and t.investOrderId='"+investOrderId+"'";
+		return investorderAndProductsDao.count("select count(*) "+hql);
+	}
+	@Override
+	public boolean deleteInvestorderAndProducts(String ids){
+		if (StringUtils.isNotBlank(ids)) {
+			String[] idsArray = ids.split(",");
+			for (int i = 0; i < idsArray.length; i++) {
+				String id = idsArray[i];
+				InvestorderAndProducts iops = investorderAndProductsDao.get(InvestorderAndProducts.class, id);
+				investorderAndProductsDao.delete(iops);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Object[] findInvestPerformanceReportListByDate(String queryDate,String orgId,PageUtil pageUtil) {
+		// TODO Auto-generated method stub
+		String yearmonthLastday;//查询年月最后一天
+		String yearmonthFirstday;//查询年月第一天
+		if(StringUtils.isBlank(queryDate)){
+			//查询当前日期及当前月份的数据
+			Calendar c = Calendar.getInstance();
+			String yearmonth = DateUtils.getFormatDateString("yyyy-MM",c);
+			queryDate = DateUtils.getFormatDateString("yyyy-MM-dd",c);
+			//取出当前月的最后一天
+			int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+			yearmonthLastday =  yearmonth+"-"+lastDay;
+			yearmonthFirstday = yearmonth+"-01";
+		}else{
+			Calendar c =DateUtils.getCalendar(queryDate);
+			String yearmonth = DateUtils.getFormatDateString("yyyy-MM",c);
+			queryDate = DateUtils.getFormatDateString("yyyy-MM-dd",c);
+			//取出当前月的最后一天
+			int lastDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+			yearmonthLastday =  yearmonth+"-"+lastDay;
+			yearmonthFirstday = yearmonth+"-01";
+		}
+		//日志输出查询条件
+		log.info(queryDate+"----"+yearmonthLastday);
+		log.info("机构ID:"+orgId);
+		StringBuffer sb = new StringBuffer();
+		 sb.append("select aa.ORGANIZATION_ID,aa.investEduOfDay,aa.countOfDay,bb.investEduOfMonth,bb.investEduMonthOfYear ");
+		 sb.append(" from (select t3.STATUS_NAME,t1.ORGANIZATION_ID,t1.INVEST_ORDER_ID ,sum(t2.INVEST_EDU) as investEduOfDay,count(1) as countOfDay ");
+		 sb.append(" from t_bp_invest_order t1 ");
+		 sb.append(" inner join t_bp_investorder_and_products t2 on t2.INVEST_ORDER_ID=t1.INVEST_ORDER_ID ");
+		 sb.append(" inner join t_bp_order_status t3 on t1.ORDER_STATUS = t3.STATUS_ID ");
+		 sb.append(" where t2.BEGIN_DATE='"+queryDate+"' and t3.STATUS_NAME = '销客专员通过' ");
+		 sb.append(" group by t1.ORGANIZATION_ID) aa, ");
+		 sb.append(" (select tt.ORGANIZATION_ID,sum(tt.investEduOfMonth) as investEduOfMonth,sum(tt.investEduMonthOfYear) as investEduMonthOfYear ");
+		 sb.append(" 	from ");
+		 sb.append(" ( ");
+		 sb.append(" select t1.ORGANIZATION_ID as ORGANIZATION_ID, t2.INVEST_EDU as investEduOfMonth,t3.REPAYMENT_MODE, ");
+		 sb.append(" case when t3.REPAYMENT_MODE = 'A' then t2.INVEST_EDU*t3.MSF ");						
+		 sb.append(" when t3.REPAYMENT_MODE = 'B' then t2.INVEST_EDU*t3.YTM/30*t3.LENDING_CYCLE "); 
+		 sb.append(" ELSE 0 ");
+		 sb.append(" end investEduMonthOfYear ");
+		 sb.append(" from t_bp_invest_order t1 ");
+		 sb.append(" inner join t_bp_investorder_and_products t2 on t2.INVEST_ORDER_ID = t1.INVEST_ORDER_ID ");
+		 sb.append(" inner join t_bp_invest_products t3 on t2.PROD_ID = t3.PROD_ID ");
+		 sb.append(" inner join t_bp_order_status t4 on t1.ORDER_STATUS = t4.STATUS_ID ");
+		 sb.append(" where t2.BEGIN_DATE >= '"+yearmonthFirstday+"' and t2.BEGIN_DATE <= '"+yearmonthLastday+"' and t4.STATUS_NAME = '销客专员通过' ");
+		 sb.append(" )tt ");	
+		 sb.append(" group by tt.ORGANIZATION_ID) bb where aa.ORGANIZATION_ID = bb.ORGANIZATION_ID ");
+		 if(StringUtils.isNotBlank(orgId)){
+			 sb.append(" and aa.ORGANIZATION_ID = '"+orgId+"'");
+		 }
+		String sql = sb.toString();
+		List<Object> objList = investorderAndProductsDao.findBySql(sql, pageUtil);
+		Long count = investorderAndProductsDao.countBySql("select count(*) from (" +sql+")tt");
+		List<InvestPerformanceModel> perList = new ArrayList<InvestPerformanceModel>();;
+		Object[] obj=new Object[2];
+		InvestPerformanceModel ipvo = new InvestPerformanceModel();
+		try {
+			for(int i=0;i<objList.size();i++){
+				Object[] obs = (Object[]) objList.get(i);
+				InvestPerformanceModel ipvo_c=(InvestPerformanceModel) ipvo.clone();
+				ipvo_c.setOrgName(obs[0]==null?"":String.valueOf(obs[0]));
+				ipvo_c.setInvestMoneyDay(obs[1]==null?"":String.valueOf(obs[1]));
+				ipvo_c.setCountDay(obs[2]==null?"":String.valueOf(obs[2]));
+				ipvo_c.setInvestEduMonth(obs[3]==null?"":String.valueOf(obs[3]));
+				ipvo_c.setInvestEduMonthOfYear(obs[4]==null?"":String.valueOf(obs[4]));
+				perList.add(ipvo_c);
+		}
+		obj[0]=perList;
+		obj[1]=count;
+	} catch (CloneNotSupportedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+		return obj;
+	}
+	
+	public static void main(String[] args) {
+		  Calendar   cDay1   =   Calendar.getInstance();  
+	        final   int   lastDay   =   cDay1.getActualMaximum(Calendar.DAY_OF_MONTH);  
+	        System.out.println(lastDay);  
+	}
+
+}

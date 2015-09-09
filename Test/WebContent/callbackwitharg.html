@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	$(function(){
+		// A sample logging function to be added to a callbacks list
+		var foo = function(value){
+			console.log("foo:" + value);
+		};
+		
+		var callbacks = $.callbacks();
+		
+		//Add the logging function to the callback list
+		callbacks.add(foo);
+		
+		//Fire the items on the list,passing an argument
+		callbacks.fire("hello");
+		//Output "foo:hello"
+		
+		//Disable the callbacks list
+		callbacks.disable();
+		
+		//Test the disabled state of the list		
+		console.log(callbacks.disabled());
+		//Outputs:true
+	});
+	
+	$(function(){
+		//A sample logging function to be added to a callbacks list
+		var foo = function(value){
+			console.log("foo:" + value);
+		};
+		
+		var callbacks = $.Callbacks();
+		
+		//Add the function "foo" to the list
+		callbacks.add(foo);
+		
+		//Fire the items on the list
+		callbacks.fire("hello");//Outputs: "foo:hello"
+		callbacks.fire("world");//Outputs:"foo:world"
+		
+		//Test to establish if the callbacks have been called
+		console.log(callbacks.fired());
+	
+	})
+	
+	
+	$(function(){
+		var foo = function(value1,value2){
+			console.log("foo:" + value1 + "," + value2);
+		};
+		
+		var bar = function(value1,value2){
+			console.log("bar: " + value1 + "," + value2);
+		};
+		
+		var callbacks = $.callbacks();
+		
+		callbacks.add(foo);
+		callbacks.add(bar);
+		
+		callbacks.empty();
+		
+		console.log(callbacks.has(foo));
+		console.log(callbacks.has(bar));
+		
+	})
+	</script>
+</head>
+<body >
+	
+	
+
+</body>
+</html>

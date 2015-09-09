@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style type="text/css">
+		
+	</style>
+	<script src="other_lib.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+		$.noConflict();
+		jQuery(document).ready(function($){
+			//Code that uses jQuery's $ can follow here.	
+		});
+			//Code that uses other library's $ can follow here
+			
+		jQuery.noConflict();
+		//Do something with jQuery
+		jQuery("div p").hide();
+		//Do something with another library's $()
+		$("content").style.display = "none";
+		
+		jQuery.noConflict();
+		(function($){
+			$(function(){
+				//More code using $ as alias to jQuery
+			});
+		})(jQuery);
+		
+		//Other code using $ as an alias to the other library
+		
+		
+		var j = jQuery.noConflict();
+		
+		//Do something with jQuery
+		j("div p").hide();
+		
+		//Do something with another library's $()
+		$("content").style.display = "none";
+		
+		
+		var dom = {};
+		dom.query = jQuery.noConflict(true);
+	
+		var $log = $("#log");
+		
+		$log.append("2nd loaded jQuery version($):" + $.fn.jquery + "");
+		
+		//Restore globally scoped jQuery variables to the first version loaded
+		//(the newer version)
+		
+		jq162 = jQuery.noConflict(true);
+		
+		$log.append("After $.noConflict(true)");
+		$log.append("1st loaded jQuery version ($) : " + $.fn.jquery + "");
+		$log.append("2nd loaded jQuery version (jq162) : " + jq162.fn.jquery + "")		
+	</script>
+</head>
+<body >
+	<div id="log">
+		<h3>Before $.noConflict(true)</h3>
+	</div>
+	
+	
+	
+	
+	
+</body>
+</html>
