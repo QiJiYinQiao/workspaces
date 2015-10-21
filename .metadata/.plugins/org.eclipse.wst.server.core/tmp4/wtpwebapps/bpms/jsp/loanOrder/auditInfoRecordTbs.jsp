@@ -86,7 +86,7 @@ $(function(){
 					$("#"+formId+" textarea[name='phoneAuditRecord']").html(phoneAuditRecord);
 					$("#"+formId+" textarea[name='webAuditRecord']").html(webAuditRecord);
 					$("#"+formId+" input[name='auditId']").val(auditId);
-					loadAttachmentList(listId,companyAuditData[i].auditId,$row.loanOrderId);
+					//loadAttachmentList(listId,companyAuditData[i].auditId,$row.loanOrderId);
 				}
 			}else{
 				addACompany();
@@ -138,10 +138,10 @@ $(function(){
 							// 渲染手机号码
 							$("#loanerInfo-form input[name='contactMethod']").val($row.mobileTel);
 							//获取客户附件
-							auditId = $("#loanerInfo-form input:first").val();
-							loadAttachmentList('customerAttList',auditId,$row.loanOrderId);
+							//auditId = $("#loanerInfo-form input:first").val();
+							//loadAttachmentList('customerAttList',auditId,$row.loanOrderId);
 						}else if(index == 1){
-							$("#spauseInfo-form").form("clear");
+							/* $("#spauseInfo-form").form("clear"); */
 							$("#spauseInfo-form input[name='auditItem']").val("audit_spouse");
 							//加载配偶信息
 							if(null!=contactSpouse){
@@ -153,13 +153,13 @@ $(function(){
 							}
 							//获取配偶附件
 							auditId = $("#spauseInfo-form input:first").val();
-							loadAttachmentList('spauseAttList',auditId,$row.loanOrderId);
+							//loadAttachmentList('spauseAttList',auditId,$row.loanOrderId);
 							
 						}else if(index == 2){
-							$("#contactWayInfoH-form").form("clear");
+							/* $("#contactWayInfoH-form").form("clear");
 							$("#contactWayInfoC-form").form("clear");
 							$("#contactWayInfoZP-form").form("clear");
-							$("#contactWayInfoZT-form").form("clear");
+							$("#contactWayInfoZT-form").form("clear"); */
 							
 							$("#contactWayInfoH-form input[name='auditItem']").val("audit_home_phone");
 							$("#contactWayInfoC-form input[name='auditItem']").val("audit_workplace_phone");
@@ -192,19 +192,19 @@ $(function(){
 							
 							//获取家庭固话附件
 							auditId = $("#contactWayInfoH-form input:first").val();
-							loadAttachmentList('contactWayHAttrList',auditId,$row.loanOrderId);
+							//loadAttachmentList('contactWayHAttrList',auditId,$row.loanOrderId);
 							
 							//获取单位固话附件
 							auditId = $("#contactWayInfoC-form input:first").val();
-							loadAttachmentList('contactWayCAttrList',auditId,$row.loanOrderId);
+							//loadAttachmentList('contactWayCAttrList',auditId,$row.loanOrderId);
 							
 							//获取征信手机附件
 							auditId = $("#contactWayInfoZP-form input:first").val();
-							loadAttachmentList('contactWayZPAttrList',auditId,$row.loanOrderId);
+							//loadAttachmentList('contactWayZPAttrList',auditId,$row.loanOrderId);
 							
 							//获取征信电话附件
 							auditId = $("#contactWayInfoZT-form input:first").val();
-							loadAttachmentList('contactWayZTAttrList',auditId,$row.loanOrderId);
+							//loadAttachmentList('contactWayZTAttrList',auditId,$row.loanOrderId);
 							
 						}
 					}
@@ -217,8 +217,8 @@ $(function(){
 						if(index == 0){
 							
 						}else if(index == 1){
-							$("#companyAUP-form").form("clear");
-							$("#companyADP-form").form("clear");
+							/* $("#companyAUP-form").form("clear");
+							$("#companyADP-form").form("clear"); */
 							//循环对比稽核类型，加载对应表单稽核信息 
 							if(basicAuditInfo){
 								$.each(basicAuditInfo,function(i,item){
@@ -234,17 +234,123 @@ $(function(){
 							
 							//获取上游合作单位附件
 							auditId = $("#companyAUP-form input:first").val();
-							loadAttachmentList('companyAUPAttrList',auditId,$row.loanOrderId);
+							//loadAttachmentList('companyAUPAttrList',auditId,$row.loanOrderId);
 							
 							//获取下游合作单位附件
 							auditId = $("#companyADP-form input:first").val();
-							loadAttachmentList('companyADPAttrList',auditId,$row.loanOrderId); 
+							//loadAttachmentList('companyADPAttrList',auditId,$row.loanOrderId); 
 						}
 					}
 				});
 			}
 		}
 	});
+	
+	$("#loanerInfo-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#spauseInfo-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#contactWayInfoH-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#contactWayInfoC-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#contactWayInfoZP-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#contactWayInfoZT-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#companyAUP-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#companyADP-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	
 });
 
 	//创建联系人信息表单
@@ -259,10 +365,26 @@ $(function(){
 		$("#"+formid+" input[name='auditItem']").val("audit_"+item.relationship);
 		$("#"+formid+" input[name='file']").attr("id","fileContacts"+i);
 		$("#"+formid+" input[name='relationship']").val(item.relationshipName).attr("class","easyui-textbox");
-		$("#"+formid+" textarea:eq(0)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true"});
-		$("#"+formid+" textarea:eq(1)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true"});
+		$("#"+formid+" textarea:eq(0)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true,validType\:'length[0,1024]'"});
+		$("#"+formid+" textarea:eq(1)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true,validType\:'length[0,1024]'"});
 		$("#"+formid+" div:eq(0)").children("a").attr({"class":"easyui-linkbutton","iconCls":"icon-save"});
-		$("#"+formid+" div:eq(1)").attr("id","creditIversTelAttrList"+i);
+		$("#"+formid+" div:eq(1)").children("a:eq(0)").attr({"class":"easyui-linkbutton","onclick":"auditInfoFileCheck('"+formid+"');"});
+		$("#"+formid+" div:eq(1)").children("a:eq(1)").attr({"class":"easyui-linkbutton","onclick":"auditInfoFileUpload('"+formid+"');"});
+		$("#"+formid+" div:eq(1)").attr({"id":"contacts-div"+i});
+		$("#"+formid+" textarea[name='phoneAuditRecord']").html(item.phoneAuditRecord);
+		$("#"+formid+" textarea[name='webAuditRecord']").html(item.webAuditRecord);
+		$("#"+formid+" input[name='auditId']").val(item.auditId);
+		
+		$.parser.parse('#'+formid); 
+		
+		$("#contacts-div"+i+" input:first").combobox({
+			valueField : 'code',
+			textField : 'text',
+			data : attempData,
+			editable:false ,
+		});
+		
+		/* $("#"+formid+" div:eq(1)").attr("id","creditIversTelAttrList"+i);
 		$("#"+formid+" div:eq(2)").attr("id","contacts_upload_add"+i);
 		$("#"+formid+" div:eq(3)").attr("id","customerInfo_upload_father_idDiv"+i);
 		$("#"+formid+" div:eq(4)").attr("id","contacts_upload_div"+i);
@@ -281,11 +403,11 @@ $(function(){
 			textField : 'text',
 			data : attempData,
 			editable:false ,
-	    });
+	    }); */
 		
 		//加载附件列表
-		var listId = $("#"+formid+" div:eq(1)").attr("id");
-		loadAttachmentList(listId,item.auditId,$row.loanOrderId); 
+		//var listId = $("#"+formid+" div:eq(1)").attr("id");
+		//loadAttachmentList(listId,item.auditId,$row.loanOrderId); 
 	}
 			
 	//增加一条公司信息
@@ -300,11 +422,24 @@ $(function(){
 		$("#"+formId+" a:eq(1)").attr({"class":"easyui-linkbutton","iconCls":"icon-remove","plain":"true"});			
 		$("#"+formId+" table input:eq(0)").attr({"class":"easyui-textbox easyui-validatebox","data-options":"required:true"});			
 		$("#"+formId+" table input:eq(1)").attr({"class":"easyui-textbox easyui-validatebox","data-options":"required:true"});			
-		$("#"+formId+" table textarea:eq(0)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true"});			
-		$("#"+formId+" table textarea:eq(1)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true"});			
+		$("#"+formId+" table textarea:eq(0)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true,validType:'length[0,1024]'"});			
+		$("#"+formId+" table textarea:eq(1)").attr({"class":"easyui-validatebox easyui-textbox","data-options":"required\:true,validType:'length[0,1024]'"});			
 		$("#"+formId+" a:eq(2)").attr({"class":"easyui-linkbutton","iconCls":"icon-save"});
+		
+		$("#"+formId+" div:eq(1)").children("a:eq(0)").attr({"class":"easyui-linkbutton","onclick":"auditInfoFileCheck('"+formId+"');"});
+		$("#"+formId+" div:eq(1)").children("a:eq(1)").attr({"class":"easyui-linkbutton","onclick":"auditInfoFileUpload('"+formId+"');"});
 		$("#"+formId+" div:eq(1)").attr("id","companyInfoAttrList"+j);
-		$("#"+formId+" div:eq(2)").attr("id","companyInfo_upload_add"+j);
+		
+		$.parser.parse('#'+formId); 
+		
+		$("#companyInfoAttrList"+j+" input:first").combobox({
+			valueField : 'code',
+			textField : 'text',
+			data : attempData,
+			editable:false ,
+		});
+		
+		/* $("#"+formId+" div:eq(2)").attr("id","companyInfo_upload_add"+j);
 		$("#"+formId+" div:eq(3)").attr("id","companyInfo_upload_father_idDiv"+j);
 		$("#"+formId+" div:eq(4)").attr("id","companyInfo_upload_div"+j);
 		$("#companyInfo_upload_div"+j+" input:eq(0)").attr("class","easyui-combobox");
@@ -320,7 +455,7 @@ $(function(){
 			textField : 'text',
 			data : attempData,
 			editable:false ,
-	    }); 
+	    });  */
 	}
 
 	//删除一条公司信息
@@ -402,6 +537,25 @@ $(function(){
 	function airdClose(){
 		$("#auditInfoRecordDialog").dialog('refresh');
 	}
+	
+	//查看附件
+	function auditInfoFileCheck(formId){
+		var auditId = $("#"+formId+" input:first").val();
+		// 附件信息
+		checkAttachementDetail(auditId,$row.loanOrderId,'');
+	}
+	
+	//上传附件
+	function auditInfoFileUpload(formId){
+		var auditId = $("#"+formId+" input:first").val();
+		if(""==auditId){
+			$.messager.alert("提示","请填先填写稽核信息!","info");
+			return false;
+		}
+		//获取附件类型
+		var attType = $("#"+formId+" div:eq(1)").children("input").combobox("getValue");
+		fileUploadsDlg(attType,$row.loanOrderId,auditId);
+	}
 </script>
 <!-- 稽核信息记录 S -->
 <div id="auditTabs" class="easyui-tabs" style="fit: true">
@@ -421,35 +575,24 @@ $(function(){
 						<tr>
 							<th>电核内容记录:</th>
 							<td colspan="3">
-								<textarea name="phoneAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea>
+								<textarea name="phoneAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea>
 							</td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
 							<td colspan="3">
-								<textarea name="webAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea>
+								<textarea name="webAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea>
 							</td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;float:left;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="customerAttList" style="width:100%;display:block;float:left;">
-					</div>
-					<div id="customerInfo_upload_add">
-						<div id="customerInfo_upload_father_idDiv">
-							<div id="customerInfo_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;"><font size="2" style="font-weight: bold;">上传附件</font></font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileCustomer" name="file" type="file" onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a> 
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input id="loanerInfo-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('loanerInfo-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('loanerInfo-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 			</div>
@@ -468,32 +611,21 @@ $(function(){
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px; height: 80px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="spauseAttList" style="width:100%;display:block;float:left;">
-					</div>
-					<div id="mateInfo_upload_add">
-						<div id="mateInfo_upload_father_idDiv">
-							<div id="mateInfo_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;"><font size="2" style="font-weight: bold;">上传附件　　　</font></font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileMateInfo" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="spauseInfo-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('spauseInfo-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('spauseInfo-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 			</div>
@@ -510,31 +642,21 @@ $(function(){
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="3"><textarea name="webAuditRecord" style="width: 100%;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="webAuditRecord" style="width: 100%;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="contactWayHAttrList" style="width:100%;display:block;float:left;"></div>
-					<div id="homeInfo_upload_add">
-						<div id="homeInfo_upload_father_idDiv">
-							<div id="homeInfo_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;">上传附件　　　</font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileHomeInfo" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="contactWayInfoH-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('contactWayInfoH-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('contactWayInfoH-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 				<hr>
@@ -546,36 +668,26 @@ $(function(){
 							<th>2、单位固话:</th>
 							<td><input style="border: none;background-color:#EBEBE4;" readonly="readonly" data-options="required:true" name="contactMethod" type="text" class="easyui-textbox easyui-validatebox" /></td>
 							<th>114查询记录:</th>
-							<td><textarea class="easyui-textbox" name="query114" style="width: 300px;"></textarea>
+							<td><textarea class="easyui-textbox" name="query114" style="width: 300px;" data-options="validType:'length[0,1024]'"></textarea>
 							</td>
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="contactWayCAttrList" style="width:100%;display:block;float:left;"></div>
-					<div id="comPho_upload_add">
-						<div id="comPho_upload_father_idDiv">
-							<div id="comPho_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;">上传附件　　　</font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileComPho" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="contactWayInfoC-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('contactWayInfoC-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('contactWayInfoC-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 				<hr>
@@ -589,31 +701,21 @@ $(function(){
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="phoneAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="contactWayZPAttrList" style="width:100%;display:block;float:left;"></div>
-					<div id="creditInversPho_upload_add">
-						<div id="creditInversPho_upload_father_idDiv">
-							<div id="creditInversPho_upload_div" class="attachmentTypeCombo">
-							<font size="2" style="font-weight: bold;">上传附件　　　</font>
-							<input class="easyui-combobox"/>
-							<input name="fileName" type="text" placeholder="请输入附件名">
-							<input id="fileCreditInversPho" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="contactWayInfoZP-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('contactWayInfoZP-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('contactWayInfoZP-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 				<hr>
@@ -627,31 +729,21 @@ $(function(){
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="3"><textarea  name="phoneAuditRecord" style="width: 550px;" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea  name="phoneAuditRecord" style="width: 550px;" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px;" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea></td>
+							<td colspan="3"><textarea name="webAuditRecord" style="width: 550px;" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="contactWayZTAttrList" style="width:100%;display:block;float:left;"></div>
-					<div id="creditInversTel_upload_add">
-						<div id="creditInversTel_upload_father_idDiv">
-							<div id="creditInversTel_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;">上传附件　　　</font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileCreditInversTel" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="contactWayInfoZT-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('contactWayInfoZT-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('contactWayInfoZT-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 			</div>
@@ -695,7 +787,13 @@ $(function(){
 				<div style="width: 100%; height: 30px; text-align: right;">
 					<a href="javascript:void(0);" onclick="saveAuditInfo(this);">保存</a>
 				</div>
-				<div id="creditIversTelAttrList" style="width:100%;display:block;float:left;"></div>
+				<div>
+					<font size="2" style="font-weight: bold;margin-left: 30px;">附件类型:</font>
+					<input />
+					<a  href="javascript:void(0);" >查看附件</a>	
+					<a  href="javascript:void(0);" >上传附件</a>	
+				</div>
+				<!-- <div id="creditIversTelAttrList" style="width:100%;display:block;float:left;"></div>
 				<div id="contacts_upload_add">
 					<div id="contacts_upload_father_idDiv">
 						<div id="contacts_upload_div" class="attachmentTypeCombo">
@@ -710,7 +808,7 @@ $(function(){
 				</div>
 				<div style="width: 100%; height: 30px; text-align: right;">
 					<a href="javascript:void(0);" onclick="fileUploads(this)">上传附件</a>
-				</div>
+				</div> -->
 			</form>
 		</div>
 	<!-- 联系人信息模板 E -->
@@ -738,31 +836,21 @@ $(function(){
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="5"><textarea name="phoneAuditRecord" style="width: 100%;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="5"><textarea name="phoneAuditRecord" style="width: 100%;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="5"><textarea name="webAuditRecord" style="width: 100%;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+							<td colspan="5"><textarea name="webAuditRecord" style="width: 100%;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="companyAUPAttrList" style="width:100%;display:block;float:left;"></div>
-					<div id="companyAUP_upload_add">
-						<div id="companyAUP_upload_father_idDiv">
-							<div id="companyAUP_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;">　　上传附件　　　</font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileCompanyAUP" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="companyAUP-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('companyAUP-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('companyAUP-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 				
@@ -781,33 +869,23 @@ $(function(){
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
-							<td colspan="5"><textarea  name="phoneAuditRecord" class="easyui-validatebox easyui-textbox" data-options="required:true" 
+							<td colspan="5"><textarea  name="phoneAuditRecord" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'" 
 									style="width: 100%;"></textarea></td>
 						</tr>
 						<tr>
 							<th>网核内容记录:</th>
-							<td colspan="5"><textarea  name="webAuditRecord" class="easyui-validatebox easyui-textbox" data-options="required:true" 
+							<td colspan="5"><textarea  name="webAuditRecord" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'" 
 									style="width: 100%;"></textarea></td>
 						</tr>
 					</table>
 					<div style="width: 100%; height: 30px; text-align: right;">
 						<a href="javascript:void(0);" onclick="saveAuditInfo(this);" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 					</div>
-					<div id="companyADPAttrList" style="width:100%;display:block;float:left;"></div>
-					<div id="companyADP_upload_add">
-						<div id="companyADP_upload_father_idDiv">
-							<div id="companyADP_upload_div" class="attachmentTypeCombo">
-								<font size="2" style="font-weight: bold;">　　上传附件　　　</font>
-								<input class="easyui-combobox"/>
-								<input name="fileName" type="text" placeholder="请输入附件名">
-								<input id="fileCompanyADP" name="file" type="file"  onchange="fileChange(this);" style="width:205px;"> 
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-								<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a>
-							</div>
-						</div>
-					</div>
-					<div style="width: 100%; height: 30px; text-align: right;">
-						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
+					<div>
+						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+						<input  id="companyADP-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('companyADP-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('companyADP-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 			</div>
@@ -843,7 +921,13 @@ $(function(){
 		<div style="width: 100%; height: 30px; text-align: right;">
 			<a href="javascript:void(0);" onclick="saveAuditInfo(this);">保存</a>
 		</div>
-		<div id="companyInfoAttr" style="width:100%;display:block;float:left;"></div>
+		<div>
+			<font size="2" style="font-weight: bold;margin-left: 30px;">附件类型</font>
+			<input  />
+			<a  href="javascript:void(0);" >查看附件</a>	
+			<a  href="javascript:void(0);" >上传附件</a>	
+		</div>
+		<!-- <div id="companyInfoAttr" style="width:100%;display:block;float:left;"></div>
 		<div id="companyInfos_upload_add">
 			<div id="companyInfos_upload_father_idDiv">
 				<div id="companyInfos_upload_div" >
@@ -858,7 +942,7 @@ $(function(){
 		</div>
 		<div style="width: 100%; height: 30px; text-align: right;">
 			<a href="javascript:void(0);" onclick="fileUploads(this)">上传附件</a>
-		</div>
+		</div> -->
 	</form>
 </div>
 <!-- 公司信息模板E -->

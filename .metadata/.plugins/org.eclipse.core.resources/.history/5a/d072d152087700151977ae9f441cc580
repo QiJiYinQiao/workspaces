@@ -1,0 +1,19 @@
+<%@page import="com.bpms.util.Constants"%>
+<%@page import="com.bpms.shiro.ShiroUser"%>
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%
+ ShiroUser shiroUser = Constants.getCurrendUser();
+%>
+<style type="text/css">
+	
+</style>
+<script type="text/javascript">
+	$(function(){
+			
+	});
+
+</script>
+<div class="easyui-tabs" style="fit:true;">
+	
+</div>

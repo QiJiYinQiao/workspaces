@@ -1,0 +1,29 @@
+package com.bpms.service;
+
+import com.bpms.model.FirstauditQuestioncollect;
+
+/**
+ * 
+ * @author liuhh 外访问题对应的service接口
+ *
+ */
+public interface FirstauditQuestioncollectService {
+	/**
+	 * 保存或修改对应的外访核实问题
+	 * 
+	 * @param questioncollect
+	 *            外访核实问题
+	 * @return 保存是否成功
+	 */
+	public boolean saveFirstauditQuestioncollect(
+			FirstauditQuestioncollect questioncollect);
+
+	/**
+	 * 根据ID查询外访核实问题
+	 * 
+	 * @param id
+	 *            外访核实问题的ID
+	 * @return 外访核实问题
+	 */
+	public FirstauditQuestioncollect findById(String id);
+}

@@ -1,0 +1,28 @@
+package com.bpms.service;
+
+import com.bpms.model.OutsurveyAnswer;
+
+/**
+ * 
+ * @author liuhh 外方问题回答对应的service接口
+ *
+ */
+public interface OutsurveyAnswerService {
+	/**
+	 * 保存或修改外访问题回答
+	 * 
+	 * @param outsurveyAnswer
+	 *            外访问题回答
+	 * @return 外访问题回答保存修改是否成功
+	 */
+	public boolean saveOutsurveyAnswer(OutsurveyAnswer outsurveyAnswer);
+
+	/**
+	 * 根据ID查询外访问题回答
+	 * 
+	 * @param id
+	 *            外访问题回答对应的ID
+	 * @return 外访问题回答
+	 */
+	public OutsurveyAnswer findById(String id);
+}

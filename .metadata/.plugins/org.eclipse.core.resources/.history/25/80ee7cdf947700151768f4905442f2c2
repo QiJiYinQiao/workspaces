@@ -1,0 +1,12 @@
+#smtp服务器地址
+mail.host=smtp.263xmail.com
+#smtp的协议
+mail.transport.protocol=smtp
+#smtp的认证
+mail.smtp.auth=true
+#发送邮件地址
+from=honghuliu@qqjrbj.com
+#连接服务的地址
+username=yibansun@qqjrbj.com
+#连接服务的密码
+password=sunyiban123

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.WXOrderDao">
+	<resultMap type="com.jxc.web.user.model.WXOrderEntity" id="R_WXOrder_ENTITY" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.lang.String" id="str" />
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<resultMap type="java.util.List" id="list"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="bigdecmal"></resultMap>
+	
+	<!-- 保存订单 -->
+	<insert id="addWxorder" parameterType="map" >
+		INSERT INTO `sky`.`t_wx_order` (`ID`,`ORDERID`, `SCHEDULE_ORDER`, `UNAME`, `UPHONE`, `UIDCARD`, `UPASSPORT`, `NATIONALITY`, `CITY`,`COUNTER`, `DESTINATION`, `RENTDATE`, `ENDDATE`, `OUTDAY`, `ORDERNUM`, `RENT_COST`, `DEPOSIT`, `SHOULDGETCOST`, `HADGETCOST`, `PREGETCOST`, `TAKEORDERADDRESS`, `ISVALID`, `REMARK`, `CREATEUSER`, `CREATETIME`, `MODIFYUSER`, `MODIFYTIME`, `ORDERSTATE`,`PAYMENT`,`DISCOUNTWAY`) VALUES 
+		  (replace(uuid(),'-',''),#{orderid}, #{schedule_order}, #{uname}, #{uphone}, #{uidcard}, #{upassport}, #{nationality}, #{city},#{counter}, #{destination}, #{rentdate},  #{enddate}, #{outday}, #{ordernum}, #{rent_cost}, #{deposit}, #{shouldgetcost}, #{hadgetcost}, #{pregetcost},#{takeorderaddress}, '0001', #{remark}, #{createuser}, now(), #{createuser}, now(), '0001',#{payment},#{discountway});
+	</insert>
+	
+	<!-- 查询收货地 -->
+	<select id="querytakeorderplace" resultMap="hashmap">
+		<!-- SELECT tl.ITEM_VALUE countycode,tl.ITEM_TEXT countryname FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'wxtakeorderplace' AND tl.ITEM_LEVEL = 0 ORDER BY tl.SORTORDER; -->
+		SELECT tc.CITY_CODE countycode,tc.CITY_NAME countryname FROM t_3g_city tc ORDER BY tc.SORTORDER
+	</select>
+	
+	<!-- 查询收货地  二级 -->
+	<select id="querySectakeorderplace" resultMap="hashmap" parameterType="map">
+		<!-- SELECT tl.ITEM_VALUE scode,tl.ITEM_TEXT sname FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'wxtakeorderplace' AND tl.ITEM_LEVEL = 1 AND tl.UP_ID=(SELECT ID FROM t_info_code_line WHERE CODEID = (SELECT ID FROM t_info_code WHERE code = 'wxtakeorderplace') AND UP_ID IS NULL AND ITEM_VALUE = #{upid}) ORDER BY tl.SORTORDER; -->
+		SELECT tc.ID scode,tc.NAME sname FROM t_3g_counter tc  WHERE tc.CITY_CODE = #{upid}
+	</select>
+	
+	<!-- 获取订单列表 -->
+	<select id="queryWxOrderList" parameterType="map" resultMap="R_WXOrder_ENTITY">
+		SELECT * FROM t_wx_order WHERE 1 = 1
+		<!--租用人姓名 手机号 租用日期 返还日期 目的地  预定方式  取货方式（自提，快递000） 状态  制单人； 默认显示有效订单-->
+		<if test="uname!=null and uname!=''">
+			AND UNAME LIKE CONCAT('%',CONCAT(#{uname},'%'))
+		</if>
+		<if test="uphone!=null and uphone!=''">
+			AND UPHONE LIKE CONCAT('%',CONCAT(#{uphone},'%'))
+		</if>
+		<if test="schedule_order!=null and schedule_order!=''">
+			AND SCHEDULE_ORDER = #{schedule_order}
+		</if>
+		<if test="rentdate!=null and rentdate!=''">
+			AND RENTDATE LIKE CONCAT(#{rentdate},'%')
+		</if>
+		<if test="enddate!=null and enddate!=''">
+			AND ENDDATE LIKE CONCAT(#{enddate},'%')
+		</if>
+		<if test="destination!=null and destination!='0000'">
+			AND DESTINATION = #{destination}
+		</if>
+		<if test="orderstate!=null and orderstate!='0000'">
+			AND ORDERSTATE = #{orderstate}
+		</if>
+		<if test="createuser!=null and createuser!=''">
+			<!-- AND MODIFYUSER LIKE CONCAT('%',CONCAT(#{createuser},'%')) -->
+			AND MODIFYUSER IN (SELECT ID FROM t_3g_user WHERE NAME LIKE CONCAT('%',CONCAT(#{createuser},'%'))) 
+		</if>
+		LIMIT #{start},#{number}
+	</select>
+	<!-- 获取订单列表数量 -->
+	<select id="queryWxOrderListNum" parameterType="map" resultMap="ints">
+		SELECT count(*) FROM t_wx_order WHERE 1 = 1
+		<!--租用人姓名 手机号 租用日期 返还日期 目的地  预定方式  取货方式（自提，快递000） 状态  制单人； 默认显示有效订单-->
+		<if test="uname!=null and uname!=''">
+			AND UNAME LIKE CONCAT('%',CONCAT(#{uname},'%'))
+		</if>
+		<if test="uphone!=null and uphone!=''">
+			AND UPHONE LIKE CONCAT('%',CONCAT(#{uphone},'%'))
+		</if>
+		<if test="schedule_order!=null and schedule_order!=''">
+			AND SCHEDULE_ORDER = #{schedule_order}
+		</if>
+		<if test="rentdate!=null and rentdate!=''">
+			AND RENTDATE LIKE CONCAT(#{rentdate},'%')
+		</if>
+		<if test="enddate!=null and enddate!=''">
+			AND ENDDATE LIKE CONCAT(#{enddate},'%')
+		</if>
+		<if test="destination!=null and destination!='0000'">
+			AND DESTINATION = #{destination}
+		</if>
+		<if test="orderstate!=null and orderstate!='0000'">
+			AND ORDERSTATE = #{orderstate}
+		</if>
+		<if test="createuser!=null and createuser!=''">
+			<!-- AND MODIFYUSER LIKE CONCAT('%',CONCAT(#{createuser},'%')) -->
+			AND MODIFYUSER IN (SELECT ID FROM t_3g_user WHERE NAME LIKE CONCAT('%',CONCAT(#{createuser},'%'))) 
+		</if>
+	</select>
+	
+	<!-- 查询日租金 -->
+	<select id="queryWXDayRent" parameterType="map" resultMap="hashmap">
+		SELECT tl.DESCRIPTION dayrent from t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'wxcountry' AND tl.ITEM_VALUE = #{countrycode} AND tl.UP_ID IS NULL
+	</select>
+	
+	<!-- 查询目的地国家 -->
+	<select id="queryDestination" resultMap="hashmap">
+		<!-- SELECT tl.ITEM_TEXT countryname,tl.ITEM_VALUE countrycode from t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'wxcountry'  AND tl.UP_ID IS NULL -->
+		SELECT ID countrycode,NAME countryname,DEPOSIT deposit FROM t_3g_product
+	</select>
+	
+	<!-- 订购方式 -->
+	<select id="queryOrderWay" resultMap="hashmap">
+		SELECT tl.ITEM_TEXT orderwayname,tl.ITEM_VALUE orderwaycode from t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'orderway' 
+	</select>
+	
+	<!-- 查询押金 -->
+	<select id="queryDeposit" resultMap="str">
+		SELECT tl.DESCRIPTION FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'deposit' AND tl.ITEM_VALUE = '04'
+	</select>
+	
+	<!-- 确认订单 -->
+	<update id="confirmOrder" parameterType="map">
+		UPDATE t_wx_order SET ORDERSTATE = '0002' WHERE ID = #{id}
+	</update>
+	
+	<!-- 取消订单 -->
+	<update id="cancelOrder" parameterType="map">
+		UPDATE t_wx_order SET ORDERSTATE = '0003' WHERE ID = #{id}
+	</update>
+	
+	<!-- 查询订购方式名称 -->
+	<select id="queryOrderWayName" parameterType="map" resultMap="str">
+		SELECT tl.ITEM_TEXT orderwayname from t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'orderway' AND tl.ITEM_VALUE  = #{orderwaycode}
+	</select>
+	
+	<!-- 查询目的地国家名称 -->
+	<select id="queryDestinationName" resultMap="str" parameterType="map">
+		<!-- SELECT tl.ITEM_TEXT countryname from t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'wxcountry' AND tl.ITEM_VALUE = #{countrycode} -->
+		SELECT NAME countryname FROM t_3g_product WHERE ID = #{countrycode} 
+	</select>
+	
+	<!-- 根据userid 查询用户名 -->
+	<select id="queryUserNmaeByid" resultMap="str" parameterType="map">
+		SELECT NAME FROM t_3g_user WHERE ID = #{id}
+	</select>
+	
+	<!-- 查询收货地址 -->
+	<select id="querytakeorderplacename" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_TEXT countryname FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'wxtakeorderplace' AND tl.ITEM_LEVEL = 0 AND tl.ITEM_VALUE = #{countycode}
+	</select>
+	
+	<!-- 查询订单根据id -->
+	<select id="queryWxorderById" parameterType="map" resultMap="R_WXOrder_ENTITY">
+		SELECT * FROM t_wx_order WHERE ID = #{id}
+	</select>
+	
+	<!-- 查询该操作员的订单量 -->
+	<select id="queryUserOrderNum" parameterType="map" resultMap="hashmap">
+		SELECT tu.NAME name,tw.SCHEDULE_ORDER orderway,IFNULL(SUM(tw.ORDERNUM),0) num FROM t_wx_order tw LEFT JOIN t_3g_user tu ON tu.ID = tw.MODIFYUSER WHERE tw.MODIFYUSER = #{id} AND tw.SCHEDULE_ORDER = #{scheduleorder}  AND tw.RENTDATE BETWEEN #{begindate} AND #{enddate} GROUP BY tw.SCHEDULE_ORDER
+<!-- 		SELECT tu.NAME name,tw.SCHEDULE_ORDER orderway,IFNULL(SUM(tw.ORDERNUM),0) num FROM t_wx_order tw LEFT JOIN t_3g_user tu ON tu.ID = tw.MODIFYUSER WHERE tw.MODIFYUSER = #{id}  AND tw.RENTDATE BETWEEN #{begindate} AND #{enddate} GROUP BY tw.SCHEDULE_ORDER -->
+		<!-- SELECT r.orderway orderway,IFNULL(SUM(two.ORDERNUM),0) num FROM t_wx_order two RIGHT JOIN (SELECT DISTINCT tw.SCHEDULE_ORDER orderway FROM t_wx_order tw) r ON two.SCHEDULE_ORDER = r.orderway WHERE two.MODIFYUSER = #{id}   AND two.RENTDATE BETWEEN #{begindate} AND  #{enddate} GROUP BY two.SCHEDULE_ORDER  -->
+	</select>
+	
+	<!-- 查询所有操作员订单量 -->
+	<select id="queryAllUserOrderNum" parameterType="map" resultMap="hashmap">
+		SELECT tu.NAME name,tw.SCHEDULE_ORDER orderway,IFNULL(SUM(tw.ORDERNUM),0) num FROM t_wx_order tw LEFT JOIN t_3g_user tu ON tu.ID = tw.MODIFYUSER WHERE tw.MODIFYUSER in (SELECT id FROM t_3g_user WHERE NAME LIKE CONCAT('%',CONCAT(#{name},'%'))) AND tw.SCHEDULE_ORDER = #{scheduleorder} AND tw.SCHEDULE_ORDER = #{scheduleorder} AND tw.RENTDATE BETWEEN #{begindate} AND #{enddate} GROUP BY tw.MODIFYUSER,tw.SCHEDULE_ORDER
+	</select>
+	
+	<!-- 查询所有订单的操作员 -->
+	<select id="queryAllOrderOperator" resultMap="hashmap" parameterType="map">
+		SELECT tu.NAME name,tu.ID id FROM t_3g_user tu WHERE tu.ID in
+		<if test="name!=null and name!=''">
+			(SELECT id FROM t_3g_user WHERE NAME LIKE CONCAT('%',CONCAT(#{name},'%')))
+		</if>
+		<if test="name==null or name==''">
+			(SELECT DISTINCT tw.MODIFYUSER FROM t_wx_order tw)
+		</if>
+	</select>
+	
+	<!-- 查询租用价格 01 官网，微店   02 JCB -->
+	<select id="queryDiffDayrent" parameterType="map" resultMap="str">
+		SELECT ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID = tl.CODEID WHERE tc.CODE = 'wxcountry' AND tl.UP_ID = #{upid}
+		<if test="type=='01'">
+			AND tl.ITEM_VALUE = '01'
+		</if>
+		<if test="type=='02'">
+			AND tl.ITEM_VALUE = '02'
+		</if>
+	</select>
+	
+	<!-- 查询优惠 -->
+	<select id="queryYouhui" resultMap="hashmap">
+		SELECT tl.ITEM_VALUE code,tl.ITEM_TEXT name FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'youhui' AND tl.`STATUS` = '1'
+	</select>
+	
+	<!-- 根据优惠代码 查询优惠 -->
+	<select id="queryYouhuiNameByCode" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE ='youhui' AND tl.ITEM_VALUE = #{code}
+	</select>
+	
+	<!-- 根据MAINID,优惠查询日租金 -->
+	<select id="queryDayRentPrice" parameterType="map" resultMap="str">
+		<!-- SELECT tp.PRICE price FROM t_3g_product_price tp WHERE tp.MAINID = #{mainid} AND DISCOUNT = #{discount} -->
+		SELECT tp.PRICE price FROM t_3g_product_price tp LEFT JOIN t_3g_product tg ON tg.ID = tp.MAINID WHERE tg.NAME = #{mainid} AND DISCOUNT = #{discount}
+	</select>
+	
+	<!-- 根据取货柜台ID获取取货地 -->
+	<select id="queryCityCounterByCID" parameterType="map" resultMap="hashmap">
+		SELECT tc.CITY_NAME city,tg.NAME counter FROM t_3g_city tc LEFT JOIN t_3g_counter tg ON tc.CITY_CODE = tg.CITY_CODE WHERE tg.ID = #{id}
+	</select>
+	
+	<!-- 根据产品名称查询押金 -->
+	<select id="queryDepositByPname" parameterType="map" resultMap="str">
+		SELECT DEPOSIT FROM t_3g_product WHERE NAME = #{countryname}
+	</select>
+</mapper>

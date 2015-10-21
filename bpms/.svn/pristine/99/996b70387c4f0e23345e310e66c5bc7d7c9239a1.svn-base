@@ -1,0 +1,133 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+	<style type="text/css">
+		textarea{
+			width: 880px;
+			height:30px;
+		}
+	</style>
+	<script type="text/javascript">
+	
+	</script>
+	
+	<div>
+		<form action="post">
+			<table>
+				<tr>
+					<th>
+						<font size="5">问题</font>
+					</th>
+				</tr>
+				
+				<tr>
+					<th>
+						1
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						2
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						3
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						4
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						5
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						6
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						7
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						8
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						9
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						10
+					</th>
+					<td>
+						<textarea class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="2">
+						<font size="5">外访核实</font>
+					</th>
+				</tr>
+				
+				<tr>
+					<td colspan="2">
+						<textarea style="width: 100%;height:200px;" class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="2">
+						<div style="float:right;margin-right: 10px;">
+							<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveQuestionsCollect();">保存</a>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>

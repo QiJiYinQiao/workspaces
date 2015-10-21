@@ -2,37 +2,37 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="273" key="DIALOG_WIDTH"/>
-		<item value="431" key="DIALOG_Y_ORIGIN"/>
-		<item value="488" key="DIALOG_HEIGHT"/>
-		<item value="640" key="DIALOG_X_ORIGIN"/>
+		<item value="292" key="DIALOG_Y_ORIGIN"/>
+		<item value="1444" key="DIALOG_X_ORIGIN"/>
+		<item value="399" key="DIALOG_HEIGHT"/>
 		<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="isRegEx"/>
 		<item value="false" key="casesensitive"/>
+		<item value="false" key="isRegEx"/>
 		<item value="false" key="incremental"/>
-		<item value="false" key="wholeword"/>
-		<item value="查看" key="selection"/>
+		<item value="true" key="wholeword"/>
+		<item value="queryLoaner" key="selection"/>
 		<list key="findhistory">
-			<item value="查看"/>
-			<item value="你好"/>
-			<item value="dash"/>
-			<item value="login"/>
-			<item value="validType"/>
-			<item value="required:true,validType:"/>
-			<item value="hello"/>
-			<item value="SqlSessionTemplate"/>
+			<item value="queryLoaner"/>
+			<item value="createView"/>
+			<item value="showView"/>
+			<item value="carInfoForm"/>
+			<item value="auditWay"/>
+			<item value="findAllClaimTask"/>
+			<item value="isGuaranty"/>
+			<item value=",required:true"/>
 		</list>
 		<list key="replacehistory">
-			<item value="com.sun.entity.UserEntity"/>
-			<item value="BaseResultMap"/>
-			<item value="attachmentDetailList"/>
-			<item value="readonly=&apos;readonly&apos;"/>
 			<item value=""/>
-			<item value="attempData"/>
-			<item value="class"/>
-			<item value="overdueRepaymentForm"/>
+			<item value="integer"/>
+			<item value="保存"/>
+			<item value="10"/>
+			<item value="attType"/>
+			<item value="&quot;#attType&quot;"/>
+			<item value="370"/>
+			<item value="photoListsize"/>
 		</list>
 	</section>
 </section>

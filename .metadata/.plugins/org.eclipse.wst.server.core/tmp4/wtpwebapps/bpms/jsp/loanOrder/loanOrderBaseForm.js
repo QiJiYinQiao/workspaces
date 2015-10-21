@@ -5,12 +5,7 @@ function RenderCombox(){
 			valueField : 'code',
 			textField : 'text',
 			url:'common/commonAction!findTextArr.action?codeMyid=attachment_type',
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			},
+			required:true,
 			editable:false
 		});
 
@@ -20,12 +15,7 @@ function RenderCombox(){
 			valueField : 'code',
 			textField : 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 	   
 	   //婚姻状况
@@ -34,12 +24,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 	   
 	   //是否有子女
@@ -48,12 +33,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 		});
 	   
 	   //房屋居住情况
@@ -62,12 +42,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 		});
 	   
 	   //与本人关系
@@ -76,12 +51,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-	            }
-			}
+			editable:false
 		});
 	   
 	   //还款方式
@@ -90,12 +60,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 	    
 	   //贷款类型
@@ -104,12 +69,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 	   
 	   //账户介质
@@ -118,12 +78,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 	   
 	   //账户性质
@@ -132,12 +87,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 		
 	   // 单位性质
@@ -146,12 +96,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });  
 	   
 	   // 主副银行卡
@@ -160,12 +105,7 @@ function RenderCombox(){
 			valueField: 'code',
 			textField: 'text',
 			required : true,
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			}
+			editable:false
 	   });
 
    }

@@ -21,9 +21,8 @@ session.setAttribute("user", String.valueOf(user.getUserId()));
 	<script type="text/javascript">
 	// websocket对象
 	var websocket;
+	var $menuTree;
 	$(function(){
-		initMenu();
-	    initWebSocket();
 		if (jqueryUtil.isLessThanIe8()) {
 			$.messager.show({
 				title : '警告',
@@ -31,11 +30,13 @@ session.setAttribute("user", String.valueOf(user.getUserId()));
 				timeout : 1000 * 30
 			});
 		}
+		initMenu();
+	    initWebSocket();
 	});
 	
 	// 初始化菜单
 	function initMenu(){
-			$("#menuTree").tree({
+		$menuTree = $("#menuTree").tree({
 					url : 'systemAction!findAllFunctionList.action',
 					method : 'get',
 					animate : true,
@@ -47,7 +48,7 @@ session.setAttribute("user", String.valueOf(user.getUserId()));
 							top : e.pageY
 						});
 					},
-					onClick : function(node) {
+					onSelect : function(node) {
 						if (node.attributes.url != "javascript:void(0);") {
 							var parent = $(this).tree("getParent",node.target);
 							// 点击代办任务的菜单的时候将任务的个数清零
@@ -69,7 +70,6 @@ session.setAttribute("user", String.valueOf(user.getUserId()));
 					}
 				});
 	}
-	
 	// 装载新任务的列表
 	var unClaimLoanTaskIds = [];
 	var claimLoanTaskIds = [];
@@ -94,19 +94,25 @@ session.setAttribute("user", String.valueOf(user.getUserId()));
 		websocket.onmessage = function(message) {
 			var message = JSON.parse(message.data);
 			if(message.type=='message'){
+				/*************************************菜单消息提示*************************************/
 				if (message.dataType== 'unClaimLoanOrder') {//接受贷款代办任务的提示信息
 	                handleTaskIds(unClaimLoanTaskIds,message);
-	                showMessage(unClaimLoanTaskIds.length,$("#menuTree").tree('find',"168"));
-	         	}else if (message.dataType== 'claimLoanOrder') {// 接受贷款受理人的提示信息
+	                showMessage(unClaimLoanTaskIds.length,$menuTree.tree('find',"168"));
+	                showLoanTotalTaskCount(message);
+                }else if (message.dataType== 'claimLoanOrder') {// 接受贷款受理人的提示信息
 	               	handleTaskIds(claimLoanTaskIds,message);
-	                showMessage(claimLoanTaskIds.length,$("#menuTree").tree('find',"169"));
-	         	}else if (message.dataType== 'unClaimInvestOrder') {//接受财富代办任务的提示信息
+	                showMessage(claimLoanTaskIds.length,$menuTree.tree('find',"169"));
+	                showLoanTotalTaskCount(message);
+  				}else if (message.dataType== 'unClaimInvestOrder') {//接受财富代办任务的提示信息
 	         		handleTaskIds(unClaimInvestTaskIds,message);
-	                showMessage(unClaimInvestTaskIds.length,$("#menuTree").tree('find',"151"));
+	                showMessage(unClaimInvestTaskIds.length,$menuTree.tree('find',"151"));
+	                showInvestTotalTaskCount(message);
                 }else if(message.dataType== 'claimInvestOrder') {// 接受财富受理任务的提示信息
                 	handleTaskIds(claimInvestTaskIds,message);
-	                showMessage(claimInvestTaskIds.length,$("#menuTree").tree('find',"152"));
+	                showMessage(claimInvestTaskIds.length,$menuTree.tree('find',"152"));
+	                showInvestTotalTaskCount(message);
                 }
+				/*************************************菜单消息提示*************************************/
 			}
 		}
 	};
@@ -155,6 +161,17 @@ session.setAttribute("user", String.valueOf(user.getUserId()));
 		}else if(menu.id=="152"){
 			claimInvestTaskIds = [];
 		}
+	}
+	
+	// 渲染借款的任务提示的总个数
+	function showLoanTotalTaskCount(message){
+        $("#taskIframePage").contents().find("#loanUnClaimCount").html(message.unClaimCount);
+		$("#taskIframePage").contents().find("#loanClaimCount").html(message.claimCount);
+	}
+	// 渲染财富的任务提示总个数
+	function showInvestTotalTaskCount(message){
+        $("#taskIframePage").contents().find("#investUnClaimCount").html(message.unClaimCount);
+		$("#taskIframePage").contents().find("#investClaimCount").html(message.claimCount);
 	}
 	
 	</script>

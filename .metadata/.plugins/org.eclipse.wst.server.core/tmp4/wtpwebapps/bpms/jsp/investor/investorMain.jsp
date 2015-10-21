@@ -41,7 +41,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								        return jqueryUtil.showText(value,idtypeArr);
 							         }  
 		                          },
-		                          {field : 'idNo',title : '证件号码',width : 180,align : 'center'},
+		                          {field : 'idNo',title : '证件号码',width : 200,align : 'center'},
 					              {field : 'genderType',title : '性别',width : 80,align : 'center',
 									formatter:function(value, row, index){
 										return jqueryUtil.showText(value,sexArr);
@@ -49,7 +49,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								  },
 					              {field : 'mobileTel',title : '移动电话',width :150,align : 'center'},
 					              {field : 'industry',title : '所属行业',width : 150,align : 'center'},
-					              {field : 'jobType',title : '职业',width :80,align : 'center',
+					              {field : 'jobType',title : '职业',width :160,align : 'center',
 					            	  formatter:function(value, row, index){
 											return jqueryUtil.showText(value,jobtypeArr);
 									  }  
@@ -60,7 +60,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					              }},
 					              {field : 'birthday',title : '出生日期',width : 150,align : 'center'},
 					              {field : 'email',title : '邮箱',width : 150,align : 'center'},
-					              {field : 'companyName',title : '单位名称',width :100,align : 'center'}
+					              {field : 'companyName',title : '单位名称',width :200,align : 'center'}
 					              ] ],toolbar:'#tb'
 				});
 				//搜索框

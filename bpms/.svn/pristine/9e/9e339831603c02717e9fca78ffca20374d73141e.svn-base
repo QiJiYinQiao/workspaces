@@ -1,0 +1,120 @@
+package com.bpms.util;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+/**
+ * 发送邮件的工具类
+ * 
+ * @author liuhh
+ *
+ */
+public class SendEmailUtil {
+
+	/** 文件的名称. */
+	private static final String PROPERTIES_NAME = "email.properties";
+
+	/** Properties工具类. */
+	private static Properties pro = new Properties();
+
+	/** 创建发送邮件的session对象. */
+	private static Session session;
+
+	/** 发送邮件地址 */
+	private static String MAIL_HOST = "mail.host";
+
+	/** 发送邮件地址 */
+	private static String MAIL_FROM = "from";
+
+	/** 连接服务的地址 */
+	private static String MAIL_USERNAME = "username";
+
+	/** 连接服务的密码 */
+	private static String MAIL_PASSWORD = "password";
+
+	/**
+	 * 无参数的构造方法,限定工具类,不能进行创建实例
+	 */
+	private SendEmailUtil() {
+	}
+
+	/** 加载配置文件. */
+	static {
+		try {
+			session = getSession();
+			pro.load(SaveUploadFileUtil.class.getClassLoader()
+					.getResourceAsStream(PROPERTIES_NAME));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 获取session
+	 */
+	private static Session getSession() {
+		// 1、创建session
+		Session session = Session.getInstance(pro);
+		// 开启session的debug模式，这样可以查看到程序的email的运行状态
+		session.setDebug(true);
+		return session;
+	}
+
+	/**
+	 * 发送消息
+	 * 
+	 * @param message
+	 *            消息体
+	 * @throws Exception
+	 */
+	public static void sendEmail(Message message) throws Exception {
+		// 3、使用邮箱的用户名密码连上邮件服务器，发送邮件时，发件人本人需要提交邮箱的用户名密码给smtp服务器，通过验证后才能发送邮件
+		Transport ts = session.getTransport();
+		ts.connect(pro.getProperty(MAIL_HOST), pro.getProperty(MAIL_USERNAME),
+				pro.getProperty(MAIL_PASSWORD));
+		// 5、发送邮件
+		ts.sendMessage(message, message.getAllRecipients());
+		ts.close();
+	}
+
+	/**
+	 * 创建发送的文本消息
+	 * 
+	 * @param toUser
+	 *            邮件接收人
+	 * @param subject
+	 *            邮件主题
+	 * @param content
+	 *            邮件内容
+	 * @return 邮件消息
+	 * @throws Exception
+	 */
+	public static MimeMessage createTextMail(String subject, String content,
+			String toUser) throws Exception {
+		// 创建邮件对象
+		MimeMessage message = new MimeMessage(session);
+		// 指明邮件的发件人
+		message.setFrom(new InternetAddress(pro.getProperty(MAIL_FROM)));
+		// 指明邮件的收件人
+		message.setRecipient(Message.RecipientType.TO, new InternetAddress(
+				toUser));
+		// 邮件的标题
+		message.setSubject(subject);
+		// 邮件的文本内容
+		message.setContent(content, "text/html;charset=UTF-8");
+		// 返回创建好的邮件对象
+		return message;
+	}
+
+	public static void main(String[] args) throws Exception {
+		Message message = createTextMail("见面礼", "很高兴认识你",
+				"honghuliu@qqjrbj.com");
+		sendEmail(message);
+	}
+}

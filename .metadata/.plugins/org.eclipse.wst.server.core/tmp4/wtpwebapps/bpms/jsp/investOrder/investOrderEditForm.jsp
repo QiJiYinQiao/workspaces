@@ -931,7 +931,7 @@ th{
        <th>账户名称:</th>
        <td><input id="actName" name="actName" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
        <th>开户行账号:</th>
-       <td><input id="actNo" name="actNo" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
+       <td><input id="actNo" name="actNo" class="easyui-textbox easyui-numberbox"" required/></td>
      </tr>
   	</table>
   	</div>

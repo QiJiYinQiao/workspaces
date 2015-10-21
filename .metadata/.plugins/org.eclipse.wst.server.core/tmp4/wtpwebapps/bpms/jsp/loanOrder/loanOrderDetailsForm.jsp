@@ -123,13 +123,18 @@ $(function(){
 			 	$('#bankGrid').datagrid('options').url = "accountInfo/accountInfoAction!findAllListChacked.action";
 	            $('#bankGrid').datagrid('reload',{"loanerId": $row.loanerId,"loanOrderId": $row.loanOrderId}); 
 			 }else if(5==index){
-				loadDetailAttachmentList('attachmentDetailList','noauditId',$row.loanOrderId);//附件信息
+				
 			 } else if(6==index){
 				loadLoanerJoint($row);//渲染共同借款人的信息
 			 }
 		 }
 	});
-})
+	
+	$("#checkAttachment").click(function(){
+		checkAttachementDetail('noauditId',$row.loanOrderId,'','1');
+	});
+	
+});
 		//加载附件
 		function loadDetailAttachmentList(listId,auditId,loanOrderId){
 			$("#"+listId).empty();
@@ -210,7 +215,7 @@ $(function(){
 	//渲染紧急联系人列表
 	function linkPeopleDatagrid() {
 		$("#linkPeople").datagrid({
-				width : 863,
+				width : parseInt($(window).width()*0.98),
 				height : 290,
 				pagination : false,
 				rownumbers : true,
@@ -218,6 +223,7 @@ $(function(){
 				singleSelect : false,
 				nowrap : true,
 				multiSort : false,
+				fitColumns:true,
 				columns : [[
 							{field : 'ck',rowspan : 2,checkbox : true},
 							{field : 'chName',title : '姓名',width : 80,rowspan : 2,align : 'center'},
@@ -262,7 +268,7 @@ $(function(){
 	//渲染单位地址datagrid
 	function initDatagrid() {
 		$("#dwDatagrid").datagrid({
-				width : 863,
+				width : parseInt($(window).width()*0.98),
 				height : 370,
 				pagination : false,
 				rownumbers : true,
@@ -270,6 +276,7 @@ $(function(){
 				singleSelect : false,
 				nowrap : true,
 				multiSort : false,
+				fitColumns:true,
 				columns : [[
 				            {field : 'ck',rowspan : 2,checkbox : true},
 				            {field : 'name',title : '单位名称',width : 80,rowspan : 2,align : 'center'},
@@ -327,7 +334,7 @@ $(function(){
 	//开户行信息列表
 	function initBankGrid() {
 		$("#bankGrid").datagrid({
-			width : 863,
+			width : parseInt($(window).width()*0.98),
 			height : 420,
 			pagination : false,
 			rownumbers : true,
@@ -335,6 +342,7 @@ $(function(){
 			singleSelect : false,
 			nowrap : true,
 			multiSort : false,
+			fitColumns:true,
 			columns : [ [    {field : 'ck',rowspan:2,checkbox : true},
 				             {field : 'accountName',title : '开户名称',width : 100,align : 'center'},
 				             {field : 'bankName',title : '开户行名称',width : 100,align : 'center'},
@@ -374,12 +382,8 @@ $(function(){
 				dataType:"json",
 				success:function(iJson){
 					if(iJson==null){
-					   //渲染共同贷款人户籍地址
-					   renderProvinceSelect("residenceProvinceId","residenceCityId","residenceAreaId");
-					   //渲染共同贷款人的当前地址
-					   renderProvinceSelect("ljCurProvinceId","ljCurCityId","ljCurAreaId");
-					   //渲染共同贷款人的单位地址
-					   renderProvinceSelect("corpProvinceId","corpCityId","corpAreaId");
+						$("#loanerJointNoInfo").show();
+						$("#loanerJointInfo").hide();
 						return;
 					}else{
 					   	$("#loanerJointForm").form("load",iJson);
@@ -505,7 +509,7 @@ $(function(){
 				</div>
 				<div title="申请贷款信息" data-options="iconCls:'icon-help'"
 					style="padding: 10px">
-					<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 700px;">
+					<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width:99%;">
 					  <form id="loanInfo">
 					    <table class="table">
 							<tr>
@@ -544,16 +548,22 @@ $(function(){
 					</div>
 				</div>
 				<div title="附件信息" data-options="iconCls:'icon-help'" style="padding: 10px">
-					<div id="noAttachmentDetailList" style="width: 100%;height:280px;text-align: center;padding-top:250px;">
+					<a id="checkAttachment" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+					<!-- <div id="noAttachmentDetailList" style="width: 100%;height:280px;text-align: center;padding-top:250px;">
 						<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
 							暂无附件信息
 						</font>
 					</div>
 					<div id="attachmentDetailList" style="width:100%;display:block;float:left;">
-					</div>
+					</div> -->
 				</div>
 				<div title="共同贷款人" data-options="iconCls:'icon-help'" style="padding: 10px">
-					<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+					<div id="loanerJointNoInfo" style="width: 100%;height:280px;text-align: center;padding-top:250px;display:none;">
+						<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
+							暂无共同贷款人信息
+						</font>
+					</div>
+					<div id="loanerJointInfo" class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
 					   <form id="loanerJointForm" method="post">
 					   		 <!-- 共同贷款人的ID -->
 							<input id="ljId" name="ljId" type="hidden" />

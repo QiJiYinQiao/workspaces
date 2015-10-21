@@ -2,12 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>合同详情页面</title>
-	</head>
+
 
 	<!-- 1、判断投资订单investOrder是否存在，若investOrder不存在，则合同信息就更不可能存在了-->
 	<c:if test="${investOrderObj == null}">
@@ -18,87 +13,89 @@
 	
 	<!-- 2、判断投资订单investOrder是否存在，若investOrder存在，则开始渲染页面-->
 	<c:if test="${investOrderObj != null }">
-	
+		
 		<!-- 第一部分：合同信息部分数据 -->
-		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-			<span>[合同信息]</span><br/>
+		<!-- class="well well-small" -->
+		<div style="margin-left: 5px;margin-top: 5px">
+			<span class="badge">[合同信息]</span><br/>
 			
-			<table width='100%' height='100%' style="border-collapse:collapse; font-size: 12px;background-color:#F4f4f4;" cellpadding='5' border='1' align='center'>
+			<table width='100%' align='center'>
 			   <tr align="center">
-			      <th>合同编号:</th>
-			      <td>${investOrderObj.contractNo}</td>
+			      <th>合同编号:</th>			      
+			      <td><input name="contractNo" class="easyui-textbox" disabled="disabled" value="${investOrderObj.contractNo}"/></td>
 			      <th>合同签署地:</th>
-			      <td>${investOrderObj.signSite}</td>
+			      <td><input name="signSite" class="easyui-textbox" disabled="disabled" value="${investOrderObj.signSite}"/></td>
 			   </tr> 
 			   
 			   <tr align="center">
-			      <th>合同签署日期:</th>
-			      <td><fmt:formatDate value="${investOrderObj.signDate}" pattern="yyyy年MM月dd日"/></td>
-			      <th>理财经理:</th>
-			      <td>${investOrderObj.financingMgr}</td>		      
+			      <th>合同签署日期:</th>			      
+			      <td><input name="signDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${investOrderObj.signDate}" pattern="yyyy年MM月dd日"/>'/></td>
+			      <th>理财经理:</th>			      
+			      <td><input name="financingMgr" class="easyui-textbox" disabled="disabled" value="${investOrderObj.financingMgr}"/></td>		      
 			   </tr>
 			   
 			   <tr align="center">
 			      <th>理财经理电话:</th>
-			      <td>${investOrderObj.fmPhone}</td>
+			      <td><input name="fmPhone" class="easyui-textbox" disabled="disabled" value="${investOrderObj.fmPhone}"/></td>
 			      <th>理财经理签字日期:</th>
-			      <td><fmt:formatDate value="${investOrderObj.fmSignDate}" pattern="yyyy年MM月dd日"/></td>		      
+			      <td><input name="fmSignDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${investOrderObj.fmSignDate}" pattern="yyyy年MM月dd日"/>'/></td>		      
 			   </tr>
 			   
-			   <tr align="center">
+			   <tr align="center">			   
 			      <th>部门主管:</th>
-			      <td>${investOrderObj.deptMgr}</td>
-			      <th>部门主管签字日期:</th>
-			      <td><fmt:formatDate value="${investOrderObj.dmSignDate}" pattern="yyyy年MM月dd日"/></td>		      
+			      <td><input name="deptMgr" class="easyui-textbox" disabled="disabled" value="${investOrderObj.deptMgr}"/></td>
+			      <th>部门主管签字日期:</th>			      
+			      <td><input name="dmSignDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${investOrderObj.dmSignDate}" pattern="yyyy年MM月dd日"/>'/></td>		      
 			   </tr>
 			</table>					
 		</div><br/>		
 		
 		
 		<!-- 第二部分：开户行信息部分数据 -->
-		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-			<span>[开户行信息]</span><br/>
+		<!-- 从数据字典中获取  账户介质,账户性质 的中文字符 -->
+		<script type="text/javascript">
+			//账户介质 				 
+			$("#actMedium").val(jqueryUtil.showDicText("account_medium","${investOrderObj.actMedium}")); 				
+			//账户性质  actNature
+			$("#actNature").val(jqueryUtil.showDicText("bankAccount_type","${investOrderObj.actNature}"));			
+		</script>	
+		
+		<div style="margin-left: 5px;margin-top: 5px">
+			<span class="badge">[开户行信息]</span><br/>
 			
-			<table width='100%' height='100%' style="border-collapse:collapse; font-size: 12px;background-color:#F4f4f4;" cellpadding='5' border='1' align='center'>
+			<table width='100%' align='center'>
 			   <tr align="center">
 			      <th>账户介质:</th>			      
-				  <td>
-					<c:if test="${investOrderObj.actMedium == 'A'}">
-						存折					
-					</c:if>
-					<c:if test="${investOrderObj.actMedium == 'B'}">
-						银行卡					
-					</c:if>	
-				  </td>				      			      			      
+				  <td><input id="actMedium" class="easyui-textbox" disabled="disabled" value="${investOrderObj.actMedium}"/></td>				      			      			      
 			      <th>账户性质:</th>			      
-				  <td>
-					<c:if test="${investOrderObj.actNature == 'A'}">
-						对公账户					
-					</c:if>
-					<c:if test="${investOrderObj.actNature == 'B'}">
-						对私账户					
-					</c:if>	
+				  <td><input id="actNature" class="easyui-textbox" disabled="disabled" value="${investOrderObj.actNature}"/>
 				  </td>				      			      			      
 			   </tr>
 			   
 			   <tr align="center">
 			      <th>开户行名称:</th>
-			      <td>${investOrderObj.bankName}</td>
+			      <td><input name="bankName" class="easyui-textbox" disabled="disabled" value="${investOrderObj.bankName}"/></td>
 			      <th>账户名称:</th>
-			      <td>${investOrderObj.actName}</td>
+			      <td><input name="actName" class="easyui-textbox" disabled="disabled" value="${investOrderObj.actName}"/></td>
 			   </tr> 	
 			   
 			   <tr align="center">
 			      <th>开户行帐号:</th>
-			      <td colspan="3">${investOrderObj.actNo}</td>
+			      <td><input name="actNo" class="easyui-textbox" disabled="disabled" value="${investOrderObj.actNo}"/></td>
 			   </tr> 				   				   			    		
 			</table>					
 		</div><br/>		
 			
 
 		<!-- 第三部分：理财产品信息部分数据 -->
-		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-			<span>[理财产品信息]</span><br/>
+		<!-- 从数据字典中获取  还款方式的中文字符 -->
+		<script type="text/javascript">
+			//还款方式			 			 
+			$("#repaymentMode").val(jqueryUtil.showDicText("repayment_mode","${investProductList.get(0).repaymentMode}"));			 						
+		</script>	
+		
+		<div style="margin-left: 5px;margin-top: 5px">
+			<span class="badge">[理财产品信息]</span><br/>
 			
 			<!-- 1、判断客户是否已经选择了理财产品 : 若此时客户还没有选择理财产品-->
 			<c:if test="${investProductList == null || fn:length(investProductList) <= 0}">
@@ -109,83 +106,80 @@
 	
 			<!-- 2、判断客户是否已经选择了理财产品 : 若此时客户已经选择理财产品-->
 			<c:if test="${investProductList != null && fn:length(investProductList) > 0}">
-				<table width='100%' height='100%' style="border-collapse:collapse; font-size: 12px;background-color:#F4f4f4;" cellpadding='5' border='1' align='center'>
+				<table width="100%" align='center'>
 				   <tr align="center">
-				      <th>理财产品:</th>
-				      <td colspan="2">${investProductList.get(0).prodName}</td>
-				      <th>模式特点:</th>
-				      <td colspan="2">${investProductList.get(0).prodDesc}</td>
+				      <th>理财产品:</th>										      
+				      <td><input name="prodName" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).prodName}"/></td>
+				      <th>年化收益率:</th>										      				      
+				      <td><input name="ars" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).ars}%"/></td>
 				   </tr> 
 				   
 				   <tr align="center">
-				      <th>年化收益率:</th>
-				      <td>${investProductList.get(0).ars}%</td>
-				      <th>到期收益率:</th>
-				      <td>${investProductList.get(0).ytm}%</td>
+				      <th>到期收益率:</th>				      
+				      <td><input name="ytm" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).ytm}%"/></td>
 				      <th>还款方式:</th>
-					  <td style="text-align: center;">
-						<c:if test="${investProductList.get(0).repaymentMode == 'A'}">
-							利随本清					
-						</c:if>
-						<c:if test="${investProductList.get(0).repaymentMode == 'B'}">
-							按月回息					
-						</c:if>	
-					  </td>				      
+					  <td><input id="repaymentMode" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).repaymentMode}"/></td>				      
 				   </tr> 				   
 				   
 				   <tr align="center">
 				      <th>最低出借金额:</th>
-				      <td>
+				      <td>										      
 				      	<c:if test="${investProductList.get(0).lowLendEdu != null }">
-				      		<fmt:formatNumber value="${investProductList.get(0).lowLendEdu}" pattern="#.00"/>元				      		
+				      		<input name="lowLendEdu" class="easyui-textbox" disabled="disabled" value='<fmt:formatNumber value="${investProductList.get(0).lowLendEdu}" pattern="#.00"/>元'/>				      						      	
 				      	</c:if>
 				      	<c:if test="${investProductList.get(0).lowLendEdu  == null }">
-				      		无
+							<input name="lowLendEdu" class="easyui-textbox" disabled="disabled" value='无'/>				      		
 				      	</c:if>				      
 				      </td>
 				      <th>最高出借金额:</th>
 				      <td>				      				     
 				      	<c:if test="${investProductList.get(0).higLendEdu != null}">
-				      		<fmt:formatNumber value="${investProductList.get(0).lowLendEdu}" pattern="#.00"/>元
+				      		<input name="higLendEdu" class="easyui-textbox" disabled="disabled" value='<fmt:formatNumber value="${investProductList.get(0).higLendEdu}" pattern="#.00"/>元'/>				      	
 				      	</c:if>
-				      	<c:if test="${investProductList.get(0).higLendEdu == null}">
-				      		无
+				      	<c:if test="${investProductList.get(0).higLendEdu == null}">				      		
+							<input name="higLendEdu" class="easyui-textbox" disabled="disabled" value='无上限'/>				      		
 				      	</c:if>						      				      				      				      				      
 				      </td>
-				      <th>出借周期:</th>
-				      <td>${investProductList.get(0).lendingCycle}天</td>
+				   </tr>
+				   
+				   <tr align="center">
+				      <th>出借周期:</th>				      
+				      <td><input name="lendingCycle" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).lendingCycle}天"/></td>
+				      <th>意向投资日期:</th>				      				     
+				      <td><input name="beginDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${investProductList.get(0).beginDate}" pattern="yyyy年MM月dd日"/>'/></td>
 				   </tr> 
 				   
 				   <tr align="center">
-				      <th>意向投资日期:</th>
-				      <td><fmt:formatDate value="${investProductList.get(0).beginDate}" pattern="yyyy年MM月dd日"/></td>
-				      <th>到日期:</th>
-				      <td><fmt:formatDate value="${investProductList.get(0).endDate}" pattern="yyyy年MM月dd日"/></td>
-				      <th>投资金额:</th>
-				      <td><fmt:formatNumber value="${investProductList.get(0).investEdu}" pattern="#.00"/>元</td>
-				   </tr> 				   				   
-				   
+				      <th>到日期:</th>				     
+				      <td><input name="endDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${investProductList.get(0).endDate}" pattern="yyyy年MM月dd日"/>'/></td>
+				      <th>投资金额:</th>				      
+				      <td><input name="investEdu" class="easyui-textbox" disabled="disabled" value='<fmt:formatNumber value="${investProductList.get(0).investEdu}" pattern="#.00"/>元'/></td>
+				   </tr> 
+				   				   				   
+				   <tr align="center">
+				      <th>模式特点:</th>				      
+				      <td colspan="3"><textarea id="prodDesc" name="prodDesc" style="width: 90%;"  disabled="disabled">${investProductList.get(0).prodDesc}</textarea></td>				      				   
+				   </tr>
+				   				   
 				</table>					
 			</c:if>				
 		</div><br/>
 
 
 		<!-- 第四部分：备注信息部分数据 -->
-		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-			<span>[备注信息]</span><br/>
+		<div style="margin-left: 5px;margin-top: 5px">
+			<span class="badge">[备注信息]</span><br/>
 			
-			<table width='100%' height='100%' style="border-collapse:collapse; font-size: 12px;background-color:#F4f4f4;" cellpadding='5' border='1' align='center'>
+			<table width='100%' align='center'>
 			   <tr align="center">
-			      <th>备注信息:</th>
-			      <td>${investOrderObj.orderDesc}</td>		      
+			      <th>备注信息:</th>								      			      
+				  <td><textarea id="orderDesc" name="orderDesc" style="width: 95%;"  disabled="disabled">${investOrderObj.orderDesc}</textarea></td>				      				   			      			      		      
 			   </tr>
 			</table>					
-		</div><br/>
-			
+		</div><br/>			
 	</c:if>	
 	
 	<!-- 渲染关闭按钮 -->		
-     <div style="margin-left: ">
+     <div align="right">
         <a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#contractInfoDialog').dialog('close')">关闭</a>
      </div>
-</html>

@@ -1,0 +1,107 @@
+package com.bpms.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.LoanOrderHis;
+import com.bpms.model.vo.LoanOrderHisModel;
+import com.bpms.service.LoanOrderHisService;
+import com.bpms.util.Collections;
+import com.bpms.util.Constants;
+
+/**
+ * 
+ * 个人贷款申请订单的serviceImpl
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+@Service("loanOrderHisService")
+public class LoanOrderHisServiceImpl implements LoanOrderHisService {
+
+	@Autowired
+	private BaseDAO<LoanOrderHis> baseDAO;
+
+	@Override
+	public void saveLoanOrderHis(LoanOrderHis loanOrderHis) {
+		this.baseDAO.save(loanOrderHis);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<LoanOrderHisModel> findAllLoanOrderHist(String loanOrderId) {
+		// 定义返回值
+		List<LoanOrderHisModel> hisModels = new ArrayList<LoanOrderHisModel>();
+		String sql = "SELECT"
+				+ "		tbloh.AGENT_TIME, "
+				+ "		tbloh.ASSIGNEE, "
+				+ "		tu.NAME AS assigneeName, "
+				+ "		tbloh.COMMENT, "
+				+ "		tbloh.LOAN_ORDER_HI_ID, "
+				+ "		tbloh.LOAN_ORDER_ID, "
+				+ "		tblo.CREATE_DATE, "
+				+ "		tbloh.ORDER_STATUS, "
+				+ "		tbos.STATUS_NAME, "
+				+ "		tbloh.ROLE_ID, "
+				+ "		tr.NAME AS roleName "
+				+ "	FROM "
+				+ "		t_bp_loan_order_his tbloh "
+				+ "	INNER JOIN t_bp_loan_order tblo ON tbloh.LOAN_ORDER_ID = tblo.LOAN_ORDER_ID "
+				+ "	INNER JOIN t_bp_order_status tbos ON tbloh.ORDER_STATUS = tbos.STATUS_ID "
+				+ "	INNER JOIN t_role tr ON tbloh.ROLE_ID = tr.ROLE_ID "
+				+ "	INNER JOIN t_users tu ON tbloh.ASSIGNEE  = tu.USER_ID "
+				+ " WHERE tbloh.LOAN_ORDER_ID = '" + loanOrderId + "'";
+		List<Object> list = this.baseDAO.findBySQL(sql);
+		if (Collections.listIsNotEmpty(list)) {
+			for (Object l : list) {
+				Object[] obj = (Object[]) l;
+				LoanOrderHisModel model = new LoanOrderHisModel();
+				model.setAgentTime((Date) obj[0]);
+				model.setAssignee((String) obj[1]);
+				model.setAssigneeName((String) obj[2]);
+				model.setComment((String) obj[3]);
+				model.setLoanOrderHiId((String) obj[4]);
+				model.setLoanOrderId((String) obj[5]);
+				model.setCreateDate((Date) obj[6]);
+				model.setOrderStatus((String) obj[7]);
+				model.setOrderStatusName((String) obj[8]);
+				model.setRoleId((String) obj[9]);
+				model.setRoleName((String) obj[10]);
+				hisModels.add(model);
+			}
+		}
+		return hisModels;
+	}
+
+	@Override
+	public LoanOrderHis findLoanOrderHis(String roleCode, String loanOrderId) {
+		String hql = "select o from LoanOrderHis o,Role r where o.roleId = r.roleId and r.roleCode='"
+				+ roleCode + "' and o.loanOrderId='" + loanOrderId + "'";
+		List<LoanOrderHis> loanOrderHis = this.baseDAO.find(hql);
+		if (Collections.listIsNotEmpty(loanOrderHis)) {
+			return loanOrderHis.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public List<LoanOrderHis> findLoanOrderHis(String loanOrderId) {
+		String hql = "select o from LoanOrderHis o,Role r where o.roleId = r.roleId and ( r.roleCode='"
+				+ Constants.LOAN_ROLE_CODE_IPCDAISHENWEI1
+				+ "' or r.roleCode = '"
+				+ Constants.LOAN_ROLE_CODE_IPCDAISHENWEI2
+				+ "' or r.roleCode='"
+				+ Constants.LOAN_ROLE_CODE_IPCDAISHENWEI3
+				+ "' )and o.loanOrderId='"
+				+ loanOrderId + "'";
+		return this.baseDAO.find(hql);
+	}
+}

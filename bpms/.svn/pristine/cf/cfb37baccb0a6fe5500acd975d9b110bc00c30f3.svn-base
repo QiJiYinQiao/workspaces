@@ -1,0 +1,122 @@
+package com.bpms.service;
+
+import java.io.IOException;
+import java.util.List;
+
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
+
+import com.bpms.model.LoanOrder;
+
+/**
+ * 
+ * 个人业务贷款申请的业务处理的service接口
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+public interface LoanOrderWorkFlowService {
+
+	/**
+	 * 启动流程实例
+	 * 
+	 * @param loanOrder
+	 *            启动流程实例参数
+	 * @return 启动流程实例是否成功
+	 */
+	boolean saveStartProcessInstance(LoanOrder loanOrder);
+
+	/**
+	 * 通过用户的角色获取用户签约任务
+	 * 
+	 * @return 要办理的任务
+	 */
+	List<LoanOrder> findAllClaimTask(Integer firstResult, Integer maxResults);
+
+	/**
+	 * 通过用户的角色获取用户签约任务个数
+	 * 
+	 * @return 要办理的任务个数
+	 */
+	Long findAllClaimTaskCount(String userId);
+
+	/**
+	 * 获取用户的代办任务的信息列表
+	 * 
+	 * @return 代办的任务列表
+	 */
+	List<LoanOrder> findAllUnClaimTask(Integer firstResult, Integer maxResults);
+
+	/**
+	 * 获取用户的代办任务的信息列表个数
+	 * 
+	 * @return 代办的任务列表个数
+	 */
+	Long findAllUnClaimTaskCount(String userId);
+
+	/**
+	 * 根据任务的id获取当前的贷款订单的信息
+	 * 
+	 * @param taskId
+	 *            任务的Id
+	 * @return 贷款信息
+	 */
+	LoanOrder findLoanOrderByTaskId(String taskId);
+
+	/**
+	 * 用户领取任务信息
+	 * 
+	 * @param taskId
+	 *            任务ID
+	 * @param userId
+	 *            用户的ID
+	 * 
+	 * @return 保存是否成功
+	 */
+	void saveClaimTask(String loanOrderId)
+			throws ActivitiTaskAlreadyClaimedException;
+
+	/**
+	 * 解除领取的任务信息
+	 * 
+	 * @param taskId
+	 *            任务的id
+	 * @return 解除领取任务是否成功
+	 */
+	void saveUnCliamTask(String taskId);
+
+	/**
+	 * 将领取的任务,指定给制定人
+	 * 
+	 * @return 给指定人是否成功
+	 */
+	void updateCliamTaskUser(String taskId, String userId);
+
+	/**
+	 * 完成任务
+	 * 
+	 * @param loanOrder
+	 *            订单
+	 * @param comment
+	 *            备注信息
+	 * @param result
+	 *            下一步
+	 * @param processingResult
+	 *            是否通过
+	 * @param isInvolvedLoanCar
+	 *            是否涉及车贷
+	 */
+	void saveSubmitTask(LoanOrder loanOrder, String comment, String result,
+			String processingResult, String isInvolvedLoanCar);
+
+	/**
+	 * 根据订单的id获取当前执行图片的位置
+	 * 
+	 * @param loanOrderId
+	 *            订单的id
+	 * @throws IOException
+	 */
+	void getDiagramResourceByLoanOrderId(String loanOrderId) throws IOException;
+}

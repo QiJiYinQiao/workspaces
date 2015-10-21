@@ -9,17 +9,6 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring.xml,classpath:spring-hibernate.xml,classpath:activiti-context.xml</param-value>
 	</context-param>
-	<!-- 自定义推送 -->
-	<servlet>
-		<servlet-name>firePush</servlet-name>
-		<servlet-class>com.bpms.action.FirePush</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>firePush</servlet-name>
-		<url-pattern>/firePush</url-pattern>
-	</servlet-mapping>
-	<!-- 自定义推送结束 -->
-
 	<filter>
 		<filter-name>shiroFilter</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>

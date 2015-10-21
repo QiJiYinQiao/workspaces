@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.EquipmentDao">
+	<resultMap type="com.jxc.web.user.model.EquipmentEntity" id="R_Equipment_ENTITY" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.lang.String" id="str"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="decimal"/>
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<!-- 查询所有设备 -->
+	<select id="getAll" resultMap="R_Equipment_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_equipment ORDER BY EQUIPMENT_STATE,MODIFY_TIME DESC;
+	</select>
+	<!-- 查询可用设备 -->
+	<select id="getList" resultMap="R_Equipment_ENTITY" parameterType="map">
+		<!-- SELECT * FROM `sky`.`t_3g_equipment` WHERE IS_VALID = "0001" AND  (<![CDATA[ RENT_ENDDATE < now() ]]> OR RENT_ENDDATE IS NULL) AND <![CDATA[ SCRAP_DATE > now() ]]>  LIMIT #{0},#{1}; -->
+		SELECT * FROM `sky`.`t_3g_equipment` WHERE IS_VALID = "0001" AND EQUIPMENT_STATE = '0001' AND SIM_ID IS NOT NULL  LIMIT #{start},#{number};
+	</select>
+	<!-- 可用设备总条数 -->
+	<select id="getListNum" resultMap="ints">
+		SELECT COUNT(*) FROM `sky`.`t_3g_equipment` WHERE IS_VALID = "0001" AND EQUIPMENT_STATE = '0001' AND SIM_ID IS NOT NULL ;
+	</select>
+	
+	<!-- 查询当前柜台可用设备 -->
+	<select id="getNowList" resultMap="R_Equipment_ENTITY" parameterType="map">
+		<!-- (<![CDATA[ RENT_ENDDATE < now() ]]> OR RENT_ENDDATE IS NULL) AND <![CDATA[ SCRAP_DATE > now() ]]> -->
+		SELECT * FROM `sky`.`t_3g_equipment` WHERE IS_VALID = "0001" AND COUNTERID=#{2} AND EQUIPMENT_STATE = '0001' AND SIM_ID IS NOT NULL  LIMIT #{0},#{1};
+	</select>
+	<!-- 当前柜台可用设备总条数 -->
+	<select id="getNowListNum" resultMap="ints" parameterType="map">
+		SELECT COUNT(*) FROM `sky`.`t_3g_equipment` WHERE IS_VALID = "0001" AND COUNTERID=#{counterid} AND EQUIPMENT_STATE = '0001' AND SIM_ID IS NOT NULL ;
+	</select>
+	
+	<!-- 更新订单后，根据订单中的设备号修改设备信息：设备实际返还日期，设备租金-->
+	<select id="updateEquipment" resultMap="R_Equipment_ENTITY" parameterType="map">
+		UPDATE `sky`.`t_3g_equipment` SET `TOTAL_RENT`=#{2},`REMARK`=#{3}, `RENT_ENDDATE`=#{1},EQUIPMENT_STATE='0001' WHERE  `NO`=#{0};
+	</select>
+	<!-- 更新订单后，根据订单中的设备号修改设备信息：设备实际返还日期，设备租金 外部设备-->
+	<select id="updateEquipmentOut" resultMap="R_Equipment_ENTITY" parameterType="map">
+		UPDATE `sky`.`t_3g_equipment_out` SET `TOTAL_RENT`=#{2},`REMARK`=#{3}, `RENT_ENDDATE`=#{1},EQUIPMENT_STATE='0001'  WHERE  `NO`=#{0};
+	</select>
+	<!-- 提交订单后，根据订单中的设备号修改设备信息：设备租用日期，预计返还日期，实际返还日期，修改人，修改时间，设备租金，备注 -->
+	<update id="updateEquipmentAfterAdd"  parameterType="map">
+		UPDATE `sky`.`t_3g_equipment` SET `RENT_BEGINDATE`=#{1}, `RENT_EXPECTDATE`=#{2}, `RENT_ENDDATE`=#{3}, `MODIFY_USER`=#{4}, `MODIFY_TIME`=#{5},  `TOTAL_RENT`=#{7},`RENT_ENDDATE`='9999-12-12 00:00:00',EQUIPMENT_STATE='0002' WHERE  `NO`=#{0};
+	</update>
+	<!-- 根据设备号查询此设备的日租金 -->
+	<select id="queryDayRent" resultMap="R_Equipment_ENTITY" parameterType="map">
+		<!-- SELECT IS_VALID,DAY_RENT,ID,DEPOSIT FROM t_3g_equipment WHERE NO = #{eqptno} AND IS_VALID = "0001" AND   EQUIPMENT_STATE = '0001' AND SIM_ID IS NOT NULL; -->
+		SELECT te.IS_VALID,ti.DAY_RENT,te.ID,te.DEPOSIT FROM t_3g_equipment te LEFT JOIN t_3g_info ti ON te.SIM_ID = ti.ID WHERE te.NO = #{eqptno} AND te.IS_VALID = "0001" AND  te.EQUIPMENT_STATE = '0001' AND ti.IS_VALID = '0001' AND te.SIM_ID IS NOT NULL;
+	</select>
+	<!-- 根据设备号查询此设备是否有效 -->
+	<select id="queryIsValid" resultMap="R_Equipment_ENTITY" parameterType="map">
+		SELECT * FROM allequipment WHERE NO = #{equipment_no};
+	</select>
+	<!-- 根据柜台号或者设备号，国家查询设备  no,counterid,tg_id,equipment_state,start,number tc.COUNTER_CODE =  #{1} OR ti.COUNTRY LIKE #{2}"%" OR te.`NO` = #{0} OR te.EQUIPMENT_STATE LIKE #{3}"%" LIMIT #{4},#{5}; -->
+	<select id="queryEquipmentByNum" resultMap="R_Equipment_ENTITY" parameterType="map">
+	  <!-- SELECT * FROM t_3g_equipment WHERE IS_VALID = "0001" AND(NO = #{0} OR COUNTERID = (SELECT ID FROM t_3g_counter WHERE COUNTER_CODE = #{1}) OR SIM_ID = (SELECT ID FROM t_3g_info WHERE COUNTRY = #{2}) OR EQUIPMENT_STATE = #(3)); -->
+	 <!--   SELECT * FROM t_3g_equipment te LEFT JOIN t_3g_counter tc ON te.COUNTERID = tc.ID LEFT JOIN t_3g_info ti ON te.SIM_ID = ti.ID 
+	   WHERE tc.COUNTER_CODE  LIKE  CONCAT(#{counterid},'%')  AND ti.COUNTRY LIKE CONCAT(#{tg_id},'%') AND te.EQUIPMENT_STATE LIKE  CONCAT(#{equipment_state},'%') -->
+	   <!-- te.COUNTERID LIKE CONCAT(#{countercode},'%') AND te.EQUIPMENT_STATE LIKE CONCAT(#{equipment_state},'%') AND ti.COUNTRY LIKE CONCAT(#{countrys},'%')  -->
+	   SELECT * FROM t_3g_equipment te LEFT JOIN t_3g_info ti ON te.SIM_ID = ti.ID WHERE 1=1 
+	   		<if test="type == 1">
+	   			AND te.`SIM_ID` IS NOT NULL 
+	   		</if>
+	   		<if test="no != ''">
+	   			AND te.`NO` LIKE CONCAT('%',CONCAT(#{no},'%'))
+	   		</if>
+	   		<if test="countercode != ''">
+	   			AND te.COUNTERID  =  #{countercode}
+	   		</if>
+	   		<if test="countrys != ''">
+	   			AND ti.COUNTRY = #{countrys}
+	   		</if>
+	   		<if test="equipment_state != ''">
+	   			AND te.EQUIPMENT_STATE = #{equipment_state}
+	   		</if>
+	   		 LIMIT #{start},#{number};
+	</select>
+	<!-- 查询到设备的总条数 -->
+	<select id="queryEquipmentByNumTotal" resultMap="ints" parameterType="map">
+		<!--  SELECT count(*) FROM t_3g_equipment te LEFT JOIN t_3g_info ti ON te.SIM_ID = ti.ID WHERE te.COUNTERID LIKE CONCAT(#{countercode},'%') AND te.EQUIPMENT_STATE LIKE CONCAT(#{equipment_state},'%') AND ti.COUNTRY LIKE CONCAT(#{countrys},'%') ; -->
+		 SELECT count(*) FROM t_3g_equipment te LEFT JOIN t_3g_info ti ON te.SIM_ID = ti.ID WHERE 1=1 
+			<if test="type == 1">
+	   			AND te.`SIM_ID` IS NOT NULL 
+	   		</if>
+	   		<if test="no != ''">
+	   			<!-- AND te.`NO` = #{no} -->
+	   			AND te.`NO` LIKE CONCAT('%',CONCAT(#{no},'%'))
+	   		</if>
+	   		<if test="countercode != ''">
+	   			AND te.COUNTERID  =  #{countercode}
+	   		</if>
+	   		<if test="countrys != ''">
+	   			AND ti.COUNTRY = #{countrys}
+	   		</if>
+	   		<if test="equipment_state != ''">
+	   			AND te.EQUIPMENT_STATE = #{equipment_state}
+	   		</if>
+	</select>
+	<!-- 查询共有多少条记录 -->
+	<select id="queryEquipmentRows" resultMap="ints" parameterType="map">
+		SELECT COUNT(*) FROM t_3g_equipment WHERE COUNTERID = #{counterid};
+	</select>
+	<!-- 设备列表起始页分页查询 -->
+	<select id="queryEquipmentByPage" resultMap="R_Equipment_ENTITY" parameterType="map">
+		<!-- SELECT * FROM allequipment WHERE COUNTERID = #{2} AND IS_VALID='0001' ORDER BY EQUIPMENT_STATE,MODIFY_TIME DESC LIMIT #{0},#{1} ; -->
+		SELECT * FROM t_3g_equipment WHERE COUNTERID = #{2} AND IS_VALID='0001' ORDER BY EQUIPMENT_STATE,MODIFY_TIME DESC LIMIT #{0},#{1} ;
+	</select>
+	<!-- 查询有效总记录数 -->
+	<select id="queryEquipmentInvalidRows" resultMap="ints" parameterType="map">
+		<!-- (<![CDATA[ RENT_ENDDATE < now() ]]> OR RENT_ENDDATE IS NULL) AND <![CDATA[ SCRAP_DATE > now() ]]> -->
+		SELECT COUNT(*) FROM t_3g_equipment WHERE IS_VALID = "0001" AND EQUIPMENT_STATE = '0001' ;
+	</select>
+	<!-- 添加自营设备 -->
+	<insert id="addequipment" parameterType="map">
+		INSERT INTO `sky`.`t_3g_equipment` (`ID`, `NO`, `COUNTERID`, `STOCK_DATE`,  `IS_VALID`, `CREATE_USER`, `CREATE_TIME`,`MODIFY_USER`,`MODIFY_TIME`, `REMARK`,`EQUIPMENT_STATE`,`DEPOSIT`,`SIM_ID`,`DAY_RENT`) VALUES (replace(uuid(),'-',''), #{no}, #{counterid}, #{stock_date}, '0001', #{create_user}, #{create_time}, #{create_user},#{create_time}, #{remark},'0001',#{deposit},#{sim_id},#{day_rent});
+	</insert>
+	<!-- 根据柜台编码查询柜台名称 -->
+	<select id="queryCounterName" resultMap="str" parameterType="map">
+		SELECT NAME FROM t_3g_counter WHERE COUNTER_CODE = #{no};
+	</select>
+	<!-- 添加外部设备 -->
+	<insert id="addOutEquipment" parameterType="map">
+		INSERT INTO `sky`.`t_3g_equipment_out` (`ID`, `NO`, `COUNTERID`, `IS_VALID`, `CREATE_USER`, `CREATE_TIME`, `MODIFY_USER`,`MODIFY_TIME`,`DAY_RENT`,`DEPOSIT`,`RENT_BEGINDATE`,`RENT_EXPECTDATE`,`RENT_ENDDATE`,`TOTAL_RENT`,`EQUIPMENT_STATE`) VALUES (replace(uuid(),'-',''),#{0},#{1},#{2},#{3},#{4},#{5},#{6},#{7},#{8},#{9},#{10},'9999-12-12 12:12:12',#{11},'0002');
+	</insert>
+	<!-- 根据设备类型查询设备押金 -->
+	<select id="queryDepositByEtype" resultMap="str" parameterType="map">
+		SELECT tl.DESCRIPTION FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'deposit' AND tl.`STATUS`='1' AND tl.ITEM_TEXT = #{equipment_type} ORDER BY tl.SORTORDER ;
+	</select>
+	<!-- 判断外部设备是否存在 -->
+	<select id="isExist" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM t_3g_equipment_out WHERE NO = #{equipmentno};
+	</select>
+	<!-- 根据目的地国家编码查询设备日租金，目的地国家，针对外部设备 -->
+	<select id="queryOutEquipDayRent" resultMap="hashmap" parameterType="map">
+		SELECT tl.DESCRIPTION,tl.ITEM_TEXT,tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'country' AND tl.`STATUS`='1' AND tl.ITEM_VALUE=#{countryvalue};
+	</select>
+	<!-- 查询设备详情 -->
+	<select id="queryEquipmentDetail" resultMap="R_Equipment_ENTITY" parameterType="map">
+		SELECT * FROM 
+		<if test="equipmenttype=='0001'">
+			t_3g_equipment 
+		</if>
+		<if test="equipmenttype=='0002'">
+			t_3g_equipment_out
+		</if>
+		WHERE NO = #{equipmentno}
+	</select>
+	<!-- 根据设备号查询其绑定的SIM卡到期时间 -->
+	<select id="querySimIsOuttime" resultMap="str" parameterType="map">
+		SELECT ti.DAY_END FROM t_3g_info ti LEFT JOIN t_3g_equipment te ON ti.ID = te.SIM_ID WHERE te.`NO` = #{equipmentno};
+	</select>
+	<!-- 根据设备号查询其绑定的SIM卡开卡日期 -->
+	<select id="querySimDayBegin" resultMap="str" parameterType="map">
+		SELECT ti.DAY_BEGIN FROM t_3g_info ti LEFT JOIN t_3g_equipment te ON ti.ID = te.SIM_ID WHERE te.`NO` = #{equipmentno};
+	</select>
+	<!-- 编辑设备信息 ,EQUIPMENT_STATE=#{equipment_state}-->
+	<update id="editequipment" parameterType="map">
+		UPDATE t_3g_equipment SET SIM_ID = #{sim_id},COUNTERID = #{counterid},SCRAP_DATE = #{scrap_date},IS_VALID=#{is_valid} WHERE NO = #{no};
+	</update>
+	<!-- 编辑设备信息时，如果此SIM卡已经绑定，则解除其与原来设备的绑定 -->
+	<!-- <update id="editequipmentrefresh" parameterType="map">
+		UPDATE t_3g_equipment SET SIM_ID = null WHERE SIM_ID = #{sim_id};
+	</update> -->
+	<!-- 根据条件查询设备 -->
+	<select id="queryEqptByConditions" resultMap="R_Equipment_ENTITY" parameterType="map">
+		 SELECT * FROM allequipment ap LEFT JOIN t_3g_info ti ON ap.SIM_ID = ti.ID WHERE 1 = 1 
+		 <if test="equipment.no!=''">
+		 	AND ap.`NO` LIKE CONCAT('%',CONCAT(#{equipment.no},'%'))
+		 </if>
+		 <if test="equipment.is_valid!=''">
+		 	 AND ap.IS_VALID = #{equipment.is_valid}
+		 </if>
+		 <if test="equipment.counterid!=''">
+		 	AND ap.COUNTERID = #{equipment.counterid}
+		 </if>
+		 <if test="equipment.rent_begindate!=''">
+		 	AND ap.RENT_BEGINDATE LIKE CONCAT(#{equipment.rent_begindate},'%')
+		 </if>
+		 <if test="equipment.rent_expectdate!=''">
+		 	AND ap.RENT_EXPECTDATE LIKE CONCAT(#{equipment.rent_expectdate},'%')
+		 </if>
+		 <if test="equipment.rent_enddate!=''">
+		 	AND ap.RENT_ENDDATE LIKE CONCAT(#{equipment.rent_enddate},'%')
+		 </if>
+		 <if test="equipment.stock_date!=''">
+		 	 AND ap.STOCK_DATE LIKE CONCAT(#{equipment.stock_date},'%')
+		 </if>
+		 <if test="equipment.scrap_date!=''">
+		 	AND ap.SCRAP_DATE LIKE CONCAT(#{equipment.scrap_date},'%')
+		 </if>
+		 <if test="equipment.equipment_type!=''">
+		 	AND ap.EQUIPMENT_TYPE = #{equipment.equipment_type}
+		 </if>
+		 <if test="equipment.equipment_state!=''">
+		 	AND ap.EQUIPMENT_STATE = #{equipment.equipment_state}
+		 </if>
+		 <if test="equipment.sim_id=='0001'">
+		 	AND ap.SIM_ID IS NOT NULL
+		 </if>
+		 <if test="equipment.sim_id=='0002'">
+		 	AND ap.SIM_ID IS NULL
+		 </if>
+		 <if test="country!=''">
+		 	AND ti.COUNTRY = #{country}
+		 </if>
+		 ORDER BY ap.EQUIPMENT_STATE,ap.MODIFY_TIME DESC LIMIT #{start},#{number};
+	</select>
+	<!-- 根据条件查询到设备的总条数 -->
+	<select id="queryEqptByConditionsNums" resultMap="ints" parameterType="map">
+		 SELECT count(*) FROM allequipment ap LEFT JOIN t_3g_info ti ON ap.SIM_ID = ti.ID WHERE 1 = 1 
+		 <if test="equipment.no!=''">
+		 	<!-- AND ap.`NO`= #{equipment.no} -->
+		 	AND ap.`NO` LIKE CONCAT('%',CONCAT(#{equipment.no},'%'))
+		 </if>
+		 <if test="equipment.is_valid!=''">
+		 	 AND ap.IS_VALID = #{equipment.is_valid}
+		 </if>
+		 <if test="equipment.counterid!=''">
+		 	AND ap.COUNTERID = #{equipment.counterid}
+		 </if>
+		 <if test="equipment.rent_begindate!=''">
+		 	AND ap.RENT_BEGINDATE LIKE CONCAT(#{equipment.rent_begindate},'%')
+		 </if>
+		 <if test="equipment.rent_expectdate!=''">
+		 	AND ap.RENT_EXPECTDATE LIKE CONCAT(#{equipment.rent_expectdate},'%')
+		 </if>
+		 <if test="equipment.rent_enddate!=''">
+		 	AND ap.RENT_ENDDATE LIKE CONCAT(#{equipment.rent_enddate},'%')
+		 </if>
+		 <if test="equipment.stock_date!=''">
+		 	 AND ap.STOCK_DATE LIKE CONCAT(#{equipment.stock_date},'%')
+		 </if>
+		 <if test="equipment.scrap_date!=''">
+		 	AND ap.SCRAP_DATE LIKE CONCAT(#{equipment.scrap_date},'%')
+		 </if>
+		 <if test="equipment.equipment_type!=''">
+		 	AND ap.EQUIPMENT_TYPE = #{equipment.equipment_type}
+		 </if>
+		 <if test="equipment.equipment_state!=''">
+		 	AND ap.EQUIPMENT_STATE = #{equipment.equipment_state}
+		 </if>
+		 <if test="equipment.sim_id=='0001'">
+		 	AND ap.SIM_ID IS NOT NULL
+		 </if>
+		 <if test="equipment.sim_id=='0002'">
+		 	AND ap.SIM_ID IS NULL
+		 </if>
+		 <if test="country!=''">
+		 	AND ti.COUNTRY = #{country}
+		 </if>
+	</select>
+	<!-- 批量添加设备 -->
+	<insert id="batchInsertEqupment" parameterType="java.util.List">
+		INSERT INTO `sky`.`t_3g_equipment` (`ID`, `NO`, `COUNTERID`, `STOCK_DATE`,  `IS_VALID`, `CREATE_USER`, `CREATE_TIME`,`MODIFY_USER`,`MODIFY_TIME`, `EQUIPMENT_STATE`,`DEPOSIT`,`SIM_ID`,`IMEI`,`EQPT_PASSWORD`) VALUES 
+		<foreach collection="list" item="item" separator="," index="index">
+			(#{item.id},#{item.no},#{item.counterid},#{item.stock_date},#{item.is_valid},#{item.create_user},#{item.create_time},#{item.create_user},#{item.create_time},#{item.equipment_state},#{item.deposit},#{item.sim_id},#{item.imei},#{item.eqpt_password} )
+		</foreach>
+	</insert>
+	<!-- 批量添加设备 先将数据添加到临时表-->
+	<insert id="batchInsertTemporatoryEqupment" parameterType="java.util.List">
+		INSERT INTO `sky`.`t_3g_temporatory_equipment` (`ID`, `NO`, `COUNTERID`, `STOCK_DATE`,  `IS_VALID`, `CREATE_USER`, `CREATE_TIME`,`MODIFY_USER`,`MODIFY_TIME`, `EQUIPMENT_STATE`,`DEPOSIT`) VALUES 
+		<foreach collection="list" item="item" separator="," index="index">
+			(#{item.id},#{item.no},#{item.counterid},#{item.stock_date},#{item.is_valid},#{item.create_user},#{item.create_time},#{item.create_user},#{item.create_time},#{item.equipment_state},#{item.deposit})
+		</foreach>
+	</insert>
+	<!-- 更新设备信息时，如果此SIM卡号已经绑定，解除其之前的绑定 -->
+	<update id="updateBinding" parameterType="map">
+		UPDATE t_3g_equipment SET SIM_ID = NULL WHERE SIM_ID = #{simid}
+	</update>
+	<!-- 创建临时表 -->
+	<!-- <update id="createTemTable">
+		CREATE TEMPORARY TABLE t_3g_equipments ( ID VARCHAR(40) NOT NULL, NO VARCHAR(50),COUNTERID VARCHAR(40),STOCK_DATE DATETIME,IS_VALID VARCHAR(4),CREATE_USER VARCHAR(40),CREATE_TIME DATETIME,MODIFY_USER VARCHAR(40),MODIFY_TIME DATETIME,EQUIPMENT_STATE VARCHAR(4),DEPOSIT VARCHAR(50) );
+	</update> -->
+	<!-- 查询临时表中的所有设备号 -->
+	<select id="queryEqptnoTemporatory" resultMap="str">
+		SELECT NO FROM t_3g_temporatory_equipment;
+	</select>
+	<!-- 根据临时表中的设备号查询当前表中是否有重复数据 -->
+	<select id="queryIfDoubleData" resultMap="ints" parameterType="map">
+		SELECT COUNT(#{no}) FROM t_3g_equipment WHERE NO = #{no};
+	</select>
+	<!-- 清空临时表中的数据 -->
+	<update id="clearTemporatoryEqptno">
+		DELETE FROM t_3g_temporatory_equipment;
+	</update>
+	<!-- 添加设备后，更新SIM卡 -->
+	<update id="updateSimAfterAdd" parameterType="map">
+		UPDATE t_3g_equipment SET SIM_ID = NULL WHERE SIM_ID = #{sim_id};
+	</update>
+	<!-- 查询自营设备是否存在 -->
+	<select id="ifSelfEqptExist" resultMap="ints">
+		SELECT COUNT(*) FROM t_3g_equipment WHERE NO = #{no}
+	</select>
+	<!-- 根据设备号查询其绑定的SIM卡号 -->
+	<select id="queryBindSimId" parameterType="map" resultMap="str">
+		SELECT SIM_ID FROM t_3g_equipment WHERE NO = #{no}
+	</select>
+	<!-- 查询当前登录人柜台下的设备 -->
+	<select id="queryEqptByCount" resultMap="R_Equipment_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_equipment te LEFT JOIN t_3g_user tu ON te.COUNTERID = tu.COUNTERID WHERE tu.ID = #{userid} ORDER BY te.MODIFY_TIME DESC LIMIT #{start},#{number} 
+	</select>
+	
+	<select id="queryEqptByCountNum" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM t_3g_equipment te LEFT JOIN t_3g_user tu ON te.COUNTERID = tu.COUNTERID WHERE tu.ID = #{userid} 
+	</select>
+	
+	<!-- 设备入库 -->
+	<update id="eqptInStorage" parameterType="map" >
+		<!-- <foreach collection="list" item="item" > -->
+			UPDATE t_3g_equipment te SET te.COUNTERID = #{counterid} ,te.MODIFY_USER = #{modify_user},te.MODIFY_TIME = now(),te.IN_STORAGE = now()  WHERE te.`NO` = #{no};
+		<!-- </foreach> -->
+	</update>
+	
+	<!-- 根据设备号查询设备 -->
+	<select id="queryEqptByNo" parameterType="map" resultMap="R_Equipment_ENTITY">
+		SELECT * FROM t_3g_equipment te WHERE te.`NO` = #{eqptno}
+	</select>
+	
+	<!-- 添加盘点 -->
+	<insert id="addInventory" parameterType="map" >
+		INSERT INTO t_3g_inventory VALUES (replace(uuid(),'-',''),#{inventorydate},#{eqptid},#{counterid},#{userid},#{inventoryremark},'1',#{userid},#{inventorytime},#{userid},#{inventorytime})
+	</insert>
+	
+</mapper>

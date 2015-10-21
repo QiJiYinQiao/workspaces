@@ -255,7 +255,7 @@ function doEdit(){
 				<th>年收入(元):</th>
 				<td><input name="annualSalary" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'"/></td>
 				<th>工作年限(年):</th>
-				<td><input name="yearsOfWork" class="easyui-textbox easyui-validatebox" data-options="validType:'integer'"/></td>
+				<td><input name="yearsOfWork" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,2]']"/></td>
 				<th>与本人关系:</th>
 				<td>
 				  <input id="relationship" name="relationship" class="easyui-textbox easyui-validatebox"  panelHeight="auto" editable='false'/>
@@ -267,7 +267,7 @@ function doEdit(){
 				            省:<input id="compProvince" name="compProvince" class="easyui-combobox" style="width: 100px;"/> 
 					市:<input id="compCity" name="compCity" class="easyui-combobox" style="width: 100px;"/> 
 					县:<input id="compArea" name="compArea" class="easyui-combobox" style="width: 100px;"/>
-					详细地址:<input name="compAddrDetails" class="easyui-textbox easyui-validatebox" style="width: 308px;"/>
+					详细地址:<input name="compAddrDetails" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,250]'" style="width: 308px;"/>
 				</td>
 			</tr>
 			<tr>
@@ -276,7 +276,7 @@ function doEdit(){
 				        省:<input id="familyProvince" name="familyProvince" class="easyui-combobox" style="width: 100px;" /> 
 				        市:<input id="familyCity" name="familyCity" class="easyui-combobox"  style="width: 100px;"/> 
 				        县:<input id="familyArea" name="familyArea" class="easyui-combobox"  style="width: 100px;"/>
-				        详细地址:<input name="familyAddrDetails" class="easyui-textbox easyui-validatebox" style="width: 308px;"/>
+				        详细地址:<input name="familyAddrDetails" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,250]'" style="width: 308px;"/>
 				</td>
 			</tr>
 			<tr>

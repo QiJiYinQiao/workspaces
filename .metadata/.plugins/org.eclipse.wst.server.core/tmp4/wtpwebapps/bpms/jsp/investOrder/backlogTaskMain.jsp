@@ -97,8 +97,8 @@ function showInvestorView(index){
 	var row = rows[index];
 	$('#investorView').dialog({    
 			    title: '详情',    
-			    width: 700,    
-			    height: 410,    
+			    width: 720,    
+			    height: 545,    
 			    closed: false,    
 			    cache: false,    
 			    href: 'investor/investorAction!findInvestorByInvestorId.action?investorId='+row.investorId,    
@@ -124,8 +124,8 @@ function checkInvestOrderOpinions(index){
 function showInvestorAndInvestProductsDetailsView(investOrderId){
 	$('#investorAndInvestProductsView').dialog({    
 	    title: '理财产品详情',    
-	    width: 1000,    	
-	    height: 400,    
+	    width: 700,    	
+	    height: 350,    
 	    closed: false,
 	    closable: true,
 	    cache: false,    

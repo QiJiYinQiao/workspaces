@@ -36,7 +36,7 @@
 		$grid =$("#dg").datagrid({
 					url : "loanOrder/loanOrderAction!findLoanOrderAllList.action",
 					width : 'auto',
-					height : 749,
+					height : parseInt($(this).height()*0.9),
 					pagination : true,
 					rownumbers : true,
 					border : true,
@@ -109,6 +109,16 @@
 							] ],
 					toolbar : '#tb'
 				});
+		
+		
+		//贷款类型
+		   $("#loanType").combobox({
+				url:"common/commonAction!findTextArr.action?codeMyid=loan_type",
+				valueField: 'code',
+				textField: 'text',
+				editable:false,
+		   });
+		
 	});
 
 	//删除
@@ -348,15 +358,62 @@
 		$("#viewDiv").dialog('close');
 	}
 	
+	//查询
+	function queryLoanOrder(){
+		$("#dg").datagrid({
+			url:"loanOrder/loanOrderAction!queryLoanOrderByCondicions.action",
+			queryParams:{
+				"name":$("#loanerName").val(),
+				"mobileTel":$("#mobileTel").val(),
+				"idNo":$("#idNo").val(),
+				"loanType":$("#loanType").combobox("getValue")
+			}
+		});
+	}
+	
+	//重置查询条件
+	function resetQueryCondition(){
+		$("#queryLoanOrderForm").form("clear");
+		$('#dg').datagrid({
+			url : "loanOrder/loanOrderAction!findLoanOrderAllList.action"
+		});
+	}
+	
 </script>
 </head>
 <body>
 	<div data-options="region:'center',border : false">
-		<div class="well well-small" style="margin-left: 5px; margin-top: 5px">
-			<span class="badge">提示</span>
+		<div  style="margin-left: 5px; margin-top: 5px">
+			<!-- <span class="badge">提示</span>class="well well-small"
 			<p>
 				在此你可以对<span class="label-info"><strong>客户信息</strong></span>进行编辑!
-			</p>
+			</p> -->
+			<form id="queryLoanOrderForm" method="post">
+				<table cellpadding="6">
+					<tr>
+						<th>客户姓名</th>
+						<td><input id="loanerName" name="loanerNname" class="easyui-textbox" ></td>
+						
+						<th>手机号</th>
+						<td><input id="mobileTel" name="mobileTel" class="easyui-numberbox" ></td>
+						
+						<th>身份证号</th>
+						<td><input id="idNo" name="idNo" class="easyui-textbox"></td>
+						
+						<th>贷款类型</th>
+						<td><input id="loanType" name="loanType" class="easyui-combobox" ></td>
+					</tr>
+					<tr>
+						<td colspan="8"></td>
+						<td>
+							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-redo" onclick="resetQueryCondition();">重置</a>
+						</td>
+						<td>
+							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search" onclick="queryLoanOrder();">查询</a>
+						</td>
+					</tr>
+				</table>
+			</form>
 		</div>
 		<div id="tb" style="padding: 2px 0">
 			<table cellpadding="0" cellspacing="0">

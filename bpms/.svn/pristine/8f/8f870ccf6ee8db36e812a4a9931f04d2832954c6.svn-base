@@ -1,0 +1,29 @@
+package com.bpms.listener2;
+
+import org.activiti.engine.delegate.DelegateTask;
+
+import com.bpms.listener.BaseLoanTaskListener;
+import com.bpms.model.Role;
+import com.bpms.util.Constants;
+
+/**
+ * IPC贷审委2活动节点的监听
+ * 
+ * @author liuhh
+ *
+ */
+@SuppressWarnings("serial")
+public class LoanIPCLRC02TaskListener extends BaseLoanTaskListener {
+
+	@Override
+	public String getRoleCode() {
+		return Constants.LOAN_ROLE_CODE_IPCDAISHENWEI2;
+	}
+	
+	@Override
+	public void notify(DelegateTask task) {
+		task.setAssignee((String) task.getVariable("ipclrcUser02"));
+		Role role = roleService.findRoleByCode(getRoleCode());
+		task.createVariableLocal("role", role);
+	}
+}

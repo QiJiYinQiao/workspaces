@@ -1,0 +1,130 @@
+package com.bpms.model;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
+
+/**
+ * 外访调查报告总结
+ * @author Sun
+ *
+ */
+
+@Entity
+@Table(name = "t_bp_outsurvey_report_summary")
+public class IpcOutSurveyReportSummary implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	private String id;
+	private String loanOrderId; //订单ID
+	private String surveyer; //调查人员
+	private Date reportDate; //报告时间
+	private String qanda;	 //初审问题及答疑
+	private String doubtfulPoint; //调查中存在的疑点疑点
+	private String customerAnaly; //客户优劣势分析
+	private String suggestAmt;		//建议放款额度(包括风控措施并给出相应理由)
+	
+	public IpcOutSurveyReportSummary() {
+	}
+
+	public IpcOutSurveyReportSummary(String id, String loanOrderId,
+			String surveyer, Date reportDate, String qanda,
+			String doubtfulPoint, String customerAnaly, String suggestAmt) {
+		super();
+		this.id = id;
+		this.loanOrderId = loanOrderId;
+		this.surveyer = surveyer;
+		this.reportDate = reportDate;
+		this.qanda = qanda;
+		this.doubtfulPoint = doubtfulPoint;
+		this.customerAnaly = customerAnaly;
+		this.suggestAmt = suggestAmt;
+	}
+
+	@Id
+	@GenericGenerator(name = "systemUUID", strategy = "uuid")
+	@GeneratedValue(generator = "systemUUID")
+	@Column(name = "ID", insertable = true, updatable = true, nullable = false, length = 40, unique = true)
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Column(name = "LOANORDERID", length = 40)
+	public String getLoanOrderId() {
+		return loanOrderId;
+	}
+
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+
+	@Column(name = "SURVEYER", length = 10)
+	public String getSurveyer() {
+		return surveyer;
+	}
+
+	public void setSurveyer(String surveyer) {
+		this.surveyer = surveyer;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "REPORT_DATE", length = 19)
+	public Date getReportDate() {
+		return reportDate;
+	}
+
+	public void setReportDate(Date reportDate) {
+		this.reportDate = reportDate;
+	}
+
+	@Column(name = "QANDA", length = 200)
+	public String getQanda() {
+		return qanda;
+	}
+
+	public void setQanda(String qanda) {
+		this.qanda = qanda;
+	}
+
+	@Column(name = "DOUBTFUL_POINT", length = 200)
+	public String getDoubtfulPoint() {
+		return doubtfulPoint;
+	}
+
+	public void setDoubtfulPoint(String doubtfulPoint) {
+		this.doubtfulPoint = doubtfulPoint;
+	}
+
+	@Column(name = "CUSTOMER_ANALY", length = 200)
+	public String getCustomerAnaly() {
+		return customerAnaly;
+	}
+
+	public void setCustomerAnaly(String customerAnaly) {
+		this.customerAnaly = customerAnaly;
+	}
+
+	@Column(name = "SUGGEST_AMT", length = 200)
+	public String getSuggestAmt() {
+		return suggestAmt;
+	}
+
+	public void setSuggestAmt(String suggestAmt) {
+		this.suggestAmt = suggestAmt;
+	}
+
+	
+	
+}

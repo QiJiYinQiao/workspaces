@@ -1,0 +1,40 @@
+package com.bpms.service.impl;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.FirstauditQuestioncollect;
+import com.bpms.service.FirstauditQuestioncollectService;
+
+/**
+ * 问题服务的实现类
+ * 
+ * @author liuhh
+ *
+ */
+@Service
+public class FirstauditQuestioncollectServiceImpl implements
+		FirstauditQuestioncollectService {
+
+	@Autowired
+	private BaseDAO<FirstauditQuestioncollect> dao;
+
+	@Override
+	public boolean saveFirstauditQuestioncollect(
+			FirstauditQuestioncollect questioncollect) {
+		if (StringUtils.isNotBlank(questioncollect.getQuestionId())) {
+			dao.update(questioncollect);
+		} else {
+			dao.save(questioncollect);
+		}
+		return true;
+	}
+
+	@Override
+	public FirstauditQuestioncollect findById(String id) {
+		return dao.get(FirstauditQuestioncollect.class, id);
+	}
+
+}

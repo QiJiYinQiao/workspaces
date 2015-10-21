@@ -1,8 +1,15 @@
+<%@page import="com.bpms.util.Constants"%>
+<%@page import="com.bpms.shiro.ShiroUser"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%
 String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+ShiroUser shiroUser = Constants.getCurrendUser();
+String roles = shiroUser.getJsonRoles();
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -57,8 +64,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 											var result="<a href='javascript:void(0);' onclick='loanOrderInfo("+ index + ");'>查看申请详情</a>　 ";
 			      							result+="<a href='javascript:void(0);' onclick='lookLoanOrderProcessCommentDialog("+index+");'>查看审批意见</a>　 ";
 		      								result+="<a href='javascript:void(0);' onclick='showImage("+index+");'>查看审批流程</a>　 ";
-		      								result+="<a href='javascript:void(0);' onclick='handleTaskDialog("+index+");'>办理任务</a>　 ";
-		      								result+="<a href='javascript:void(0);' onclick='runTaskHandlePersons("+index+");'>指派给他人</a>";
+		      								// 获取用户的角色信息
+		      								var roles = eval('<%=roles%>');
+		      								// 判断当前用户的是否为数据岗的角色
+		      								if(roles!=null && $.inArray('ShuJuGang', roles)!=-1){
+		      									var organizationId = '<%=shiroUser.getUser().getOrganization().getOrganizationId()%>';
+		      									// 如果为数据岗的角色，判断数据岗是否为总共司的数据岗（42总公司的数据岗）,当前操作人不是总公司的数据岗具有办理功能
+			      								if( '42' != organizationId){
+			      									result+="<a href='javascript:void(0);' onclick='handleTaskDialog("+index+");'>办理任务</a>　 ";
+			      								}else{
+				      								result+="<a href='javascript:void(0);' onclick='runTaskHandlePersons("+index+");'>指派给他人</a>";
+			      								}
+		      								}else{
+		      									result+="<a href='javascript:void(0);' onclick='handleTaskDialog("+index+");'>办理任务</a>　 ";
+			      								result+="<a href='javascript:void(0);' onclick='runTaskHandlePersons("+index+");'>指派给他人</a>";
+		      								}
 					      				return result;
 				            	 	 }
 					              }
@@ -100,7 +120,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$runTaskHandlePersonsGrid = $("#runTaskHandlePersonsGrid").datagrid({
 				url : "loanOrder/loanOrderAction!findRunTaskHandlePersons.action",
 				width : 'auto',
-				height :  $(this).height()-90,
+				height :  $(this).height()-190,
 				queryParams: {"taskId": row.taskId},
 				rownumbers:true,
 				border:false,

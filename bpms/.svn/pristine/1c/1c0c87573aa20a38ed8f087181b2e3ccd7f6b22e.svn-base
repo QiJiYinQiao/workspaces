@@ -1,0 +1,23 @@
+package com.bpms.service;
+
+import com.bpms.model.IpcOutSurveyReportSummary;
+
+public interface IpcOutSurveyReportSummaryService {
+	/**
+	 * 持久化外访调查报告
+	 * 
+	 * @return
+	 */
+	public boolean persistenceIpcOutSurveySummaryReport(
+			IpcOutSurveyReportSummary ipcOutSurveyReportSummary);
+	
+	/**
+	 * 根据订单的id获取外访调查报告总结
+	 * 
+	 * @param loanOrderid
+	 *            外访调查报告的id
+	 * @return 外访调查报告
+	 */
+	public IpcOutSurveyReportSummary findIpcOutSurveyReportSummaryById(
+			String loanOrderid);
+}

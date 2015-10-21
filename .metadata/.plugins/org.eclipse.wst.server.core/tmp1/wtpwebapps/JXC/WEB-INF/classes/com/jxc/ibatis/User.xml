@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.UserDao">
+	<resultMap type="com.jxc.web.user.model.UserEntity" id="R_USER_ENTITY" />
+	<resultMap type="com.jxc.web.user.model.CounterEntity" id="R_Counter_ENTITY" />
+	<resultMap type="String" id="str" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<!-- 查询子模块菜单 -->
+	<select id="queryUserforLogin" resultMap="R_USER_ENTITY"
+		parameterType="map">
+		select * from t_3g_user where USERNAME = #{username} and PASSWORD = #{password} and IS_VALID = '0001';
+	</select>
+	<!-- 查询用户名是否存在 -->
+	<select id="queryIsUserNameExist" parameterType="map" resultMap="ints">
+		SELECT COUNT(*) FROM t_3g_user WHERE USERNAME = #{username};
+	</select>
+	<!-- 插入数据 -->
+	<select id="saveUserforRegist" resultMap="R_USER_ENTITY"
+		parameterType="map">
+		INSERT INTO `t_3g_user` (`ID`,`USERNAME`, `PASSWORD`, `NAME`, `SEX`, `IDNUMBER`, `BIRTH`, `MOBILE`, `COUNTERID`, `HEADID`, `CONTACTS_NAME`, `CONTACTS_TEL`, `ENTRY_DATE`, `ADDRESS`, `GRADETYPE`, `IS_VALID`,CREATE_USER,CREATE_TIME,MODIFY_USER,MODIFY_TIME,REMARK)
+		VALUES (#{id},#{username}, #{password}, #{name}, #{sex}, #{idnumber}, #{birth}, #{mobile}, #{counterid}, #{headid}, #{contactsname}, #{contactstel}, #{entrydate}, #{address}, #{gradetype}, '0001',#{createuser},#{createtime},#{createuser},#{createtime},#{remark});
+	</select>
+	<!-- 添加人员后更新其关系表 -->
+	<insert id="insertUserCounter" parameterType="map">
+		INSERT INTO t_3g_user_counter VALUES (replace(uuid(),'-',''),#{id},#{counterid},1,#{createuser},#{createtime},#{createuser},#{createtime},#{remark})
+	</insert>
+	<!-- 查询所有人员 -->
+	<select id="queryUser" resultMap="R_USER_ENTITY"
+		parameterType="map">
+		SELECT `ID`, `USERNAME`, `PASSWORD`, `NAME`, `SEX`, `IDNUMBER`, `BIRTH`, `MOBILE`, `COUNTERID`, `HEADID`, `CONTACTS_NAME`, `CONTACTS_TEL`, `ENTRY_DATE`, `ADDRESS`, `GRADETYPE`, `IS_VALID`, `CREATE_USER`, `CREATE_TIME`, `MODIFY_USER`, `MODIFY_TIME`, `REMARK`, `SORT` FROM `sky`.`t_3g_user`;
+	</select>
+	<!-- 查询当前登陆人员信息 -->
+	<select id="saveUserInfo" resultMap="R_USER_ENTITY"
+		parameterType="map">
+		SELECT `ID`, `USERNAME`,`NAME`,`HEADID`,`GRADETYPE` FROM `sky`.`t_3g_user` WHERE USERNAME = #{username};
+	</select>
+	<!-- 根据当前登录人的ID查询信息-->
+	<select id="queryCountry" resultMap="R_Counter_ENTITY" parameterType="map">
+		<!-- SELECT tc.COUNTRY FROM t_3g_counter tc LEFT JOIN t_3g_user tu ON tu.COUNTERID = tc.ID AND tu.COUNTERID=#{counterid}; -->
+		<!-- SELECT COUNTRY FROM t_3g_counter WHERE ID = (SELECT COUNTERID FROM t_3g_user WHERE ID = #{id}); -->
+		<!-- SELECT tc.COUNTRY,tc.NAME,tc.COUNTER_CODE,tc.ID FROM t_3g_counter tc LEFT JOIN t_3g_user tu ON tc.COUNTER_CODE = tu.COUNTERID WHERE tu.ID = #{id}; -->
+		SELECT tc.COUNTRY,tc.NAME,tc.COUNTER_CODE,tc.ID FROM t_3g_counter tc LEFT JOIN t_3g_user_counter tu ON tc.COUNTER_CODE = tu.COUNTERID WHERE tu.USERID = #{id};
+	</select>
+	<!-- 修改密码 -->
+	<update id="updateUser" parameterType="map">
+		UPDATE t_3g_user SET PASSWORD = #{1} WHERE USERNAME = #{0};
+	</update>
+	<!-- 查询优惠天数 -->
+	<select id="discountday" resultMap="hashmap" parameterType="map">
+		SELECT tl.ITEM_TEXT,tl.ITEM_VALUE,tl.DESCRIPTION FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'discountday' AND tl.`STATUS`='1' ORDER BY tl.SORTORDER ;
+	</select>
+	<update id="changediscountday" parameterType="map">
+		UPDATE t_info_code_line SET DESCRIPTION = #{discountday} WHERE CODEID = 'b4edfc5a590511e4a562d89d672b5e6c' AND ITEM_VALUE = #{value};
+	</update>
+	<!-- 查询某月内各国订单量，单价 -->
+	<select id="queryCOP" parameterType="map" resultMap="hashmap">
+		SELECT tl.ITEM_VALUE countrycode,tl.ITEM_TEXT country,tl.DESCRIPTION dayrent,IFNULL(r.num,0) number FROM t_info_code_line tl LEFT JOIN (SELECT IFNULL(SUM(NUM),0) num,D_COUNTRY country FROM t_ttsl_book WHERE RENT_BEGINDATE LIKE CONCAT(#{rentbegindate},'%')  GROUP BY D_COUNTRY) r ON tl.ITEM_VALUE = r.country WHERE CODEID = 'e31220ce4f5811e4a562d89d672b5e6c'
+	</select>
+	<!-- 旅客明细 -->
+	<select id="queryPassengerDetail" resultMap="hashmap" parameterType="map">
+		SELECT tl.NAME username,tl.CONTACTS_TEL usertel,tl.PASSPORTNO userpassport,tb.FLIGHT_B flightb,tb.RENT_BEGINDATE rent_begindate,tb.FLIGHT_E flighte,tb.RENT_ENDDATE rent_enddate,tu.NAME transforname,tl.MODIFY_USER modify_user,tl.MODIFY_TIME modify_time from t_ttsl_book_line tl LEFT JOIN t_ttsl_book tb ON tl.BOOKID = tb.ID
+		LEFT JOIN t_ttsl_user tu ON tu.ID = tb.USEID WHERE tb.IS_VALID = '0001'
+		<if test="username!='' and username != null">
+			AND tl.NAME LIKE CONCAT('%',CONCAT(#{username},'%'))
+		</if>
+		<if test="usertel!='' and usertel != null">
+			AND tl.CONTACTS_TEL LIKE CONCAT('%',CONCAT(#{usertel},'%'))  
+		</if>
+		<if test="userpassport!='' and userpassport != null">
+			AND tl.PASSPORTNO LIKE CONCAT('%',CONCAT(#{userpassport},'%')) 
+		</if>
+		<if test="flightb!='' and flightb != null">
+			AND tb.FLIGHT_B LIKE CONCAT('%',CONCAT(#{flightb},'%')) 
+		</if>
+		<if test="rent_begindate!='' and rent_begindate!=null">
+			AND tb.RENT_BEGINDATE LIKE CONCAT(#{rent_begindate},'%') 
+		</if>
+		<if test="flighte!='' and flighte != null">
+			AND tb.FLIGHT_E LIKE CONCAT('%',CONCAT(#{flighte},'%')) 
+		</if>
+		<if test="rent_enddate!='' and rent_enddate!=null">
+			AND tb.RENT_ENDDATE LIKE CONCAT(#{rent_enddate},'%')
+		</if>
+		<if test="transforname!='' and transforname != null">
+			AND tu.NAME LIKE CONCAT('%',CONCAT(#{transforname},'%')) 
+		</if>
+		 LIMIT #{start},#{number}
+	</select>
+	<select id="queryPassengerDetailNums" resultMap="ints" parameterType="map">
+		SELECT count(*) from t_ttsl_book_line tl LEFT JOIN t_ttsl_book tb ON tl.BOOKID = tb.ID
+		LEFT JOIN t_ttsl_user tu ON tu.ID = tb.USEID WHERE tb.IS_VALID = '0001'
+		<if test="username!='' and username != null">
+			AND tl.NAME LIKE CONCAT('%',CONCAT(#{username},'%'))
+		</if>
+		<if test="usertel!='' and usertel != null">
+			AND tl.CONTACTS_TEL LIKE CONCAT('%',CONCAT(#{usertel},'%'))  
+		</if>
+		<if test="userpassport!='' and userpassport != null">
+			AND tl.PASSPORTNO LIKE CONCAT('%',CONCAT(#{userpassport},'%')) 
+		</if>
+		<if test="flightb!='' and flightb != null">
+			AND tb.FLIGHT_B LIKE CONCAT('%',CONCAT(#{flightb},'%')) 
+		</if>
+		<if test="rent_begindate!='' and rent_begindate!=null">
+			AND tb.RENT_BEGINDATE LIKE CONCAT(#{rent_begindate},'%') 
+		</if>
+		<if test="flighte!='' and flighte != null">
+			AND tb.FLIGHT_E LIKE CONCAT('%',CONCAT(#{flighte},'%')) 
+		</if>
+		<if test="rent_enddate!='' and rent_enddate!=null">
+			AND tb.RENT_ENDDATE LIKE CONCAT(#{rent_enddate},'%')
+		</if>
+		<if test="transforname!='' and transforname != null">
+			AND tu.NAME LIKE CONCAT('%',CONCAT(#{transforname},'%')) 
+		</if>
+	</select>
+	<!-- 根据用户ID查询用户名 -->
+	<select id="queryUsernameById" parameterType="map" resultMap="str">
+		SELECT NAME name FROM t_3g_user WHERE ID = #{id}
+	</select>
+</mapper>

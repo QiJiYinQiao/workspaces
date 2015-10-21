@@ -47,7 +47,6 @@ $(function(){
 	// 获取要修改的用户的信息
 	var $row = $grid.datagrid('getSelected');
 	//上传附件所需订单ID 
-	loadAttachmentList('attachmentList','noauditId',$row.loanOrderId);
 	// 渲染所有的下拉列表框信息
 	RenderCombox();
     //紧急联系家庭地址
@@ -76,12 +75,25 @@ $(function(){
 			 	$('#bankGrid').datagrid('options').url = "accountInfo/accountInfoAction!findAllListChacked.action";
 	            $('#bankGrid').datagrid('reload',{"loanerId": $row.loanerId,"loanOrderId": $row.loanOrderId}); 
 			 }else if(5==index){
-				loadAttachmentList('attachmentList','noauditId',$row.loanOrderId);//附件信息
 			 } else if(6==index){
 				loadLoanerJoint($row);//渲染共同借款人的信息
 			 }
 		 }
 	});
+	
+	$("#loanOrderEditattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		url:'common/commonAction!findTextArr.action?codeMyid=attachment_type',
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+		editable:false 
+    });
+	
 })
 	// 渲染用户的基本信息
 	function loadBaseInfo(row){
@@ -124,6 +136,28 @@ $(function(){
 			}
 		});
 	}
+	
+	//查看附件
+	function checkAttachment(){
+		var loanOrderId = $("#loanOrderId").val();
+		if(''==loanOrderId){
+			$.messager.alert("提示","请先保存基本信息!","info");
+			return false;
+		}
+		checkAttachementDetail('noauditId',loanOrderId,'','');
+	};
+	
+	//上传附件
+	function upploadAttachment(){
+		var attType = $("#loanOrderEditattType").combobox("getValue");
+		var loanOrderId = $("#loanOrderId").val();
+		if(''==loanOrderId){
+			$.messager.alert("提示","请先保存基本信息!","info");
+			return false;
+		}
+		fileUploadsDlg(attType,loanOrderId,'');
+	};
+	
 </script>
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="">
@@ -190,7 +224,7 @@ $(function(){
 							    <th>邮箱:</th>
 								<td>
 								   <input id="email" name="email" type="text"
-									class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'email'"/>
+									class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['email','length[0,300]']"/>
 								</td>
 							</tr>
 							<tr>
@@ -239,7 +273,11 @@ $(function(){
 				<jsp:include page="loanOrderBankForm.jsp"></jsp:include>
 			</div>
 			<div title="附件信息" data-options="iconCls:'icon-help'" style="padding: 10px">
-				<jsp:include page="loanOrderAttachmentForm.jsp"></jsp:include>
+			<%-- 	<jsp:include page="loanOrderAttachmentForm.jsp"></jsp:include> --%>
+				<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+				<input id="loanOrderEditattType" class="easyui-textbox easyui-combobox" />
+				<a onclick="checkAttachment();" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+				<a onclick="upploadAttachment();" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 			</div>
 			<div title="共同贷款人" data-options="iconCls:'icon-help'" style="padding: 10px">
 				<jsp:include page="loanOrderJointForm.jsp"></jsp:include>

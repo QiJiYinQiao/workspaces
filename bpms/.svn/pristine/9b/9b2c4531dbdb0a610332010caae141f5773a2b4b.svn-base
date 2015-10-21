@@ -1,0 +1,95 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>外访调查报告总结</title>
+<style type="text/css">
+	input {
+		width:100%;
+	}
+	textarea {
+		height:200px;
+		width:100%;
+	}
+	th　{
+		text-align: left;
+	}
+</style>
+</head>
+<body>
+	<div>
+		<form>
+			<table cellpadding="6">
+				<tr>
+					<td colspan="4"></td>
+					<th>
+						调查人员
+					</th>
+					<td>
+						<input class="easyui-textbox"> 
+					</td>
+					<th>
+						报告时间
+					</th>
+					<td>
+						<input class="easyui-datebox">
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="8">
+						初审问题及答疑
+					</th>
+				</tr>
+				
+				<tr>
+					<td colspan="8">
+						<div id="firstAuditQuestion">
+							<span>问题1</span>
+							<textarea rows="" cols=""></textarea>
+						</div>
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="8">
+						调查中存在的疑问点
+					</th>
+				</tr>
+				
+				<tr>
+					<td colspan="8">
+						<textarea rows="" cols=""></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="8">
+						客户优劣势分析 (包括但不限于企业的经营情况、企业背景、软信息、财务信息等)
+					</th>
+				</tr>
+				
+				<tr>
+					<td colspan="8">
+						<textarea rows="" cols=""></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="8">
+						建议放款额度 (包括风控措施并给出相应理由)
+					</th>
+				</tr>
+				
+				<tr>
+					<td colspan="8">
+						<textarea rows="" cols=""></textarea>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

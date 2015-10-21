@@ -1,0 +1,233 @@
+package com.bpms.listener;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.runtime.Execution;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.bpms.model.FinalAuditReport;
+import com.bpms.model.LoanOrder;
+import com.bpms.model.LoanOrderHis;
+import com.bpms.model.SysParameter;
+import com.bpms.service.FinalAuditReportService;
+import com.bpms.service.LoanOrderHisService;
+import com.bpms.service.LoanOrderService;
+import com.bpms.service.ParameterService;
+import com.bpms.util.Constants;
+
+/**
+ * @Creater chenfl
+ * @File_Name LoanServiceTaskDelegate.java
+ * @Version v1.0
+ * @Creation_Date 2015年5月27日 下午2:08:32
+ * @Modifier
+ * @Modified_Date
+ * @Description 借款业务流程中服务任务（ServiceTask）
+ */
+public class LoanServiceTaskDelegate implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @Description 评级分析器方法
+	 * @param execution
+	 */
+	public void distrbuteByRating(Execution execution) {
+
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader
+				.getCurrentWebApplicationContext();
+		// 使用上下文环境中的getBean方法得到bean实例
+		// 获取系统参数的service
+		ParameterService parameterService = (ParameterService) ctx
+				.getBean("parameterService");
+		// 根据参数编码查询评级上限
+		List<SysParameter> list = parameterService
+				.findSysParameterValueByCode(Constants.LOAN_PARAMETER_RATINGLIMIT);
+		// 强转为excutionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		Map<String, Object> variables = new HashMap<String, Object>();
+		String parameterValue = ((SysParameter) list.get(0)).getParmValue();
+		// 客户评级上限
+		variables.put(Constants.LOAN_PARAMETER_RATINGLIMIT,
+				BigDecimal.valueOf((Long.valueOf(parameterValue))));
+		// 客户的评级
+		variables.put(Constants.LOAN_PARAMETER_CUSTRATING, 50);
+		// 设置流程参数
+		executionEntity.setVariables(variables);
+
+	}
+
+	/**
+	 * @Description 额度分析器方法
+	 * @param execution
+	 */
+	public void distrbuteByLimit(Execution execution) {
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader
+				.getCurrentWebApplicationContext();
+
+		// 使用上下文环境中的getBean方法得到bean实例
+		// 获取系统参数的service
+		ParameterService parameterService = (ParameterService) ctx
+				.getBean("parameterService");
+		// 获取订单的信息的service
+		FinalAuditReportService finalAuditReportService = (FinalAuditReportService) ctx
+				.getBean("finalAuditReportService");
+		// 将execution强转为executionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		// 根据流程实例获取流程的BusinessKey,并获取当前的业务订单的id
+		String id = "";
+		if (StringUtils.isNotBlank(executionEntity.getBusinessKey())) {
+			// 截取字符串，取BusinessKey小数点的第2个值,第二个值为业务订单的id
+			id = executionEntity.getBusinessKey().split("\\.")[1];
+		}
+		// 根据订单的id获取业务订单
+		FinalAuditReport auditReport = finalAuditReportService
+				.findFinalAuditReportByLoanOrderId(id);
+
+		// 根据参数编码查询额度上限
+		List<SysParameter> list = parameterService
+				.findSysParameterValueByCode(Constants.LOAN_PARAMETER_EDULIMIT);
+		// 设置流程标量的信息
+		Map<String, Object> variables = new HashMap<String, Object>();
+		String parameterValue = ((SysParameter) list.get(0)).getParmValue();
+		// 借款额度上限
+		variables.put(Constants.LOAN_PARAMETER_EDULIMIT,
+				BigDecimal.valueOf(Long.valueOf(parameterValue)));
+		// 订单的申请额度
+		variables.put(Constants.LOAN_PARAMETER_LOANEDU,
+				auditReport.getContractLoanAmount());
+		// 设置流程变量的信息
+		executionEntity.setVariables(variables);
+	}
+
+	/**
+	 * 判断是否涉及车贷
+	 * 
+	 * @param execution
+	 */
+	public void isInvolveCarLoan(Execution execution) {
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader
+				.getCurrentWebApplicationContext();
+		// 使用上下文环境中的getBean方法得到bean实例
+		// 获取订单的信息的service
+		LoanOrderHisService loanOrderHisService = (LoanOrderHisService) ctx
+				.getBean("loanOrderHisService");
+		// 将execution强转为executionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+
+		// 根据流程实例获取流程的BusinessKey,并获取当前的业务订单的id
+		String id = "";
+		if (StringUtils.isNotBlank(executionEntity.getBusinessKey())) {
+			// 截取字符串，取BusinessKey小数点的第2个值,第二个值为业务订单的id
+			id = executionEntity.getBusinessKey().split("\\.")[1];
+		}
+		LoanOrderHis orderHis = loanOrderHisService.findLoanOrderHis(
+				Constants.LOAN_ROLE_CODE_IPCMGR, id);
+
+		// 设置流程标量的信息
+		Map<String, Object> variables = new HashMap<String, Object>();
+		if (orderHis != null) {
+			if (orderHis.getIsInvolvedLoanCar().equals("A")) {
+				variables.put("result", "InvolvingCarLoans");
+				// 设置流程变量的信息
+				executionEntity.setVariables(variables);
+			} else {
+				variables.put("result", "NotInvolvingCarLoans");
+				executionEntity.setVariables(variables);
+			}
+		}
+	}
+
+	/**
+	 * 业务分发器
+	 */
+	public void businessDistributor(Execution execution) {
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		executionEntity.setVariable("result", "IPCBusiness");
+	}
+
+	/**
+	 * @Description IPC的额度分析器方法
+	 */
+	public void ipcDistrbuteByLimit(Execution execution) {
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader
+				.getCurrentWebApplicationContext();
+
+		// 使用上下文环境中的getBean方法得到bean实例
+		// 获取订单的service
+		LoanOrderService orderService = (LoanOrderService) ctx.getBean("loanOrderService");
+		// 将execution强转为executionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		// 根据流程实例获取流程的BusinessKey,并获取当前的业务订单的id
+		String id = "";
+		if (StringUtils.isNotBlank(executionEntity.getBusinessKey())) {
+			// 截取字符串，取BusinessKey小数点的第2个值,第二个值为业务订单的id
+			id = executionEntity.getBusinessKey().split("\\.")[1];
+		}
+		// 获取订单的信息
+		LoanOrder loanOrder = orderService.findLoanOrderById(id);
+		// 判断订单的所属机构是否为北京，如果是北京地区则额度为15万，其他地区则为10万。
+		int compare = -1;
+		// 北京额度为15万
+		if(loanOrder.getOrganizationId() == 79){
+			 compare = loanOrder.getLoanAmount().compareTo(new  BigDecimal(150000));
+		}else{
+			// 其他地区为10万
+			 compare = loanOrder.getLoanAmount().compareTo(new  BigDecimal(100000));
+		}
+		
+		// 进行比较是否为大于小于
+		if(compare >= 0){
+			executionEntity.setVariable("result", "IPCEduAnalyzerMoreThan");
+		}else{
+			executionEntity.setVariable("result", "IPCEduAnalyzerLessThan");
+		}
+		
+	}
+
+	/**
+	 * 判断是否涉及车贷
+	 * 
+	 * @param execution
+	 */
+	public void isCarCredit(Execution execution) {
+		// 设置流程变量
+		ExecutionEntity entity = (ExecutionEntity) execution;
+		entity.setVariable("result", "CarCreditNeed");
+		/*
+		 * // 获取上下文环境 WebApplicationContext ctx = ContextLoader
+		 * .getCurrentWebApplicationContext(); // 使用上下文环境中的getBean方法得到bean实例 //
+		 * 获取订单的信息的service LoanOrderHisService loanOrderHisService =
+		 * (LoanOrderHisService) ctx .getBean("loanOrderHisService"); //
+		 * 将execution强转为executionEntity ExecutionEntity executionEntity =
+		 * (ExecutionEntity) execution;
+		 * 
+		 * // 根据流程实例获取流程的BusinessKey,并获取当前的业务订单的id String id = ""; if
+		 * (StringUtils.isNotBlank(executionEntity.getBusinessKey())) { //
+		 * 截取字符串，取BusinessKey小数点的第2个值,第二个值为业务订单的id id =
+		 * executionEntity.getBusinessKey().split("\\.")[1]; } LoanOrderHis
+		 * orderHis = loanOrderHisService.findLoanOrderHis(
+		 * Constants.LOAN_ROLE_CODE_IPCMGR, id);
+		 * 
+		 * // 设置流程标量的信息 Map<String, Object> variables = new HashMap<String,
+		 * Object>(); if (orderHis != null) { if
+		 * (orderHis.getIsInvolvedLoanCar().equals("A")) {
+		 * variables.put("result", "InvolvingCarLoans"); // 设置流程变量的信息
+		 * executionEntity.setVariables(variables); } else {
+		 * variables.put("result", "NotInvolvingCarLoans");
+		 * executionEntity.setVariables(variables); } }
+		 */
+	}
+
+}

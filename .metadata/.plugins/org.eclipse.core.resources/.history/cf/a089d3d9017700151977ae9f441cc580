@@ -1,0 +1,5 @@
+package com.bpms.model;
+
+public class CarInfo {
+
+}

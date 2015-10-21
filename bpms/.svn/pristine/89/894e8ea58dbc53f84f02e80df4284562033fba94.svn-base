@@ -1,0 +1,41 @@
+package com.bpms.action;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.IpcOutSurveyReportSummary;
+import com.bpms.service.IpcOutSurveyReportSummaryService;
+import com.bpms.view.model.DataModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+@Namespace("/ipcOutSurveyReportSummary")
+@Action(value = "ipcOutSurveyReportSummaryAction")
+public class IpcOutSurveyReportSummaryAction extends BaseAction implements ModelDriven<IpcOutSurveyReportSummary> {
+	
+	private static final long serialVersionUID = 1L;
+	private IpcOutSurveyReportSummary iosrs = new IpcOutSurveyReportSummary();
+	
+	@Autowired
+	private IpcOutSurveyReportSummaryService ipcOutSurveyReportSummaryService;
+	
+	@Override
+	public IpcOutSurveyReportSummary getModel() {
+		return iosrs;
+	}
+	
+	public void saveIpcOutSurveyReportSummary(){
+		Boolean b = ipcOutSurveyReportSummaryService.persistenceIpcOutSurveySummaryReport(iosrs);
+		String msg = "保存失败";
+		if(b){
+			msg = "保存成功";
+		}
+		OutputJson(new DataModel("提示",msg,b));
+	}
+	
+	public void findIpcOutSurveyReportSummary(){
+		IpcOutSurveyReportSummary ipcoutSummary = ipcOutSurveyReportSummaryService.findIpcOutSurveyReportSummaryById(iosrs.getLoanOrderId());
+		OutputJson(ipcoutSummary);
+	}
+	
+}

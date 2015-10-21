@@ -1,0 +1,162 @@
+package com.bpms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.CreditAuditReport;
+import com.bpms.model.LoanOrder;
+import com.bpms.model.Loaner;
+import com.bpms.model.vo.CreditAuditReportModel;
+import com.bpms.service.CommonService;
+import com.bpms.service.CreditAuditReportService;
+import com.bpms.service.LoanOrderService;
+import com.bpms.service.LoanerService;
+import com.bpms.service.UserService;
+import com.bpms.util.Collections;
+import com.bpms.util.HqlUtil;
+import com.bpms.util.PageUtil;
+
+@Service
+public class CreditAuditReportServiceImpl implements CreditAuditReportService {
+
+	@Autowired
+	private BaseDAO<CreditAuditReport> baseDAO;
+	@Autowired
+	private LoanerService loanerService;
+	@Autowired
+	private LoanOrderService loanOrderService;
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private UserService userService;
+
+	@Override
+	public boolean persistenceCreditAuditReport(
+			CreditAuditReport creditAuditReport) {
+		if (StringUtils.isBlank(creditAuditReport.getCarId())) {
+			baseDAO.save(creditAuditReport);
+		} else {
+			baseDAO.update(creditAuditReport);
+		}
+		return true;
+	}
+
+	@Override
+	public List<CreditAuditReport> findCreditAuditReport(
+			Map<String, Object> map, PageUtil pageUtil) {
+		String hql = "from CreditAuditReport t where 1=1";
+		hql += HqlUtil.getSearchConditionsHQL("t", map);
+		hql += HqlUtil.getGradeSearchConditionsHQL("t", pageUtil);
+		return baseDAO.find(hql, map, pageUtil.getPage(), pageUtil.getRows());
+	}
+
+	@Override
+	public Long countCreditAuditReport(Map<String, Object> map,
+			PageUtil pageUtil) {
+		String hql = "select count(*) from CreditAuditReport t where 1=1";
+		hql += HqlUtil.getSearchConditionsHQL("t", map);
+		hql += HqlUtil.getGradeSearchConditionsHQL("t", pageUtil);
+		return baseDAO.count(hql, map);
+	}
+
+	@Override
+	public CreditAuditReport findCreditAuditReportByLoanOrderId(
+			String loanOrderId) {
+		String hql = "from CreditAuditReport o where o.loanOrderId='"
+				+ loanOrderId + "'";
+		List<CreditAuditReport> list = baseDAO.find(hql);
+		// 如果信审报告不存在，则是第一次进行审核，需要新增到数据库同时，将新增信息进行返回
+		if (Collections.listIsNotEmpty(list)) {
+			return list.get(0);
+		} else {
+			// 创建信审报告的信息
+			CreditAuditReport auditReport = new CreditAuditReport();
+			auditReport.setLoanOrderId(loanOrderId);
+			this.persistenceCreditAuditReport(auditReport);
+			return findCreditAuditReoprtById(auditReport.getCarId());
+		}
+	}
+
+	@Override
+	public CreditAuditReport findCreditAuditReoprtById(String id) {
+		return baseDAO.get(CreditAuditReport.class, id);
+	}
+
+	@Override
+	public CreditAuditReportModel queryApplicationReportDetail(
+			Map<String, Object> map) {
+		String loanerId = (String) map.get("loanerId");
+		String loanOrderId = (String) map.get("loanOrderId");
+		CreditAuditReportModel carm = new CreditAuditReportModel();
+		String hql = "from CreditAuditReport o where o.loanOrderId='"
+				+ loanOrderId + "'";
+		List<CreditAuditReport> list = baseDAO.find(hql);
+		//信审报告信息
+		if(null!=list && list.size()>0){
+			CreditAuditReport car = list.get(0);
+			if(null!=car.getFirstAuditReport()){
+				carm.setIsLocalResText(commonService.findDictName("is_local_resident", car.getFirstAuditReport().getIsLocalRes()));
+				carm.setMarriageTypeText(commonService.findDictName("marriage_type", car.getFirstAuditReport().getMarriageType()));
+				carm.setComOperStatusText(commonService.findDictName("com_oper_status", car.getFirstAuditReport().getComOperStatus()));
+				carm.setCreditStatusText(commonService.findDictName("credit_status", car.getFirstAuditReport().getCreditStatus()));
+				carm.setPhoneCheckStatusText(commonService.findDictName("phone_check_status", car.getFirstAuditReport().getPhoneCheckStatus()));
+				carm.setVisitStatusText(commonService.findDictName("visit_status", car.getFirstAuditReport().getVisitStatus()));
+				carm.setQulificationStatusText(commonService.findDictName("qulification_status", car.getFirstAuditReport().getQulificationStatus()));
+				carm.setFirstDescription(car.getFirstAuditReport().getDescription());
+				carm.setIndustryType(car.getFirstAuditReport().getIndustryType());
+				carm.setComOperDuration(car.getFirstAuditReport().getComOperDuration());
+				carm.setNote(car.getFirstAuditReport().getNote());
+				carm.setFirsPersSugg(car.getFirstAuditReport().getFirsPersSugg());
+				carm.setFirsDate(car.getFirstAuditReport().getFirsDate());
+				carm.setFirsDepSugg(car.getFirstAuditReport().getFirsDepSugg());
+				carm.setFirsPersonnel(car.getFirstAuditReport().getFirsPersonnel());
+				carm.setFirsPersonnelName(userService.findUserById(Integer.parseInt(carm.getFirsPersonnel())).getName());
+				carm.setFirstSuggestAmt(car.getFirstAuditReport().getSuggestAmt());
+				carm.setOutSurver(car.getFirstAuditReport().getOutSurver());
+				carm.setFirstAuditWayText(commonService.findDictName("audit_way", car.getFirstAuditReport().getAuditWay()));
+			}
+			
+			if(null!=car.getFinalAuditReport()){
+				carm.setLoanPeriodTypeText(commonService.findDictName("loan_period_type", car.getFinalAuditReport().getLoanPeriodType()));
+				carm.setMonthServiceFeeRateText(commonService.findDictName("month_service_fee_rate", car.getFinalAuditReport().getMonthServiceFeeRate()));
+				carm.setLoanInterestRateText(commonService.findDictName("loan_interest_rate", car.getFinalAuditReport().getLoanInterestRate()));
+				carm.setFinalDescription(car.getFinalAuditReport().getDescription());
+				carm.setFinaPersonnel(car.getFinalAuditReport().getFinaPersonnel());
+				carm.setFinaPersSugg(car.getFinalAuditReport().getFinaPersSugg());
+				carm.setFinaDate(car.getFinalAuditReport().getFinaDate());
+				carm.setContractLoanAmount(car.getFinalAuditReport().getContractLoanAmount());
+				carm.setActualLoanAmount(car.getFinalAuditReport().getActualLoanAmount());
+				carm.setVisitFee(car.getFinalAuditReport().getVisitFee());
+				carm.setFinalmonthRepay(car.getFinalAuditReport().getMonthRepay());
+				carm.setLoanInterestRate(car.getFinalAuditReport().getLoanInterestRate());
+				carm.setFinaId(car.getFinalAuditReport().getFinaId());
+				carm.setFinaPersonnelName(userService.findUserById(Integer.parseInt(carm.getFinaPersonnel())).getName());
+				carm.setFinalAuditWay(car.getFinalAuditReport().getAuditWay());
+				//carm.setFinalSuggestAmt(car.getFinalAuditReport().getSuggestAmt());
+				carm.setFinalAuditWayText(commonService.findDictName("audit_way", car.getFinalAuditReport().getAuditWay()));
+			}
+			carm.setLoanCity(car.getLoanCity());
+			carm.setLawQueryStatusText(commonService.findDictName("law_query_status",car.getLawQueryStatus()));
+			carm.setComCreditStatusText(commonService.findDictName("com_credit_status",car.getComCreditStatus()));
+		}
+		//贷款申请人信息
+		Loaner loaner = loanerService.findById(loanerId);
+		carm.setName(loaner.getName());
+		carm.setIdNo(loaner.getIdNo());
+		
+		//订单信息
+		LoanOrder loanOrder = loanOrderService.findLoanOrderById(loanOrderId);
+		carm.setLoanAmount(loanOrder.getLoanAmount());
+		carm.setPurpose(loanOrder.getPurpose());
+		carm.setRepayMethod(loanOrder.getRepayMethod());
+		carm.setRepayMethodText(commonService.findDictName("repay_method", loanOrder.getRepayMethod()));
+		
+		return carm;
+	}
+
+}

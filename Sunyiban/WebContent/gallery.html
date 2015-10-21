@@ -59,7 +59,116 @@
 <script type="text/javascript" src="js/themer.js"></script>
 
 <title>MWS Admin - Gallery</title>
-
+<style type="text/css">
+	#rollPhotos li{
+		float:left;
+		width:100px;
+		height:100px;
+		overflow:hidden;
+		margin:4px;
+		position:relative;
+		cursor:pointer;
+		border:1px solid #999999;
+		background:#ffffff;
+		display:inline;
+	}
+	
+	.checkedPhoto{
+		height:100%;
+		border: 3px solid red;
+		opcity: 0.5;
+	}
+	
+	#photoListUlId li{
+		margin:0;
+		list-style:none;
+		float:left;
+		width:100px;
+		height:100px;
+		overflow:hidden;
+		margin:4px;
+		position:relative;
+		cursor:pointer;
+		border:1px solid #999999;
+		background:#ffffff;
+	}
+	
+	#photoListUlId li:hover .mws-gallery-overlay
+	{
+		display:block;
+	}
+	
+	#photoListUlId li .mws-gallery-overlay
+	{
+		position:absolute;
+		top:0; bottom:0;
+		left:0; right:0;
+		display:none;
+		background:url(images/core/mws-gallery-overlay.png);
+	}
+	
+	#photoListUlId li .mws-gallery-overlay .mws-gallery-zoom
+	{
+		width:32px;
+		height:32px;
+		display:block;
+		position:absolute;
+		top:50%; left:50%;
+		margin-left:-16px;
+		margin-top:-16px;
+		
+		background:#323232 url(css/icons/24/magnifying-glass-2.png) no-repeat center center;
+		
+		/* CSS 3 */
+		
+		-webkit-border-radius:4px;
+		-moz-border-radius:4px;
+		-o-border-radius:4px;
+		-khtml-border-radius:4px;	
+		border-radius:4px;		
+	}
+	
+	.photoListUlClass:after {
+		clear: both;
+		content: ' ';
+		display: block;
+		font-size: 0;
+		line-height: 0;
+		visibility: hidden;
+		width: 0;
+		height: 0;
+	}
+	
+	.editPhotoChecked{
+		position:absolute;
+		left:0;
+		top:0;
+		width:30px;
+		height:30px;
+		background:url(img/check.png) no-repeat 0px 4px;
+		border:1px solid gray;
+	}
+	
+	.editPhotoUNChecked{
+		position:absolute;
+		left:0;
+		top:0;
+		width:30px;
+		height:30px;
+		background-color:white;
+		border:1px solid gray;
+	}
+	
+	.photoEditDC{
+		display: none;
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		z-index: 9999;
+	}
+</style>
 </head>
 
 <body>
@@ -220,7 +329,7 @@
             </div>
             <div id="mws-user-info" class="mws-inset">
             	<div id="mws-user-photo">
-                	<img src="example/profile.jpg" alt="User Photo" />
+                	<img src="example/1.jpg" alt="User Photo" />
                 </div>
                 <div id="mws-user-functions">
                     <div id="mws-username">
@@ -240,200 +349,285 @@
 		<div id="mws-sidebar-stitch"></div>
 		<div id="mws-sidebar-bg"></div>
         <div id="mws-sidebar">
-        	<div id="mws-searchbox" class="mws-inset">
-            	<form action="http://www.malijuwebshop.com/themes/mws-admin/gallery.html">
-                	<input type="text" class="mws-search-input" />
-                    <input type="submit" class="mws-search-submit" />
-                </form>
-            </div>
-            <div id="mws-navigation">
-            	<ul>
-                	<li><a href="dashboard.html" class="mws-i-24 i-home">Dashboard</a></li>
-                	<li><a href="charts.html" class="mws-i-24 i-chart">Charts</a></li>
-                	<li><a href="calendar.html" class="mws-i-24 i-day-calendar">Calendar</a></li>
-                	<li><a href="files.html" class="mws-i-24 i-file-cabinet">File Manager</a></li>
-                	<li><a href="table.html" class="mws-i-24 i-table-1">Table</a></li>
-                	<li>
-                    	<a href="#" class="mws-i-24 i-list">Forms</a>
-                        <ul>
-                        	<li><a href="form_layouts.html">Layouts</a></li>
-                        	<li><a href="form_elements.html">Elements</a></li>
-                        </ul>
-                    </li>
-                	<li><a href="widgets.html" class="mws-i-24 i-cog">Widgets</a></li>
-                	<li><a href="typography.html" class="mws-i-24 i-text-styling">Typography</a></li>
-                	<li><a href="grids.html" class="mws-i-24 i-blocks-images">Grids &amp; Panels</a></li>
-                	<li class="active"><a href="gallery.html" class="mws-i-24 i-polaroids">Gallery</a></li>
-                	<li><a href="error.html" class="mws-i-24 i-alert-2">Error Page</a></li>
-                	<li>
-                    	<a href="icons.html" class="mws-i-24 i-pacman">
-                        	Icons <span class="mws-nav-tooltip">2000+</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        
-        <div id="mws-container" class="clearfix">
-            <div class="container">
-            
-            	<div class="mws-report-container clearfix">
-                	<a class="mws-report" href="#">
-                    	<span class="mws-report-icon mws-ic ic-building"></span>
-                        <span class="mws-report-content">
-                        	<span class="mws-report-title">Floors Climbed</span>
-                            <span class="mws-report-value">324</span>
-                        </span>
-                    </a>
-
-                	<a class="mws-report" href="#">
-                    	<span class="mws-report-icon mws-ic ic-sport"></span>
-                        <span class="mws-report-content">
-                        	<span class="mws-report-title">Calories Burned</span>
-                            <span class="mws-report-value down">74%</span>
-                        </span>
-                    </a>
-
-                	<a class="mws-report" href="#">
-                    	<span class="mws-report-icon mws-ic ic-walk"></span>
-                        <span class="mws-report-content">
-                        	<span class="mws-report-title">Kilometers Walked</span>
-                            <span class="mws-report-value">14</span>
-                        </span>
-                    </a>
-                    
-                	<a class="mws-report" href="#">
-                    	<span class="mws-report-icon mws-ic ic-bug"></span>
-                        <span class="mws-report-content">
-                        	<span class="mws-report-title">Bugs Fixed</span>
-                            <span class="mws-report-value up">22%</span>
-                        </span>
-                    </a>
-                    
-                	<a class="mws-report" href="#">
-                    	<span class="mws-report-icon mws-ic ic-car"></span>
-                        <span class="mws-report-content">
-                        	<span class="mws-report-title">Cars Repaired</span>
-                            <span class="mws-report-value">77</span>
-                        </span>
-                    </a>
-                </div>
-                
-            	<div class="mws-panel grid_8">
-                	<div class="mws-panel-header">
-                    	<span class="mws-i-24 i-polaroids">Image Gallery</span>
-                    </div>
-                    <div class="mws-panel-body">
-                    	<div class="mws-panel-content">
-                    		<ul id="mws-gallery" class="clearfix">
-                    			<li>
-                    				<img src="example/cyan_hawk.jpg" alt="" />
-                    				<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                    			</li>
-                    			<li>
-                    				<img src="example/cyan_kangaroo.jpg" alt="" />
-									<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                    			</li>
-                    			<li><img src="example/cyan_koala.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/cyan_kookaburra.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/cyan_wallaby.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_buffalo.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_cat.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_fish.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_underwater3.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_horse.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_meercats.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_penguin.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_squirrel.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_underwater2.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_underwater4.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>
-                    			<li><img src="example/scottwills_underwater5.jpg" alt="" />
-                                	<div class="mws-gallery-overlay">
-                    					<div class="mws-gallery-zoom"></div>
-                    				</div>
-                                </li>                    			
-                    		</ul>
-                            
-                            <div class="mws-pagination clearfix">
-                            	<ul>
-                                	<li><a href="#" class="mws-paging-button disabled">First</a></li>
-                                	<li><a href="#" class="mws-paging-button disabled">Prev</a></li>
-                                	<li><a href="#" class="mws-paging-button current">1</a></li>
-                                	<li><a href="#" class="mws-paging-button">2</a></li>
-                                	<li><a href="#" class="mws-paging-button">3</a></li>
-                                	<li><a href="#" class="mws-paging-button">4</a></li>
-                                	<li><a href="#" class="mws-paging-button">5</a></li>
-                                	<li><a href="#" class="mws-paging-button">Next</a></li>
-                                	<li><a href="#" class="mws-paging-button">Last</a></li>
-                                </ul>
-                            </div>
+       	<div id="mws-searchbox" class="mws-inset">
+           	<form action="http://www.malijuwebshop.com/themes/mws-admin/gallery.html">
+               	<input type="text" class="mws-search-input" />
+                   <input type="submit" class="mws-search-submit" />
+               </form>
+           </div>
+           <div id="mws-navigation">
+           	<ul>
+               	<li><a href="dashboard.html" class="mws-i-24 i-home">Dashboard</a></li>
+               	<li><a href="charts.html" class="mws-i-24 i-chart">Charts</a></li>
+               	<li><a href="calendar.html" class="mws-i-24 i-day-calendar">Calendar</a></li>
+               	<li><a href="files.html" class="mws-i-24 i-file-cabinet">File Manager</a></li>
+               	<li><a href="table.html" class="mws-i-24 i-table-1">Table</a></li>
+               	<li>
+                   	<a href="#" class="mws-i-24 i-list">Forms</a>
+                       <ul>
+                       	<li><a href="form_layouts.html">Layouts</a></li>
+                       	<li><a href="form_elements.html">Elements</a></li>
+                       </ul>
+                   </li>
+               	<li><a href="widgets.html" class="mws-i-24 i-cog">Widgets</a></li>
+               	<li><a href="typography.html" class="mws-i-24 i-text-styling">Typography</a></li>
+               	<li><a href="grids.html" class="mws-i-24 i-blocks-images">Grids &amp; Panels</a></li>
+               	<li class="active"><a href="gallery.html" class="mws-i-24 i-polaroids">Gallery</a></li>
+               	<li><a href="error.html" class="mws-i-24 i-alert-2">Error Page</a></li>
+               	<li>
+                   	<a href="icons.html" class="mws-i-24 i-pacman">
+                       	Icons <span class="mws-nav-tooltip">2000+</span>
+                       </a>
+                   </li>
+               </ul>
+           </div>
+	       </div>
+	      
+	       <div id="mws-container" class="clearfix">
+	           <div class="container">
+	           	<div class="mws-report-container clearfix">
+	               	<a class="mws-report" href="#">
+	                   	<span class="mws-report-icon mws-ic ic-building"></span>
+	                       <span class="mws-report-content">
+	                       	<span class="mws-report-title">Floors Climbed</span>
+	                           <span class="mws-report-value">324</span>
+	                       </span>
+	                   </a>
+	
+	               	<a class="mws-report" href="#">
+	                   	<span class="mws-report-icon mws-ic ic-sport"></span>
+	                       <span class="mws-report-content">
+	                       	<span class="mws-report-title">Calories Burned</span>
+	                           <span class="mws-report-value down">74%</span>
+	                       </span>
+	                   </a>
+	
+	               	<a class="mws-report" href="#">
+	                   	<span class="mws-report-icon mws-ic ic-walk"></span>
+	                       <span class="mws-report-content">
+	                       	<span class="mws-report-title">Kilometers Walked</span>
+	                           <span class="mws-report-value">14</span>
+	                       </span>
+	                   </a>
+	                   
+	               	<a class="mws-report" href="#">
+	                   	<span class="mws-report-icon mws-ic ic-bug"></span>
+	                       <span class="mws-report-content">
+	                       	<span class="mws-report-title">Bugs Fixed</span>
+	                           <span class="mws-report-value up">22%</span>
+	                       </span>
+	                   </a>
+	                   
+	               	<a class="mws-report" href="#">
+	                   	<span class="mws-report-icon mws-ic ic-car"></span>
+	                       <span class="mws-report-content">
+	                       	<span class="mws-report-title">Cars Repaired</span>
+	                           <span class="mws-report-value">77</span>
+	                       </span>
+	                   </a>
+	               </div>
+	               
+	           	<div class="mws-panel grid_8">
+	               <div class="mws-panel-header">
+	                   	<span class="mws-i-24 i-polaroids">Image Gallery</span>
+	                   	<button onclick="returnPhotoTypeList();">返回</button>
+	                   	<button onclick="editPhotoList();">编辑</button>
+	                   	<button onclick="editPhotoListCancel();">取消编辑</button>
+	                   	<input type="checkbox" id="allCheck"/><label for="allCheck" onclick="editPhotoAllChecked();">全选</label>
+                   </div>
+                   <div class="mws-panel-body">
+                   		<!-- 相册主页 S -->
+                   		<div id="TypeList" class="mws-panel-content">
                     	</div>
-                    </div>
+                   		<!-- 相册主页 E -->
+                   </div>
 				</div>
-            </div>
-            
-            <div id="mws-footer">
-            	Copyright &copy; 2014.Company name All rights reserved.<a target="_blank" href="http://www.17sucai.com/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a>
-            </div>
-            
-        </div>
+	           </div>
+	       </div>
+          <div id="mws-footer">
+          	Copyright &copy; 2014.Company name All rights reserved.<a target="_blank" href="http://www.17sucai.com/">&#x7F51;&#x9875;&#x6A21;&#x677F;</a>
+          </div>
     </div>
+	<script type="text/javascript">
+		var isRollPhotoListOpen = false;//图片详情是否打开，判断上下左右键是否失效
+		//图片列表
+		var photoList = ["example/1.jpg","example/2.jpg","example/3.jpg","example/4.jpg","example/5.jpg",
+		                 "example/6.jpg","example/7.jpg","example/8.jpg","example/9.jpg","example/10.jpg"];
+		
+		var idCardList = ["example/1.jpg","example/2.jpg","example/3.jpg","example/4.jpg","example/5.jpg",
+		                 "example/6.jpg","example/7.jpg","example/8.jpg","example/9.jpg","example/10.jpg"];
+		
+		var hukouList = ["example/1.jpg","example/2.jpg","example/3.jpg","example/4.jpg","example/5.jpg",
+		                 "example/6.jpg","example/7.jpg","example/8.jpg","example/9.jpg","example/10.jpg"];
+		
+		//图片类型列表
+		var photoTypeList = {"photoList":photoList,"idCardList":idCardList,"hukouList":hukouList};
+		var photoListNow;//当前查看的图片列表对象
+		var imageIndex = 0;//图片下标
+		var photoListsize = 0;//图片列表长度
+		var lefts = 0;//是否是第一张图片,滚动栏位移距离 
+		//得到图片类型列表，循环创建图片类型 DOM
+		var ulStr = "<ul id='mws-gallery' class='clearfix'>"; //类型列表DOM字符串
+		$(function(){
+			//方向键事件监听
+			document.onkeydown=function(event){
+				var e = event || window.event || arguments.callee.caller.arguments[0];
+				
+				if(isRollPhotoListOpen){
+					if(e && e.keyCode==38 || e && e.keyCode==37){//上,左
+						//alert('38=上键，37=左键');
+						$("#previousBtn").click();
+					}
 
+					if(e && e.keyCode==40 || e && e.keyCode==39){//下,右
+						//alert('38=下键，37=右键');
+						$("#nextBtn").click();
+					}
+				}
+			}; 
+			
+			//创建相册列表
+			for(var k in photoTypeList){
+				var photoTypeName = k;
+				//创建类型列表DOM
+				ulStr += "<li><div id='"+photoTypeName+"' onclick=\"checkPhotoType('"+photoTypeName+"','"+photoTypeList[k].length+"')\">";
+				ulStr += "<div style='height:80px;'><img src='"+photoTypeList[k][0]+"'/></div>";
+				ulStr += "<div style='position: absolute;top:80px;background-color: gray;width: 100%;height:20px;text-align: center;'>"+photoTypeName+"</div>";
+				ulStr += "<div class='mws-gallery-overlay'><div class='mws-gallery-zoom'></div></div></div></li>";
+			}
+			ulStr += "</ul>";
+			$(ulStr).appendTo("#TypeList");
+		});
+	
+		//查看相册
+		function checkPhotoType(photoTypeName,len){
+			var photoList = photoTypeList[photoTypeName];
+			photoListNow = photoList;
+			var photoListStr = "";							  //相册内容列表DOM字符串
+			var rollListStr = "";								  //滚动详情DOM字符串
+			photoListStr += "<ul id='photoListUlId' class='photoListUlClass'>";
+			rollListStr += "<div id='photoDetail' style='position:absolute;width:1000px;height:800px;left:200px;top:0px;display: none;z-index: 999;overflow: hidden;background-color: gray;'>";
+			rollListStr += "<div style='position:absolute;left:940px;top:60px;width:60px;height:60px;z-index: 9999;cursor:pointer;' onClick=\"closeBtnOn();\"><img src='img/close.png' /></div>"
+			rollListStr += "<ul id='mws-gallery' class='clearfix'><li style='width:1000px;height:900px;' > <img id='imgplace' src='"+photoList[0]+"' alt='' /> </li> </ul>";
+			rollListStr += "<div id='previousBtn' style='position: absolute;left: 10px;top:400px;width:60px;height:60px;cursor: pointer;' onclick=\"lastPage();\">";
+			rollListStr += "<img src='img/go_previous.png' alt='上一张' /></div>";
+			rollListStr += "<div id='nextBtn' style='position: absolute;left: 950px;top:400px;width:60px;height:60px;cursor: pointer;' onclick=\"nextPage();\">";
+			rollListStr += "<img src='img/go_next.png' alt='下一张' /></div>";
+			rollListStr += "<div id='photoRoll' style='position: absolute;top:690px;height:110px;background-color: gray;width: 980px;overflow: hidden;'><ul id='mws-gallery' style='float:left;height:110px;width:1100px;'>"; //图片详细列表dom字符串
+			
+			for(var i = 0; i < photoList.length; i++){
+				if(i==0){
+					rollListStr += "<li ><div id='photoRollList"+i+"' class='checkedPhoto' onclick=\"checkPhotoRoll("+i+")\">";
+				}else{
+					rollListStr += "<li ><div id='photoRollList"+i+"' onclick=\"checkPhotoRoll("+i+")\">";
+				}
+				rollListStr += "<div style='height:80px;'><img src='"+photoList[i]+"' alt='' /></div>";
+				rollListStr += "</div></li>";
+				
+				photoListStr += "<li>";
+				//checkbox
+				photoListStr += "<div class='photoEditDC' onClick='photoChecked(this);'><div class='editPhotoUNChecked'></div></div>";
+				
+				photoListStr += "<div onclick=\"checkPhotoDetail("+i+")\">";
+				photoListStr += "<div style='height:80px;'><img src='"+photoList[i]+"'/></div>";
+				photoListStr += "<div style='position: absolute;top:80px;background-color: gray;width: 100%;height:20px;text-align: center;'>"+photoList[i]+"</div>";
+				photoListStr += "<div class='isEditHidden mws-gallery-overlay'><div class='mws-gallery-zoom'></div></div></div></li>";
+			}
+			rollListStr += "</ul></div></div>";
+			photoListStr += "</ul>";
+			$("#TypeList").empty();
+			$(photoListStr).appendTo("#TypeList");
+			$(rollListStr).appendTo("#mws-container");
+		}
+		
+		//查看图片详情
+		function checkPhotoDetail(index){
+			$(".checkedPhoto").removeAttr("class");
+			$("#photoDetail").css("display","block").show();
+			isRollPhotoListOpen = true;
+			photoListsize = photoListNow.length;
+			$("#imgplace").attr("src",photoListNow[index]);
+			$("#photoRollList"+index+"").attr("class","checkedPhoto");
+			imageIndex = index;
+			lefts = -parseInt(index)*110;
+			$("#photoRoll ul").css("marginLeft",lefts);
+		}
+		
+		//上一页
+		function lastPage(){
+			if(imageIndex == 0){
+				imageIndex = photoListsize;
+				lefts = -(photoListsize-2)*110;
+			}
+			imageIndex--;
+			$("#imgplace").attr("src",photoListNow[imageIndex]);
+			$(".checkedPhoto").removeAttr("class");
+			$("#photoRollList"+imageIndex+"").attr("class","checkedPhoto");
+			lefts += 110;
+			$("#photoRoll ul").css("marginLeft",lefts);
+		}
+		
+		//下一页
+		function nextPage(){
+			imageIndex++;
+			if(imageIndex == photoListsize){
+				imageIndex = 0;
+				lefts = (photoListsize-9)*110;//减去多少显示多少张图片 
+			}
+			$("#imgplace").attr("src",photoListNow[imageIndex]);
+			$(".checkedPhoto").removeAttr("class");
+			$("#photoRollList"+imageIndex+"").attr("class","checkedPhoto");
+			lefts += -110;
+			$("#photoRoll ul").css("marginLeft",lefts);
+		}
+		
+		//滚动栏点击
+		function checkPhotoRoll(index){
+			imageIndex = index;
+			$("#imgplace").attr("src",photoListNow[index]);
+			$(".checkedPhoto").removeAttr("class");
+			$("#photoRollList"+index+"").attr("class","checkedPhoto");
+		}
+		
+		//关闭详情按钮
+		function closeBtnOn(){
+			$("#photoDetail").hide(2000);
+		}
+		
+		//返回按钮
+		function returnPhotoTypeList(){
+			$("#photoListUlId").remove();
+			$("#photoDetail").remove();
+			$("#TypeList").empty();
+			$(ulStr).appendTo("#TypeList");
+		}
+		
+		//编辑图片
+		function editPhotoList(){
+			$("div .isEditHidden").css("display","none");
+			$("#photoListUlId li").css("cursor","default");
+			$("div .photoEditDC").css("display","block");		
+		}
+		
+		//取消编辑
+		function editPhotoListCancel(){
+			$("div .isEditHidden").css("display","");
+			$("#photoListUlId li").css("cursor","pointer");
+			$("div .photoEditDC").css("display","none");
+			$("div .editPhotoChecked").attr("class","editPhotoUNChecked")
+		}
+		
+		//选中图片
+		function photoChecked(obj){
+			$(obj).children().attr("class","editPhotoChecked");
+		}
+		
+		//全选
+		function editPhotoAllChecked(){
+			$("div .editPhotoUNChecked").attr("class","editPhotoChecked");
+			var checked = $("div .editPhotoChecked").parent();
+			console.info(checked);
+		}
+	</script>
 </body>
 </html>

@@ -30,6 +30,7 @@
 	}	
 	textarea{resize: none;}
 </style>
+
 <script type="text/javascript">
 var row,row1;
 var investorId='${investorId}';
@@ -71,26 +72,47 @@ $(function(){
 			            	}  
 		              }
 		              ] ]
-	});
-	$("#upload_form_div input:first").combobox({
+	});	
+	
+	//渲染附件类型下拉列表
+	$("#attType").combobox({
 		valueField : 'code',
 		textField : 'text',
 		url:'common/commonAction!findTextArr.action?codeMyid=attachment_type_invest',
 		onLoadSuccess : function(){
-			attempData = $("#upload_form_div input:first").combobox("getData");
 			var val = $(this).combobox("getData");
-            for (var item in val[0]) {
-                if (item == "code") {
-                    $(this).combobox("select", val[0][item]);
-                }
-            }
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
 		},
-		editable:false ,
-    });
+		editable:false 
+    });	
+		
+	// 渲染附件列表
+	//查看附件
+	$("#checkAttachment").click(function(){		
+		console.info("")
+		checkAttachementDetail4InvestOrder('noauditId',investOrderId,row.assignee,'2');
+	});
 	
-	loadAttachmentList('attachmentList',investOrderId);
+	//上传附件
+	$("#upploadAttachment").click(function(){
+		var attType = $("#attType").combobox("getValue");
+		investfileUploadsDlg(attType,investOrderId);
+	});			
+			
+	//弹出新引入的第三方文件上传组件，附件类型，订单ID，附件名称
+	function investfileUploadsDlg(attType, investOrderId){
+		if(attType==""){
+			$.messager.alert("提示","请先选择附件类型!","info");
+			return false;
+		}
+		window.open('jsp/investOrder/investOrderAttachmentForm.jsp?investOrderId='+investOrderId+'&attType='+attType,
+				"附件详情", "height="+$(window).height()*0.95+", width="+$(window).width()*0.95+", top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");
+	}			
 });	
-
+	
+	
 	
 	/**==完善客户及合同信息==*/
 	function completeOrderInfo(){
@@ -172,169 +194,78 @@ $(function(){
 			}
 		});
 	}
-	/**=============上传附件及显示已上传附件列表===================*/
-	//上传附件方法
-		function fileUploads(obj){
-			var id = $(obj).parent().prev().children().attr("id");
-			var listId = $(obj).parent().prev().prev().attr("id");
-			var cDivClone = $("#"+id).children("div:first");
-			var cDiv = $("#"+id).children();
-			var att_types = ""; //附件类型
-			var fileNames = ""; //附件名
-			var fileIds = [];	//附件id
-			for(var i = 0 ; i < cDiv.length; i++){
-				var cDivId = cDiv[i].id;
-				var att_type = $("#"+cDivId+" input:first").combobox("getValue");
-				var fileName = $("#"+cDivId+" input[name='fileName']").val();
-				var fileId = $("#"+cDivId+" input:last").attr("id");
-				var fileValue = document.getElementById(fileId).value;
-				if(""==att_type || ""==fileName || ""==fileValue){
-					$.messager.alert("提示","请填写完整信息","info");
-					return false;
-				}
-				att_types  += att_type + ",";
-				fileNames += fileName + ",";
-				fileIds[i] = fileId;
-			}
-			parent.$.messager.progress({
-				title : '提示',
-				text : '文件上传中，请稍后....'
-			});
-			$.ajaxFileUpload({
-				url:'attachment/attachmentAction!saveInvestAttachment.action',
-				data:{"fileName":fileNames,"attType":att_types,"investOrderId" : investOrderId},
-				fileElementId:fileIds,
-				secureuri:false,
-				dataType:'text',
-				async : false,
-				success:function(data,status){
-					parent.$.messager.progress('close');
-					loadAttachmentList(listId,investOrderId);
-					data = $.parseJSON(data);
-					$.messager.alert("提示",data.message,"info");
-					$("#"+id).empty().append(cDivClone);
-					$(cDivClone).children("a:first").click();
-					$(cDivClone).remove();
-				},
-				error: function(){
-					
-				}
-			});
-		}
-		
-		/**=========加载附件列表========*/ 
-		function loadAttachmentList(listId,investOrderId){
-			$("#"+listId).empty();
-			var str = "<div id='firstDiv"+listId+"' style='width:50%;height:30px;float: left;'><span class='linkSpan'>附件名称</span></a><span class='linkSpan'>附件类型</span><span class='linkSpanS'>操作</span></div><div id='secondDiv"+listId+"' style='width:50%;height:30px;float: left;'><span class='linkSpan'>附件名称</span></a><span class='linkSpan'>附件类型</span><span class='linkSpanS'>操作</span></div>";
-			$("#"+listId).append(str);
-			$.ajax({
-				url : "attachment/attachmentAction!findAttachmentByOrderTypeAndOrderId.action",
-				data : {"orderType":"investorOrder","investOrderId":investOrderId},
-				type : "post",
-				async : false,
-				success : function(data){
-					if(data.length==0){
-						$("#firstDiv"+listId).empty();
-						$("#secondDiv"+listId).empty();
-					}else if(data.length==1){
-						$("#secondDiv"+listId).empty();
-					} 
-					if(data){
-						var attId;
-						var attName;
-						var attType;
-						var linkStr = "";
-						var j = 0;
-						$.each(data,function(i,item){
-							attId = data[i].attId;
-							attName = data[i].attName;
-							attType = data[i].attType;
-							attTypeName = data[i].attTypeName;
-							linkStr = "<div style='width:50%;height:30px;float: left;'><input type='hidden' name='attId' value='"+attId+"' /><a target='_blank' href='jsp/openoffice/documentView.jsp?attId="+attId+"'><span class='linkSpan'>"+attName+"</span></a><span class='linkSpan'>"+attTypeName+"</span><a href='javascript:void(0);' class='attachBackLinkButton' onclick=\"deleteAttachment(this,'"+attId+"');\">删除</a><a href='javascript:void(0);' class='attachBackLinkButton' onclick=\"downloadAttachment('"+attId+"');\">　下载</a></div>";
-							$("#"+listId).append(linkStr);
-						});
-					}
-				},
-				error : function(){
-					
-				}
-			});
-		}
 	
-		// 根据行索引获取行信息
-		function getRowData (index) {
-		    if (!$.isNumeric(index) || index < 0) { return undefined; }
-		    var rows = $("#lookLoanOrderdg").datagrid("getRows");
-		    return rows[index];
-		}
-		//查看附件信息
-		function lookAttachment(index){
-				var row = getRowData(index);
-				$("#lookAttachmentList").datagrid({
-					url : "attachment/attachmentAction!findAllAttachmentList.action",
-					width : 'auto',
-					height : 430,
-					pagination:false,
-					rownumbers:true,
-					border:false,
-					singleSelect:true,
-					nowrap:true,
-					queryParams:{"orderId":row.investOrderId,"userId":row.assignee,"orderType":"attachment_type_invest"},
-					multiSort:false,
-					columns : [ [ 
-					              {field : 'attName',title : '附件名称',width : 200,sortable:true,align:'center'},
-					              {field : 'attTypeName',title : '附件类型',width : 160,align:'center'},
-					              {field : 'creatorName',title : '创建者',width : 170,align:'center'},
-					              {field : 'id',title : '查看附件',width :220,align:'center',formatter:function(value,row,index){
-					            		var result = "<a target='_blank' href='jsp/openoffice/documentView.jsp?attId="+row.attId+"'>在线预览</a>　　" ;
-					            			result += "<a target='_blank' href='javascript:void(0);' onclick=\"downloadAttachment('"+row.attId+"');\">下载</a>　　" ;
-					            		return result;
-					              }}
-				    ] ]
-				});
-				$('#lookInfo').accordion("select","附件信息"); 
-		}
+	// 根据行索引获取行信息
+	function getRowData (index) {
+	    if (!$.isNumeric(index) || index < 0) { return undefined; }
+	    var rows = $("#lookLoanOrderdg").datagrid("getRows");
+	    return rows[index];
+	}
+
+	//查看附件信息
+	function lookAttachment(index){
+			var row = getRowData(index);
+			$("#lookAttachmentList").datagrid({
+				url : "attachment/attachmentAction!findAllAttachmentList.action",
+				width : 'auto',
+				height : 430,
+				pagination:false,
+				rownumbers:true,
+				border:false,
+				singleSelect:true,
+				nowrap:true,
+				queryParams:{"orderId":row.investOrderId,"userId":row.assignee,"orderType":"attachment_type_invest"},
+				multiSort:false,
+				columns : [ [ 
+				              {field : 'attName',title : '附件名称',width : 200,sortable:true,align:'center'},
+				              {field : 'attTypeName',title : '附件类型',width : 160,align:'center'},
+				              {field : 'creatorName',title : '创建者',width : 170,align:'center'},
+				              {field : 'id',title : '查看附件',width :220,align:'center',formatter:function(value,row,index){
+				            		var result = "<a target='_blank' href='jsp/openoffice/documentView.jsp?attId="+row.attId+"'>在线预览</a>　　" ;
+				            			result += "<a target='_blank' href='javascript:void(0);' onclick=\"downloadAttachment4InvestOrder('"+row.attId+"');\">下载</a>　　" ;
+				            		return result;
+				              }}
+			    ] ]
+			});
+			$('#lookInfo').accordion("select","附件信息"); 
+	}
 </script>
+
 		<!-- 受理任务 S -->
 		<div data-options="region:'north',title:'North Title',split:true">
 			<div style="height: 280px;overflow: auto;" >
-			<form id="acceptTaskForm" method="post">
-				 <input name="id" id="id"  type="hidden"/>
-				 <input name="auditId" type="hidden" value="noauditId"/>
-				 <table class="table" cellpadding="5px;">
-					 <tr>
-					    <th>客户姓名:</th>
-						<td><input name="name" readonly="readonly" type="text"/></td>
-					</tr>
-					<tr>
-						<th>身份证号:</th>
-						<td><input name="idNo" readonly="readonly" type="text"/></td>
-					</tr>
-					<tr>
-					 	<th>备注:</th>
-						<td colspan="3">
-							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:300px;height:70px;"></textarea>
-						</td>
-					</tr>
-				 </table>
-				<div id="attachmentList" style="width:100%;display:block;float:left;">
-				</div>
-				<div id="upload_form_div_add">
-					<div id="upload_form_father_idDiv" style="width:100%;">
-						<div id="upload_form_div">
-							<font size="2" style="font-weight: bold;">　上传附件:&nbsp;</font>
-							<input class="easyui-textbox easyui-combobox" type="text" />
-							<input name="fileName" type="text" placeholder="请输入附件名">
-							<input id="file" name="file" type="file"  onchange="fileChange(this);" > 
-							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a> 
-						</div>
-					</div>
-				</div>
-				<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
-					<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
-				</div> 
-			</form>
+				<form id="acceptTaskForm" method="post">
+					 <input name="id" id="id"  type="hidden"/>
+					 <input name="auditId" type="hidden" value="noauditId"/>
+					 
+					 <!-- 显示客户基本信息区域 -->
+					 <table class="table" cellpadding="5px;">
+						 <tr>
+						    <th>客户姓名:</th>
+							<td><input name="name" readonly="readonly" type="text"/></td>
+						</tr>
+						<tr>
+							<th>身份证号:</th>
+							<td><input name="idNo" readonly="readonly" type="text"/></td>
+						</tr>
+						<tr>
+						 	<th>备注:</th>
+							<td colspan="3">
+								<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:300px;height:70px;"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th>附件类型:</th>
+							<td>
+								<input id="attType" class="easyui-textbox easyui-combobox" />
+							</td>
+							<td colspan="2">
+								<a id="checkAttachment" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+								<a id="upploadAttachment" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
+							</td>
+						</tr>						
+					 </table>								
+	 			</form>
 			</div>
 			
 			<div style="width: 880px;height:30px;">

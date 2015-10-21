@@ -15,14 +15,15 @@ $(function(){
 	$datagrid = $("#lookLoanOrderdg").datagrid({
 		url : "loanOrderHis/loanOrderHisAction!findAllLoanOrderHis.action",
 		width : 'auto',
-		height : 240,
-		pagination:true,
+		height : 340,
+		pagination:false,
 		rownumbers:true,
 		border:true,
 		singleSelect:true,
 		nowrap:true,
 		queryParams:{"loanOrderId":$row.loanOrderId},
 		multiSort:false,
+		fitColumns:true,
 		columns : [ [ 
 		              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
 		              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
@@ -40,7 +41,7 @@ $(function(){
 	// 渲染身份证号
 	$("#acceptTaskForm input[name='idNo']").val($row.idNo);
 	
-	$("#upload_form_div input:first").combobox({
+	$("#attType").combobox({
 		valueField : 'code',
 		textField : 'text',
 		url:'common/commonAction!findTextArr.action?codeMyid=attachment_type',
@@ -66,8 +67,16 @@ $(function(){
 		},
     });
 	
-	loadAttachmentList('attachmentLists','noauditId',$row.loanOrderId);
+	//查看附件
+	$("#checkAttachment").click(function(){
+		checkAttachementDetail('noauditId',$row.loanOrderId,'');
+	});
 	
+	//上传附件
+	$("#upploadAttachment").click(function(){
+		var attType = $("#attType").combobox("getValue");
+		fileUploadsDlg(attType,$row.loanOrderId,'');
+	});
 	
 	$("#microcreditOpinionForm input").css("background-color","#EBEBE4");
 	$("#microcreditOpinionForm textarea").css("background-color","#F5F5F5");
@@ -148,32 +157,7 @@ $(function(){
 	function lookAttachment(index){
 		var row = getRowData($datagrid,index);
 		// 附件信息
-		$("#lookAttachmentList").datagrid({
-			url : "attachment/attachmentAction!findAttachmentListByUserIdAndOrderId.action",
-			width : 970,
-			height : 240,
-			pagination:true,
-			rownumbers:true,
-			border:true,
-			singleSelect:true,
-			nowrap:true,
-			queryParams:{"loanOrderId":row.loanOrderId,"userId":row.assignee},
-			multiSort:false,
-			fitColumns : true,
-			columns : [ [ 
-			              {field : 'attName',title : '附件名称',width : parseInt($(this).width()*0.1),sortable:true},
-			              {field : 'attTypeName',title : '附件类型',width : parseInt($(this).width()*0.1)},
-			              {field : 'creatorName',title : '创建者',width : parseInt($(this).width()*0.1),align : 'left'},
-				          {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.1),align : 'left',
-				            	formatter:function(value,row,index){
-				            		var result = "<a target='_blank' href='jsp/openoffice/documentView.jsp?attId="+row.attId+"'>在线预览</a>　　" ;
-				            			result += "<a target='_blank' href='javascript:void(0);' onclick=\"downloadAttachment('"+row.attId+"');\">下载</a>　　" ;
-				            		return result;
-				            	}  
-			              }
-			              ] ]
-		});
-		$('#lookInfo').accordion("select","附件信息"); 
+		checkAttachementDetail('noauditId',$row.loanOrderId,row.assignee,'2');
 	}
 	
 	//查询系统参数
@@ -275,10 +259,16 @@ $(function(){
 				}
 			});
 	}
+	
+	//查看稽核信息
+	function checkAuditReportDetail(){
+		window.open("jsp/loanOrder/auditInfoRecordDetail.jsp?loanOrderId="+$row.loanOrderId,
+				"稽核信息详情", 'height=650, width=1000, top=200, left=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+	}
 </script>
 <!-- 受理任务 S -->
 <div data-options="region:'north',title:'North Title',split:true">
-	<div style="width: 986px;height: 265px;overflow: auto;">
+	<div style="width: 980px;height: 195px;overflow: auto;">
 			<form id="acceptTaskForm" method="post">
 				 <input name="id" id="id"  type="hidden"/>
 				 <input name="auditId" type="hidden" value="noauditId"/>
@@ -296,40 +286,33 @@ $(function(){
 					<tr>
 					 	<th>理由:</th>
 						<td colspan="3">
-							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:300px;height:70px;"></textarea>
+							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							附件类型:
+						</th>
+						<td>
+							<input id="attType" class="easyui-textbox easyui-combobox" />
+						</td>
+						<td colspan="2">
+							<a id="checkAttachment" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+							<a id="upploadAttachment" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 						</td>
 					</tr>
 				 </table>
-				<div id="attachmentLists" style="width:100%;display:block;float:left;">
-				</div>
-				<div id="upload_form_div_add">
-					<div id="upload_form_father_idDiv" style="width:100%;">
-						<div id="upload_form_div">
-							<font size="2" style="font-weight: bold;">　上传附件:&nbsp;</font>
-							<input class="easyui-textbox easyui-combobox" type="text" />
-							<input name="fileName" type="text" placeholder="请输入附件名">
-							<input id="file" name="file" type="file"  onchange="fileChange(this);" > 
-							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">添加</a>
-							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">删除</a> 
-						</div>
-					</div>
-				</div>
-				<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
-					<a href="javascript:void(0);" class="easyui-linkbutton" onclick="fileUploads(this)">上传附件</a>
-				</div> 
 			</form>
 		</div>
 		<div style="width: 980px;height:30px;">
+			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkAuditReportDetail();">查看稽核信息</a>
 			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="microcreditOpinion();">查看微贷业务呈报意见表</a>
 			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="finalMicrocreditOpinionDg();">IPC部门经理通过</a>
 			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('IPCDeptLeaderReject',this);">IPC部门经理拒贷</a>
 		</div>
-		<div id="lookInfo" class="easyui-accordion" style="height: 300px;width: 980px;overflow: hidden;">
+		<div id="lookInfo" class="easyui-accordion" style="height: 370px;width: 980px;overflow: hidden;">
 		    <div title="备注信息" data-options="iconCls:'icon-cstbase',selected:true" >   
 				<table id="lookLoanOrderdg" title="申请备注的信息"></table>
-			</div>
-		    <div title="附件信息" data-options="iconCls:'icon-cstbase'" >   
-				<table id="lookAttachmentList" title="申请附件的信息"></table>
 			</div>
 		</div>
 </div>  

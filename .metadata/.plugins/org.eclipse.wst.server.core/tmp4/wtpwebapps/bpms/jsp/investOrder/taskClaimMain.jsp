@@ -129,7 +129,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			$('#investorView').dialog({    
 					    title: '投资客户详情',    
 					    width: 800,    
-					    height: 450,    
+					    height: 550,    
 					    closed: false,    
 					    cache: false,    
 					    href: 'investor/investorAction!findInvestorByInvestorId.action?investorId='+row.investorId,    
@@ -143,7 +143,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			var row = this.getRowData(index);
 			$('#contractInfoDialog').dialog({    
 			    title: '合同详情',    
-			    width: 700,    	
+			    width: 600,    	
 			    height: 600,    
 			    closed: false,
 			    closable: true,
@@ -157,30 +157,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		
 		//查看该投资人的理财产品详情界面
 		function showInvestorAndInvestProductsDetailsView(investOrderId){
+			
 			$('#investorAndInvestProductsDialog').dialog({    
 			    title: '理财产品详情',    
-			    width: 1000,    	
-			    height: 250,    
+			    width: 800,    	
+			    height: 350,    
 			    closed: false,
 			    closable: true,
 			    cache: false,    
 			    href: 'investOrder/investOrderAction!findInvestorAndInvestProductsDetails.action?investOrderId='+investOrderId,    
 			    modal: true   
-			});						
+			});  													 					
 		}
 		
 		// 查看历史审批意见		
 		function checkInvestOrderHisApprovalOpinions(index){
-			/* row = this.getRowData(index);//获取本条数据
-			$('#OpinionsDialog').dialog({    
-			    title: '历史审查意见',    
-			    width: 800,    
-			    height: 500,    
-			    closed: false,    
-			    cache: false,    
-			    href: 'jsp/investOrder/optionsList.jsp',    
-			    modal: true   
-			});  */
 			var row = this.getRowData(index);
 			parent.$.modalDialog.openner= $grid;
 			parent.$.modalDialog({
@@ -252,7 +243,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<!-- 投资客户数据对话框区域 -->
 		<div id="investorView"></div>
 
-		<!-- 合同信息对话框区域 -->
+		<!-- 合同详情信息对话框区域 -->
 		<div id="contractInfoDialog"></div>
 
 		<!-- 理财产品详情对话框区域 -->

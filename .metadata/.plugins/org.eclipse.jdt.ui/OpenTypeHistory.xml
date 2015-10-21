@@ -4,4 +4,7 @@
 <typeInfo handle="=bpms/src&lt;com.bpms.service{MicrocreditOpinionService.java[MicrocreditOpinionService" modifiers="513" timestamp="1437047025451"/>
 <typeInfo handle="=bpms/src&lt;com.bpms.service{LoanContractService.java[LoanContractService" modifiers="513" timestamp="1440469929696"/>
 <typeInfo handle="=Sunyiban/src&lt;com.sun.dao{IUserDao.java[IUserDao" modifiers="513" timestamp="1441615564430"/>
+<typeInfo handle="=bpms/src&lt;com.bpms.action{BaseAction.java[BaseAction" modifiers="1" timestamp="1438676101201"/>
+<typeInfo handle="=bpms/E:\/workspaces\/bpms\/WebContent\/WEB-INF\/lib\/xwork-core-2.3.14.jar&lt;com.opensymphony.xwork2(ModelDriven.class[ModelDriven" modifiers="1537" timestamp="1437015438868"/>
+<typeInfo handle="=bpms/src&lt;com.bpms.service{CarInfoService.java[CarInfoService" modifiers="513" timestamp="1445330168949"/>
 </typeInfoHistroy>

@@ -1,0 +1,28 @@
+package com.bpms.listener2;
+
+import org.activiti.engine.delegate.DelegateTask;
+
+import com.bpms.listener.BaseLoanTaskListener;
+import com.bpms.model.Role;
+import com.bpms.util.Constants;
+/**
+ * IPC地方调查员活动节点监听
+ * @author liuhh
+ *
+ */
+@SuppressWarnings("serial")
+public class LoanIPCCensorTaskListener extends BaseLoanTaskListener {
+
+	@Override
+	public String getRoleCode() {
+		return Constants.LOAN_ROLE_CODE_IPCDIFANGDIAOCHA;
+	}
+	
+	@Override
+	public void notify(DelegateTask task) {
+		task.setAssignee((String) task.getVariable("IPCCensorAssign"));
+		Role role = roleService.findRoleByCode(getRoleCode());
+		task.createVariableLocal("role", role);
+	}
+
+}

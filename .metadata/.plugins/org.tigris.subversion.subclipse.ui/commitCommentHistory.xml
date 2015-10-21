@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CommitComments>	<CommitComment>注释‘查看细则’</CommitComment>
-	<CommitComment>入账月份，自动计算</CommitComment>
-	<CommitComment>dataGrid fitColumns</CommitComment>
-	<CommitComment>添加贷款人详细信息字段</CommitComment>
-	<CommitComment>添加贷款人ID字段</CommitComment>
-	<CommitComment>贷款人详细信息</CommitComment>
-	<CommitComment>合同编号从1开始</CommitComment>
-	<CommitComment>微贷意见呈报表样式调整</CommitComment>
-	<CommitComment>贷款客户监管页面
+<CommitComments>	<CommitComment>增加信贷方式，建议金额字段</CommitComment>
+	<CommitComment>添加验证
 </CommitComment>
-	<CommitComment>sunyb</CommitComment>
+	<CommitComment>外访调查报告</CommitComment>
+	<CommitComment>表单页面</CommitComment>
+	<CommitComment>信审页面</CommitComment>
+	<CommitComment>办理任务，pagination : false</CommitComment>
+	<CommitComment>根据订单ID，用户ID，附件名，附件类型判断附件是否存在</CommitComment>
+	<CommitComment>查看详情，不可编辑</CommitComment>
+	<CommitComment>附件上传，预览方法</CommitComment>
+	<CommitComment>终审 填写申请报告 功能提出页面，功能拆分</CommitComment>
 </CommitComments>

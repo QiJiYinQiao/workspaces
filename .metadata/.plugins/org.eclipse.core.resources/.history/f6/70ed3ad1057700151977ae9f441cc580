@@ -1,0 +1,23 @@
+package com.bpms.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import com.bpms.model.CarInfo;
+import com.bpms.service.CarInfoService;
+
+@Service("carInfoService")
+public class CarInfoServiceImpl implements CarInfoService {
+
+	@Override
+	public CarInfo findCarInfoByOid(String loanOrderId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean persistenceCarInfo(CarInfo ci) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

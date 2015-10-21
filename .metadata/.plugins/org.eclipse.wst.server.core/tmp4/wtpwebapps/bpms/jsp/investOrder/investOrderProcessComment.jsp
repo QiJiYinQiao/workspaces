@@ -65,7 +65,7 @@
 				              {field : 'creatorName',title : '创建者',width : 170,align:'center'},
 				              {field : 'id',title : '查看附件',width :220,align:'center',formatter:function(value,row,index){
 				            		var result = "<a target='_blank' href='jsp/openoffice/documentView.jsp?attId="+row.attId+"'>在线预览</a>　　" ;
-				            			result += "<a target='_blank' href='javascript:void(0);' onclick=\"downloadAttachment('"+row.attId+"');\">下载</a>　　" ;
+				            			result += "<a target='_blank' href='javascript:void(0);' onclick=\"downloadAttachment4InvestOrder('"+row.attId+"');\">下载</a>　　" ;
 				            		return result;
 				              }}
 			    ] ]

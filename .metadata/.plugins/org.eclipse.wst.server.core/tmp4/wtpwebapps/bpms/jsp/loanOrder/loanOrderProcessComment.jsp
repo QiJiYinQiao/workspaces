@@ -20,7 +20,8 @@
 			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
 			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
 			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'comment',title : '审批意见',width :parseInt($(this).width()*0.1),align : 'left'},
+			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'left'},
+			              /* {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'left'}, */
 			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.09),align : 'left',
 			            	formatter:function(value,row,index){
 			            		return "<a href='javascript:void(0);' onclick='lookAttachment("+index+");'>查看附件</a>　　" ;
@@ -40,7 +41,8 @@
 	// 查看附件信息
 	function lookAttachment(index){
 			var row = getRowData(index);
-			$('#attachmentList').dialog({
+			checkAttachementDetail('',row.loanOrderId,row.assignee,'1');
+			/* $('#attachmentList').dialog({
 					title:"附件信息",
 					width: 1000,    
 				    height: 650,    
@@ -71,7 +73,7 @@
 				            	}  
 				              }
 				              ] ]
-			});
+			}); */
 	}
 </script>
 <table id="lookLoanOrderdg" title="申请备注的信息"></table>

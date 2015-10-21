@@ -1,3 +1,4 @@
+<%@page import="com.bpms.util.Constants"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <%
@@ -85,10 +86,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							msg : rsp.message,
 							timeout : 1000 * 2
 						});
-						// 如果是初审通过状态，IPC进行挑拣，领取任务后直接默认通过办理----此处可以理解为IPC简单的挑拣，下一结点才为办理
-						if(row.orderStatus.statusCode!=null && row.orderStatus.statusCode =="LoanOrder_InitialAuditThrough"){
-							submitChooseTask(row);
-						}
 					}else{
 						parent.$.messager.alert(rsp.title,rsp.message,'warning');
 					}
@@ -108,7 +105,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				href : "jsp/loanOrder/loanOrderProcessComment.jsp"});
 		}
 		
-		// 此处方法就是为了ipc挑拣准备的默认执行方法
+/* 		// 此处方法就是为了ipc挑拣准备的默认执行方法
 		function  submitChooseTask(row) {
 			var data = {
 				"comment" : "IPC挑拣完毕",
@@ -124,7 +121,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				success : function(msg) {
 				}
 			});
-		}
+		} */
 
 	</script>
   </head>

@@ -1,0 +1,44 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+
+</script>
+	<div>
+		<form action="post">
+			<table cellpadding = "5">
+				<tr>
+					<th>初审人:</th>
+					<td>
+						<input  name="firsPersonnelName" class="easyui-textbox" />
+					</td>
+					<th>初审日期</th>
+					<td><input  name="firsDate"  class="easyui-textbox" /></td>
+				</tr>
+				<tr>
+					<th>初审人员意见:</th>
+					<td colspan="3"><textarea name="firsPersSugg" style="width:600px;height:70px;" class="easyui-textbox" ></textarea></td>
+				</tr>
+				<tr>
+					<th>初审部门意见:</th>
+					<td colspan="3"><textarea name="firsDepSugg" style="width:600px;height:70px;" class="easyui-textbox" ></textarea></td>
+				</tr>
+				
+				<tr>
+					<th>初审资质分析说明:</th>
+					<td colspan="3"><textarea name="firstDescription" style="width:600px;height:70px;" class="easyui-textbox" ></textarea></td>
+				</tr>
+				
+				<tr>
+					<td colspan="4">
+						<div style="float:right;margin-right: 10px;">
+							<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveSurveyReport();">保存</a>
+						</div>
+					</td>
+				</tr>
+				
+			</table>
+		</form>
+	</div>

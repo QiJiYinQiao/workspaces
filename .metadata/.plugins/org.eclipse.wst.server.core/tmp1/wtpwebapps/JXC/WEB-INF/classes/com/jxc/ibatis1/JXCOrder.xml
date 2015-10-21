@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao1.OrderDao1">
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.lang.String" id="str" />
+	<resultMap type="List" id="li"/>
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<resultMap type="java.util.List" id="list"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="bigdecmal"></resultMap>
+	
+	<select id="queryOrder" resultMap="hashmap" parameterType="map">
+		SELECT * FROM v_jcbweb_oders_info WHERE 1 = 1
+		<!-- :jbc,name:,phone:phone,goodname:goodname,cfdate:cfdate,cfdate_end:cfdate_end,returndate:returndate,returndate_end:returndate_end, -->
+		<if test="jbc!=null and jbc!=''">
+			AND jbc LIKE CONCAT('%',CONCAT(#{jbc},'%'))
+		</if>
+		<if test="name!=null and name!=''">
+			AND name LIKE CONCAT('%',CONCAT(#{name},'%'))
+		</if>
+		<if test="phone!=null and phone!=''">
+			AND phone LIKE CONCAT('%',CONCAT(#{phone},'%'))
+		</if>
+		<if test="goodname!=null and goodname!=''">
+			AND goodname LIKE CONCAT('%',CONCAT(#{goodname},'%'))
+		</if>
+		<if test="payment!=null and payment!=''">
+			AND payment = #{payment}
+		</if>
+		<if test="state!=null and state!=''">
+			AND state = #{state}
+		</if>
+		<if test="way!=null and way!=''">
+			AND way = #{way}
+		</if>
+		<if test="isphoneconfirm!=null and isphoneconfirm!=''">
+			AND isphoneconfirm = #{isphoneconfirm}
+		</if>
+		<if test="cfcity!=null and cfcity!=''">
+			AND cfcity = #{cfcity}
+		</if>
+		<if test="cfdate!=null and cfdate!=''">
+			<choose>
+				<when test="cfdate_end!=null and cfdate_end!=''">
+					AND DATE_FORMAT(cfdate,'%Y-%m-%d') BETWEEN #{cfdate} AND #{cfdate_end}
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(cfdate,'%Y-%m-%d') = #{cfdate}
+				</otherwise>
+			</choose>
+		</if>
+		<if test="returndate!=null and returndate!=''">
+			<choose>
+				<when test="returndate_end!=null and returndate_end!=''">
+					AND DATE_FORMAT(returndate,'%Y-%m-%d') BETWEEN #{returndate} AND #{returndate_end}
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(returndate,'%Y-%m-%d') = #{returndate}
+				</otherwise>
+			</choose>
+		</if>
+		<if test="createtime!=null and createtime!=''">
+			<choose>
+				<when test="createtime_end!=null and createtime_end!=''">
+					AND DATE_FORMAT(createtime,'%Y-%m-%d') BETWEEN #{createtime} AND #{createtime_end}
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(createtime,'%Y-%m-%d') = #{createtime}
+				</otherwise>
+			</choose>
+		</if>
+		<choose>
+			<when test="start!=null or number !=null">
+				ORDER BY cfdate LIMIT #{start},#{number}
+			</when>
+			<otherwise>
+				ORDER BY createtime 
+			</otherwise>
+		</choose>
+		 	
+	</select>
+	
+	<select id="queryOrderNum" resultMap="ints" parameterType="map">
+		SELECT COUNT(*) FROM v_jcbweb_oders_info WHERE 1 = 1
+		<if test="jbc!=null and jbc!=''">
+			AND jbc LIKE CONCAT('%',CONCAT(#{jbc},'%'))
+		</if>
+		<if test="name!=null and name!=''">
+			AND name LIKE CONCAT('%',CONCAT(#{name},'%'))
+		</if>
+		<if test="phone!=null and phone!=''">
+			AND phone LIKE CONCAT('%',CONCAT(#{phone},'%'))
+		</if>
+		<if test="goodname!=null and goodname!=''">
+			AND goodname LIKE CONCAT('%',CONCAT(#{goodname},'%'))
+		</if>
+		<if test="payment!=null and payment!=''">
+			AND payment = #{payment}
+		</if>
+		<if test="state!=null and state!=''">
+			AND state = #{state}
+		</if>
+		<if test="way!=null and way!=''">
+			AND way = #{way}
+		</if>
+		<if test="isphoneconfirm!=null and isphoneconfirm!=''">
+			AND isphoneconfirm = #{isphoneconfirm}
+		</if>
+		<if test="cfcity!=null and cfcity!=''">
+			AND cfcity = #{cfcity}
+		</if>
+		<if test="isphoneconfirm!=null and isphoneconfirm!=''">
+			AND isphoneconfirm = #{isphoneconfirm}
+		</if>
+		<if test="cfcity!=null and cfcity!=''">
+			AND cfcity = #{cfcity}
+		</if>
+		<if test="cfdate!=null and cfdate!=''">
+			<choose>
+			<when test="cfdate_end!=null and cfdate_end!=''">
+				AND DATE_FORMAT(cfdate,'%Y-%m-%d') BETWEEN #{cfdate} AND #{cfdate_end}
+			</when>
+			<otherwise>
+				AND DATE_FORMAT(cfdate,'%Y-%m-%d') = #{cfdate}
+			</otherwise>
+		</choose>
+		</if>
+		<if test="returndate!=null and returndate!=''">
+			<choose>
+			<when test="returndate_end!=null and returndate_end!=''">
+				AND DATE_FORMAT(returndate,'%Y-%m-%d') BETWEEN #{returndate} AND #{returndate_end}
+			</when>
+			<otherwise>
+				AND DATE_FORMAT(returndate,'%Y-%m-%d') = #{returndate}
+			</otherwise>
+		</choose>
+		</if>
+		<if test="createtime!=null and createtime!=''">
+			<choose>
+				<when test="createtime_end!=null and createtime_end!=''">
+					AND DATE_FORMAT(createtime,'%Y-%m-%d') BETWEEN #{createtime} AND #{createtime_end}
+				</when>
+				<otherwise>
+					AND DATE_FORMAT(createtime,'%Y-%m-%d') = #{createtime}
+				</otherwise>
+			</choose>
+		</if>
+	</select>
+	
+	<select id="queryCardTypeByNo" resultMap="str" parameterType="map">
+		SELECT bank FROM t_jcb_cardinfo WHERE card = #{card}
+	</select>
+	
+	<select id="queryJCBOrderByName" resultMap="hashmap" parameterType="map">
+		SELECT * FROM v_jcbweb_oders_info WHERE name = #{name} AND phone = #{phone}
+	</select>
+	
+	<!-- 编辑电话信息 -->
+	<update id="editPhoneMsg" parameterType="map">
+		UPDATE `suishenwifi`.`orders` SET `isphoneconfirm`=#{isphoneconfirm}, `phoneremark`=#{phoneremark} WHERE  `id`=#{id};
+	</update>
+	
+	<!-- 查询目的地 -->
+	<select id="queryGoods" resultMap="hashmap">
+		SELECT ID goodid,goodname FROM goods
+	</select>
+	
+	<!-- 查询出发城市 -->
+	<select id="queryCfCity" resultMap="hashmap">
+		SELECT id cityid,city FROM takecity;
+	</select>
+	
+	<!-- 根据ID查询订单 -->
+	<select id="queryJCBOrderById" resultMap= "hashmap" parameterType="map">
+		SELECT * FROM v_jcbweb_oders_info WHERE orderid=#{id}
+	</select>
+</mapper>

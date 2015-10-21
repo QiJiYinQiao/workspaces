@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.InventoryDao">
+	<resultMap type="com.jxc.web.user.model.InventoryEntity" id="R_Inventory_ENTITY" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.lang.String" id="str"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="decimal"/>
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	
+	<!-- 查询盘点列表 -->
+	<select id="getInventoryList" resultMap="R_Inventory_ENTITY" parameterType="map"> 
+		SELECT * FROM t_3g_inventory where 1=1
+		<choose>
+			<when test="inventory_time_to!=null and inventory_time_to!=''">
+				AND INVENTORY_TIME BETWEEN #{inventory_time_from} AND #{inventory_time_to}
+			</when>
+			<when test="inventory_time_from!=null and inventory_time_from!=''">
+				AND DATE_FORMAT(INVENTORY_TIME,'%Y-%m-%d') = #{inventory_time_from}
+			</when>
+		</choose>
+		<if test="username!=null and username!=''">
+			AND INVENTORY_USER IN (SELECT ID FROM t_3g_user WHERE NAME LIKE CONCAT('%',CONCAT(#{username},'%')))
+		</if>
+		<if test="counter_id!=null and counter_id!=''">
+			AND COUNTER_ID = #{counter_id}
+		</if>
+		<if test="equipemnt_no != null and equipemnt_no!=''">
+			AND EQUIPMENT_ID IN (SELECT ID FROM t_3g_equipment WHERE NO LIKE CONCAT('%',CONCAT(#{equipemnt_no},'%')))
+		</if>
+		 LIMIT #{start},#{number}
+	</select>
+	
+	<select id="getInventoryListNum" resultMap="ints" parameterType="map"> 
+		SELECT count(*) FROM t_3g_inventory where 1=1
+		<choose>
+			<when test="inventory_time_to!=null and inventory_time_to!=''">
+				AND INVENTORY_TIME BETWEEN #{inventory_time_from} AND #{inventory_time_to}
+			</when>
+			<when test="inventory_time_from!=null and inventory_time_from!=''">
+				AND DATE_FORMAT(INVENTORY_TIME,'%Y-%m-%d') = #{inventory_time_from}
+			</when>
+		</choose>
+		<if test="username!=null and username!=''">
+			AND INVENTORY_USER IN (SELECT ID FROM t_3g_user WHERE NAME LIKE CONCAT('%',CONCAT(#{username},'%')))
+		</if>
+		<if test="counter_id!=null and counter_id!=''">
+			AND COUNTER_ID = #{counter_id}
+		</if>
+		<if test="equipemnt_no != null and equipemnt_no!=''">
+			AND EQUIPMENT_ID IN (SELECT ID FROM t_3g_equipment WHERE NO LIKE CONCAT('%',CONCAT(#{equipemnt_no},'%')))
+		</if>
+	</select>
+	
+	<!-- 根据城市ID 查询城市名 -->
+	<select id="queryCityNameById" resultMap="str" parameterType="map">
+		SELECT CITY_NAME cityname FROM t_3g_city WHERE ID = #{id}
+	</select>
+</mapper>

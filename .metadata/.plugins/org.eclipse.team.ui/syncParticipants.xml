@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <syncparticipants>
-<participant displayName="SVN (/bpms)" id="org.tigris.subversion.subclipse.participant" secondary_id="1441613427674">
+<participant displayName="SVN (/bpms)" id="org.tigris.subversion.subclipse.participant" secondary_id="1444872064894">
 <data root="false">
 <org.eclipse.team.ui.TEAMSUBSRCIBERSETTINGS org.eclipse.team.ui.SCOPE_TYPE="ResourceScope">
 <org.eclipse.team.ui.TEAMSUBSRCIBER_REFRESHSCHEDULE org.eclipse.team.ui.CTX_REFRESHSCHEDULE_ENABLED="false" org.eclipse.team.ui.CTX_REFRESHSCHEDULE_INTERVAL="3600" org.eclipse.team.ui.CTX_REFRESHSCHEDULE_RUNONCE="false"/>

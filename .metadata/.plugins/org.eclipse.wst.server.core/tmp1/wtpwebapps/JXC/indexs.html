@@ -1,0 +1,56 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<script type="text/javascript" src="../media/js/jquery.min.js"></script>
+	<script type="text/javascript" src="../media/js/jquery.easyui.min.js"></script>
+ <title>css外层DIV半透明内层div不透明-弹出层效果的实现【实例】</title> 
+        <style type="text/css"> 
+            <!-- 
+            body,td,th { 
+                font-size: 12px; padding:0; margin:0; 
+            } 
+            .tanchuang_wrap{ width:600px; height:400px;position:absolute;left: 0px;top: 0px;z-index:100; display:none;} 
+            .lightbox{width:600px;z-index:101; height:400px;background-color:red;filter:alpha(Opacity=20);-moz-opacity:0.2;opacity: 0.2; position:absolute; top:0px; left:0px;} 
+            .tanchuang_neirong{width:353px;height:153px;border:solid 1px #f7dd8c;background-color:#FFF;position:absolute;z-index:105;left: 123px;top: 123px;} 
+            --> 
+        </style> 
+        <script language="javascript"> 
+            function closeDiv(divId){ 
+                document.getElementById(divId).style.display = 'none'; 
+            } 
+            function displayDiv(divId){ 
+                document.getElementById(divId).style.display = 'block'; 
+            } 
+        </script> 
+</head>
+
+<body>
+<input id="cost_discount" onkeyup="keyupreturn1(this.value);" style="border: 1px solid #95b8e7;border-radius: 5px;height: 20px;"  name="cost_discount"  value="0"></input>
+<span id="cost_discount_span"></span>
+<script type="text/javascript">
+	 function keyupreturn1(costrent){
+			 	//alert(costrent);/^\-?(0|[1-9]\d{0,})\.\d{1,2}$/
+				//if(!/^(\-?\d+)(\.|\.\d+)?$/.test(costrent)){
+				//alert(costrent);
+				if(!/^(\-?\d+)(\.|\.\d+)?$/.test(costrent)){
+					costrent = costrent.substring(0,costrent.length-1);
+					$("#cost_discount").val(costrent);
+					$("#cost_discount_span").html("*请输入数字").css("color","red");
+				}else{
+					$("#cost_discount_span").empty();
+				}
+				//alert("ok");
+				var cost = $("#upfront_sum").val();
+				//alert("预收总金额"+cost);
+				var cost_return = $("#cost_return_discount").val();
+				//alert("退租金额"+cost_return);
+				var cost_sum = cost-cost_return-parseInt(costrent);
+				//alert("实收金额"+cost_sum);
+				$("#cost_sum").val(cost_sum);
+		 }
+		 
+</script>
+</body>
+</html>

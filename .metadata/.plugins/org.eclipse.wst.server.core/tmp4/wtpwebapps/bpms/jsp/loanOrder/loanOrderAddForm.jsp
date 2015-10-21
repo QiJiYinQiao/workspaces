@@ -88,6 +88,15 @@ input, textarea {
 				  }
 			   }
 		 });
+		
+		$("#loanOrderattType").combobox({
+			valueField : 'code',
+			textField : 'text',
+			url:'common/commonAction!findTextArr.action?codeMyid=attachment_type',
+			required:true,
+			editable:false 
+	    });
+		
    });
    
    // 用户名的下拉grid
@@ -145,6 +154,28 @@ input, textarea {
 			}
 		});
 	}
+	
+	//查看附件
+	$("#checkAttachment").click(function(){
+		var loanOrderId = $("#loanOrderId").val();
+		if(''==loanOrderId){
+			$.messager.alert("提示","请先保存基本信息!","info");
+			return false;
+		}
+		checkAttachementDetail('noauditId',loanOrderId,'','');
+	});
+	
+	//上传附件
+	$("#upploadAttachment").click(function(){
+		var attType = $("#loanOrderattType").combobox("getValue");
+		var loanOrderId = $("#loanOrderId").val();
+		if(''==loanOrderId){
+			$.messager.alert("提示","请先保存基本信息!","info");
+			return false;
+		}
+		fileUploadsDlg(attType,loanOrderId,'');
+	});
+	
 </script>
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="">
@@ -217,7 +248,7 @@ input, textarea {
 							    <th>邮箱:</th>
 								<td>
 								   <input id="email" name="email" type="text"
-									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'email'"/>
+									class="easyui-validatebox easyui-textbox" data-options="required:true,validType:['email','length[0,300]']"/>
 								</td>
 							</tr>
 							<tr>
@@ -245,9 +276,8 @@ input, textarea {
 							</tr>
 							<tr>
 							   <td colspan="6" style="text-align: right;">
-							      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm();">重置</a>
+							      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#baseForm').form('clear');">重置</a>
 							      <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveBaseInfo('save','edit');">保存</a>
-							      <a href="javascript:void(0)" id="edit" class="easyui-linkbutton" iconCls="icon-save" style="display: none;" onclick="ableForm();">修改</a>
 							   </td>
 							</tr>
 						</table>
@@ -267,8 +297,12 @@ input, textarea {
 				<jsp:include page="loanOrderBankForm.jsp"></jsp:include>
 			</div>
 			<div title="附件信息" data-options="iconCls:'icon-help'" style="padding: 10px">
-				<jsp:include page="loanOrderAttachmentForm.jsp"></jsp:include>
-			</div>
+					<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
+					<input id="loanOrderattType" class="easyui-textbox easyui-combobox" />
+					<a id="checkAttachment" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+					<a id="upploadAttachment" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
+				<%-- <jsp:include page="loanOrderAttachmentForm.jsp"></jsp:include> --%>
+			</div> 
 			<div title="共同贷款人" data-options="iconCls:'icon-help'" style="padding: 10px">
 				<jsp:include page="loanOrderJointForm.jsp"></jsp:include>
 			</div>

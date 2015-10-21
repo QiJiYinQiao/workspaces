@@ -1,0 +1,42 @@
+package com.bpms.service.impl;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.IpcOutSurveyReportSummary;
+import com.bpms.service.IpcOutSurveyReportSummaryService;
+
+@Service("ipcOutSurveyReportSummaryService")
+public class IpcOutSurveyReportSummaryServiceImpl implements
+		IpcOutSurveyReportSummaryService {
+
+	@Autowired
+	private BaseDAO<IpcOutSurveyReportSummary> baseDAO;
+	
+	@Override
+	public boolean persistenceIpcOutSurveySummaryReport(
+			IpcOutSurveyReportSummary ipcOutSurveyReportSummary) {
+		if (StringUtils.isBlank(ipcOutSurveyReportSummary.getId())) {
+			baseDAO.save(ipcOutSurveyReportSummary);
+		} else {
+			baseDAO.update(ipcOutSurveyReportSummary);
+		}
+		return true;
+	}
+
+	@Override
+	public IpcOutSurveyReportSummary findIpcOutSurveyReportSummaryById(
+			String loanOrderid) {
+		String hql = " FROM IpcOutSurveyReportSummary isrs WHERE isrs.loanOrderId = '"+loanOrderid+"'";
+		List<IpcOutSurveyReportSummary> list = baseDAO.find(hql);
+		if(null != list && list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+}

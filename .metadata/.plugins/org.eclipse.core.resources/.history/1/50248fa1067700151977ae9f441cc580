@@ -1,0 +1,32 @@
+package com.bpms.action;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.CarInfo;
+import com.bpms.service.CarInfoService;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 车辆信息 控制器
+ */
+@Namespace("/carInfo")
+@Action(value = "carInfoAction")
+public class CarInfoAction  extends BaseAction implements ModelDriven<CarInfo>{
+
+	private static final long serialVersionUID = 1L;
+
+	private CarInfo ci = new CarInfo();
+	
+	@Autowired
+	private CarInfoService carInfoService;	
+	
+	@Override
+	public CarInfo getModel() {
+		return ci;
+	}
+	
+	
+
+}

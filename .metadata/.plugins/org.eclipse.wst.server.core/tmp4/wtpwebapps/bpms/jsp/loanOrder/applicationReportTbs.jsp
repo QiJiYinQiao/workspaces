@@ -1,6 +1,10 @@
+<%@page import="com.bpms.util.Constants"%>
+<%@page import="com.bpms.shiro.ShiroUser"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
-
+<%
+ ShiroUser shiroUser = Constants.getCurrendUser();
+%>
 <style type="text/css">
 	#acceptTaskForm table input{border: none;}
 	table {border-radius: 5px;}
@@ -301,7 +305,7 @@
 			
 			// 对公
 			for(var i=0;i<publicOriented.length;i++){
-				var accountsJournals = data[i];
+				var accountsJournals = publicOriented[i];
 				var accountsJournalForm = getAccountsJournalForm(accountsJournals.bankaccountType,count,month)
 			  	$("#accountsJournal-corporate-div").append(accountsJournalForm);
 				var id="#accountsJournal-form-"+accountsJournals.bankaccountType+"-"+count;
@@ -312,7 +316,7 @@
 			
 			// 对私
 			for(var i=0;i<privateOriented.length;i++){
-				var accountsJournals = data[i];
+				var accountsJournals = privateOriented[i];
 				var accountsJournalForm = getAccountsJournalForm(accountsJournals.bankaccountType,count,month)
 			  	$("#accountsJournal-private-div").append(accountsJournalForm);
 				var id="#accountsJournal-form-"+accountsJournals.bankaccountType+"-"+count;
@@ -368,12 +372,12 @@
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>[入账月份:月]</th>"
-		  	+"			<td><input name='monName01' style='width: 100px;' readonly='readonly' class='easyui-validatebox' value='"+month[5]+"'/></td>"
-		  	+"			<td><input name='monName02' style='width: 100px;' readonly='readonly' class='easyui-validatebox' value='"+month[4]+"'/></td>"
-		  	+"			<td><input name='monName03' style='width: 100px;' readonly='readonly' class='easyui-validatebox' value='"+month[3]+"'/></td>"
-		  	+"			<td><input name='monName04' style='width: 100px;' readonly='readonly' class='easyui-validatebox' value='"+month[2]+"'/></td>"
-		  	+"			<td><input name='monName05' style='width: 100px;' readonly='readonly' class='easyui-validatebox' value='"+month[1]+"'/></td>"
-		  	+"			<td><input name='monName06' style='width: 100px;' readonly='readonly' class='easyui-validatebox' value='"+month[0]+"'/></td>"
+		  	+"			<td><input name='monName01' style='width: 100px;'  class='easyui-validatebox' value='"+month[5]+"'/></td>"
+		  	+"			<td><input name='monName02' style='width: 100px;'  class='easyui-validatebox' value='"+month[4]+"'/></td>"
+		  	+"			<td><input name='monName03' style='width: 100px;'  class='easyui-validatebox' value='"+month[3]+"'/></td>"
+		  	+"			<td><input name='monName04' style='width: 100px;'  class='easyui-validatebox' value='"+month[2]+"'/></td>"
+		  	+"			<td><input name='monName05' style='width: 100px;'  class='easyui-validatebox' value='"+month[1]+"'/></td>"
+		  	+"			<td><input name='monName06' style='width: 100px;'  class='easyui-validatebox' value='"+month[0]+"'/></td>"
 		  	+"		</tr>"
 		  	+"			<tr>"
 		  	+"			<th>[入账金额:元]</th>"
@@ -390,7 +394,7 @@
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>流水分析:</th>"
-		  	+"			<td colspan='7'><textarea name='analysis' class='easyui-validatebox easyui-textbox' data-options='required:true' style='width: 95%;height:70px;'></textarea></td>"
+		  	+"			<td colspan='7'><textarea name='analysis' class='easyui-validatebox easyui-textbox' data-options=\"required:true,validType:'length[0,512]'\" style='width: 95%;height:70px;'></textarea></td>"
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<td style='text-align: right;' colspan='7' align='right'>"
@@ -437,7 +441,8 @@
 	
 	// 增加
 	function addAccountsJournalForm(obj,type){
-		$(obj).parent().after(getAccountsJournalForm(type,count));
+		var month = ['','','','','',''];
+		$(obj).parent().after(getAccountsJournalForm(type,count,month));
 		var id="#accountsJournal-form-"+type+"-"+count;
 	  	$.parser.parse(id);  
 		count++;
@@ -704,11 +709,11 @@
 				</tr>
 				<tr>
 					<th>最近一笔贷款详情:</th>
-					<td colspan="6"><textarea name="lastLoanSpace" class="easyui-validatebox easyui-textbox" data-options="required:true" style="width: 95%;height:70px;"></textarea></td>
+					<td colspan="6"><textarea name="lastLoanSpace" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,512]'" style="width: 95%;height:70px;"></textarea></td>
 				</tr>
 				<tr>
 					<th>备注:</th>
-					<td colspan="6"><textarea name="loanDetail" class="easyui-validatebox easyui-textbox" data-options="required:true" style="width: 95%;height:70px;"></textarea></td>
+					<td colspan="6"><textarea name="loanDetail" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,512]'" style="width: 95%;height:70px;"></textarea></td>
 				</tr>
 				<tr>
 					<td style="text-align: right;" colspan="6" align="right"><a href="javascript:void(0);" onclick="saveLoansDetails(this)" class="easyui-linkbutton" iconCls="icon-save">保存</a></td>
@@ -763,7 +768,7 @@
 				</tr>
 				<tr>
 					<th>明细:</th>
-					<td colspan="8"><textarea name="detail" style="width: 95%;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+					<td colspan="8"><textarea name="detail" style="width: 95%;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,512]'"></textarea></td>
 				</tr>
 				<tr>
 					<td style="text-align: right;" colspan="8" align="right">
@@ -796,7 +801,7 @@
 				</tr>
 				<tr>
 					<th>备注:</th>
-					<td colspan="9"><textarea name="queryNotes" class="easyui-validatebox" style="width: 95%;height:70px;"></textarea></td>
+					<td colspan="9"><textarea name="queryNotes" class="easyui-validatebox" style="width: 95%;height:70px;" data-options="required:true,validType:'length[0,512]'"></textarea></td>
 				</tr>
 				<tr>
 					<td style="text-align: right;" colspan="9" align="right">
@@ -829,7 +834,7 @@
 				</tr>
 				<tr>
 					<th>备注:</th>
-					<td colspan="9"><textarea name="queryNotes" class="easyui-validatebox" style="width: 95%;height:70px;"></textarea></td>
+					<td colspan="9"><textarea name="queryNotes" class="easyui-validatebox" style="width: 95%;height:70px;" data-options="required:true,validType:'length[0,512]'"></textarea></td>
 				</tr>
 				<tr>
 					<td  style="text-align: right;" colspan="9" align="right">
@@ -914,29 +919,29 @@
 				</tr>
 				<tr>
 					<th>备注:</th>
-					<td colspan="6"><textarea name="note" style="width:600px;height:70px;" class="easyui-validatebox easyui-validatebox" data-options="required:true"></textarea></td>
+					<td colspan="6"><textarea name="note" style="width:600px;height:70px;" class="easyui-validatebox easyui-validatebox" data-options="required:true,validType:'length[0,300]'"></textarea></td>
 				</tr>
 				<tr>
 					<th>初审人:</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox"  value="<shiro:principal property='name'/>" disabled="disabled"/>
-						<input id="firsPersonnel" name="firsPersonnel" hidden="true"  class="easyui-validatebox easyui-textbox" value="<shiro:principal property="userId"/>"/>
+						<input class="easyui-validatebox easyui-textbox"  value="<%=shiroUser.getUser().getName() %>"  disabled="disabled"/>
+						<input id="firsPersonnel" name="firsPersonnel" hidden="true"  class="easyui-validatebox easyui-textbox" value="<%=shiroUser.getUserId() %>"/>
 					</td>
 					<th>初审日期</th>
-					<td><input id="finaDate" name="firsDate"  class="easyui-validatebox easyui-datetimebox" /></td>
+					<td><input id="finaDate" name="firsDate"  class="easyui-validatebox easyui-datebox" data-options="editable:false" /></td>
 				</tr>
 				<tr>
 					<th>初审人员意见:</th>
-					<td colspan="6"><textarea name="firsPersSugg" style="width:600px;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+					<td colspan="6"><textarea name="firsPersSugg" style="width:600px;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,10]'"></textarea></td>
 				</tr>
 				<tr>
 					<th>初审部门意见:</th>
-					<td colspan="6"><textarea name="firsDepSugg" style="width:600px;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+					<td colspan="6"><textarea name="firsDepSugg" style="width:600px;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,512]'"></textarea></td>
 				</tr>
 				
 				<tr>
 					<th>初审资质分析说明:</th>
-					<td colspan="6"><textarea name="description" style="width:600px;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea></td>
+					<td colspan="6"><textarea name="description" style="width:600px;height:70px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea></td>
 				</tr>
 				<tr>
 					<td style="text-align: right;" colspan="6" align="right">

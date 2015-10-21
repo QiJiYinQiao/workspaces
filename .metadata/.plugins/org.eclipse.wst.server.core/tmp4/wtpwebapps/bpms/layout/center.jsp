@@ -177,9 +177,7 @@
 </script>
 <div id="centerTabs">
 	<div iconCls="icon-home" title="首页" border="false" style="overflow: hidden;">
-		<!-- <iframe src="layout/portal.jsp" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe> -->
-		
-		<div style="text-align: center; margin: 0 auto; margin-top:200px;"><img src="extend/index.jpg" alt="P2P理财" align="middle"/></div>
+		<iframe id="taskIframePage" src="layout/portal.jsp" frameborder="0" style="border:0;width:100%;height:99.4%;"></iframe>
 	</div>
 </div>
 <div id="tabsMenu" style="width: 120px;display:none;">

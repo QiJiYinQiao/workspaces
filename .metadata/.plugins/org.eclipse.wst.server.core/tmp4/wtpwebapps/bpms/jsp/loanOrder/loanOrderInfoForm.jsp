@@ -52,13 +52,13 @@ function loadLoanOrderInfo(row){
 	    <table class="table">
 			<tr>
 				<th>申请额度(元):</th>
-				<td><input name="loanAmount" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mDouble'" type="text" />
+				<td><input name="loanAmount" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['mDouble','length[0,20]']" type="text" />
 				<th>最低接受额度(元):</th>
-				<td><input name="loanMin" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mDouble'"/></td>
+				<td><input name="loanMin" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['mDouble','length[0,20]']"/></td>
 			</tr>
 			<tr>
 				<th>申请贷款期限(月):</th>
-				<td><input name="loanPeriod" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'integer'"/></td>
+				<td><input name="loanPeriod" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:['integer','length[0,2]']"/></td>
 				<th>还款方式:</th>
 				<td><input id="repayMethod" name="repayMethod" type="text" class="easyui-textbox easyui-validatebox easyui-aa"  panelHeight="auto" editable="false"/></td>
 			</tr>
@@ -68,12 +68,12 @@ function loadLoanOrderInfo(row){
 			       <input id="loanType" name="loanType" type="text" class="easyui-textbox easyui-validatebox easyui-aa"  panelHeight="auto" editable="false"/>
 			    </td>
 			    <th>业务员:</th>
-				<td><input name="salesMan" class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
+				<td><input name="salesMan" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,40]'"/></td>
 			</tr>
 			<tr>
 				<th>贷款用途:</th>
 				<td colspan="3">
-				  <textarea name="purpose" class="easyui-textbox easyui-validatebox" style="width: 470px; height: 80px;" data-options="required:true"></textarea>
+				  <textarea name="purpose" class="easyui-textbox easyui-validatebox" style="width: 470px; height: 80px;" data-options="required:true,validType:'length[0,100]'"></textarea>
 				</td>
 			</tr>
 			<tr>

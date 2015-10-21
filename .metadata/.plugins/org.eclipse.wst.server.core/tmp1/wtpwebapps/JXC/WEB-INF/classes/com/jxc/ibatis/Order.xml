@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.OrderDao">
+	<resultMap type="com.jxc.web.user.model.OrderEntity" id="R_Order_ENTITY" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.lang.String" id="str" />
+	<resultMap type="List" id="li"/>
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<resultMap type="java.util.List" id="list"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="bigdecmal"></resultMap>
+	
+	<!-- 插入数据 -->
+	<insert id="addOrder"  parameterType="map">
+		INSERT INTO `sky`.`t_3g_order` (`ID`, `ORDER_NUM`, `RENT_P_NAME`, `RENT_P_IDNUMBER`, `RENT_P_PASSPORTNO`, `RENT_P_NATIONALITY`, `RENT_P_TEL`, `RENT_BEGINDATE`, `RENT_EXPECTDATE`, `EQUIPMENT_NO`, `COST_RENT_3G`, `COST_RENT_EQUIPMENT`, `COST_RETURN_DISCOUNT`, `COST_SUM`, `CREATE_USER`, `CREATE_TIME`,`REMARK`,`UPFRONT_SUM`,`D_COUNTRY`,`S_COUNTRY`,`IS_VALID`,`PAYMENT`,`MODIFY_USER`,`MODIFY_TIME`,`RENT_DAY`,`ORDER_STATE`,`USEID`,COUNTERID,POSITION_LEVEL,DISCOUNT_DAY,DISCOUNTWAY,JCBDATE,JCBCARDMONEY,JCBCARDNUMBER,POS_MONEY,CASH_MONEY)
+		VALUES (#{id}, #{order_num}, #{rent_p_name}, #{rent_p_idnumber}, #{rent_p_passportno}, #{rent_p_nationality}, #{rent_p_tel}, #{rent_begindate}, #{rent_expectdate}, #{equipment_no}, #{cost_rent_3g}, #{cost_rent_equipment}, #{cost_return_discount}, #{cost_sum}, #{create_user}, #{create_time},#{remark},#{upfront_sum},#{d_country},#{s_country},'0001',#{payment},#{create_user}, #{create_time},#{rent_day},'0001',#{useid},#{counterid},#{position_level},#{discount_day},#{discountway},#{jcbdate},#{jcbcardmoney},#{jcbcardnumber},#{pos_money},#{cash_money});
+	</insert>
+	<select id="queryOrder" resultMap="R_Order_ENTITY" parameterType="map">
+		<!-- SELECT `ID`, `ORDER_NUM`, `RENT_P_NAME`, `RENT_P_IDNUMBER`, `RENT_P_PASSPORTNO`, `RENT_P_NATIONALITY`, `RENT_P_TEL`, `RENT_BEGINDATE`, `RENT_ENDDATE`, `EQUIPMENT_NO`, `COST_RENT_3G`, `COST_RENT_EQUIPMENT`, `COST_RETURN_DISCOUNT`, `COST_SUM`, `CREATE_USER`, `CREATE_TIME` FROM t_3g_order; -->
+		<!-- SELECT * FROM  t_3g_order  ORDER BY ORDER_STATE,RENT_ENDDATE DESC,RENT_EXPECTDATE ASC; -->
+		SELECT * FROM t_3g_order WHERE USEID = #{useid}
+		<if test="gradetype == '0000'">
+			OR 1 = 1
+		</if>
+		<if test="gradetype == '0002'">
+			<!-- OR USEID IN (SELECT ID FROM t_3g_user WHERE HEADID = #{useid}) -->
+			OR COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+		</if>
+		 ORDER BY MODIFY_TIME DESC LIMIT #{start},#{number};
+	</select>
+	<!-- 根据手机号或者设备号查询EQUIPMENT_NO = #{0} OR RENT_P_TEL = #{1}  -->
+	<!-- <select id="queryOrderByNum" resultMap="R_Order_ENTITY" parameterType="String">
+	   select * from t_3g_order where 1 = #{sqls} ;
+	</select> -->
+	<select id="queryOrderByNum" resultMap="R_Order_ENTITY" parameterType="map">
+	  <!--  select * from t_3g_order WHERE IS_VALID = '0001' AND RENT_ENDDATE IS NULL  AND a.EQUIPMENT_TYPE='0002' -->
+	   select * from t_3g_order t LEFT JOIN allequipment a ON t.EQUIPMENT_NO = a.`NO` WHERE t.IS_VALID = '0001' AND a.EQUIPMENT_STATE = '0002' AND t.ORDER_STATE = '0001'
+	   <choose>
+	   		<when test="equipment_no!=null and rent_p_tel != null">
+	   			AND t.RENT_P_TEL = #{rent_p_tel} AND t.EQUIPMENT_NO = #{equipment_no} ;
+	   		</when>
+	   		<when test="equipment_no != null">
+	   			AND t.EQUIPMENT_NO = #{equipment_no};
+	   		</when>
+	   		<when test="rent_p_tel !=null">
+	   			AND t.RENT_P_TEL = #{rent_p_tel} ;
+	   		</when>
+	   		<!-- <if test="(#{0]) !=null">
+	   			 EQUIPMENT_NO = #{0};
+	   		</if>
+	   		<if test="(#{0}) !=null and (#{1}) !=null">
+	   			 RENT_P_TEL = #{1} AND EQUIPMENT_NO = #{0};
+	   		</if> -->
+	   </choose>
+	</select>
+	
+	<!-- 根据订单中的设备号修改设备信息：设备返还日期，设备租金，备注 -->
+	<!-- <select id="update_equipment" resultMap="R_Equipment_ENTITY" parameterType="map">
+		UPDATE `sky`.`t_3g_equipment` SET `TOTAL_RENT`=#{2},`REMARK`=#{3}, `RENT_ENDDATE`=#{1} WHERE  `NO`=#{0};
+	</select> -->
+	<!-- 分页查询 -->
+	<select id="queryOrderByPage" resultMap="R_Order_ENTITY" parameterType="map">
+		<!-- SELECT `ID`, `ORDER_NUM`, `RENT_P_NAME`, `RENT_P_IDNUMBER`, `RENT_P_PASSPORTNO`, `RENT_P_NATIONALITY`, `RENT_P_TEL`, `RENT_BEGINDATE`, `RENT_ENDDATE`, `EQUIPMENT_NO`, `COST_RENT_3G`, `COST_RENT_EQUIPMENT`, `COST_RETURN_DISCOUNT`, `COST_SUM`, `CREATE_USER`, `CREATE_TIME` FROM t_3g_order ORDER BY CREATE_TIME DESC LIMIT #{0},#{1} ; -->
+		SELECT * FROM t_3g_order WHERE USEID = #{useid}
+		<!-- <if test="gradetype == '0000'">
+			OR 1 = 1
+		</if>
+		<if test="gradetype == '0002'">
+			OR COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+		</if> -->
+		<choose>
+			<when test="gradetype=='0000'">
+				OR 1 = 1
+			</when>
+			<otherwise>
+				OR COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+			</otherwise>
+		</choose>
+		 ORDER BY ORDER_STATE,RENT_ENDDATE DESC,RENT_EXPECTDATE ASC LIMIT #{start},#{number}  ;
+	</select>
+	<!-- 查询共有多少条记录 -->
+	<select id="queryOrderRows" resultMap="ints" parameterType="map">
+		SELECT COUNT(*) FROM t_3g_order WHERE USEID = #{useid}
+		<!-- <if test="gradetype == '0000'">
+			OR 1 = 1
+		</if>
+		<if test="gradetype == '0002'">
+			OR USEID IN (SELECT ID FROM t_3g_user WHERE HEADID = #{useid})
+			OR COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+		</if> -->
+		<choose>
+			<when test="gradetype=='0000'">
+				OR 1 = 1
+			</when>
+			<otherwise>
+				OR COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 根据设备号查询目的地 -->
+	<select id="queryDcountry" resultMap="str" parameterType="map">
+		<!-- SELECT D_COUNTRY FROM t_3g_order WHERE EQUIPMENT_NO = #{equipment_no}; -->
+		SELECT tl.ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tc.ID=tl.CODEID WHERE tc.CODE='country' AND tl.ITEM_VALUE = (SELECT COUNTRY FROM t_3g_info WHERE ID = (SELECT SIM_ID FROM t_3g_equipment WHERE NO = #{equipment_no} ORDER BY MODIFY_TIME LIMIT 0,1));
+	</select>
+	<!-- 退还后更新订单 -->
+	<update id="updateOrder" parameterType="com.jxc.web.user.model.OrderEntity">
+		UPDATE t_3g_order SET RENT_ENDDATE = #{rent_enddate}, COST_RETURN_DISCOUNT = #{cost_return_discount},COST_SUM=#{cost_sum},COST_DISCOUNT = #{cost_discount},COST_RENT_3G = #{cost_rent_3g},MODIFY_USER=#{modify_user},MODIFY_TIME=#{modify_time},REMARK=#{remark},RENT_P_IDNUMBER=#{rent_p_idnumber},RENT_P_PASSPORTNO=#{rent_p_passportno},ORDER_STATE='0002',USEID = #{useid}  WHERE ORDER_NUM = #{order_num};
+	</update>
+	<!-- 退还后更新SIM卡中的最后退还日期字段  针对内部设备 -->
+	<update id="updateSimLastRentDate" parameterType="map">
+		UPDATE t_3g_info SET LAST_RENTDATE = #{rent_enddate} WHERE  ID = (SELECT SIM_ID FROM t_3g_equipment WHERE NO = #{no});
+	</update>
+	<!-- 查询支付方式 ,及其对应的编码-->
+	<select id="getPayment" resultMap="hashmap" parameterType="map">
+		SELECT tl.ITEM_TEXT,tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'payment' AND tl.`STATUS`='1' ORDER BY tl.SORTORDER;
+	</select>
+	<!-- 根据地区编码查询地区名称 -->
+	<select id="getCountry" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'country' AND tl.`STATUS`='1' AND ITEM_VALUE = #{itemvalue} ;
+	</select>
+	<!-- 根据地区名称查询地区编码 -->
+	<select id="getCountryCode" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'country' AND tl.`STATUS`='1' AND tl.ITEM_TEXT  = #{itemtext};
+	</select>
+	<!-- 根据支付方式代码查询支付方式 -->
+	<select id="getPaymentText" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'payment' AND tl.`STATUS`='1' AND ITEM_VALUE = #{paymentvalue} ;
+	</select>
+	<!-- 根据 手机号，设备号，租用日期，返还日期，目的地，租用人姓名，订单号查询订单 id,rent_p_name,rent_p_tel,equipment_no,rent_begindate,rent_expectdate,rent_enddate,d_country,payment,start,number,order_state-->
+	<select id="queryOrderWithConditons" resultMap="R_Order_ENTITY" parameterType="map">
+		<!-- SELECT * FROM t_3g_order WHERE ID = #{id} OR RENT_P_NAME = #{rent_p_name} OR RENT_P_TEL = #{rent_p_tel} '%${text}%' OR EQUIPMENT_NO = #{equipment_no} OR RENT_BEGINDATE = #{rent_begindate} OR RENT_ENDDATE = #{rent_enddate} OR D_COUNTRY = #{d_country} OR PAYMENT = #{payment} OR RENT_EXPECTDATE = #{rent_expectdate} LIMIT #{1},#{2}; -->
+		<!-- SELECT * FROM t_3g_order WHERE ID = #{0} OR RENT_P_NAME = #{1} OR RENT_P_TEL = #{2} OR EQUIPMENT_NO = #{3} OR RENT_BEGINDATE LIKE #{4}"%" OR RENT_EXPECTDATE LIKE #{5}"%" OR RENT_ENDDATE LIKE #{6}"%" OR D_COUNTRY = #{7} OR ORDER_STATE LIKE #{11}"%" OR PAYMENT LIKE #{8}"%"  LIMIT #{9},#{10}; -->
+		<!-- D_COUNTRY LIKE CONCAT(#{d_country},'%') AND ORDER_STATE LIKE CONCAT(#{order_state},'%') AND PAYMENT LIKE CONCAT(#{payment},'%') -->
+		SELECT * FROM t_3g_order WHERE 1 = 1  
+		<!-- <if test="gradetype == '0001'">
+			AND USEID = #{useid}
+		</if>
+		<if test="gradetype == '0002' or gradetype == '0005'">
+			AND (USEID = #{useid} OR USEID IN (SELECT ID FROM t_3g_user WHERE HEADID = #{useid}))
+			AND COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+		</if> -->
+		<choose>
+			<when test="gradetype=='0001'">
+				AND USEID = #{useid}
+			</when>
+			<when test="gradetype == '0002'">
+				AND COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+			</when>
+			<!-- <otherwise>
+				AND COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+			</otherwise> -->
+		</choose>
+		<if test="d_country!=''">
+			AND d_country = #{d_country}
+		</if>
+		<if test="order_state!=''">
+			AND order_state = #{order_state}
+		</if>
+		<if test="payment!=''">
+			AND payment = #{payment}
+		</if>
+		<if test="order_num!=''">
+			<!-- AND ORDER_NUM = #{order_num} -->
+			AND ORDER_NUM LIKE CONCAT('%',CONCAT(#{order_num},'%'))
+		</if>
+		<if test="rent_p_name!=''">
+			<!-- AND RENT_P_NAME = #{rent_p_name} -->
+			AND RENT_P_NAME LIKE CONCAT('%',CONCAT(#{rent_p_name},'%'))
+		</if>
+		<if test="rent_p_tel!=''">
+			<!-- AND RENT_P_TEL = #{rent_p_tel} -->
+			AND RENT_P_TEL LIKE CONCAT('%',CONCAT(#{rent_p_tel},'%'))
+		</if>
+		<if test="equipment_no!=''">
+			<!-- AND EQUIPMENT_NO = #{equipment_no} -->
+			AND EQUIPMENT_NO LIKE CONCAT('%',CONCAT(#{equipment_no},'%'))
+		</if>
+		<if test="rent_begindate!=''">
+			AND RENT_BEGINDATE LIKE CONCAT(#{rent_begindate},'%')
+		</if>
+		<if test="rent_expectdate!=''">
+			AND RENT_EXPECTDATE LIKE CONCAT(#{rent_expectdate},'%')
+		</if>
+		<if test="rent_enddate!=''">
+			AND RENT_ENDDATE LIKE CONCAT(#{rent_enddate},'%')
+		</if>
+		 ORDER BY ORDER_STATE,RENT_ENDDATE DESC,RENT_EXPECTDATE ASC LIMIT #{start},#{number}; 
+	</select>
+	<!-- 根据 手机号，设备号，租用日期，返还日期，目的地，租用人姓名，订单号查询到订单的总条数 -->
+	<select id="queryOrderWithConditonsTotal" resultMap="ints" parameterType="map">
+		<!-- SELECT * FROM t_3g_order WHERE ID = #{id} OR RENT_P_NAME = #{rent_p_name} OR RENT_P_TEL = #{rent_p_tel} '%${text}%' OR EQUIPMENT_NO = #{equipment_no} OR RENT_BEGINDATE = #{rent_begindate} OR RENT_ENDDATE = #{rent_enddate} OR D_COUNTRY = #{d_country} OR PAYMENT = #{payment} OR RENT_EXPECTDATE = #{rent_expectdate} LIMIT #{1},#{2}; -->
+		<!-- SELECT * FROM t_3g_order WHERE ID = #{0} OR RENT_P_NAME = #{1} OR RENT_P_TEL = #{2} OR EQUIPMENT_NO = #{3} OR RENT_BEGINDATE LIKE #{4}"%" OR RENT_EXPECTDATE LIKE #{5}"%" OR RENT_ENDDATE LIKE #{6}"%" OR D_COUNTRY = #{7} OR ORDER_STATE LIKE #{11}"%" OR PAYMENT LIKE #{8}"%"  LIMIT #{9},#{10}; -->
+		SELECT count(*) FROM t_3g_order WHERE 1 = 1 
+		<!-- <if test="gradetype == '0001'">
+			AND USEID = #{useid}
+		</if>
+		<if test="gradetype == '0002'">
+			AND COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+		</if> -->
+		<choose>
+			<when test="gradetype=='0001'">
+				AND USEID = #{useid}
+			</when>
+			<when test="gradetype == '0002'">
+				AND COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+			</when>
+			<!-- <otherwise>
+				AND COUNTERID IN (SELECT COUNTERID FROM t_3g_user_counter WHERE USERID = #{useid})
+			</otherwise> -->
+		</choose>
+		<if test="d_country!=''">
+			AND d_country = #{d_country}
+		</if>
+		<if test="order_state!=''">
+			AND order_state = #{order_state}
+		</if>
+		<if test="payment!=''">
+			AND payment = #{payment}
+		</if>
+		<if test="order_num!=''">
+			AND ORDER_NUM LIKE CONCAT('%',CONCAT(#{order_num},'%'))
+		</if>
+		<if test="rent_p_name!=''">
+			AND RENT_P_NAME LIKE CONCAT('%',CONCAT(#{rent_p_name},'%'))
+		</if>
+		<if test="rent_p_tel!=''">
+			AND RENT_P_TEL LIKE CONCAT('%',CONCAT(#{rent_p_tel},'%'))
+		</if>
+		<if test="equipment_no!=''">
+			AND EQUIPMENT_NO LIKE CONCAT('%',CONCAT(#{equipment_no},'%'))
+		</if>
+		<if test="rent_begindate!=''">
+			AND RENT_BEGINDATE LIKE CONCAT(#{rent_begindate},'%')
+		</if>
+		<if test="rent_expectdate!=''">
+			AND RENT_EXPECTDATE LIKE CONCAT(#{rent_expectdate},'%')
+		</if>
+		<if test="rent_enddate!=''">
+			AND RENT_ENDDATE LIKE CONCAT(#{rent_enddate},'%')
+		</if>
+	</select>
+	<!-- 查询国籍及其对应的代码 -->
+	<select id="queryNationality" resultMap="hashmap">
+		SELECT tl.ITEM_TEXT,tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'nationality' AND tl.`STATUS`='1' ORDER BY tl.SORTORDER ;
+	</select>
+	<!-- 根据国籍代码获取国籍名称 -->
+	<select id="queryNationText" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'nationality' AND tl.`STATUS`='1' AND ITEM_VALUE = #{nationvalue} ;
+	</select>
+	<!-- 查询地区名称及其对应的代码 -->
+	<select id="getCountryVlueAndText" resultMap="hashmap">
+		SELECT tl.ITEM_TEXT,tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'country' AND tl.`STATUS`='1' ORDER BY tl.SORTORDER ;
+	</select>
+	<!-- 根据订单号查询订单 -->
+	<select id="getDetailByOrderNum" resultMap="R_Order_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_order WHERE ORDER_NUM = #{order_num};
+	</select>
+	<!-- 根据舱位等级查询优惠天数 -->
+	<select id="queryDiscountdayByCLevel" resultMap="str" parameterType="map">
+		SELECT tl.DESCRIPTION FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'discountday' AND tl.`ITEM_VALUE`=#{itemvalue} ;
+	</select>
+	<!-- 根据舱位等级查询舱位 -->
+	<select id="queryPositionDesc" resultMap="str" parameterType="map">
+		SELECT tl.ITEM_TEXT FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'discountday' AND tl.`ITEM_VALUE`=#{itemvalue} ;
+	</select>
+	<!-- 查询最近更新的一笔订单 -->
+	<select id="queryLastOrder" resultMap="R_Order_ENTITY" >
+		SELECT * FROM t_3g_order ORDER BY modify_time DESC limit 0,1;
+	</select>
+	<!-- 查询起始优惠天数 -->
+	<select id="querysaleday" resultMap="str">
+		SELECT tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'saleday';
+	</select>
+	<!-- 按国家，日期，柜台查询该时间段内各国的订单量 -->
+	<!-- <select id="queryCountIntimeBc" resultMap="ints" parameterType="map">
+		SELECT COUNT(*) FROM t_3g_order WHERE MODIFY_TIME BETWEEN #{begindate} AND #{enddate} AND D_COUNTRY = #{d_country}
+		<if test="countercode!=''">
+			AND COUNTERID = #{countercode}
+		</if>
+		SELECT tl.ITEM_TEXT,count(*) as nums FROM t_3g_order td LEFT JOIN t_info_code_line tl ON td.D_COUNTRY = tl.ITEM_VALUE AND tl.CODEID = 'e31220ce4f5811e4a562d89d672b5e6c' WHERE td.RENT_BEGINDATE BETWEEN '2014-11-01' AND DATE_ADD('2014-11-08',INTERVAL 1 DAY) group by td.D_COUNTRY
+	</select> -->
+	<select id="queryCountIntimeBc" resultMap="hashmap" parameterType="map">
+		select ITEM_TEXT,IFNULL(nums,0) nums from t_info_code_line icl left join (SELECT D_COUNTRY,count(*) as nums FROM t_3g_order  WHERE RENT_BEGINDATE BETWEEN #{begindate} AND DATE_ADD(#{enddate},INTERVAL 1 DAY) 
+		<if test="countercode!=''">
+			AND COUNTERID = #{countercode}
+		</if>
+		 group by D_COUNTRY) r on icl.ITEM_VALUE=r.D_COUNTRY  where icl.CODEID = 'e31220ce4f5811e4a562d89d672b5e6c' 
+	</select>
+	<!-- 查询指定时间内每天多少订单 -->
+	<select id="queryDayOrderNums" resultMap="ints" parameterType="map">
+		<!-- SELECT count(*) FROM t_3g_order WHERE MODIFY_TIME LIKE CONCAT(#{modify_date},'%')
+		<if test="countercode!=''">
+			 AND COUNTERID = #{countercode}
+		</if> -->
+		SELECT count(*) FROM t_3g_order WHERE DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d') = #{modify_date}
+		<if test="countercode!=''">
+			 AND COUNTERID = #{countercode}
+		</if>
+	</select>
+	<!-- 查询每天的总收入和总支出 -->
+	<select id="queryDayInOut" resultMap="hashmap" parameterType="map">
+		SELECT SUM(IFNULL(UPFRONT_SUM,0)) 'yushou',SUM(IFNULL(COST_RETURN_DISCOUNT,0)) 'tuihuan'  FROM t_3g_order  WHERE DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') = #{modify_date}
+		<if test="countercode!=''">
+			 AND COUNTERID = #{countercode}
+		</if>
+	</select>
+	<!-- 查询每天的总收入 -->
+	<select id="queryDayIn" resultMap="bigdecmal" parameterType="map">
+		SELECT IFNULL(SUM(UPFRONT_SUM),0) 'yushou' FROM t_3g_order  WHERE DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d') = #{modify_date}
+		<if test="countercode!=''">
+			 AND COUNTERID = #{countercode}
+		</if>
+	</select>
+	<!-- 查询每天的支出 -->
+	<select id="queryDayOut" resultMap="bigdecmal" parameterType="map">
+		SELECT IFNULL(SUM(COST_RETURN_DISCOUNT),0) 'tuihuan' FROM t_3g_order  WHERE DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') = #{modify_date}
+		<if test="countercode!=''">
+			 AND COUNTERID = #{countercode}
+		</if>
+	</select>
+	
+	<!-- 查询某一天某个国家的的总收入支出 -->
+	<select id="queryDayInOutByCountry" resultMap="hashmap" parameterType="map">
+		SELECT IFNULL(SUM(UPFRONT_SUM),0) 'yushou', SUM(IFNULL(COST_RETURN_DISCOUNT,0)) 'tuizu' FROM t_3g_order WHERE D_COUNTRY = #{d_country} AND DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') = #{modify_time}
+	</select>
+	<!-- 查询某天某国的收入 -->
+	<select id="queryDayInByCountry" resultMap="bigdecmal" parameterType="map">
+		SELECT IFNULL(SUM(UPFRONT_SUM),0) 'yushou' FROM t_3g_order  WHERE DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d') = #{modify_time} AND D_COUNTRY = #{d_country};
+	</select>
+	<!-- 查询某天某国的支出 -->
+	<select id="queryDayOutByCountry" resultMap="bigdecmal" parameterType="map">
+		SELECT IFNULL(SUM(COST_RETURN_DISCOUNT),0) 'tuihuan' FROM t_3g_order  WHERE DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') = #{modify_time} AND D_COUNTRY = #{d_country};
+	</select>	
+
+	<!-- 查询某一天某个国家的订单数量 -->
+	<select id="queryOneDayOrderCount" resultMap="ints" parameterType="map">
+		SELECT COUNT(*) FROM t_3g_order WHERE DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d') = #{modify_time} AND D_COUNTRY = #{d_country} 
+		<if test="countercode!=''">
+			 AND COUNTERID = #{countercode}
+		</if>
+	</select>
+	<!-- 查询某个时间段内的订单 -->
+	<select id="queryOrderByTime" resultMap="R_Order_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_order WHERE RENT_BEGINDATE BETWEEN #{begin} AND #{end} AND ORDER_STATE = '0002' 
+		<if test="counterid!=null">
+			AND COUNTERID=#{counterid}
+		</if>
+		<if test="d_countrys!=null">
+			AND D_COUNTRY=#{d_countrys}
+		</if>
+		<if test="equipment_type=='0001'">
+			AND length(EQUIPMENT_NO) != 11
+		</if>
+		<if test="equipment_type=='0002'">
+			AND length(EQUIPMENT_NO) = 11
+		</if>
+		ORDER BY RENT_BEGINDATE DESC
+	</select>
+	<!-- 查询某个时间段内订单的数量 -->
+	<select id="queryOrderByTimeNum" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM t_3g_order WHERE RENT_BEGINDATE BETWEEN #{begin} AND #{end} AND ORDER_STATE = '0002';
+	</select>
+	<!-- 预计明日支出 -->
+	<select id="queryTomorrorInOut" resultMap="hashmap">
+		<!-- SELECT IFNULL(SUM(tg.COST_RENT_3G),0) zulin,IFNULL(SUM(tg.UPFRONT_SUM),0) yushou,tg.D_COUNTRY FROM t_3g_order tg WHERE DATE_FORMAT(tg.RENT_EXPECTDATE,'%y-%m-%d') = DATE_FORMAT(DATE_ADD(now(),interval 1 day),'%y-%m-%d') AND tg.ORDER_STATE = '0001' GROUP BY tg.D_COUNTRY  -->
+		SELECT IFNULL(SUM(tg.COST_RENT_3G),0) zulin,IFNULL(SUM(tg.UPFRONT_SUM),0) yushou FROM t_3g_order tg WHERE DATE_FORMAT(tg.RENT_EXPECTDATE,'%y-%m-%d') = DATE_FORMAT(DATE_ADD(now(),interval 1 day),'%y-%m-%d') AND tg.ORDER_STATE = '0001' AND tg.D_COUNTRY = #{countrycode} GROUP BY tg.D_COUNTRY 
+	</select>
+	<!-- unknown -->
+	<select id="queryOrderDetail" resultMap="hashmap" parameterType="map">
+		SELECT  order_num ordernum,rent_p_name rentpname,RENT_P_TEL rentptel,DATE_FORMAT(rent_begindate,'%Y-%m-%d') rentbegindate,DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') rentenddate,cost_sum costsum,
+			(DATEDIFF(rent_enddate,RENT_BEGINDATE)+1)  days,cast((cost_sum/(DATEDIFF(rent_enddate,RENT_BEGINDATE)+1)) as decimal(9,0)) avgday,
+			remark ,case when ORDER_STATE = '0001' then '进行中' else '已完成' end state,
+			case when LENGTH(equipment_no)>6 then '外部设备' else '内部设备' end equipmenttype,
+			MODIFY_USER modifyuser,DATE_FORMAT(MODIFY_TIME,'%Y-%m-%d') modifytime,DATE_FORMAT(RENT_EXPECTDATE,'%Y-%m-%d') rentexpectdate
+			FROM sky.t_3g_order
+			where 1 = 1
+		<if test="dcountry!=null and dcountry!=''">
+			 and D_COUNTRY=#{dcountry}
+		</if>
+		<choose>
+			<when test="rentbegindate_to!=null and rentbegindate_to!=''">
+				and DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d')  BETWEEN #{rentbegindate_from} AND #{rentbegindate_to}
+			</when>
+			<when test="rentbegindate_from!=null and rentbegindate_from!=''">
+				and DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d') = #{rentbegindate_from}
+			</when>
+		</choose>
+		<if test="rent_expectdate!=null and rent_expectdate!=''">
+			 AND DATE_FORMAT(RENT_EXPECTDATE,'%Y-%m-%d') =  #{rent_expectdate} AND DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') >  #{rent_expectdate}
+		</if>
+		<!-- 自有设备 -->
+		<if test="equipmenttype=='0001'">
+			<![CDATA[  and LENGTH(equipment_no)<=6  ]]>    
+		</if>
+		<!-- 外部设备 -->
+		<if test="equipmenttype=='0002'">
+			and LENGTH(equipment_no)>6
+		</if>
+		<if test="diffday=='0001'">
+		<![CDATA[ 	and (TO_DAYS(rent_enddate)-TO_DAYS(RENT_BEGINDATE) +1)<7 ]]>    
+		</if>
+		<if test="remark!=null and remark!=''">
+			and remark like CONCAT('%',CONCAT(#{remark},'%'))
+		</if>
+		order by equipmenttype,avgday LIMIT #{start},#{number}
+	</select>
+	<select id="queryOrderDetailNum" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM sky.t_3g_order where 1 = 1
+		<if test="dcountry!=null and dcountry!=''">
+			 and D_COUNTRY=#{dcountry}
+		</if>
+		<choose>
+			<when test="rentbegindate_to!=null and rentbegindate_to!=''">
+				and DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d')  BETWEEN #{rentbegindate_from} AND #{rentbegindate_to}
+			</when>
+			<when test="rentbegindate_from!=null and rentbegindate_from!=''">
+				and DATE_FORMAT(RENT_BEGINDATE,'%Y-%m-%d') = #{rentbegindate_from}
+			</when>
+		</choose>
+		<if test="rent_expectdate!=null and rent_expectdate!=''">
+			 AND DATE_FORMAT(RENT_EXPECTDATE,'%Y-%m-%d') =  #{rent_expectdate} AND DATE_FORMAT(RENT_ENDDATE,'%Y-%m-%d') >  #{rent_expectdate}
+		</if>
+		<!-- 自有设备 -->
+		<if test="equipmenttype=='0001'">
+			<![CDATA[  and LENGTH(equipment_no)<=6  ]]>    
+		</if>
+		<!-- 外部设备 -->
+		<if test="equipmenttype=='0002'">
+			and LENGTH(equipment_no)>6
+		</if>
+		<if test="diffday=='0001'">
+		<![CDATA[ 	and (TO_DAYS(rent_enddate)-TO_DAYS(RENT_BEGINDATE) +1)<7 ]]>    
+		</if>
+		<if test="remark!=null and remark!=''">
+			and remark like CONCAT('%',CONCAT(#{remark},'%'))
+		</if>
+	</select>
+</mapper>

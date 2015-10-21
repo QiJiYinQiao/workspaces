@@ -2,16 +2,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>投资者和理财详情页面</title>
-	</head>
-<script type="text/javascript">
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
 
-</script>
-
+	
 	<!-- 1、判断客户是否已经选择了理财产品 : 若此时客户还没有选择理财产品-->
 	<c:if test="${InvestorAndInvestProductRows == null || fn:length(InvestorAndInvestProductRows) <= 0}">
 		<div align="center">
@@ -23,65 +19,68 @@
 	<c:if test="${InvestorAndInvestProductRows != null && fn:length(InvestorAndInvestProductRows) > 0}">
 		<!-- 客户信息部分数据 -->
 		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-			<span>[客户信息]</span><br/>
+			<span class="badge">[客户信息]</span><br/>
 			
-			<table width='100%' height='100%' style="border-collapse:collapse; font-size: 12px;background-color:#F4f4f4;" cellpadding='5' border='1' align='center'>
+			<table align='center' width="100%">
 			   <tr align="center">
 			      <th>姓名:</th>
-			      <td>${InvestorAndInvestProductRows.get(0).investorName}</td>
-			      <th>身份证号:</th>
-			      <td>${InvestorAndInvestProductRows.get(0).idCrad}</td>
+			      <td><input name="investorName" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).investorName}"/></td>
+			      <th>身份证号:</th>			      
+			      <td><input name="idCrad" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).idCrad}"/></td>
 			      <th>联系方式:</th>
-			      <td>${InvestorAndInvestProductRows.get(0).mobTel}</td>		      
+			      <td><input name="mobTel" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).mobTel}"/></td>		      
 			   </tr>
 			</table>					
 		</div>		
 			
 		<!-- 理财产品部分数据 -->
-		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-		  <span>[已购理财产品信息]</span><br/>
+		<div class="well well-small" style="margin-left: 5px;margin-top: 20px">
+     	  <span class="badge">[已购理财产品信息]</span><br/>			
 			
-		  <table width='100%' height='100%' style="border-collapse:collapse; font-size: 12px;background-color:#F4f4f4;" cellpadding='5' border='1' align='center'>
+		  <table align='center' width="100%">
 		     <tr>
 		        <th align="center">理财产品</th>
+		        <td><input name="prodName" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).prodName}"/></td>
 		        <th align="center">出借周期（天）</th>
-		        <th align="center">年化收益（%）</th>
-		        <th align="center">到期收益（%）</th>
-		        <th align="center">理财金额（元）</th>
-		        <th align="center">年化折标系数</th>
-		        <th align="center">还款方式</th>
-		        <th align="center">意向投资日期</th>
-		        <th align="center">到期日期</th>
+				<td><input name="lendingCycle" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).lendingCycle}"/></td>		     
 		     </tr>
-		     
-		     <c:forEach items="${InvestorAndInvestProductRows}" var="oneModel">
-		     	<tr align="center">
-		     		<td>${oneModel.prodName}</td>
-		     		<td>${oneModel.lendingCycle}</td>
-		     		<td>${oneModel.ars}</td>
-		     		<td>${oneModel.ytm}</td>
-		     		<td><fmt:formatNumber value="${oneModel.investEdu}" pattern="#.00"/></td>
-		     		<td>${oneModel.msf}</td>
-	
-					<c:if test="${oneModel.repaymentMode == 'A'}">
-						<td style="text-align: center;">利随本清</td>					
-					</c:if>
-					<c:if test="${oneModel.repaymentMode == 'B'}">
-						<td style="text-align: center;">按月回息</td>					
-					</c:if>		     		
-	
-		     		<td><fmt:formatDate value="${oneModel.beginDate}" pattern="yyyy年MM月dd日"/></td>
-		     		<td><fmt:formatDate value="${oneModel.endDate}" pattern="yyyy年MM月dd日"/></td>
-		     	</tr>
-		     </c:forEach>
-		     
+
 		     <tr>
-		        <td colspan="10" style="text-align: right;">
+		        <th align="center">年化收益（%）</th>
+	     		<td><input name="ars" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).ars}%"/></td>
+		        <th align="center">到期收益（%）</th>
+	     		<td><input name="ytm" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).ytm}%"/></td>
+		     </tr>
+
+		     <tr>
+		        <th align="center">理财金额（元）</th>
+	     		<td><input name="investEdu" class="easyui-textbox" disabled="disabled" value='<fmt:formatNumber value="${InvestorAndInvestProductRows.get(0).investEdu}" pattern="#.00"/>'/></td>
+		        <th align="center">年化折标系数</th>
+	     		<td><input name="msf" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).msf}"/></td>
+		     </tr>
+
+			<!-- 从数据字典中获取还款方式的中文字符 -->
+			<script type="text/javascript">
+				$("#repaymentMode").val(jqueryUtil.showDicText("repayment_mode","${InvestorAndInvestProductRows.get(0).repaymentMode}"));//还款方式
+			</script>	
+
+		     <tr>
+		        <th align="center">还款方式</th>		     	     				     	     		
+ 				<td><input id="repaymentMode" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).repaymentMode}"/></td>					
+		        <th align="center">意向投资日期</th>
+	     		<td><input name="beginDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${InvestorAndInvestProductRows.get(0).beginDate}" pattern="yyyy年MM月dd日"/>'/></td>
+		     </tr>
+
+		     <tr>
+		     </tr>		     		     
+		        <th align="center">到期日期</th>
+	     		<td><input name="endDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${InvestorAndInvestProductRows.get(0).endDate}" pattern="yyyy年MM月dd日"/>'/></td>
+		     </tr>
+			 <tr>
+		        <td colspan="4" style="text-align: right;">
 		        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="$('#investorAndInvestProductsDialog').dialog('close')">关闭</a>
 		        </td>
-		     </tr>
+		     </tr>		     
 		  </table>
 		</div>		
 	</c:if>	
-	
-</html>

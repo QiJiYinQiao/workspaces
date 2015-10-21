@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.InfoDao">
+	<resultMap type="com.jxc.web.user.model.InfoEntity" id="R_Info_ENTITY" />
+	<resultMap type="com.jxc.web.user.model.InfologEntity" id="R_Infolog_ENTITY"></resultMap>
+	<resultMap type="com.jxc.web.user.model.EquipmentEntity" id="R_Equipment_ENTITY" />
+	<resultMap type="String" id="str" />
+	<resultMap type="Integer" id="ints"></resultMap>
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<resultMap type="java.util.List" id="list"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="bigdecmal"></resultMap>
+	<!-- 插入数据 -->
+	<insert id="addInfo" parameterType="map">
+		INSERT INTO `sky`.`t_3g_info` (`ID`, `OPERATORS`, `COUNTRY`,`DAY_RENT`,`DAY_BEGIN`,`DAY_END`,`IS_VALID`, `CREATE_USER`, `CREATE_TIME`, `MODIFY_USER`, `MODIFY_TIME`, `REMARK`) VALUES (#{id}, #{operators}, #{country},#{day_rent},#{day_begin},#{day_end}, '0001', #{create_user}, #{create_time}, #{create_user},#{create_time}, #{remark});
+	</insert>
+	<!-- 添加SIM卡后，更新其绑定的设备 -->
+	<update id="updateEqptAfterInfo" parameterType="map">
+		UPDATE t_3g_equipment SET SIM_ID = #{simid},DAY_RENT = (SELECT DAY_RENT FROM t_3g_info WHERE ID = #{simid}) WHERE NO = #{no};
+	</update>
+	<!-- 插入数据后更新其子表 -->
+	<insert id="recordInsert" parameterType="map">
+		INSERT INTO t_3g_info_log (ID,CARD_ID,OPERATION_CONTENT,OPERATION_USER,OPERATION_TIME,REMARK) VALUES(replace(uuid(),'-',''),#{card_id},'新增',#{operation_user},#{operation_time},#{remark});
+	</insert>
+	<!-- 查询所有记录 默认为有效 -->
+	<select id="selectInfo" resultMap="R_Info_ENTITY" parameterType="map">
+		SELECT * FROM `sky`.`t_3g_info` WHERE IS_VALID = '0001' ORDER BY DAY_END,OPERATORS LIMIT #{start},#{number};
+	</select>
+	<!-- 查询总记录条数 -->
+	<select id="infocount" resultMap="ints">
+		SELECT count(*) FROM t_3g_info WHERE IS_VALID = '0001';
+	</select>
+	<!-- 根据设备号查询目的地 ti.IS_VALID,ti.DAY_RENT,ti.ID-->
+	<select id="queryD_country" resultMap="hashmap" parameterType="map">
+		<!-- SELECT ti.COUNTRY FROM t_3g_info ti LEFT JOIN t_3g_equipment te ON ti.ID = te.3G_ID AND te.`NO` = #{equipment_Sno}; -->
+		<!-- SELECT COUNTRY FROM t_3g_info WHERE ID = (SELECT SIM_ID FROM t_3g_equipment WHERE NO = #{equipment_Sno}); -->
+		SELECT tl.ITEM_TEXT,tl.ITEM_VALUE,tl.DESCRIPTION FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'country' AND tl.`STATUS`='1' AND tl.ITEM_VALUE = (SELECT COUNTRY FROM t_3g_info  WHERE ID = (SELECT SIM_ID FROM t_3g_equipment WHERE NO = #{equipment_Sno}));
+	</select>
+	<!-- 根据sim  id查询sim卡信息 -->
+	<select id="queryInfoById" resultMap="R_Info_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_info WHERE ID = #{id};
+	</select>
+	<!-- 对SIM卡操作后更新其子表 -->
+	<insert id="recordSimInfo" parameterType="map">
+		<!-- INSERT INTO t_3g_info_log VALUES (replace(uuid(),'-',''),'95155e63528b11e4a562d89d672b5e6c','新增','admin',now(),'hahaha'); -->
+		 INSERT INTO t_3g_info_log VALUES (replace(uuid(),'-',''),#{sim_id},#{operation_content},#{operation_user},#{operation_time},#{remark}); 
+	</insert>
+	<!-- 根据SIM卡ID查询其子表 -->
+	<select id="querySimChildInfo" resultMap="R_Infolog_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_info_log WHERE CARD_ID = #{cardid} ORDER BY OPERATION_TIME DESC LIMIT #{start},#{number};
+	</select>
+	<!-- 查询到子表记录的总条数 -->
+	<select id="querySimChildInfoCount" resultMap="ints">
+		SELECT count(*)  FROM t_3g_info_log WHERE CARD_ID = #{cardid} ;
+	</select>
+	<!-- 根据条件查询SIM卡 -->
+	<select id="queryInfoWithCondition" resultMap="R_Info_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_info ti WHERE 1 = 1
+		<if test="ie.id != ''">
+			AND ti.ID LIKE CONCAT('%',CONCAT(#{ie.id},'%'))
+		</if>
+		<if test="ie.operators != ''">
+			AND ti.OPERATORS = #{ie.operators}
+		</if>
+		<if test="ie.country != ''">
+			 AND ti.COUNTRY=#{ie.country} 
+		</if>
+		<if test="ie.day_begin != ''">
+			AND ti.DAY_BEGIN LIKE CONCAT(#{ie.day_begin},'%')
+		</if>
+		<if test="ie.day_end != ''">
+			AND ti.DAY_END LIKE CONCAT(#{ie.day_end},'%') 
+		</if>
+		<if test="ie.is_valid != ''">
+			AND ti.IS_VALID = #{ie.is_valid}
+		</if>
+		  	LIMIT #{start},#{number};
+	</select>
+	<!-- 根据条件查询到SIM卡的总条数 -->
+	<select id="queryInfoWithConditionCounts" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM t_3g_info ti WHERE 1 = 1
+		<if test="ie.id != ''">
+			<!-- AND ti.ID = #{ie.id} -->
+			AND ti.ID LIKE CONCAT('%',CONCAT(#{ie.id},'%'))
+		</if>
+		<if test="ie.operators != ''">
+			AND ti.OPERATORS = #{ie.operators}
+		</if>
+		<if test="ie.country != ''">
+			 AND ti.COUNTRY=#{ie.country} 
+		</if>
+		<if test="ie.day_begin != ''">
+			AND ti.DAY_BEGIN = #{ie.day_begin}
+		</if>
+		<if test="ie.day_end != ''">
+			AND ti.DAY_END = #{ie.day_end} 
+		</if>
+		<if test="ie.is_valid != ''">
+			AND ti.IS_VALID = #{ie.is_valid}
+		</if>
+	</select>
+	<!-- 根据条件查询SIM卡运营商代码和运营商 -->
+	<select id="queryOperaterVAT" resultMap="hashmap" parameterType="map">
+		SELECT tl.ITEM_TEXT,tl.ITEM_VALUE FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'simoperator' AND tl.`STATUS`='1'
+		<if test="itemvalue != null">
+			AND tl.ITEM_VALUE = #{itemvalue}
+		</if>
+		<if test="itemtext != null">
+			AND tl.ITEM_TEXT = #{itemtext}
+		</if>
+		<if test="country!=''">
+			AND tl.ITEM_VALUE LIKE CONCAT(#{country},'%')
+		</if>
+		ORDER BY tl.SORTORDER;
+	</select>
+	<!-- 根据卡号查询此卡是否已经被绑定 -->
+	<select id="checkIsBind" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM t_3g_equipment WHERE SIM_ID = #{id} AND SIM_ID IS NOT NULL AND SIM_ID != '';
+	</select>
+	<!-- 根据设备号，柜台，是否绑定查询设备 -->
+	<select id="searchOfUnbindEqpt" resultMap="R_Equipment_ENTITY" parameterType="map"> 
+		SELECT * FROM t_3g_equipment WHERE  EQUIPMENT_STATE = '0001' AND IS_VALID = '0001'
+		<if test="equipmentno!=''">
+			AND NO LIKE CONCAT('%',CONCAT(#{equipmentno},'%'))
+		</if>
+		<if test="counterid!=''">
+			AND COUNTERID = #{counterid}
+		</if>
+		<if test="simid=='0001'">
+			AND SIM_ID IS NOT NULL
+		</if>
+		<if test="simid=='0002'">
+			AND SIM_ID IS NULL
+		</if>
+		ORDER BY COUNTERID,MODIFY_TIME DESC LIMIT #{start},#{number}
+	</select>
+	<!-- 根据设备号，柜台，是否绑定查询设备的条数 -->
+	<select id="searchOfUnbindEqptCounts" resultMap="ints" parameterType="map"> 
+		SELECT count(*) FROM t_3g_equipment WHERE EQUIPMENT_STATE = '0001' AND IS_VALID = '0001'
+		<if test="equipmentno!=''">
+			<!-- AND NO = #{equipmentno} -->
+			AND NO LIKE CONCAT('%',CONCAT(#{equipmentno},'%'))
+		</if>
+		<if test="counterid!=''">
+			AND COUNTERID = #{counterid}
+		</if>
+		<if test="simid=='0001'">
+			AND SIM_ID IS NOT NULL
+		</if>
+		<if test="simid=='0002'">
+			AND SIM_ID IS NULL
+		</if>
+	</select>
+	<!-- 查询SIM卡是否存在 -->
+	<select id="checkIsExist" resultMap="ints" parameterType="map">
+		SELECT count(*) FROM t_3g_info WHERE ID = #{id};
+	</select>
+	<!-- 根据国家获取日租金 -->
+	<select id="queryInfoDayRent" resultMap="str" parameterType="map">
+		SELECT tl.DESCRIPTION FROM t_info_code_line tl LEFT JOIN t_info_code tc ON tl.CODEID = tc.ID WHERE tc.CODE = 'country' AND tl.`STATUS`='1' AND tl.ITEM_VALUE = #{country}
+	</select>
+	<!-- 编辑数据卡信息 -->
+	<update id="editOfInfo" parameterType="map">
+		UPDATE t_3g_info SET DAY_END = #{day_end},IS_VALID = #{is_valid},REMARK = #{remark} WHERE ID = #{id};
+	</update>
+	<!-- 编辑数据卡后在其子表记录编辑信息 -->
+	<insert id="recordEditInfo" parameterType="map">
+		INSERT INTO t_3g_info_log (ID,CARD_ID,OPERATION_CONTENT,OPERATION_USER,OPERATION_TIME,REMARK) VALUES(replace(uuid(),'-',''),#{card_id},'修改',#{operation_user},#{operation_time},#{remark});
+	</insert>
+	<!-- 批量续费操作 -->
+	<update id="xufeioperation" parameterType="map">
+		<!-- <foreach collection="list" item="item" separator=";" index="index"> -->
+			<!-- UPDATE t_3g_info SET DAY_END = #{item.updatedate},MODIFY_USER = #{item.operation_user},MODIFY_TIME = #{item.operation_time} WHERE ID = #{item.card_id} -->
+		<!-- </foreach> -->
+		UPDATE t_3g_info SET DAY_END = #{updatedate},MODIFY_USER = #{operation_user},MODIFY_TIME = #{operation_time},REMARK=#{remark} WHERE ID = #{card_id}
+	</update>
+	<!-- 续费操作后更新子表 -->
+	<insert id="xufeioperationChild" parameterType="java.util.List">
+		INSERT INTO t_3g_info_log VALUES
+		<foreach collection="list" item="item" separator="," index="index">
+			(#{item.id},#{item.card_id},#{item.operation_content},#{item.ex_updatedate},#{item.updatedate},#{item.operation_user},#{item.operation_time},#{item.remark})
+		</foreach>
+	</insert>
+	<!-- 批量添加SIM卡 -->
+	<insert id="batchInportSim" parameterType="java.util.List">
+		INSERT INTO t_3g_info(ID,OPERATORS,COUNTRY,DAY_RENT,DAY_END,IS_VALID,CREATE_USER,CREATE_TIME,MODIFY_USER,MODIFY_TIME) VALUES
+		<foreach collection="list" item="info" separator="," index="index">
+			(#{info.id},#{info.operators},#{info.country},#{info.day_rent},#{info.day_end},'0001',#{info.create_user},#{info.create_time},#{info.create_user},#{info.create_time})
+		</foreach>
+	</insert>
+	<!-- 批量添加SIM卡 先添加到临时表-->
+	<insert id="batchInportTemporatorySim" parameterType="java.util.List">
+		INSERT INTO t_3g_temporatory_info(ID) VALUES
+		<foreach collection="list" item="item" separator="," index="index">
+			(#{item})
+		</foreach>
+	</insert>
+	<!-- 查询临时表中的所有数据 -->
+	<select id="queryTemporatorySim" resultMap="str">
+		SELECT ID FROM t_3g_temporatory_info;
+	</select>
+	<!-- 根据临时表的卡号查询数据是否重复 -->
+	<select id="queryIsDoubleByTemp" resultMap="ints" parameterType="map">
+		SELECT COUNT(#{id}) FROM t_3g_info WHERE id = #{id};
+	</select>
+	<!-- 删除临时表数据 -->
+	<update id="deleteTemporatorySim">
+		DELETE FROM t_3g_temporatory_info;
+	</update>
+	<!-- 批量导入后更新子表 -->
+	<insert id="insertDaoruAfterBatchin" parameterType="map">
+		INSERT INTO t_3g_info_log  (ID,CARD_ID,OPERATION_CONTENT,OPERATION_USER,OPERATION_TIME,REMARK) VALUES (replace(uuid(),'-',''),#{card_id},'导入',#{operation_user},#{operation_time},#{remark})
+		<!--  <foreach collection="lists" item="item" separator="," index="index"> 
+			(replace(uuid(),'-',''),#{item.card_id},'导入',#{item.operation_user},#{item.operation_time})
+		 </foreach>  -->
+	</insert>
+	<!-- 批量开卡 -->
+	<update id="simcardopoen" parameterType="map">
+		UPDATE t_3g_info SET DAY_BEGIN = #{day_begin},DAY_END = #{day_end},MODIFY_USER = #{modify_user},MODIFY_TIME = #{modify_time},REMARK = #{remark} WHERE ID = #{id};
+	</update>
+	<!-- 批量开卡后更新子表 -->
+	<insert id="insertAftersimcardopoen" parameterType="map">
+		INSERT INTO t_3g_info_log  (ID,CARD_ID,OPERATION_CONTENT,OPERATION_USER,OPERATION_TIME,REMARK) VALUES (replace(uuid(),'-',''),#{card_id},'开卡',#{operation_user},#{operation_time},#{remark})
+	</insert>
+	<!-- 根据卡号获取日租金 -->
+	<select id="queryDayrentBySimID" resultMap="bigdecmal" parameterType="map">
+		SELECT DAY_RENT FROM t_3g_info WHERE ID = #{id}
+	</select>
+</mapper>

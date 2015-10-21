@@ -1,0 +1,287 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>微贷业务呈报意见表</title>
+<style type="text/css">
+	th {
+		text-align: left;
+	}
+	textarea {
+		width:100%;
+	}
+</style>
+</head>
+<body>
+	<div id="" class="easyui-dialog" title=" " data-options="border:false,closed:true,modal:true">
+		<form id="" method="post">
+			<input name="mcbrId" type="hidden" />
+			<div style="text-align:center;">
+				<font size="4" style="font-weight: bold;">微贷业务呈报意见表</font>
+			</div>
+			<div>
+				<table cellpadding="8px;">
+					<tr>
+						<th>
+							借款人
+						</th>
+						<td colspan="3">
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="name"  type="text" />
+							<input name="loanOrderId" type="hidden" />
+						</td>
+						<th>
+							身份证号
+						</th>
+						<td colspan="3">
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="idNo"  type="text" />
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							共同借款人
+						</th>
+						<td  colspan="3">
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="coborrowerName"  type="text" />
+						</td>
+						<th>
+							身份证号
+						</th>
+						<td colspan="3">
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" data-options="validType:'idcard'" name="coborrowerIdno"  type="text" />
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							建议金额(元)
+						</th>
+						<td  colspan="3">
+							<input class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true" name="adviceLoanAmt" />
+						</td>
+						<th>
+							期限(月)
+						</th>
+						<td  colspan="3">
+							<input class="easyui-validatebox easyui-textbox easyui-combobox" name="adviceLoanPeriod" />
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							贷款用途
+						</th>
+						<td  colspan="3">
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="purpose"  type="text" value=""/>
+						</td>
+						
+						<th>
+							咨询服务费
+						</th>
+						<td  colspan="3">
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="counselingRate"  type="text" />%
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							经办机构/部门
+						</th>
+						<td  colspan="3"><input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="loanCtiy"  type="text"/></td>
+						<th>
+							经办人
+						</th>
+						<td colspan="3">
+							A:<input id="operatorA" class="easyui-validatebox easyui-textbox easyui-combobox" name="operatorA"  />&nbsp;&nbsp;&nbsp;
+							B:<input id="operatorB" class="easyui-validatebox easyui-textbox easyui-combobox" name="operatorB" /> 
+						</td>
+					</tr>
+					
+					<tr>
+						<th colspan="8">
+							风险控制措施
+						</th>
+					</tr>
+					
+					<tr>
+						<td colspan="8"> 
+							<div id="checkBoxDiv" style="padding-left:10px;height:30px;">
+								<input class="checkbox" id="candr" type="checkbox" name="riskCtrlMeasures" checked="checked" value="车抵+信用" /><label for="candr">车抵+信用</label>
+								<input class="checkbox" id="credit" type="checkbox" name="riskCtrlMeasures" value="信用" /><label for="credit">信用</label>
+								<input class="checkbox" id="additionMeasure" type="checkbox" name="riskCtrlMeasures" value="增加风控措施(加装GPS,签署《车辆买卖协议》、留存车辆备用钥匙)" /><label for="additionMeasure">增加风控措施(加装GPS,签署《车辆买卖协议》、留存车辆备用钥匙)</label>
+								<input class="checkbox" id="others" type="checkbox" name="riskCtrlMeasures" value="其他" /><label for="others">其他</label>
+								
+								<span style="padding-left:20px;font-weight:bold;">具体措施如下:</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td colspan="8"> 
+							<div style="height:230px;overflow:auto;">
+								<textarea class="easyui-validatebox easyui-textbox" data-options="required:true" name="specificMeasures" style="width:99%;height:220px;resize: none;">
+								</textarea>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<th colspan="8">
+							分支机构
+						</th>
+					</tr>
+					
+					<tr>
+						<th rowspan="2">
+							业务经办人
+						</th>
+						<td>
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="operatorAS" type="text" />
+						</td>
+						<th rowspan="2">
+							IPC数据
+						</th>
+						<th>
+							初次上会
+						</th>
+						<td>
+							<input class="easyui-validatebox easyui-textbox" name="firstMeeting" type="text" />
+						</td>
+						<th rowspan="2">
+							区域主管
+						</th>
+						<td rowspan="2" colspan="2">
+							<input class="easyui-validatebox easyui-textbox" name="deptPrincipal" data-options="required:true" />
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="operatorBS" type="text" />
+						</td>
+						<th>
+							补调核实
+						</th>
+						<td>
+							<input class="easyui-validatebox easyui-textbox" name="verification" type="text" />
+						</td>
+					</tr>
+					
+					<tr>
+						<th colspan="8">
+							贷审委 1
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<input class="easyui-combobox" data-options="editable:false">
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							理由/建议
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<textarea rows="" cols="" class="easyui-textbox"></textarea>
+						</th>
+					</tr>
+					
+					<tr>
+						<th colspan="8">
+							贷审委 2
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<input class="easyui-combobox" data-options="editable:false">
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							理由/建议
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<textarea rows="" cols="" class="easyui-textbox"></textarea>
+						</th>
+					</tr>
+					
+					<tr>
+						<th colspan="8">
+							贷审委 3
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<input class="easyui-combobox" data-options="editable:false">
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							理由/建议
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<textarea rows="" cols="" class="easyui-textbox"></textarea>
+						</th>
+					</tr>
+					
+					<tr>
+						<th>
+							通过金额
+						</th>
+						<td>
+							<Input class="easyui-textbox">
+						</td>
+						
+						<th>
+							期限
+						</th>
+						<td>
+							<input class="easyui-textbox">
+						</td>
+						
+						<th>
+							还款方式
+						</th>
+						<td colspan="3">
+							<input class="easyui-textbox">
+						</td>
+					</tr>
+					
+					<tr>
+						<th colspan="8">
+							汇总意见(负责人)
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<input class="easyui-combobox" data-options="editable:false">
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							理由/建议
+						</th>
+					</tr>
+					<tr>
+						<th colspan="8">
+							<textarea rows="" cols="" class="easyui-textbox"></textarea>
+						</th>
+					</tr>
+					
+				</table>
+			</div>
+		</form>
+		<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
+			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="microcreditOpinionSubmit('microcreditOpinionForm','microcreditOpinionDlg');">提交</a>
+		</div> 
+	</div>
+</body>
+</html>

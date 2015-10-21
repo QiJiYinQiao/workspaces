@@ -1,0 +1,88 @@
+package com.bpms.action;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.FirstauditQuestioncollect;
+import com.bpms.model.vo.OutSurveyQuestionAndAnswer;
+import com.bpms.service.FirstauditQuestioncollectService;
+import com.bpms.util.Constants;
+import com.bpms.view.model.DataModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 外访问题Action
+ * 
+ * @author liuhh 2015/06/23
+ */
+@SuppressWarnings("serial")
+@Namespace("/firstauditQuestioncollect")
+@Action(value = "firstauditQuestioncollectAction")
+public class FirstauditQuestioncollectAction extends BaseAction implements
+		ModelDriven<FirstauditQuestioncollect> {
+
+	// 驱动模型
+	private FirstauditQuestioncollect questioncollect = new FirstauditQuestioncollect();
+
+	// 注入service
+	@Autowired
+	private FirstauditQuestioncollectService service;
+
+	@Override
+	public FirstauditQuestioncollect getModel() {
+		return questioncollect;
+	}
+	
+	private String questions;
+
+	/**
+	 * 保存或修改外访问题
+	 */
+	public String saveOuboundVerify() {
+		String[] ques = questions.split("@@@");
+		boolean result = false;
+		String message = "保存失败";
+		for(int i = 0 ; i < ques.length; i++){
+			FirstauditQuestioncollect fqc = new FirstauditQuestioncollect();
+			fqc.setQuestionDesc(ques[i]);
+			fqc.setLoanOrderId(questioncollect.getLoanOrderId());
+			fqc.setCreater(Constants.getCurrendUser().getUserId()+"");
+			fqc.setCreateTime(new Date());
+			result = service.saveFirstauditQuestioncollect(fqc);
+		}
+		if(result){
+			message = "保存成功";
+		}
+		OutputJson(new DataModel("提示", message, result));
+		return null;
+	}
+
+	/**
+	 * 根据ID获取对应的问题
+	 */
+	public String findById() {
+		OutputJson(service.findById(questioncollect.getQuestionId()));
+		return null;
+	}
+	
+	/**
+	 * 根据订单ID查询
+	 */
+	public void findByOrderId() {
+		OutputJson(service.findQAByOrderId(questioncollect.getLoanOrderId()));
+	}
+
+	public String getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(String questions) {
+		this.questions = questions;
+	}
+	
+}

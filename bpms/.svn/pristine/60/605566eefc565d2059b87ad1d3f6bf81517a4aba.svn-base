@@ -1,0 +1,580 @@
+package com.bpms.action;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipOutputStream;
+
+
+
+
+
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.Attachment;
+import com.bpms.model.AuditinforecordAndAttachment;
+import com.bpms.model.vo.AttachmentModel;
+import com.bpms.service.AttachmentService;
+import com.bpms.service.AuditinforecordAndAttachmentService;
+import com.bpms.service.CommonService;
+import com.bpms.util.Collections;
+import com.bpms.util.Constants;
+import com.bpms.util.SaveUploadFileUtil;
+import com.bpms.util.ZipUtils;
+import com.bpms.view.model.DataModel;
+import com.bpms.view.model.GridModel;
+
+/**
+ * 文件上传控制器
+ */
+@Namespace("/attachment")
+@Action(value = "attachmentAction")
+public class AttachmentAction extends BaseAction {
+
+	private static final long serialVersionUID = 1L;
+
+	/** 自动注入service. */
+	@Autowired
+	private AttachmentService attachmentService;
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private AuditinforecordAndAttachmentService auditAttService;
+
+	private String fileName; // 文件名称
+	private List<File> file; // 上传的文件
+	private List<String> fileFileName; // 源文件文件名称
+	private List<String> fileContentType; // 文件类型
+	private String attType;// 附件类型
+	private String loanOrderId; // 贷款订单ID
+	private String auditId; // 稽核信息ID
+	private String attId; // 附件id
+	private String orderType; // 订单类型
+	private String userId;// 用户的id
+	private String investOrderId;// 投资订单id
+	private String orderId;// 订单id
+	private String isDetail;// 是否是附件列表详情 1是
+	private String attUrl;// 附件URL字符串
+	private String photoAttids;// 附件ID字符串
+
+	public String saveAttachment() {
+		String msg = "上传失败";
+		// 取得需要上传的文件数组
+		List<File> files = getFile();
+		if (Collections.listIsNotEmpty(files)) {
+			Attachment attachment = new Attachment();
+			for (int i = 0; i < files.size(); i++) {
+				// 文件在文件服务器上的相对路径
+				String path = SaveUploadFileUtil.saveFile2FileSystem(
+						fileFileName.get(i), files.get(i));
+				attachment.setAttURL(path);
+				attachment.setAttName(fileFileName.get(i));
+				attachment.setAttType(attType);
+				attachment.setOrderId(loanOrderId);
+				attachment.setCreator(String.valueOf(Constants.getCurrendUser()
+						.getUserId()));
+				attachment.setOrderType("borrowerOrder");
+				attachment.setFileType(FilenameUtils.getExtension(fileFileName
+						.get(i)));
+
+				// 保存前查询，如果有同名，文件则更新
+				Attachment existatt = attachmentService.findSameByNT(
+						attachment, auditId);
+				// 判断文件是否存在，如果存在则进行更新图片的相对地址，同时将原来的图片删除
+				if (null == existatt) {
+					attachmentService.persistenceAttachment(attachment);
+					if (StringUtils.isNotBlank(auditId)
+							&& !"undefined".equals(auditId)) {
+						AuditinforecordAndAttachment auditAtt = new AuditinforecordAndAttachment();
+						auditAtt.setAttId(attachment.getAttId());
+						auditAtt.setAuditId(auditId);
+						auditAttService
+								.saveAuditinforecordAndAttachment(auditAtt);
+					}
+				} else {
+					SaveUploadFileUtil.deleteFlieSystemFileByPath(existatt
+							.getAttURL());
+					existatt.setAttURL(path);
+					attachmentService.persistenceAttachment(existatt);
+				}
+			}
+			msg = "上传成功";
+		}
+		OutputJson(new DataModel("", msg, true), "text/html");
+		return null;
+	}
+
+	/**
+	 * 
+	 * @author: xujianwei
+	 * @time:2015年7月28日 下午1:30:57
+	 * @Title:saveInvestAttachment
+	 * @Description:TODO 投资业务上传附件（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String saveInvestAttachment() {
+		String msg = "上传失败";
+		try {
+			ServletActionContext.getRequest().setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		// 返回已保存附件列表
+		List<Map<String, String>> attachmentIdList = new ArrayList<Map<String, String>>();
+		// 取得需要上传的文件数组
+		List<File> files = getFile();
+		if (files != null && files.size() > 0) {
+			Attachment attachment = new Attachment();
+			for (int i = 0; i < files.size(); i++) {
+				//获取文件上传到图片服务器后的“相对路径”。
+				String fileUploadRelativeUrl = SaveUploadFileUtil.saveFile2FileSystem(fileFileName.get(i), files.get(i));
+				
+				attachment.setAttURL(fileUploadRelativeUrl);  //保存此单张图片在“图片服务器”上的相对URL
+				attachment.setAttName(fileFileName.get(i));   //保存此单张图片的原始图片名称				
+				attachment.setAttType(getAttType().get(i));
+				attachment.setOrderId(investOrderId);
+				attachment.setCreator(String.valueOf(Constants.getCurrendUser().getUserId()));
+				attachment.setOrderType("investorOrder");
+				attachment.setFileType(FilenameUtils.getExtension(fileFileName.get(i)));
+
+				// 保存前查询，如果有同名，文件则更新
+				Attachment existatt = attachmentService.findSameAttachment(attachment);
+				if (null == existatt) {
+					attachmentService.persistenceAttachment(attachment);
+				} else {					
+					SaveUploadFileUtil.deleteFlieSystemFileByPath(existatt.getAttURL());
+					existatt.setAttURL(fileUploadRelativeUrl);
+					attachmentService.persistenceAttachment(existatt);										
+				}
+				
+				Map<String, String> map = new HashMap<String, String>();// 存放单个附件信息		
+				map.put("attId", attachment.getAttId());
+				map.put("attName", attachment.getAttName());
+				map.put("attType", attachment.getAttType());
+				attachmentIdList.add(map);
+			}
+			msg = "上传成功";
+		}
+		OutputJson(new DataModel("", msg, true, attachmentIdList), "text/html");
+		return null;
+	}
+
+	
+	/**
+	 * 根据用户的id和订单的id获取附件
+	 */
+	public void findAttachmentListByUserIdAndOrderId() {
+		List<AttachmentModel> attachmentList = attachmentService
+				.findAttachmentList(userId, loanOrderId);
+		OutputJson(new GridModel(attachmentList, (long) attachmentList.size()));
+	}
+
+
+	/**
+	 * 根据id删除附件
+	 */
+	public void delAttachment() {
+		boolean b = attachmentService.delAttachAuditRL(attId);
+		
+		//根据attId，获得attachment的实例
+		Attachment oneAttachmentInst = attachmentService.findAttachmentById(attId);
+		if(oneAttachmentInst!= null && oneAttachmentInst.getAttURL()!=null){
+			if(StringUtils.isEmpty(this.attUrl)){
+				this.attUrl = oneAttachmentInst.getAttURL();
+				deleteAttachmentByUrl(); 
+			}
+		}		
+		
+		//注意：一定要将delAttachment()方法放置在代码“Attachment oneAttachmentInst = attachmentService.findAttachmentById(attId);”后边，
+		//否则，指定id的附件实例 就会在“获取其attUrl”之前被删除，这样就无法获得attUrl，也就无法删除“图片服务器”上的图片的。
+		b = attachmentService.delAttachment(attId);
+		
+		String message = "删除失败";
+		if (b) {
+			message = "删除成功";
+		}
+		OutputJson(new DataModel("提示", message, b), "text/html");
+	}
+
+	/**
+	 * 根据URL删除附件
+	 */
+	public void deleteAttachmentByUrl() {
+		boolean b = false;
+		String message = "删除失败";
+		String basicUrl = SaveUploadFileUtil.getFileSystemURL();
+		if (StringUtils.isNotBlank(photoAttids)) {
+			String[] attIdList = photoAttids.split(",");
+			for (int i = 0; i < attIdList.length; i++) {
+				Attachment att = attachmentService.findAttachmentById(attIdList[i]);
+				SaveUploadFileUtil.deleteFlieSystemFileByPath(att.getAttURL()
+						.replace(basicUrl, ""));
+				b = attachmentService.delAttachment(attIdList[i]);
+			}
+			if (b) {
+				message = "删除成功";
+			}
+		}
+		OutputJson(new DataModel("提示", message, b), "text/html");
+	}
+
+	/**
+	 * 根据登陆用户，订单类型，稽核信息ID查询附件信息
+	 */
+	public String findAttachmentByULA() {
+		List<AttachmentModel> list = new ArrayList<AttachmentModel>();
+		// 如果用户ID不为空，查看该用户所上传附件
+		if (null != userId && StringUtils.isNotBlank(userId)) {
+			list = attachmentService.findAttachmentList(userId, loanOrderId);
+		} else {
+			list = attachmentService.findAttachmentByULA(
+					String.valueOf(Constants.getCurrendUser().getUserId()),
+					orderType, auditId, loanOrderId, isDetail);
+		}
+
+		// 查询所有附件类型
+		/*
+		 * List<ComboBoxModel> attTypeList = commonService
+		 * .findTextArr("attachment_type"); List<Map<String, Object>> photoList
+		 * = new ArrayList<Map<String, Object>>();
+		 * 
+		 * for (ComboBoxModel cbm : attTypeList) { int count = 0; Map<String,
+		 * Object> map = new HashMap<String, Object>(); List<AttachmentModel>
+		 * photoTypeList = new ArrayList<AttachmentModel>(); for
+		 * (AttachmentModel acm : list) { if
+		 * (cbm.getCode().equals(acm.getAttType())) { photoTypeList.add(acm);
+		 * count++; } } map.put("acm", photoTypeList); map.put("count", count);
+		 * map.put("attType", cbm.getCode()); map.put("attTypeName",
+		 * cbm.getText()); photoList.add(map); } OutputJson(photoList);
+		 */
+
+		Map<String, List<AttachmentModel>> group = new HashMap<String, List<AttachmentModel>>();
+		for (AttachmentModel acm : list) {
+			String key = acm.getAttType();
+			if (group.containsKey(key)) {
+				group.get(key).add(acm);
+			} else {
+				List<AttachmentModel> photoTypeList = new ArrayList<AttachmentModel>();
+				photoTypeList.add(acm);
+				group.put(key, photoTypeList);
+			}
+		}
+		OutputJson(group);
+		return null;
+	}
+
+	//原来方法的备份
+/*	public String findAttachmentByOrderTypeAndOrderId() {
+		List<AttachmentModel> list = attachmentService.findAttachmentByOrderTypeAndOrderId(
+				String.valueOf(Constants.getCurrendUser().getUserId()),
+				orderType, investOrderId
+			);
+		OutputJson(list);
+		return null;
+	}*/
+	
+	/**
+	 * 
+	 * @author: xujianwei
+	 * @time:2015年7月28日 下午1:51:26
+	 * @Title:findAttachmentByOrderTypeAndOrderId
+	 * @Description:TODO 查询投资上传附件列表（这里描述这个方法的作用）
+	 * @return
+	 * @throws:
+	 */
+	public String findAttachmentByOrderTypeAndOrderId() {	
+		
+		List<AttachmentModel> list = new ArrayList<AttachmentModel>();
+		
+		// 如果用户ID不为空，查看该用户所上传附件
+//		if (null != userId && StringUtils.isNotBlank(userId)) {
+//		}else{			
+//		}
+		list = attachmentService.findAttachmentByOrderTypeAndOrderId(
+				String.valueOf(Constants.getCurrendUser().getUserId()),
+				orderType, investOrderId
+				);		
+		
+		Map<String, List<AttachmentModel>> group = new HashMap<String, List<AttachmentModel>>();
+		for (AttachmentModel acm : list) {
+			String key = acm.getAttType();
+			if (group.containsKey(key)) {
+				group.get(key).add(acm);
+			} else {
+				List<AttachmentModel> photoTypeList = new ArrayList<AttachmentModel>();
+				photoTypeList.add(acm);
+				group.put(key, photoTypeList);
+			}
+		}		
+		
+		OutputJson(group);
+		return null;					
+	}
+
+	/**
+	 * 根据稽核信息ID查询附件
+	 */
+	public void findAttachmentByAuditId() {
+		List<AttachmentModel> list = attachmentService
+				.findAttachmentByAuditId(auditId);
+		OutputJson(list);
+	}
+
+	/**
+	 * 下载附件
+	 * 
+	 * @return
+	 */
+	public String downloadAttachment() {
+		// 输出流
+		ZipOutputStream zos = null;
+		// 判断前台传过来的订单ID是否为空，不为空的话进行分割
+		if (StringUtils.isNotBlank(photoAttids)) {
+			String[] attidArray = photoAttids.split(",");// 所需下载文件ID数组
+			// 判断如果不为空，进行打包下载
+			if (attidArray != null && attidArray.length > 0) {
+				try {
+					// 设置头文件
+					ServletActionContext.getResponse().setHeader(
+							"Content-disposition",
+							"attachment;filename="
+							+ URLEncoder.encode(new  SimpleDateFormat("yyyyMMddHHssSSS").format(new  Date())+"附件.zip", "utf-8"));
+					// 获取输出了流
+					zos = new ZipOutputStream(ServletActionContext.getResponse().getOutputStream());
+					for (String attId : attidArray) {
+						Attachment attachment = attachmentService.findAttachmentById(attId);
+						if (null != attachment) {
+							ZipUtils.writeZip(attachment.getAttName(), SaveUploadFileUtil.getBytesFormFileSystemByPath(attachment.getAttURL()), zos);
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}finally{
+					if(zos!=null){
+						try {
+							zos.flush();
+							zos.close();
+						} catch (IOException e) {
+							zos = null;
+							e.printStackTrace();
+						} 
+					}
+				}
+			}
+		}
+		return null;
+
+	}
+
+	/**
+	 * 下载附件（投资流程和投资业务相关）
+	 * 
+	 * @return
+	 */	
+	public String downloadAttachment4InvestOrder() {
+		Attachment attachment = attachmentService.findAttachmentById(attId);
+		if (null != attachment) {
+			try {
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode(attachment.getAttName()
+										+ "-" + attachment.getAttId() + "."
+										+ attachment.getFileType(), "utf-8"));
+				
+				//根据图片的url，获得存放在图片服务器上的图片对象。
+				File picFileObj = SaveUploadFileUtil.getFileFormFileSystemByPath(attachment.getAttURL());						
+				
+				// 写入流中
+				IOUtils.write(AttachmentAction.getBytesFromFile(picFileObj), ServletActionContext.getResponse().getOutputStream());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}		
+	
+	
+	/**
+	 * 将文件转换成二进制数组
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static byte[] getBytesFromFile(File file) {
+		byte[] by = new byte[(int) file.length()];
+		try {
+			InputStream is = new FileInputStream(file);
+			ByteArrayOutputStream bytestream = new ByteArrayOutputStream();
+			byte[] bb = new byte[2048];
+			int ch;
+			ch = is.read(bb);
+			while (ch != -1) {
+				bytestream.write(bb, 0, ch);
+				ch = is.read(bb);
+			}
+			by = bytestream.toByteArray();
+			is.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return by;
+	}
+
+	/**
+	 * @Title: findAllAttachmentList
+	 * @Description: TODO 查询莫订单附件列表
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String findAllAttachmentList() {
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(attachmentService.findAllAttachmentList(userId,
+				orderType, orderId));
+		OutputJson(gridModel);
+		return null;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+
+	public String getAttId() {
+		return attId;
+	}
+
+	public void setAttId(String attId) {
+		this.attId = attId;
+	}
+
+	public String getLoanOrderId() {
+		return loanOrderId;
+	}
+
+	public void setLoanOrderId(String loanOrderId) {
+		this.loanOrderId = loanOrderId;
+	}
+
+	public List<String> getAttType() {
+		return Arrays.asList(attType.split(","));
+	}
+
+	public void setAttType(String attType) {
+		this.attType = attType;
+	}
+
+	public List<String> getFileName() {
+		return Arrays.asList(fileName.split(","));
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public List<File> getFile() {
+		return file;
+	}
+
+	public void setFile(List<File> file) {
+		this.file = file;
+	}
+
+	public List<String> getFileFileName() {
+		return fileFileName;
+	}
+
+	public void setFileFileName(List<String> fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+	public List<String> getFileContentType() {
+		return fileContentType;
+	}
+
+	public void setFileContentType(List<String> fileContentType) {
+		this.fileContentType = fileContentType;
+	}
+
+	public String getAuditId() {
+		return auditId;
+	}
+
+	public void setAuditId(String auditId) {
+		this.auditId = auditId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getInvestOrderId() {
+		return investOrderId;
+	}
+
+	public void setInvestOrderId(String investOrderId) {
+		this.investOrderId = investOrderId;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getIsDetail() {
+		return isDetail;
+	}
+
+	public void setIsDetail(String isDetail) {
+		this.isDetail = isDetail;
+	}
+
+	public String getAttUrl() {
+		return attUrl;
+	}
+
+	public void setAttUrl(String attUrl) {
+		this.attUrl = attUrl;
+	}
+
+	public String getPhotoAttids() {
+		return photoAttids;
+	}
+
+	public void setPhotoAttids(String photoAttids) {
+		this.photoAttids = photoAttids;
+	}
+
+}

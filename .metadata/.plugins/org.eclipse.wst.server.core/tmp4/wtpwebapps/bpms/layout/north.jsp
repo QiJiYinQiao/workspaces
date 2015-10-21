@@ -98,7 +98,7 @@ function startTime(){
             	<tr>
                     <td width="7" class="admin_left"></td>
                     <td width="28" class="admin_icon"></td>
-                	<td >欢迎您:<span class="admin_font" style="margin-right: 10px;"><%=user.getName() %></span><span id="time"></span></td>
+                	<td >欢迎您:<span class="admin_font" style="margin-right: 10px;"><%=user.getUser().getName() %></span><span id="time"></span></td>
                     <td ></td>
                     <td width="7" class="admin_right"></td>
                 </tr>

@@ -1,0 +1,620 @@
+package com.bpms.model.vo;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * 信审报告详情 实体
+ * @author Sun
+ *
+ */
+public class CreditAuditReportModel implements java.io.Serializable{
+	private static final long serialVersionUID = 3289242950016714945L;
+	/*基本信息*/
+	private String name; 								//客户姓名
+	private String idNo;								//身份证号
+	private BigDecimal loanAmount;						//申贷金额
+	private String repayMethod;							//还款方式
+	private String repayMethodText;						//repay_method
+	private String purpose;								//贷款用途
+	
+	/*初审资质分析*/
+	private String firstDescription;					//初审分析描述
+	private String isLocalRes;							//是否本地 is_local_resident
+	private String isLocalResText;
+	private String marriageType;						//婚姻状况 marriage_type
+	private String marriageTypeText;
+	private String industryType;						//行业类型
+	private Integer comOperDuration;					//经营年限
+	private String comOperStatus;						//经营状况 com_oper_status
+	private String comOperStatusText;
+	private String creditStatus;						//信用情况 credit_status
+	private String creditStatusText;
+	private String phoneCheckStatus;					//电核情况 phone_check_status
+	private String phoneCheckStatusText;
+	private String visitStatus;							//信访情况 visit_status
+	private String visitStatusText;	
+	private String qulificationStatus;					//资质总评 qulification_status
+	private String qulificationStatusText;
+	private String note;								//备注
+	private String firsPersSugg;						//初审人员意见
+	private String firsPersonnel;						//初审人
+	private String firsPersonnelName;					//初审人姓名
+	private Date firsDate;								//初审日期
+	private String firsDepSugg;							//初审部门意见
+	private BigDecimal firstSuggestAmt;					//初审建议金额
+	private String outSurver; 							//外访人
+	
+	/*终资质分析*/
+	private String finaId;
+	private String finalDescription;					//终审分析描述
+	private String finaPersonnel;						//终审人，此处存放的是员工用户的ID
+	private String finaPersonnelName;
+	private String finaPersSugg;						//终审人意见
+	private Date finaDate;								//终审日期
+	private BigDecimal contractLoanAmount;				//合同金额，即实际批准额度。
+	private BigDecimal actualLoanAmount;				//实放金额
+	private String loanPeriodType;						//贷款期限，loan_period_type
+	private String loanPeriodTypeText;
+	private String monthServiceFeeRate;					//月服务费率，month_service_fee_rate
+	private String monthServiceFeeRateText;
+	private String loanInterestRate;					//贷款利息 ,loan_interest_rate。
+	private String loanInterestRateText;
+	private BigDecimal visitFee;						//信访费用
+	private BigDecimal finalmonthRepay;					//月还款额度
+	private BigDecimal finalSuggestAmt;					//终审建议金额
+	private String finalAuditWay;						//终审信审方式
+	private String finalAuditWayText;					//终审信审方式
+	
+	private String loanCity;							//进件城市
+	private String lawQueryStatus;						//人法网 law_query_status
+	private String lawQueryStatusText;				
+	private String comCreditStatus;						//工商网 com_credit_status
+	private String comCreditStatusText;
+	
+	/*资产*/
+	private String realEstate;							//房产
+	private String vehicle;								//车产
+	private String theSameIndustry;						//同行业
+	
+	/*信用卡详情*/
+	private Integer cardCount;							//总卡数，包含在用、未激活和已销户的贷记卡总数，不包括外币卡，但如有使用，则包含
+	private Integer cardInUse;							//在用卡数
+	private BigDecimal creditTotalAmount;				//授信总额，授信总额不包括已销户的贷记卡额度，但包括未激活的贷记卡额度
+	private BigDecimal creditLimit;						//使用额度
+	private Integer creditYearOverdue;						//年内逾期
+	private Integer validateYear;						//使用年限，指当前使用卡的最长使用年限，不包含已销卡
+	private BigDecimal useRate;							//使用率
+	private Integer overdueCardCount;					//逾期卡数，指两年内的逾期卡总数
+	private BigDecimal overdueRatio;					//逾期比例，
+	private BigDecimal maxLimit;						//最高额度，指的是单张贷记卡最高授信额度
+	private BigDecimal creditMonthRepay;				//月还额度
+	private Integer creditcumulativeOverdue;					//累计逾期详细版征信：指两年内的累计逾期总数
+	private Integer maxQishu;							//最高期数
+	private BigDecimal creditOverdueRate;						//逾期率，=一年内逾期期数之和/应还贷期数（单一账户小于一年的按实际期数；大于一年的按12期算，再总数相加）
+	private String detail;								//明细
+	
+	/*贷款详情*/
+	private Integer totalLoanCount;						//贷款总笔数
+	private Integer outstandingCount;					//未结清贷款总笔数
+	private BigDecimal outstandingSum;					//未结清贷款总额
+	private BigDecimal outstandingBalance;				//未结清贷款余额
+	private Integer yearOverdue;						//年内逾期
+	private Integer cumulativeOverdue;					//累计逾期，指两年内的逾期期数之和
+	private BigDecimal overdueRate;						//逾期率
+	private BigDecimal monthRepay;						//月还额度
+	private String lastLoanSpace;						//最近一笔贷款详情
+	private String loanDetail;							//明细
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getIdNo() {
+		return idNo;
+	}
+	public void setIdNo(String idNo) {
+		this.idNo = idNo;
+	}
+	public BigDecimal getLoanAmount() {
+		return loanAmount;
+	}
+	public void setLoanAmount(BigDecimal loanAmount) {
+		this.loanAmount = loanAmount;
+	}
+	public String getRepayMethod() {
+		return repayMethod;
+	}
+	public void setRepayMethod(String repayMethod) {
+		this.repayMethod = repayMethod;
+	}
+	public String getPurpose() {
+		return purpose;
+	}
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
+	}
+	public String getFirstDescription() {
+		return firstDescription;
+	}
+	public void setFirstDescription(String firstDescription) {
+		this.firstDescription = firstDescription;
+	}
+	public String getIsLocalRes() {
+		return isLocalRes;
+	}
+	public void setIsLocalRes(String isLocalRes) {
+		this.isLocalRes = isLocalRes;
+	}
+	public String getIsLocalResText() {
+		return isLocalResText;
+	}
+	public void setIsLocalResText(String isLocalResText) {
+		this.isLocalResText = isLocalResText;
+	}
+	public String getMarriageType() {
+		return marriageType;
+	}
+	public void setMarriageType(String marriageType) {
+		this.marriageType = marriageType;
+	}
+	public String getMarriageTypeText() {
+		return marriageTypeText;
+	}
+	public void setMarriageTypeText(String marriageTypeText) {
+		this.marriageTypeText = marriageTypeText;
+	}
+	public String getIndustryType() {
+		return industryType;
+	}
+	public void setIndustryType(String industryType) {
+		this.industryType = industryType;
+	}
+	public Integer getComOperDuration() {
+		return comOperDuration;
+	}
+	public void setComOperDuration(Integer comOperDuration) {
+		this.comOperDuration = comOperDuration;
+	}
+	public String getComOperStatus() {
+		return comOperStatus;
+	}
+	public void setComOperStatus(String comOperStatus) {
+		this.comOperStatus = comOperStatus;
+	}
+	public String getComOperStatusText() {
+		return comOperStatusText;
+	}
+	public void setComOperStatusText(String comOperStatusText) {
+		this.comOperStatusText = comOperStatusText;
+	}
+	public String getCreditStatus() {
+		return creditStatus;
+	}
+	public void setCreditStatus(String creditStatus) {
+		this.creditStatus = creditStatus;
+	}
+	public String getCreditStatusText() {
+		return creditStatusText;
+	}
+	public void setCreditStatusText(String creditStatusText) {
+		this.creditStatusText = creditStatusText;
+	}
+	public String getPhoneCheckStatus() {
+		return phoneCheckStatus;
+	}
+	public void setPhoneCheckStatus(String phoneCheckStatus) {
+		this.phoneCheckStatus = phoneCheckStatus;
+	}
+	public String getPhoneCheckStatusText() {
+		return phoneCheckStatusText;
+	}
+	public void setPhoneCheckStatusText(String phoneCheckStatusText) {
+		this.phoneCheckStatusText = phoneCheckStatusText;
+	}
+	public String getVisitStatus() {
+		return visitStatus;
+	}
+	public void setVisitStatus(String visitStatus) {
+		this.visitStatus = visitStatus;
+	}
+	public String getVisitStatusText() {
+		return visitStatusText;
+	}
+	public void setVisitStatusText(String visitStatusText) {
+		this.visitStatusText = visitStatusText;
+	}
+	public String getQulificationStatus() {
+		return qulificationStatus;
+	}
+	public void setQulificationStatus(String qulificationStatus) {
+		this.qulificationStatus = qulificationStatus;
+	}
+	public String getQulificationStatusText() {
+		return qulificationStatusText;
+	}
+	public void setQulificationStatusText(String qulificationStatusText) {
+		this.qulificationStatusText = qulificationStatusText;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+	public String getFirsPersSugg() {
+		return firsPersSugg;
+	}
+	public void setFirsPersSugg(String firsPersSugg) {
+		this.firsPersSugg = firsPersSugg;
+	}
+	public String getFirsPersonnel() {
+		return firsPersonnel;
+	}
+	public void setFirsPersonnel(String firsPersonnel) {
+		this.firsPersonnel = firsPersonnel;
+	}
+	public Date getFirsDate() {
+		return firsDate;
+	}
+	public void setFirsDate(Date firsDate) {
+		this.firsDate = firsDate;
+	}
+	public String getFirsDepSugg() {
+		return firsDepSugg;
+	}
+	public void setFirsDepSugg(String firsDepSugg) {
+		this.firsDepSugg = firsDepSugg;
+	}
+	public String getFinalDescription() {
+		return finalDescription;
+	}
+	public void setFinalDescription(String finalDescription) {
+		this.finalDescription = finalDescription;
+	}
+	public String getFinaPersonnel() {
+		return finaPersonnel;
+	}
+	public void setFinaPersonnel(String finaPersonnel) {
+		this.finaPersonnel = finaPersonnel;
+	}
+	public String getFinaPersSugg() {
+		return finaPersSugg;
+	}
+	public void setFinaPersSugg(String finaPersSugg) {
+		this.finaPersSugg = finaPersSugg;
+	}
+	public Date getFinaDate() {
+		return finaDate;
+	}
+	public void setFinaDate(Date finaDate) {
+		this.finaDate = finaDate;
+	}
+	public BigDecimal getContractLoanAmount() {
+		return contractLoanAmount;
+	}
+	public void setContractLoanAmount(BigDecimal contractLoanAmount) {
+		this.contractLoanAmount = contractLoanAmount;
+	}
+	public BigDecimal getActualLoanAmount() {
+		return actualLoanAmount;
+	}
+	public void setActualLoanAmount(BigDecimal actualLoanAmount) {
+		this.actualLoanAmount = actualLoanAmount;
+	}
+	public String getLoanPeriodType() {
+		return loanPeriodType;
+	}
+	public void setLoanPeriodType(String loanPeriodType) {
+		this.loanPeriodType = loanPeriodType;
+	}
+	public String getLoanPeriodTypeText() {
+		return loanPeriodTypeText;
+	}
+	public void setLoanPeriodTypeText(String loanPeriodTypeText) {
+		this.loanPeriodTypeText = loanPeriodTypeText;
+	}
+	public String getMonthServiceFeeRate() {
+		return monthServiceFeeRate;
+	}
+	public void setMonthServiceFeeRate(String monthServiceFeeRate) {
+		this.monthServiceFeeRate = monthServiceFeeRate;
+	}
+	public String getMonthServiceFeeRateText() {
+		return monthServiceFeeRateText;
+	}
+	public void setMonthServiceFeeRateText(String monthServiceFeeRateText) {
+		this.monthServiceFeeRateText = monthServiceFeeRateText;
+	}
+	public String getLoanInterestRate() {
+		return loanInterestRate;
+	}
+	public void setLoanInterestRate(String loanInterestRate) {
+		this.loanInterestRate = loanInterestRate;
+	}
+	public String getLoanInterestRateText() {
+		return loanInterestRateText;
+	}
+	public void setLoanInterestRateText(String loanInterestRateText) {
+		this.loanInterestRateText = loanInterestRateText;
+	}
+	public BigDecimal getVisitFee() {
+		return visitFee;
+	}
+	public void setVisitFee(BigDecimal visitFee) {
+		this.visitFee = visitFee;
+	}
+	public String getLawQueryStatus() {
+		return lawQueryStatus;
+	}
+	public void setLawQueryStatus(String lawQueryStatus) {
+		this.lawQueryStatus = lawQueryStatus;
+	}
+	public String getLawQueryStatusText() {
+		return lawQueryStatusText;
+	}
+	public void setLawQueryStatusText(String lawQueryStatusText) {
+		this.lawQueryStatusText = lawQueryStatusText;
+	}
+	public String getComCreditStatus() {
+		return comCreditStatus;
+	}
+	public void setComCreditStatus(String comCreditStatus) {
+		this.comCreditStatus = comCreditStatus;
+	}
+	public String getComCreditStatusText() {
+		return comCreditStatusText;
+	}
+	public void setComCreditStatusText(String comCreditStatusText) {
+		this.comCreditStatusText = comCreditStatusText;
+	}
+	public String getRepayMethodText() {
+		return repayMethodText;
+	}
+	public void setRepayMethodText(String repayMethodText) {
+		this.repayMethodText = repayMethodText;
+	}
+	public BigDecimal getFinalmonthRepay() {
+		return finalmonthRepay;
+	}
+	public void setFinalmonthRepay(BigDecimal finalmonthRepay) {
+		this.finalmonthRepay = finalmonthRepay;
+	}
+	public String getRealEstate() {
+		return realEstate;
+	}
+	public void setRealEstate(String realEstate) {
+		this.realEstate = realEstate;
+	}
+	public String getVehicle() {
+		return vehicle;
+	}
+	public void setVehicle(String vehicle) {
+		this.vehicle = vehicle;
+	}
+	public String getTheSameIndustry() {
+		return theSameIndustry;
+	}
+	public void setTheSameIndustry(String theSameIndustry) {
+		this.theSameIndustry = theSameIndustry;
+	}
+	public Integer getCardCount() {
+		return cardCount;
+	}
+	public void setCardCount(Integer cardCount) {
+		this.cardCount = cardCount;
+	}
+	public Integer getCardInUse() {
+		return cardInUse;
+	}
+	public void setCardInUse(Integer cardInUse) {
+		this.cardInUse = cardInUse;
+	}
+	public BigDecimal getCreditTotalAmount() {
+		return creditTotalAmount;
+	}
+	public void setCreditTotalAmount(BigDecimal creditTotalAmount) {
+		this.creditTotalAmount = creditTotalAmount;
+	}
+	public BigDecimal getCreditLimit() {
+		return creditLimit;
+	}
+	public void setCreditLimit(BigDecimal creditLimit) {
+		this.creditLimit = creditLimit;
+	}
+	public Integer getCreditYearOverdue() {
+		return creditYearOverdue;
+	}
+	public void setCreditYearOverdue(Integer creditYearOverdue) {
+		this.creditYearOverdue = creditYearOverdue;
+	}
+	public Integer getValidateYear() {
+		return validateYear;
+	}
+	public void setValidateYear(Integer validateYear) {
+		this.validateYear = validateYear;
+	}
+	public BigDecimal getUseRate() {
+		return useRate;
+	}
+	public void setUseRate(BigDecimal useRate) {
+		this.useRate = useRate;
+	}
+	public Integer getOverdueCardCount() {
+		return overdueCardCount;
+	}
+	public void setOverdueCardCount(Integer overdueCardCount) {
+		this.overdueCardCount = overdueCardCount;
+	}
+	public BigDecimal getOverdueRatio() {
+		return overdueRatio;
+	}
+	public void setOverdueRatio(BigDecimal overdueRatio) {
+		this.overdueRatio = overdueRatio;
+	}
+	public BigDecimal getMaxLimit() {
+		return maxLimit;
+	}
+	public void setMaxLimit(BigDecimal maxLimit) {
+		this.maxLimit = maxLimit;
+	}
+	public BigDecimal getCreditMonthRepay() {
+		return creditMonthRepay;
+	}
+	public void setCreditMonthRepay(BigDecimal creditMonthRepay) {
+		this.creditMonthRepay = creditMonthRepay;
+	}
+	public Integer getCreditcumulativeOverdue() {
+		return creditcumulativeOverdue;
+	}
+	public void setCreditcumulativeOverdue(Integer creditcumulativeOverdue) {
+		this.creditcumulativeOverdue = creditcumulativeOverdue;
+	}
+	public Integer getMaxQishu() {
+		return maxQishu;
+	}
+	public void setMaxQishu(Integer maxQishu) {
+		this.maxQishu = maxQishu;
+	}
+	public BigDecimal getCreditOverdueRate() {
+		return creditOverdueRate;
+	}
+	public void setCreditOverdueRate(BigDecimal creditOverdueRate) {
+		this.creditOverdueRate = creditOverdueRate;
+	}
+	public String getDetail() {
+		return detail;
+	}
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+	public Integer getTotalLoanCount() {
+		return totalLoanCount;
+	}
+	public void setTotalLoanCount(Integer totalLoanCount) {
+		this.totalLoanCount = totalLoanCount;
+	}
+	public Integer getOutstandingCount() {
+		return outstandingCount;
+	}
+	public void setOutstandingCount(Integer outstandingCount) {
+		this.outstandingCount = outstandingCount;
+	}
+	public BigDecimal getOutstandingSum() {
+		return outstandingSum;
+	}
+	public void setOutstandingSum(BigDecimal outstandingSum) {
+		this.outstandingSum = outstandingSum;
+	}
+	public BigDecimal getOutstandingBalance() {
+		return outstandingBalance;
+	}
+	public void setOutstandingBalance(BigDecimal outstandingBalance) {
+		this.outstandingBalance = outstandingBalance;
+	}
+	public Integer getYearOverdue() {
+		return yearOverdue;
+	}
+	public void setYearOverdue(Integer yearOverdue) {
+		this.yearOverdue = yearOverdue;
+	}
+	public Integer getCumulativeOverdue() {
+		return cumulativeOverdue;
+	}
+	public void setCumulativeOverdue(Integer cumulativeOverdue) {
+		this.cumulativeOverdue = cumulativeOverdue;
+	}
+	public BigDecimal getOverdueRate() {
+		return overdueRate;
+	}
+	public void setOverdueRate(BigDecimal overdueRate) {
+		this.overdueRate = overdueRate;
+	}
+	public BigDecimal getMonthRepay() {
+		return monthRepay;
+	}
+	public void setMonthRepay(BigDecimal monthRepay) {
+		this.monthRepay = monthRepay;
+	}
+	public String getLastLoanSpace() {
+		return lastLoanSpace;
+	}
+	public void setLastLoanSpace(String lastLoanSpace) {
+		this.lastLoanSpace = lastLoanSpace;
+	}
+	public String getLoanDetail() {
+		return loanDetail;
+	}
+	public void setLoanDetail(String loanDetail) {
+		this.loanDetail = loanDetail;
+	}
+	public String getLoanCity() {
+		return loanCity;
+	}
+	public void setLoanCity(String loanCity) {
+		this.loanCity = loanCity;
+	}
+	public String getFirsPersonnelName() {
+		return firsPersonnelName;
+	}
+	public void setFirsPersonnelName(String firsPersonnelName) {
+		this.firsPersonnelName = firsPersonnelName;
+	}
+	public String getFinaId() {
+		return finaId;
+	}
+	public void setFinaId(String finaId) {
+		this.finaId = finaId;
+	}
+	public String getFinaPersonnelName() {
+		return finaPersonnelName;
+	}
+	public void setFinaPersonnelName(String finaPersonnelName) {
+		this.finaPersonnelName = finaPersonnelName;
+	}
+	public BigDecimal getFirstSuggestAmt() {
+		return firstSuggestAmt;
+	}
+	public void setFirstSuggestAmt(BigDecimal firstSuggestAmt) {
+		this.firstSuggestAmt = firstSuggestAmt;
+	}
+	public String getOutSurver() {
+		return outSurver;
+	}
+	public void setOutSurver(String outSurver) {
+		this.outSurver = outSurver;
+	}
+	public BigDecimal getFinalSuggestAmt() {
+		return finalSuggestAmt;
+	}
+	public void setFinalSuggestAmt(BigDecimal finalSuggestAmt) {
+		this.finalSuggestAmt = finalSuggestAmt;
+	}
+	public String getFirstAuditWay() {
+		return firstAuditWay;
+	}
+	public void setFirstAuditWay(String firstAuditWay) {
+		this.firstAuditWay = firstAuditWay;
+	}
+	public String getFinalAuditWay() {
+		return finalAuditWay;
+	}
+	public void setFinalAuditWay(String finalAuditWay) {
+		this.finalAuditWay = finalAuditWay;
+	}
+	public String getFirstAuditWayText() {
+		return firstAuditWayText;
+	}
+	public void setFirstAuditWayText(String firstAuditWayText) {
+		this.firstAuditWayText = firstAuditWayText;
+	}
+	public String getFinalAuditWayText() {
+		return finalAuditWayText;
+	}
+	public void setFinalAuditWayText(String finalAuditWayText) {
+		this.finalAuditWayText = finalAuditWayText;
+	}
+	
+}

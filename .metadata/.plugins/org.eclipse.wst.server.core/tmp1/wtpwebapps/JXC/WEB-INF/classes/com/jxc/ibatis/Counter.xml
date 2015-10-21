@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.CounterDao">
+	<resultMap type="com.jxc.web.user.model.CounterEntity" id="R_Counter_ENTITY" />
+	<resultMap type="String" id="str" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<!-- 插入数据 -->
+	<select id="add" resultMap="R_Counter_ENTITY"
+		parameterType="map">
+		INSERT INTO `sky`.`t_3g_counter` (`ID`, `NAME`, `HEADID`, `HEAD_TEL`, `RENT_BEGINDATE`, `RENT_ENDDATE`, `IS_VALID`, `SORT`, `CREATE_USER`, `CREATE_TIME`, `MODIFY_USER`, `MODIFY_TIME`) VALUES ('4', '12', '12', '123123', '2014-09-17 06:54:00', '2014-09-17 06:54:01', '0002', 2, 'sdf', '2014-09-17 06:54:10', 'ads', '2014-09-17 06:54:15');
+	</select>
+	<select id="getList" resultMap="R_Counter_ENTITY" parameterType="map">
+		SELECT `ID`, `NAME`,`COUNTER_CODE`, `HEADID`, `HEAD_TEL`, `RENT_BEGINDATE`, `RENT_ENDDATE`, `IS_VALID`, `SORT`, `CREATE_USER`, `CREATE_TIME`, `MODIFY_USER`, `MODIFY_TIME`, `REMARK` FROM `sky`.`t_3g_counter` ORDER BY SORT DESC;
+	</select>
+	<select id="getHeadId" resultMap="str" parameterType="map">
+		SELECT HEADID FROM t_3g_counter WHERE COUNTER_CODE = #{countercode};
+	</select>
+	<select id="queryCounterById" resultMap="R_Counter_ENTITY" parameterType="map">
+		SELECT * FROM t_3g_counter WHERE ID = #{id}
+	</select>
+	<!-- 判断是否上海员工 -->
+	<select id="queryIsShangHai" parameterType="map" resultMap="ints">
+		SELECT COUNT(*) FROM t_3g_counter WHERE NAME LIKE '%上海%' AND COUNTER_CODE = #{countercode}
+	</select>
+	<!-- 根据柜台ID 查询所在城市 -->
+	<select id="queryCityNameByCounterId" parameterType="map" resultMap="hashmap">
+		SELECT tg.CITY_CODE citycode,tg.CITY_NAME cityname FROM t_3g_counter tc LEFT JOIN t_3g_city tg ON tc.CITY_CODE = tg.CITY_CODE WHERE tc.ID = #{counterid}
+	</select>
+</mapper>

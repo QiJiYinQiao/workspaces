@@ -86,8 +86,6 @@
   	</bean>
   	
   	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager"> 
-  	 	<!-- <property name="sessionMode" value="native" />
-  	 	<property name="sessionManager" ref="sessionManager" />  -->
    	 	<property name="realm" ref="myShiroRealm"/> 
  	</bean> 
  	

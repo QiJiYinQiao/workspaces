@@ -1,0 +1,99 @@
+	<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+	<%
+		String easyuiThemeName="metro";
+		Cookie cookies[] =request.getCookies();
+		if(cookies!=null&&cookies.length>0){
+			for(Cookie cookie : cookies){
+				if (cookie.getName().equals("cookiesColor")) {
+					easyuiThemeName = cookie.getValue();
+					break;
+				}
+			}
+		}
+	%>
+	<link rel="stylesheet" type="text/css" href="themes/<%=easyuiThemeName %>/easyui.css">
+	<script type="text/javascript" src="js/xheditor/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="js/xheditor/xheditor-1.1.14-zh-cn.min.js" charset="utf-8"></script>
+	<link rel="stylesheet" type="text/css" href="themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="css/common.css">
+	<script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="js/jqueryUtil.js"></script>
+	<script type="text/javascript" src="js/json2.js"></script>
+	<script type="text/javascript" src="js/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="js/FusionCharts/FusionCharts.js"></script>
+	<script type="text/javascript" src="js/FusionCharts/FusionCharts.jqueryplugin.js"></script>
+	<script type="text/javascript" src="js/FusionCharts/FusionChartsExportComponent.js"></script>
+	<script type="text/javascript" src="js/validate.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/WdatePicker/WdatePicker.js"></script>
+	<style type="text/css">
+		.linkSpan{
+		  padding:5px;
+		  display:-moz-inline-box;
+		  display:inline-block;
+		  width:40%; 
+		  text-align: center;
+		}
+		.linkSpanS{
+		  padding:5px;
+		  display:-moz-inline-box;
+		  display:inline-block;
+		  width:10%; 
+		  text-align: center;
+		}
+		a{text-decoration: none;}
+		a:hover {
+		 color: #FF0000;
+		}
+		
+	</style>
+	<script type="text/javascript">
+		var attempData;
+		$(function(){
+               $.ajax({
+            	   url:"common/commonAction!findTextArr.action?codeMyid=attachment_type",
+            	   type:"post",
+            	   success:function(data){
+            		   attempData = data;           		   
+            	   }
+               });
+            });
+		
+		var j = 0;
+		//文件上传对话框  连个参数：附件类型，订单ID
+		function fileUploadsDlg(attType,loanOrderId,auditId){
+			if(attType==""){
+				$.messager.alert("提示","请先选择附件类型!","info");
+				return false;
+			}
+			if(undefined==auditId){
+				auditId = '';
+			}
+			window.open('jsp/loanOrder/loanOrderAttachmentForm.jsp?loanOrderId='+loanOrderId+'&attType='+attType+'&auditId='+auditId,
+					"附件详情");
+			//, "height="+$(window).height()*0.95+", width="+$(window).width()*0.95+", top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no"
+		}
+		
+		//附件详情对话框 四个参数 ：稽核信息ID，订单ID，用户ID，是否是详情 1
+		function checkAttachementDetail(auditId,loanOrderId,userId,isDetail){
+			if(undefined==userId){
+				userId = '';
+			}
+			if(undefined==isDetail){
+				isDetail=='';
+			}
+			window.open('jsp/loanOrder/attachementDetail.jsp?auditId='+auditId+'&loanOrderId='+loanOrderId+'&userId='+userId+'&isDetail='+isDetail,
+					"附件详情");
+			//, "height="+$(window).height()+", width="+$(window).width()*0.95+", top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no"
+		}
+		
+	</script>
+	<style type="text/css">
+		body {
+		    font-family:helvetica,tahoma,verdana,sans-serif;
+		    font-size:13px;
+		    margin:0px 0px 0px 0px;
+		    padding:0px 0px 0px 0px;
+		}
+	</style>

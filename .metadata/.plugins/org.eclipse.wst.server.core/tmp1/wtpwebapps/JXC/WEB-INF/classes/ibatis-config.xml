@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC 
+	"-//mybatis.org//DTD Config 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+	
+<configuration>
+	<typeAliases>
+	   <typeAlias alias="USER_ENTITY" type="com.jxc.web.user.model.UserEntity" />
+	   <typeAlias alias="COUNTER_ENTITY" type="com.jxc.web.user.model.CounterEntity" />
+	   <typeAlias alias="INFO_ENTITY" type="com.jxc.web.user.model.InfoEntity" />
+	   <typeAlias alias="ORDER_ENTITY" type="com.jxc.web.user.model.OrderEntity" />
+	   <typeAlias alias="EQUIPMENT_ENTITY" type="com.jxc.web.user.model.EquipmentEntity" />
+	   <typeAlias alias="WXORDER_ENTITY" type="com.jxc.web.user.model.WXOrderEntity" />
+	   <typeAlias alias="DictionaryCode_ENTITY" type="com.jxc.web.user.model.DictionaryCodeEntity" />
+	   <typeAlias alias="DictionaryCodeLine_ENTITY" type="com.jxc.web.user.model.DictionaryCodeLineEntity" />
+	   <typeAlias alias="INVENTORY_ENTITY" type="com.jxc.web.user.model.InventoryEntity"/>
+	   <typeAlias alias="MODULE_ENTITY" type="com.jxc.web.user.model.ModuleEntity"/>
+	   <typeAlias alias="ROLE_ENTITY" type="com.jxc.web.user.model.RoleEntity"/>
+	</typeAliases>
+</configuration>		
+			

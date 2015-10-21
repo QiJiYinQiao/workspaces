@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC 
+	"-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jxc.web.user.dao.DictionaryCodeDao">
+	<resultMap type="com.jxc.web.user.model.DictionaryCodeEntity" id="R_DictionaryCode_ENTITY" />
+	<resultMap type="Integer" id="ints" />
+	<resultMap type="java.lang.String" id="str" />
+	<resultMap type="List" id="li"/>
+	<resultMap type="java.util.HashMap" id="hashmap"></resultMap>
+	<resultMap type="java.util.List" id="list"></resultMap>
+	<resultMap type="java.math.BigDecimal" id="bigdecmal"></resultMap>
+	
+	<select id="query" parameterType="map" resultMap="R_DictionaryCode_ENTITY">
+		SELECT * FROM t_info_code WHERE 1 = 1 ORDER BY SORTORDER 
+	</select>
+	
+	<insert id="save" parameterType="map">
+		INSERT INTO t_info_code VALUES (replace(uuid(),'-',''),#{code},#{name},#{description},#{code_type},#{create_user},now(),#{modify_user},now(),#{sortorder})
+	</insert>
+	
+	<update id="edit" parameterType="map">
+		UPDATE t_info_code SET CODE = #{code},NAME = #{name},DESCRIPTION = #{description},CODE_TYPE=#{code_type},MODIFY_USER = #{modify_user} WHERE ID = #{id}
+	</update>
+	
+	<update id="startcode" parameterType="map">
+		UPDATE t_info_code SET STATUS = '1' WHERE ID = #{id}
+	</update>
+	
+	<update id="stopcode" parameterType="map">
+		UPDATE t_info_code SET STATUS = '0' WHERE ID = #{id}
+	</update>
+</mapper>
