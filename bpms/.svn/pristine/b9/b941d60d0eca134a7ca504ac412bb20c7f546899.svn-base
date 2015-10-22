@@ -1,0 +1,55 @@
+package com.bpms.listener2;
+
+import java.util.List;
+
+import org.activiti.engine.delegate.DelegateTask;
+
+import com.bpms.listener.BaseLoanTaskListener;
+import com.bpms.model.Role;
+import com.bpms.model.Users;
+import com.bpms.util.Collections;
+import com.bpms.util.Constants;
+/**
+ * IPC初审部门活动节点监听
+ * @author liuhh
+ *
+ */
+@SuppressWarnings("serial")
+public class LoanIPCInitialAuditTaskListener extends BaseLoanTaskListener {
+
+	@Override
+	public String getRoleCode() {
+		return Constants.LOAN_ROLE_CODE_IPCDIANHEZHUANYUAN;
+	}
+
+	
+	@Override
+	public void notify(DelegateTask task) {
+		
+		// 获取当前任务的候选人
+		List<Users> users = userService.findUsersByRoleCode(getRoleCode());
+		Role role = roleService.findRoleByCode(getRoleCode());
+		task.createVariableLocal("role", role);
+		if (Collections.listIsNotEmpty(users)) {
+			for (Users user : users) {
+				task.addCandidateUser(user.getUserId().toString());
+			}
+		}
+		
+		// 获取当前任务执行节点的定义的ID
+		String taskDefinitionKey = task.getTaskDefinitionKey();
+		
+		// 判断当前节点是IPC数据岗之后的IPC初审节点，还是执行外访完毕的IPC初审节点
+		// 如果是IPC数据岗之后的IPC初审节点
+		if("IPCInitialAudit".equals(taskDefinitionKey)){
+			sendMessageByUsers(task, users);
+		}
+		
+		// 如果是执行外访完毕的IPC初审节点
+		if("IPCInitialAudit2".equals(taskDefinitionKey)){
+			String ipcInitAuditUser = (String) task.getVariable("ipcInitAuditUser");
+			task.setAssignee(ipcInitAuditUser);
+			sendMessageByUserId(task, ipcInitAuditUser);
+		}
+	}
+}
