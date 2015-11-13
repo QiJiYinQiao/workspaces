@@ -185,7 +185,7 @@ $(function(){
 			</form>
 			<div style="text-align:right;">
 				<span style="color:red;float:left;padding-top:6px;">
-					注:不输入任何查询条件，默认查询所有客户还款详情
+					<!-- 注:不输入任何查询条件，默认查询所有客户还款详情 -->
 				</span>
 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search" onclick="subLoanCractForm();">执行查询</a>
 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-reload" onclick="resetLoanCractForm();">重置条件</a>

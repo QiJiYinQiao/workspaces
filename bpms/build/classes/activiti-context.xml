@@ -21,7 +21,7 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
 		</property>
 	</bean>
 
-	<bean id="loanServiceTaskDelegate" class=" com.bpms.listener.LoanServiceTaskDelegate" />
+	<bean id="loanServiceTaskDelegate" class=" com.bpms.listener.loan.LoanServiceTaskDelegate" />
 
 	<!-- 创建流程引擎对象 -->
 	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">

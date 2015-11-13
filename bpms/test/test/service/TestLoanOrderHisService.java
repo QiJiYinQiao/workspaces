@@ -1,8 +1,6 @@
 package test.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.junit.Test;
@@ -11,13 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import test.TestBase;
 
-import com.bpms.model.vo.CustomerRepaymentInfoModel;
-import com.bpms.service.LoanContractService;
 import com.bpms.service.LoanOrderHisService;
 import com.bpms.service.LoanOrderService;
 import com.bpms.service.LoanerService;
 import com.bpms.service.SysParameterService;
-import com.bpms.util.PageUtil;
 
 public class TestLoanOrderHisService extends TestBase {
 	@Autowired
@@ -31,9 +26,6 @@ public class TestLoanOrderHisService extends TestBase {
 	@Autowired
 	SysParameterService sysParameterService;
 	
-	@Autowired
-	LoanContractService loanContractService;
-	
 	/** 注入Hibernate会话工厂 */
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -42,11 +34,7 @@ public class TestLoanOrderHisService extends TestBase {
 	@Test
 	@Transactional(readOnly=false)
 	public void findAttachmentByULA() {
-		Map map = new HashMap();
-		PageUtil pageUtil = new PageUtil(0, 10);
+		System.out.println(sysParameterService.findSysParameter("loan_mthd"));
 	}
-	
-	public static void main(String[] args) {
-		
-	}
+
 }

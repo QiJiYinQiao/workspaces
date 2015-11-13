@@ -1,9 +1,16 @@
 package test;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import org.apache.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 
 /**
  * Copyright(C) JiNanShangJie 2015.
@@ -27,19 +34,4 @@ public class TestBase {
 	public TestBase() {
 		logger = Logger.getLogger(this.getClass());
 	}	
-	
-	public static void main(String[] args) {
-		int m = 2;
-		int i = 0 ;
-		for(; m >= 0; m--){
-			if(m == 0){
-				m = 12;
-			}
-			System.out.println(m);
-			i++;
-			if(i == 6){
-				break;
-			}
-		}
-	}
 }

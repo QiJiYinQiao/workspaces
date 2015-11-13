@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="com.qqjrbj.bpms.loan">
+  <process id="LoanOrderLetter" name="借款业务流程" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="com.bpms.listener.loan.LoanProcessStartExecutionListener"></activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="流程开始">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.loan.LoanProcessStartExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="OrderResubmit" name="调整订单" activiti:assignee="${curUserId}" activiti:formKey="taskOrderResubmitForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanOrderResubmitTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="InitialAudit" name="初审部门" activiti:formKey="taskInitialAuditForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanInitialAuditTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="FinalAudit" name="终审部门" activiti:formKey="taskFinalAuditForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanFinalAuditTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <userTask id="PerformOutbound" name="执行外访" activiti:formKey="taskPerformOutboundForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanVisitTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="Signatory" name="签约人" activiti:formKey="taskSignatoryForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanSignatoryTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="ApprovalMgr" name="审批主管" activiti:formKey="taskApprovalMgrForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanApprovalMgrTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <userTask id="ApprovalLeader" name="审批经理" activiti:formKey="taskApprovalLeaderForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanApprovalLeaderTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
+    <endEvent id="endevent3" name="流程结束">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.bpms.listener.loan.LoanProcessStopExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <exclusiveGateway id="exclusivegateway6" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="ApprovalLeaderRefuse" name="审批经理拒贷" sourceRef="exclusivegateway6" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ApprovalLeaderRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="PerformOutboundThrough" name="外访完毕" sourceRef="PerformOutbound" targetRef="InitialAuditVerification"></sequenceFlow>
+    <sequenceFlow id="EduAnalyzerOverrun" name="合同额度超限" sourceRef="exclusivegateway4" targetRef="ApprovalLeader">
+      <extensionElements>
+        <activiti:executionListener event="updateOrderStatus" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanEdu>=eduLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="EduAnalyzerNotOverrun" name="合同额度未超限" sourceRef="exclusivegateway4" targetRef="Signatory">
+      <extensionElements>
+        <activiti:executionListener event="updateOrderStatus" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${loanEdu<eduLimit}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ApprovalLeaderThrough" name="审批经理通过" sourceRef="exclusivegateway6" targetRef="Signatory">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ApprovalLeaderThrough'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SignatoryRefuse" name="客户拒签" sourceRef="exclusivegateway5" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='SignatoryRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SignatoryThrough" name="客户已签约" sourceRef="exclusivegateway5" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='SignatoryThrough'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ApprovalSupervisorThrough" sourceRef="ApprovalMgr" targetRef="exclusivegateway10"></sequenceFlow>
+    <sequenceFlow id="LoanOrder_flow23" sourceRef="ApprovalLeader" targetRef="exclusivegateway6"></sequenceFlow>
+    <sequenceFlow id="LoanOrder_flow8" sourceRef="InitialAudit" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="LoanOrder_flow26" sourceRef="Signatory" targetRef="exclusivegateway5"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway9" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="LoanOrder_flow2" sourceRef="OrderResubmit" targetRef="exclusivegateway9"></sequenceFlow>
+    <sequenceFlow id="OrderResubmitCancle" name="订单撤销" sourceRef="exclusivegateway9" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='OrderResubmitCancle'}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="EduAnalyzer" name="额度分析器" activiti:expression="${loanServiceTaskDelegate.distrbuteByLimit(execution)}"></serviceTask>
+    <sequenceFlow id="LoanOrder_flow20" sourceRef="EduAnalyzer" targetRef="exclusivegateway4"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway10" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="ApprovalMgrThrough" name="审批主管通过" sourceRef="exclusivegateway10" targetRef="EduAnalyzer">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ApprovalMgrThrough'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ApprovalMgrRefuse" name="审批主管拒贷" sourceRef="exclusivegateway10" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ApprovalMgrRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InitialAuditRefuse" name="初审拒贷" sourceRef="exclusivegateway2" targetRef="InitialGroupLeader">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InitialAuditRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway14" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="DataPostReject" name="数据岗驳回" sourceRef="exclusivegateway14" targetRef="OrderResubmit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DataPostReject'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="InitialGroupLeader" name="初审组长" activiti:formKey="taskInitialAuditGroupLeaderFrom.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanInitialGroupLeaderTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway15" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow26" sourceRef="InitialGroupLeader" targetRef="exclusivegateway15"></sequenceFlow>
+    <sequenceFlow id="InitialGroupLeaderReject" name="初审组长通过" sourceRef="exclusivegateway15" targetRef="InitialAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InitialGroupLeaderReject'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InitialGroupLeaderRefuse" name="初审组长拒贷" sourceRef="exclusivegateway15" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InitialGroupLeaderRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="InitialAuditVerification" name="初审部门" activiti:formKey="taskInitialVerificationForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanInitialAuditTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway16" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow27" sourceRef="FinalAudit" targetRef="exclusivegateway16"></sequenceFlow>
+    <sequenceFlow id="FinalAuditThrough" name="终审通过" sourceRef="exclusivegateway16" targetRef="ApprovalMgr">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='FinalAuditThrough'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="FinalAuditRefuse" name="终审拒贷" sourceRef="exclusivegateway16" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='FinalAuditRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="InitialGroupLeaderVerification" name="初审组长" activiti:formKey="taskInitialVerificationGroupLeaderForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanInitialGroupLeaderTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway18" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="InitialGroupLeaderVerificationReject" name="初审组长驳回" sourceRef="exclusivegateway18" targetRef="InitialAuditVerification">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InitialGroupLeaderVerificationReject'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InitialGroupLeaderVerificationRefuse" name="初审组长拒贷" sourceRef="exclusivegateway18" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='GroupLeaderVerificationRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway19" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow34" sourceRef="InitialAuditVerification" targetRef="exclusivegateway19"></sequenceFlow>
+    <sequenceFlow id="InitialAuditVerificationThrough" name="初审通过" sourceRef="exclusivegateway19" targetRef="FinalAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InitialAuditVerificationThrough'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InitialAuditThrough" name="初审通过" sourceRef="exclusivegateway2" targetRef="PerformOutbound">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="InitialAuditThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InitialAuditReject" name="初审驳回" sourceRef="exclusivegateway2" targetRef="OrderResubmit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="InitialAuditReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="DataPost" name="数据岗" activiti:formKey="taskDataPostForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.letter.LoanDataPostTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="BusinessSubmit" name="业务员提交任务" sourceRef="startevent1" targetRef="DataPost">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="OrderResubmitThrough" name="重新申请" sourceRef="exclusivegateway9" targetRef="DataPost"></sequenceFlow>
+    <sequenceFlow id="flow83" sourceRef="DataPost" targetRef="exclusivegateway14"></sequenceFlow>
+    <sequenceFlow id="DataPostThrough" name="数据岗通过" sourceRef="exclusivegateway14" targetRef="InitialAudit"></sequenceFlow>
+    <sequenceFlow id="InitialAuditVerificationRefuse" name="初审核实拒贷" sourceRef="exclusivegateway19" targetRef="InitialGroupLeaderVerification">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InitialAuditVerificationRefuse'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow85" sourceRef="InitialGroupLeaderVerification" targetRef="exclusivegateway18"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_LoanOrderLetter">
+    <bpmndi:BPMNPlane bpmnElement="LoanOrderLetter" id="BPMNPlane_LoanOrderLetter">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="665.0" y="12.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="OrderResubmit" id="BPMNShape_OrderResubmit">
+        <omgdc:Bounds height="55.0" width="105.0" x="438.0" y="173.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InitialAudit" id="BPMNShape_InitialAudit">
+        <omgdc:Bounds height="55.0" width="105.0" x="630.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="FinalAudit" id="BPMNShape_FinalAudit">
+        <omgdc:Bounds height="55.0" width="105.0" x="630.0" y="735.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="664.0" y="361.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PerformOutbound" id="BPMNShape_PerformOutbound">
+        <omgdc:Bounds height="55.0" width="105.0" x="632.0" y="452.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Signatory" id="BPMNShape_Signatory">
+        <omgdc:Bounds height="55.0" width="105.0" x="632.0" y="1151.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApprovalMgr" id="BPMNShape_ApprovalMgr">
+        <omgdc:Bounds height="55.0" width="105.0" x="630.0" y="874.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="664.0" y="1078.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApprovalLeader" id="BPMNShape_ApprovalLeader">
+        <omgdc:Bounds height="55.0" width="105.0" x="801.0" y="1071.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="664.0" y="1230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="667.0" y="1315.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway6" id="BPMNShape_exclusivegateway6">
+        <omgdc:Bounds height="40.0" width="40.0" x="833.0" y="1158.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway9" id="BPMNShape_exclusivegateway9">
+        <omgdc:Bounds height="40.0" width="40.0" x="470.0" y="89.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="EduAnalyzer" id="BPMNShape_EduAnalyzer">
+        <omgdc:Bounds height="55.0" width="105.0" x="630.0" y="1011.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway10" id="BPMNShape_exclusivegateway10">
+        <omgdc:Bounds height="40.0" width="40.0" x="662.0" y="951.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway14" id="BPMNShape_exclusivegateway14">
+        <omgdc:Bounds height="40.0" width="40.0" x="662.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InitialGroupLeader" id="BPMNShape_InitialGroupLeader">
+        <omgdc:Bounds height="55.0" width="105.0" x="786.0" y="354.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway15" id="BPMNShape_exclusivegateway15">
+        <omgdc:Bounds height="40.0" width="40.0" x="973.0" y="361.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InitialAuditVerification" id="BPMNShape_InitialAuditVerification">
+        <omgdc:Bounds height="55.0" width="105.0" x="632.0" y="562.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway16" id="BPMNShape_exclusivegateway16">
+        <omgdc:Bounds height="40.0" width="40.0" x="664.0" y="817.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InitialGroupLeaderVerification" id="BPMNShape_InitialGroupLeaderVerification">
+        <omgdc:Bounds height="55.0" width="105.0" x="771.0" y="662.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway18" id="BPMNShape_exclusivegateway18">
+        <omgdc:Bounds height="40.0" width="40.0" x="926.0" y="669.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway19" id="BPMNShape_exclusivegateway19">
+        <omgdc:Bounds height="40.0" width="40.0" x="664.0" y="669.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DataPost" id="BPMNShape_DataPost">
+        <omgdc:Bounds height="55.0" width="105.0" x="630.0" y="82.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="ApprovalLeaderRefuse" id="BPMNEdge_ApprovalLeaderRefuse">
+        <omgdi:waypoint x="853.0" y="1198.0"></omgdi:waypoint>
+        <omgdi:waypoint x="852.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="702.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="819.0" y="1216.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="PerformOutboundThrough" id="BPMNEdge_PerformOutboundThrough">
+        <omgdi:waypoint x="684.0" y="507.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="562.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="693.0" y="512.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="EduAnalyzerOverrun" id="BPMNEdge_EduAnalyzerOverrun">
+        <omgdi:waypoint x="704.0" y="1098.0"></omgdi:waypoint>
+        <omgdi:waypoint x="801.0" y="1098.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="707.0" y="1078.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="EduAnalyzerNotOverrun" id="BPMNEdge_EduAnalyzerNotOverrun">
+        <omgdi:waypoint x="684.0" y="1118.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="1151.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="692.0" y="1125.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApprovalLeaderThrough" id="BPMNEdge_ApprovalLeaderThrough">
+        <omgdi:waypoint x="833.0" y="1178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="737.0" y="1178.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="748.0" y="1158.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SignatoryRefuse" id="BPMNEdge_SignatoryRefuse">
+        <omgdi:waypoint x="664.0" y="1250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="592.0" y="1249.0"></omgdi:waypoint>
+        <omgdi:waypoint x="592.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="667.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="607.0" y="1230.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SignatoryThrough" id="BPMNEdge_SignatoryThrough">
+        <omgdi:waypoint x="684.0" y="1270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="1315.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="694.0" y="1269.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApprovalSupervisorThrough" id="BPMNEdge_ApprovalSupervisorThrough">
+        <omgdi:waypoint x="682.0" y="929.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="951.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="LoanOrder_flow23" id="BPMNEdge_LoanOrder_flow23">
+        <omgdi:waypoint x="853.0" y="1126.0"></omgdi:waypoint>
+        <omgdi:waypoint x="853.0" y="1158.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="LoanOrder_flow8" id="BPMNEdge_LoanOrder_flow8">
+        <omgdi:waypoint x="682.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="361.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="LoanOrder_flow26" id="BPMNEdge_LoanOrder_flow26">
+        <omgdi:waypoint x="684.0" y="1206.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="1230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="LoanOrder_flow2" id="BPMNEdge_LoanOrder_flow2">
+        <omgdi:waypoint x="490.0" y="173.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="129.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="OrderResubmitCancle" id="BPMNEdge_OrderResubmitCancle">
+        <omgdi:waypoint x="470.0" y="109.0"></omgdi:waypoint>
+        <omgdi:waypoint x="416.0" y="108.0"></omgdi:waypoint>
+        <omgdi:waypoint x="416.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="667.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="511.0" y="91.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="LoanOrder_flow20" id="BPMNEdge_LoanOrder_flow20">
+        <omgdi:waypoint x="682.0" y="1066.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="1078.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApprovalMgrThrough" id="BPMNEdge_ApprovalMgrThrough">
+        <omgdi:waypoint x="682.0" y="991.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="1011.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="700.0" y="991.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApprovalMgrRefuse" id="BPMNEdge_ApprovalMgrRefuse">
+        <omgdi:waypoint x="662.0" y="971.0"></omgdi:waypoint>
+        <omgdi:waypoint x="569.0" y="970.0"></omgdi:waypoint>
+        <omgdi:waypoint x="569.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="667.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="591.0" y="952.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialAuditRefuse" id="BPMNEdge_InitialAuditRefuse">
+        <omgdi:waypoint x="704.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="786.0" y="381.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="710.0" y="361.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DataPostReject" id="BPMNEdge_DataPostReject">
+        <omgdi:waypoint x="662.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="543.0" y="200.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="566.0" y="180.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="891.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="973.0" y="381.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialGroupLeaderReject" id="BPMNEdge_InitialGroupLeaderReject">
+        <omgdi:waypoint x="993.0" y="361.0"></omgdi:waypoint>
+        <omgdi:waypoint x="992.0" y="297.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="297.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="915.0" y="342.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialGroupLeaderRefuse" id="BPMNEdge_InitialGroupLeaderRefuse">
+        <omgdi:waypoint x="993.0" y="401.0"></omgdi:waypoint>
+        <omgdi:waypoint x="992.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="702.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="914.0" y="407.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="682.0" y="790.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="817.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="FinalAuditThrough" id="BPMNEdge_FinalAuditThrough">
+        <omgdi:waypoint x="684.0" y="857.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="874.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="693.0" y="857.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="FinalAuditRefuse" id="BPMNEdge_FinalAuditRefuse">
+        <omgdi:waypoint x="664.0" y="837.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="837.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="667.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="591.0" y="817.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialGroupLeaderVerificationReject" id="BPMNEdge_InitialGroupLeaderVerificationReject">
+        <omgdi:waypoint x="946.0" y="669.0"></omgdi:waypoint>
+        <omgdi:waypoint x="945.0" y="589.0"></omgdi:waypoint>
+        <omgdi:waypoint x="737.0" y="589.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="870.0" y="631.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialGroupLeaderVerificationRefuse" id="BPMNEdge_InitialGroupLeaderVerificationRefuse">
+        <omgdi:waypoint x="946.0" y="709.0"></omgdi:waypoint>
+        <omgdi:waypoint x="945.0" y="1332.0"></omgdi:waypoint>
+        <omgdi:waypoint x="702.0" y="1332.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="870.0" y="722.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow34" id="BPMNEdge_flow34">
+        <omgdi:waypoint x="684.0" y="617.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="669.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialAuditVerificationThrough" id="BPMNEdge_InitialAuditVerificationThrough">
+        <omgdi:waypoint x="684.0" y="709.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="735.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="625.0" y="708.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialAuditThrough" id="BPMNEdge_InitialAuditThrough">
+        <omgdi:waypoint x="684.0" y="401.0"></omgdi:waypoint>
+        <omgdi:waypoint x="684.0" y="452.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="694.0" y="401.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialAuditReject" id="BPMNEdge_InitialAuditReject">
+        <omgdi:waypoint x="664.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="381.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="228.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="625.0" y="362.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BusinessSubmit" id="BPMNEdge_BusinessSubmit">
+        <omgdi:waypoint x="682.0" y="47.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="82.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="691.0" y="51.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="OrderResubmitThrough" id="BPMNEdge_OrderResubmitThrough">
+        <omgdi:waypoint x="510.0" y="109.0"></omgdi:waypoint>
+        <omgdi:waypoint x="630.0" y="109.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="422.0" y="90.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow83" id="BPMNEdge_flow83">
+        <omgdi:waypoint x="682.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="180.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DataPostThrough" id="BPMNEdge_DataPostThrough">
+        <omgdi:waypoint x="682.0" y="220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="682.0" y="270.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="686.0" y="226.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InitialAuditVerificationRefuse" id="BPMNEdge_InitialAuditVerificationRefuse">
+        <omgdi:waypoint x="704.0" y="689.0"></omgdi:waypoint>
+        <omgdi:waypoint x="771.0" y="689.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="693.0" y="669.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow85" id="BPMNEdge_flow85">
+        <omgdi:waypoint x="876.0" y="689.0"></omgdi:waypoint>
+        <omgdi:waypoint x="926.0" y="689.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

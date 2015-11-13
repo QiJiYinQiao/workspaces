@@ -1,0 +1,451 @@
+package com.bpms.model;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+/**
+ * Users entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "t_users")
+@DynamicUpdate(true)
+@DynamicInsert(true)
+public class Users implements java.io.Serializable {
+	private static final long serialVersionUID = 3091722681204768199L;
+	private Integer userId;// 用户id
+	private String myid;// 用户编码
+	private String account;// 登录账户
+	private String name;// 用户名称
+	private String ename;// 用户英文名称
+	private Organization organization;// 组织机构
+	private String password;// 登录密码
+	private String email;// 电子邮箱
+	private String mobile;// 移动电话
+	private Integer age;// 年龄
+	private String gender;// 性别
+	private String origo;// 籍贯
+	private String nation;// 民族
+	private Date birthday;// 出生日期
+	private Integer height;// 身高
+	private BigDecimal weight;// 体重
+	private String healthStatus;// 健康状况
+	private String domiType;// 户籍性质
+	private String idCard;// 身份证号码
+	private String idCardAddr;// 身份证地址
+	private String maritalStatus;// 婚姻状况
+	private String education;// 最高学历
+	private String graduateSchool;// 毕业院校
+	private String major;// 专业
+	private Date graduateDate;// 毕业时间
+	private Date takejobDate;// 参加工作时间
+	private String domiAddr;// 户口所在地
+	private String postalAddr;// 通讯地址
+	private String status;// 有效标识
+	private String description;// 备注信息
+	private Date created;// 创建时间
+	private Date lastmod;// 修改时间
+	private Integer creater;// 创建人
+	private Integer modifyer;// 修改人
+	private String tel;// 固定电话
+
+	
+	public Users() {
+		super();
+	}
+
+	public Users(Integer userId, String myid, String account, String name,
+			String ename, Organization organization, String password,
+			String email, String mobile, Integer age, String gender,
+			String origo, String nation, Date birthday, Integer height,
+			BigDecimal weight, String healthStatus, String domiType,
+			String idCard, String idCardAddr, String maritalStatus,
+			String education, String graduateSchool, String major,
+			Date graduateDate, Date takejobDate, String domiAddr,
+			String postalAddr, String status, String description, Date created,
+			Date lastmod, Integer creater, Integer modifyer, String tel) {
+		super();
+		this.userId = userId;
+		this.myid = myid;
+		this.account = account;
+		this.name = name;
+		this.ename = ename;
+		this.organization = organization;
+		this.password = password;
+		this.email = email;
+		this.mobile = mobile;
+		this.age = age;
+		this.gender = gender;
+		this.origo = origo;
+		this.nation = nation;
+		this.birthday = birthday;
+		this.height = height;
+		this.weight = weight;
+		this.healthStatus = healthStatus;
+		this.domiType = domiType;
+		this.idCard = idCard;
+		this.idCardAddr = idCardAddr;
+		this.maritalStatus = maritalStatus;
+		this.education = education;
+		this.graduateSchool = graduateSchool;
+		this.major = major;
+		this.graduateDate = graduateDate;
+		this.takejobDate = takejobDate;
+		this.domiAddr = domiAddr;
+		this.postalAddr = postalAddr;
+		this.status = status;
+		this.description = description;
+		this.created = created;
+		this.lastmod = lastmod;
+		this.creater = creater;
+		this.modifyer = modifyer;
+		this.tel = tel;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "USER_ID", unique = true, nullable = false)
+	public Integer getUserId() {
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	@Column(name = "USER_NO", length = 25)
+	public String getMyid() {
+		return this.myid;
+	}
+
+	public void setMyid(String myid) {
+		this.myid = myid;
+	}
+
+	@Column(name = "LOGIN_ACT", length = 100)
+	public String getAccount() {
+		return this.account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	@Column(name = "USER_NAME", length = 25)
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "USER_ENAME", length = 50)
+	public String getEname() {
+		return ename;
+	}
+
+	public void setEname(String ename) {
+		this.ename = ename;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ORGANIZATION_ID")
+	public Organization getOrganization() {
+		return this.organization;
+	}
+
+	public void setOrganization(Organization organization) {
+		this.organization = organization;
+	}
+
+	@Column(name = "LOGIN_PWD", length = 50)
+	public String getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Column(name = "EMAIL", length = 200)
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Column(name = "MOBILE", length = 20)
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	@Column(name = "AGE")
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	@Column(name = "GENDER")
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	@Column(name = "ORIGO", length = 20)
+	public String getOrigo() {
+		return origo;
+	}
+
+	public void setOrigo(String origo) {
+		this.origo = origo;
+	}
+
+	@Column(name = "NATION", length = 1)
+	public String getNation() {
+		return nation;
+	}
+
+	public void setNation(String nation) {
+		this.nation = nation;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "BIRTHDAY", length = 10)
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	@Column(name = "STATURE")
+	public Integer getHeight() {
+		return height;
+	}
+
+	public void setHeight(Integer height) {
+		this.height = height;
+	}
+
+	@Column(name = "WEIGTH", precision = 5)
+	public BigDecimal getWeight() {
+		return this.weight;
+	}
+
+	public void setWeight(BigDecimal weight) {
+		this.weight = weight;
+	}
+
+	public void setWeight(String weight) {
+		if (StringUtils.isNotBlank(weight)) {
+			this.weight = BigDecimal.valueOf(Double.parseDouble(weight));
+		} else {
+			this.weight = null;
+		}
+	}
+
+	@Column(name = "HEALTH_STATUS", length = 1)
+	public String getHealthStatus() {
+		return healthStatus;
+	}
+
+	public void setHealthStatus(String healthStatus) {
+		this.healthStatus = healthStatus;
+	}
+
+	@Column(name = "DOMI_TYPE", length = 1)
+	public String getDomiType() {
+		return domiType;
+	}
+
+	public void setDomiType(String domiType) {
+		this.domiType = domiType;
+	}
+
+	@Column(name = "ID_CARD", length = 25)
+	public String getIdCard() {
+		return idCard;
+	}
+
+	public void setIdCard(String idCard) {
+		this.idCard = idCard;
+	}
+
+	@Column(name = "ID_CARD_ADDR", length = 512)
+	public String getIdCardAddr() {
+		return idCardAddr;
+	}
+
+	public void setIdCardAddr(String idCardAddr) {
+		this.idCardAddr = idCardAddr;
+	}
+
+	@Column(name = "MARITAL_STATUS", length = 1)
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	@Column(name = "EDUCATION", length = 1)
+	public String getEducation() {
+		return education;
+	}
+
+	public void setEducation(String education) {
+		this.education = education;
+	}
+
+	@Column(name = "GRADUATE_SCHOOL", length = 150)
+	public String getGraduateSchool() {
+		return graduateSchool;
+	}
+
+	public void setGraduateSchool(String graduateSchool) {
+		this.graduateSchool = graduateSchool;
+	}
+
+	@Column(name = "MAJOR", length = 80)
+	public String getMajor() {
+		return major;
+	}
+
+	public void setMajor(String major) {
+		this.major = major;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "GRADUATE_DATE", length = 10)
+	public Date getGraduateDate() {
+		return graduateDate;
+	}
+
+	public void setGraduateDate(Date graduateDate) {
+		this.graduateDate = graduateDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "TAKEJOB_DATE", length = 10)
+	public Date getTakejobDate() {
+		return takejobDate;
+	}
+
+	public void setTakejobDate(Date takejobDate) {
+		this.takejobDate = takejobDate;
+	}
+
+	@Column(name = "DOMI_ADDR", length = 512)
+	public String getDomiAddr() {
+		return domiAddr;
+	}
+
+	public void setDomiAddr(String domiAddr) {
+		this.domiAddr = domiAddr;
+	}
+
+	@Column(name = "POSTAL_ADDR", length = 512)
+	public String getPostalAddr() {
+		return postalAddr;
+	}
+
+	public void setPostalAddr(String postalAddr) {
+		this.postalAddr = postalAddr;
+	}
+
+	@Column(name = "AVAILABLE", length = 1)
+	public String getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@Column(name = "REMARK", length = 200)
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "CRT_DTIME", length = 10)
+	public Date getCreated() {
+		return this.created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "UPD_DTIME", length = 10)
+	public Date getLastmod() {
+		return this.lastmod;
+	}
+
+	public void setLastmod(Date lastmod) {
+		this.lastmod = lastmod;
+	}
+
+	@Column(name = "CREATOR")
+	public Integer getCreater() {
+		return this.creater;
+	}
+
+	public void setCreater(Integer creater) {
+		this.creater = creater;
+	}
+
+	@Column(name = "UPDATER")
+	public Integer getModifyer() {
+		return this.modifyer;
+	}
+
+	public void setModifyer(Integer modifyer) {
+		this.modifyer = modifyer;
+	}
+
+	@Column(name = "TEL", length = 30)
+	public String getTel() {
+		return this.tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+}

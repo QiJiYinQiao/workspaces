@@ -1,0 +1,276 @@
+package com.bpms.service.impl;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.LoanOrder;
+import com.bpms.model.OrderStatus;
+import com.bpms.model.Organization;
+import com.bpms.model.Users;
+import com.bpms.service.LoanOrderService;
+import com.bpms.service.LoanorderAndAccountinfoService;
+import com.bpms.service.LoanorderAndCompanyService;
+import com.bpms.service.LoanorderAndContactsService;
+import com.bpms.service.OrderStatusService;
+import com.bpms.service.OrganizationService;
+import com.bpms.service.UserService;
+import com.bpms.util.Constants;
+import com.bpms.util.HqlUtil;
+import com.bpms.util.PageUtil;
+
+/**
+ * 
+ * 个人贷款业务申请单的serviceImp
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+@Service("loanOrderService")
+public class LoanOrderServiceImpl implements LoanOrderService {
+	@Autowired
+	private BaseDAO<LoanOrder> baseDAO;
+	@Autowired
+	private OrderStatusService orderStatusService;
+	// 紧急联系人与订单关系表
+	@Autowired
+	private LoanorderAndContactsService loanorderAndContactsServiceImpl;
+	// 开户行信息与订单关系表
+	@Autowired
+	private LoanorderAndAccountinfoService loanorderAndAccountinfoServiceImpl;
+	// 工作单位与订单关系表
+	@Autowired
+	private LoanorderAndCompanyService loanorderAndCompanyServiceImpl;
+
+	// 注入用户的service
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private OrganizationService organizationService;
+
+	@Override
+	public List<LoanOrder> findAllLoanOrder(Map<String, Object> map,
+			PageUtil pageUtil) {
+		String hql = "from LoanOrder t where 1=1";
+		hql += HqlUtil.getSearchConditionsHQL("t", map);
+		hql += HqlUtil.getGradeSearchConditionsHQL("t", pageUtil);
+		hql += " and t.creator = " + Constants.getCurrendUser().getUserId();
+		hql += " order by t.createDate desc";
+		return baseDAO.find(hql, map, pageUtil.getPage(), pageUtil.getRows());
+	}
+
+	@Override
+	public Long getCount(Map<String, Object> map, PageUtil pageUtil) {
+		String hql = "select count(*) from LoanOrder t where 1=1";
+		hql += HqlUtil.getSearchConditionsHQL("t", map);
+		hql += HqlUtil.getGradeSearchConditionsHQL("t", pageUtil);
+		hql += " and t.creator = " + Constants.getCurrendUser().getUserId();
+		return baseDAO.count(hql, map);
+	}
+
+	@Override
+	public boolean persistenceLoanOrder(LoanOrder loanOrder) {
+		if (StringUtils.isBlank(loanOrder.getLoanOrderId())) {
+			// 获取当前用户的id
+			Users user = userService.findUserById(Constants.getCurrendUser()
+					.getUserId());
+			// 设置订单的创建者
+			loanOrder.setCreator(user.getUserId());
+			// 设置创建时间
+			loanOrder.setCreateDate(new Date());
+			// 设置订单状态
+			loanOrder.setProcessStatus("0");
+			// 设置创建者所属机构
+			loanOrder.setOrganizationId(user.getOrganization()
+					.getOrganizationId());
+			// 保存用户的信息
+			baseDAO.save(loanOrder);
+		} else {
+			baseDAO.update(loanOrder);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean deleteLoanOrder(String loanOrderId) {
+		try {
+			// 解除该订单与紧急联系的关系
+			loanorderAndContactsServiceImpl.deleteByLoanOrderId(loanOrderId);
+			// 解除该订单与开户行信息的关系
+			loanorderAndAccountinfoServiceImpl.deleteByLoanOrderId(loanOrderId);
+			// 解除该订单与工作单位的关系
+			loanorderAndCompanyServiceImpl.deleteByLoanOrderId(loanOrderId);
+			// 删除订单
+			StringBuffer hql = new StringBuffer();
+			hql.append("delete from com.bpms.model.LoanOrder t where t.loanOrderId = '"
+					+ loanOrderId + "'");
+			baseDAO.executeHql(hql.toString());
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public void updateLoanOrderStauts(String id, String status) {
+		LoanOrder loanOrder = this.baseDAO.get(LoanOrder.class, id);
+		OrderStatus orderStatus = orderStatusService
+				.getOrderStatusByStatusCode(getProcessKey(loanOrder) + "_"
+						+ status);
+		loanOrder.setOrderStatus(orderStatus);
+	}
+
+	@Override
+	public LoanOrder findLoanOrderById(String id) {
+		return this.baseDAO.get(LoanOrder.class, id);
+	}
+
+	@Override
+	public void updateLoanOrderProcessStatus(String id, String processStatus) {
+		LoanOrder loanOrder = this.baseDAO.get(LoanOrder.class, id);
+		loanOrder.setProcessStatus(processStatus);
+	}
+
+	@Override
+	public Organization findLoanCityByOrderId(String loanOrderId) {
+		LoanOrder loanOrder = findLoanOrderById(loanOrderId);
+		if (loanOrder != null) {
+			return findLoanCityByOrganizationId(loanOrder.getOrganizationId());
+		}
+		return null;
+	}
+
+	private Organization findLoanCityByOrganizationId(Integer id) {
+		Organization organization = organizationService
+				.findOrganizationById(id);
+		if (null == organization)
+			return null;
+
+		if ("1".equals(organization.getRegionType())
+				|| "3".equals(organization.getRegionType())) {
+			return organization;
+		}
+		return findLoanCityByOrganizationId(organization.getPid());
+	}
+
+	@Override
+	public List<LoanOrder> findLoanOrderListByOrderStatus(PageUtil pageUtil) {
+		StringBuffer hql = new StringBuffer();
+		hql.append("from LoanOrder t where 1=1 ");
+		hql.append("and t.orderStatus.statusId = (select statusId from OrderStatus where statusCode = 'LoanOrder_SignatoryThrough') ");
+		hql.append("and t.loanOrderId in (select loanOrderId from LoanContract where obliMatchStatus = '0')");
+		return this.baseDAO.find(hql.toString(), pageUtil);
+	}
+
+	@Override
+	public Long countLoanOrderListByOrderStatus() {
+		StringBuffer hql = new StringBuffer();
+		hql.append("select count(*) from LoanOrder t where 1=1 ");
+		hql.append("and t.orderStatus.statusId = (select statusId from OrderStatus where statusCode = 'LoanOrder_SignatoryThrough') ");
+		hql.append("and t.loanOrderId in (select loanOrderId from LoanContract where obliMatchStatus = '0')");
+		return this.baseDAO.count(hql.toString());
+	}
+
+	@Override
+	public List<LoanOrder> queryLoanOrderByCondicions(Map<String, Object> map,
+			PageUtil pageUtil) {
+		StringBuffer hql = new StringBuffer(" from LoanOrder t where 1=1 ");
+		if (StringUtils.isNotBlank((String) map.get("name"))) {
+			hql.append(" AND t.name LIKE '%" + map.get("name") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("idNo"))) {
+			hql.append(" AND t.idNo LIKE '%" + map.get("idNo") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("mobileTel"))) {
+			hql.append(" AND t.mobileTel LIKE '%" + map.get("mobileTel")
+					+ "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("loanType"))) {
+			hql.append(" AND t.loanType = '" + map.get("loanType") + "' ");
+		}
+		hql.append(" and t.creator = " + Constants.getCurrendUser().getUserId());
+		hql.append(" order by t.createDate desc ");
+		return baseDAO.find(hql.toString(), pageUtil);
+	}
+
+	@Override
+	public Long getQueryCount(Map<String, Object> map, PageUtil pageUtil) {
+		StringBuffer hql = new StringBuffer(
+				" select count(*) from LoanOrder t where 1=1");
+		if (StringUtils.isNotBlank((String) map.get("name"))) {
+			hql.append(" AND t.name LIKE '%" + map.get("name") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("idNo"))) {
+			hql.append(" AND t.idNo LIKE '%" + map.get("idNo") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("mobileTel"))) {
+			hql.append(" AND t.mobileTel LIKE '%" + map.get("mobileTel")
+					+ "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("loanType"))) {
+			hql.append(" AND t.loanType = '" + map.get("loanType") + "' ");
+		}
+		hql.append(" and t.creator = " + Constants.getCurrendUser().getUserId());
+		return baseDAO.count(hql.toString());
+	}
+
+	@Override
+	public List<Users> findCadidatePersons(String roleCode, String loanOrderId) {
+		// 获取该订单的信息
+		LoanOrder loanOrder = findLoanOrderById(loanOrderId);
+		// 获取该订单所属地方结构的所有的roleCode用户信息列表
+		return userService.findUsersByRoleCodeAndOrganizationId(roleCode,
+				loanOrder.getOrganizationId());
+	}
+
+	@Override
+	public List<Users> findCadidatePersons(String roleCode) {
+		// 获取该订单所属地方结构的所有的roleCode用户信息列表
+		return userService.findUsersByRoleCode(roleCode);
+	}
+
+	@Override
+	public Long getMaxAssignmentTaskCounter() {
+		StringBuffer hsql = new StringBuffer(
+				"select  COALESCE(MAX(l.assignmentTaskCounter),0) FROM LoanOrder l WHERE l.loanType = 'A'");
+		return baseDAO.count(hsql.toString());
+	}
+
+	/**
+	 * 根据申请订单获取订单启动流程实例的key的值
+	 * 
+	 * @param order
+	 *            贷款申请单
+	 * @return 启动流程实例的key
+	 */
+	private String getProcessKey(LoanOrder order) {
+		String proDefKey = Constants.EMPTY;
+		// 判断如果贷款申请为事业贷
+		if ("A".equals(order.getLoanType())) {
+			// 进行启动流程
+			long mod = order.getAssignmentTaskCounter() % 2;
+			// 分配给IPC
+			if (mod == 1) {
+				// 启动流程实例的key
+				proDefKey = order.getClass().getSimpleName() + "IPC";
+			} else {
+				// 分配给信审
+				proDefKey = order.getClass().getSimpleName() + "Letter";
+			}
+		} else {
+			// 如果是共信贷的话全部分配给信审
+			proDefKey = order.getClass().getSimpleName() + "Letter";
+		}
+		return proDefKey;
+	}
+}

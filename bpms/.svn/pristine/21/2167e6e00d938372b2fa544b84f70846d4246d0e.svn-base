@@ -1,0 +1,542 @@
+package com.bpms.service.impl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.model.LoanOrder;
+import com.bpms.model.LoanOrderHis;
+import com.bpms.model.Role;
+import com.bpms.service.LoanOrderHisService;
+import com.bpms.service.LoanOrderService;
+import com.bpms.service.LoanOrderWorkFlowService;
+import com.bpms.service.OrderStatusService;
+import com.bpms.service.WorkFlowService;
+import com.bpms.util.Collections;
+import com.bpms.util.Constants;
+import com.bpms.util.SendMessageUtil;
+
+/**
+ * 
+ * 个人贷款业务申请单的workFlowServiceImp
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+@Service("loanOrderWorkFlowService")
+public class LoanOrderWorkFlowServiceImpl extends WorkFlowBaseServiceImpl
+		implements LoanOrderWorkFlowService {
+
+	/** 贷款申请的业务service. */
+	@Autowired
+	private LoanOrderService loanOrderService;
+
+	@Autowired
+	private LoanOrderHisService loanOrderHisService;
+
+	@Autowired
+	private OrderStatusService orderStatusService;
+
+	@Autowired
+	private WorkFlowService workFlowService;
+
+	@Override
+	public void saveStartProcessInstance(LoanOrder loanOrder) {
+		// 获取申请订单
+		LoanOrder order = loanOrderService.findLoanOrderById(loanOrder
+				.getLoanOrderId());
+
+		// 如果为事业贷的时候,进行计数,为了平分事业贷申请.
+		// 奇数分配给IPC,偶数分配给信审.
+		if (order.getLoanType().equals("A")) {
+			// 同步代码块
+			synchronized (LoanOrderWorkFlowServiceImpl.class) {
+				// 获取计数器
+				long counter = loanOrderService.getMaxAssignmentTaskCounter() + 1;
+				order.setAssignmentTaskCounter(counter);
+			}
+		}
+
+		// 根据贷款申请订单类型获取订单申请的流程key
+		String proDefKey = getProcessKey(order);
+		// 定义businessKey
+		String businessKey = proDefKey + "." + order.getLoanOrderId();
+
+		// 指定流程变量
+		Map<String, Object> variables = new HashMap<String, Object>();
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+		variables.put(Constants.CURRENT_USER_KEY, userId);
+		runtimeService.startProcessInstanceByKey(proDefKey, businessKey,
+				variables);
+	}
+
+	@Override
+	public List<LoanOrder> findAllClaimTask(Integer firstResult,
+			Integer maxResults) {
+
+		// 定义返回值
+		List<LoanOrder> list = new ArrayList<LoanOrder>();
+		// 获取当前用户的角色
+		String userID = String.valueOf(Constants.getCurrendUser().getUserId());
+		List<Task> tasks = this.taskService
+				.createTaskQuery()
+				.processDefinitionKeyLike(LoanOrder.class.getSimpleName() + "%")
+				.taskAssignee(String.valueOf(userID))
+				.listPage(firstResult, maxResults);
+
+		// 判断查询的结果集是否为空,如果不为空的,则根据流程实例的id查询订单的信息,并放入list返回结果集中
+		if (Collections.listIsNotEmpty(tasks)) {
+			for (Task task : tasks) {
+				// 根据订单的id获取订单的信息
+				LoanOrder loanOrder = this.findLoanOrderByTaskId(task.getId());
+				LoanOrder order = (LoanOrder) loanOrder.clone();
+				order.setTaskId(task.getId());
+				list.add(order);
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public Long findAllClaimTaskCount(String userId) {
+		try {
+			return this.taskService
+					.createTaskQuery()
+					.processDefinitionKeyLike(
+							LoanOrder.class.getSimpleName() + "%")
+					.taskAssignee(userId).count();
+		} catch (Exception e) {
+			return 0L;
+		}
+	}
+
+	@Override
+	public List<LoanOrder> findAllUnClaimTask(Integer firstResult,
+			Integer maxResults) {
+		List<String> groupIds = getGroupIds();
+		List<LoanOrder> list = new ArrayList<LoanOrder>();
+		if (Collections.listIsNotEmpty(groupIds)) {
+			// 获取当前受理任务
+			List<Task> tasks = taskService
+					.createTaskQuery()
+					.taskCandidateGroupIn(groupIds)
+					.processDefinitionKeyLike(
+							LoanOrder.class.getSimpleName() + "%")
+					.listPage(firstResult, maxResults);
+
+			// 判断查询的结果集是否为空,如果不为空的,则根据流程实例的id查询订单的信息,并放入list返回结果集中
+			if (Collections.listIsNotEmpty(tasks)) {
+				for (Task task : tasks) {
+					// 根据订单的id获取订单的信息
+					LoanOrder loanOrder = this.findLoanOrderByTaskId(task
+							.getId());
+					if (null != loanOrder) {
+						LoanOrder order = (LoanOrder) loanOrder.clone();
+						order.setTaskId(task.getId());
+						list.add(order);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public Long findAllUnClaimTaskCount(String userId) {
+		try {
+			List<String> groupIds = getGroupIds();
+			if (Collections.listIsNotEmpty(groupIds)) {
+				// 获取当前受理任务
+				return taskService
+						.createTaskQuery()
+						.taskCandidateGroupIn(groupIds)
+						.processDefinitionKeyLike(
+								LoanOrder.class.getSimpleName() + "%").count();
+			}
+			return 0L;
+		} catch (Exception e) {
+			return 0L;
+		}
+	}
+
+	@Override
+	public LoanOrder findLoanOrderByTaskId(String taskId) {
+		// 使用任务ID，查询任务对象Task
+		Task task = taskService.createTaskQuery()//
+				.taskId(taskId)// 使用任务ID查询
+				.singleResult();
+		// 使用流程实例ID，查询正在执行的执行对象表，返回流程实例对象
+		ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+				.processInstanceId(task.getProcessInstanceId()).singleResult();
+		// 获取BusinessKey对应的申请订单的ID
+		String id = "";
+		if (StringUtils.isNotBlank(pi.getBusinessKey())) {
+			// 截取字符串，取BusinessKey小数点的第2个值
+			id = pi.getBusinessKey().split("\\.")[1];
+		}
+		// 查询贷款申请单的信息
+		LoanOrder loanOrder = this.loanOrderService.findLoanOrderById(id);
+		return loanOrder;
+	}
+
+	@Override
+	public void saveClaimTask(String taskId)
+			throws ActivitiTaskAlreadyClaimedException {
+		// 签收任务
+		this.taskService.claim(taskId,
+				String.valueOf(Constants.getCurrendUser().getUserId()));
+
+		// 当前用户的ID
+		String curUserId = String.valueOf(Constants.getCurrendUser()
+				.getUserId());
+		// 给受理人发送任务增加消息
+		SendMessageUtil.sendMessageByUserId(SendMessageUtil.getMessageData(
+				SendMessageUtil.DATATYPE_CLAIMLOANORDER,
+				SendMessageUtil.CALCULATETYPE_ADD, taskId,
+				findAllClaimTaskCount(curUserId),
+				findAllUnClaimTaskCount(curUserId)), curUserId);
+
+		// 给同角色的其他候选人发送任务减少消息
+		List<String> userIds = workFlowService
+				.findRunTaskAllHandlePersons(taskId);
+		if (Collections.listIsNotEmpty(userIds)) {
+			for (String userId : userIds) {
+				SendMessageUtil.sendMessageByUserId(SendMessageUtil
+						.getMessageData(
+								SendMessageUtil.DATATYPE_UNCLAIMLOANORDER,
+								SendMessageUtil.CALCULATETYPE_SUBTRACT, taskId,
+								findAllClaimTaskCount(userId),
+								findAllUnClaimTaskCount(userId)), userId);
+			}
+		}
+
+		// // 获取当前处理人的角色
+		// Role role = taskService.getVariableLocal(taskId, "role", Role.class);
+		// // 如果角色为IPC
+		// if (role.getRoleCode().equals(Constants.LOAN_ROLE_CODE_IPCAUDIT)) {
+		// LoanOrder loanOrder = findLoanOrderByTaskId(taskId);
+		// loanOrder.setTaskId(taskId);
+		// // 如果订单的状态为初审通过，则IPC领取时直接跨度到IPC办理节点
+		// if ("LoanOrder_InitialAuditThrough".equals(loanOrder
+		// .getOrderStatus().getStatusCode())) {
+		// saveSubmitTask(loanOrder, "IPC挑拣完毕",
+		// "IPCInvestigationDeptChooseThrough", "A", null);
+		// }
+		// }
+
+	}
+
+	@Override
+	public void saveUnCliamTask(String taskId) {
+		this.taskService.unclaim(taskId);
+	}
+
+	@Override
+	public void updateCliamTaskUser(String taskId, String userId) {
+		// 指派给其他用户
+		this.taskService.setAssignee(taskId, userId);
+		// 当前用户的ID
+		String curUserId = String.valueOf(Constants.getCurrendUser()
+				.getUserId());
+
+		// 给受理人发送任务增加消息
+		SendMessageUtil.sendMessageByUserId(SendMessageUtil.getMessageData(
+				SendMessageUtil.DATATYPE_CLAIMLOANORDER,
+				SendMessageUtil.CALCULATETYPE_SUBTRACT, taskId,
+				findAllClaimTaskCount(curUserId),
+				findAllUnClaimTaskCount(curUserId)), curUserId);
+
+		// 发送受理任务增加提示
+		SendMessageUtil.sendMessageByUserId(
+				SendMessageUtil.getMessageData(
+						SendMessageUtil.DATATYPE_CLAIMLOANORDER,
+						SendMessageUtil.CALCULATETYPE_ADD, taskId,
+						findAllClaimTaskCount(userId),
+						findAllUnClaimTaskCount(userId)), userId);
+	}
+
+	/*
+	 * @Override public void saveSubmitTask(LoanOrder loanOrder, String comment,
+	 * String result, String processingResult, String isInvolvedLoanCar) { //
+	 * 获取当前执行任务 Task task = this.taskService.createTaskQuery()
+	 * .taskId(loanOrder.getTaskId()).singleResult();
+	 * 
+	 * // 获取当前登陆用户的信息 String userId =
+	 * String.valueOf(Constants.getCurrendUser().getUserId());
+	 * 
+	 * // 获取当前处理人的角色 Role role = taskService.getVariableLocal(task.getId(),
+	 * "role", Role.class); // 根据订单状态的code,获取对应的订单id String orderStatusId =
+	 * orderStatusService.getOrderStatusByStatusCode(
+	 * LoanOrder.class.getSimpleName() + "_" + result).getStatusId();
+	 * 
+	 * // 记录订单履历 LoanOrderHis his = new LoanOrderHis(); his.setComment(comment);
+	 * his.setAgentTime(new Date()); his.setAssignee(userId);
+	 * his.setLoanOrderId(loanOrder.getLoanOrderId());
+	 * his.setOrderStatus(orderStatusId);
+	 * his.setRoleId(String.valueOf(role.getRoleId()));
+	 * his.setProcessingResult(processingResult);
+	 * his.setIsInvolvedLoanCar(isInvolvedLoanCar);
+	 * loanOrderHisService.saveLoanOrderHis(his);
+	 * 
+	 * // 设置流程变量 Map<String, Object> variables = new HashMap<String, Object>();
+	 * if (StringUtils.isNotBlank(result) && !result.equals("默认提交")) {
+	 * variables.put("result", result); }
+	 * 
+	 * // 判断用户的角色信息，如果是初审色，则设定用户的ID,以作为初审组长驳回的时候使用 if
+	 * (Constants.LOAN_ROLE_CODE_INITIALAUDIT.equals(role.getRoleCode())) {
+	 * variables.put("initAuditUser", userId); }
+	 * 
+	 * // 判断用户的角色信息，如果IPC初审，则执行外访完毕后，有原经手人处理此任务
+	 * if(Constants.LOAN_ROLE_CODE_IPCCHUSHENBUMEN.equals(role.getRoleCode())){
+	 * variables.put("ipcInitAuditUser", userId); }
+	 * 
+	 * // 修改订单的状态 if (!result.equals("IPCLRC01Through") &&
+	 * !result.equals("IPCLRC02Through") && !result.equals("IPCLRC03Through")) {
+	 * this.loanOrderService.updateLoanOrderStauts( loanOrder.getLoanOrderId(),
+	 * result); } // 使用任务ID，完成当前人的个人任务，同时设置流程变量
+	 * taskService.complete(task.getId(), variables);
+	 * 
+	 * // 流程结束了 ProcessInstance pi =
+	 * runtimeService.createProcessInstanceQuery()//
+	 * .processInstanceId(task.getProcessInstanceId())// 使用流程实例ID查询
+	 * .singleResult();
+	 * 
+	 * // 判断流程是否结束,如果结束修改流程的状态 if (pi == null) { // 更新请假单表的状态从1变成2（审核中-->审核完成）
+	 * LoanOrder loanorder = this.loanOrderService
+	 * .findLoanOrderById(loanOrder.getLoanOrderId());
+	 * loanorder.setProcessStatus("2"); }
+	 * 
+	 * // 给自身发送受理任务减少消息 SendMessageUtil.sendMessageByUserId(
+	 * SendMessageUtil.getMessageData( SendMessageUtil.DATATYPE_CLAIMLOANORDER,
+	 * SendMessageUtil.CALCULATETYPE_SUBTRACT, task.getId(),
+	 * findAllClaimTaskCount(userId), findAllUnClaimTaskCount(userId)), userId);
+	 * 
+	 * }
+	 */
+
+	@Override
+	public void saveSubmitTask(String result, LoanOrder loanOrder,
+			LoanOrderHis loanOrderHis) {
+		// 根据订单的ID获取订单的信息
+		LoanOrder order = loanOrderService.findLoanOrderById(loanOrder
+				.getLoanOrderId());
+		// 获取当前执行任务
+		Task task = taskService.createTaskQuery().taskId(loanOrder.getTaskId())
+				.singleResult();
+
+		// 获取当前登陆用户的信息
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+
+		// 获取当前处理人的角色
+		Role role = taskService.getVariableLocal(task.getId(), "role",
+				Role.class);
+		// 根据订单状态的code,获取对应订单状态的ID
+		String orderStatusId = orderStatusService.getOrderStatusByStatusCode(
+				getProcessKey(order) + "_" + result).getStatusId();
+
+		// 记录订单履历
+		LoanOrderHis his = new LoanOrderHis();
+		his.setTitle(loanOrderHis.getTitle());
+		his.setComment(loanOrderHis.getComment());
+		his.setAgentTime(new Date());
+		his.setAssignee(userId);
+		his.setLoanOrderId(order.getLoanOrderId());
+		his.setOrderStatus(orderStatusId);
+		his.setRoleId(String.valueOf(role.getRoleId()));
+		his.setProcessingResult(loanOrderHis.getProcessingResult());
+		his.setAuditWay(loanOrderHis.getAuditWay());
+		loanOrderHisService.saveLoanOrderHis(his);
+
+		// 设置流程变量
+		Map<String, Object> variables = new HashMap<String, Object>();
+		if (StringUtils.isNotBlank(result) && !result.equals("默认提交")) {
+			variables.put("result", result);
+		}
+
+		/*// 判断用户的角色信息，如果是初审色，则设定用户的ID,以作为初审组长驳回的时候使用
+		if (Constants.LOAN_ROLE_CODE_INITIALAUDIT.equals(role.getRoleCode())) {
+			variables.put("initAuditUser", userId);
+		}
+
+		// 判断用户的角色信息，如果IPC初审，则执行外访完毕后，有原经手人处理此任务
+		if (Constants.LOAN_ROLE_CODE_IPCDIANHEZHUANYUAN.equals(role
+				.getRoleCode())) {
+			variables.put("ipcInitAuditUser", userId);
+		}*/
+
+		// 修改订单的状态
+		if (!result.equals("IPCLRC01Through")
+				&& !result.equals("IPCLRC02Through")
+				&& !result.equals("IPCLRC03Through")) {
+			this.loanOrderService.updateLoanOrderStauts(
+					loanOrder.getLoanOrderId(), result);
+		}
+		// 使用任务ID，完成当前人的个人任务，同时设置流程变量
+		taskService.complete(task.getId(), variables);
+
+		// 流程结束了
+		ProcessInstance pi = runtimeService.createProcessInstanceQuery()//
+				.processInstanceId(task.getProcessInstanceId())// 使用流程实例ID查询
+				.singleResult();
+
+		// 判断流程是否结束,如果结束修改流程的状态
+		if (pi == null) {
+			// 更新请假单表的状态从1变成2（审核中-->审核完成）
+			LoanOrder loanorder = this.loanOrderService.findLoanOrderById(order
+					.getLoanOrderId());
+			loanorder.setProcessStatus("2");
+		}
+
+		// 给自身发送受理任务减少消息
+		SendMessageUtil.sendMessageByUserId(
+				SendMessageUtil.getMessageData(
+						SendMessageUtil.DATATYPE_CLAIMLOANORDER,
+						SendMessageUtil.CALCULATETYPE_SUBTRACT, task.getId(),
+						findAllClaimTaskCount(userId),
+						findAllUnClaimTaskCount(userId)), userId);
+
+	}
+
+	@Override
+	public void getDiagramResourceByLoanOrderId(String loanOrderId)
+			throws IOException {
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			// 根据申请订单的业务的ID组织执行流程实例的busniessKey
+			LoanOrder order = loanOrderService.findLoanOrderById(loanOrderId);
+			String businessKey = getProcessKey(order) + "." + loanOrderId;
+
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService
+					.createProcessInstanceQuery()
+					.processInstanceBusinessKey(businessKey).singleResult();
+
+			// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+			ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService
+					.getProcessDefinition(pi.getProcessDefinitionId());
+
+			// 获取当前执行任务流程
+			List<Task> tasks = this.taskService.createTaskQuery()
+					.processInstanceBusinessKey(businessKey).list();
+
+			// 获取图片的流程图片名称
+			String resourceName = getProcessKey(order) + ".png";
+
+			// 获取图片的文件的流
+			in = this.repositoryService.getResourceAsStream(
+					pd.getDeploymentId(), resourceName);
+
+			// 获取图片对象
+			BufferedImage bimg;
+
+			bimg = ImageIO.read(in);
+
+			// 得到Graphics2D 对象
+			Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+			// 设置颜色和画笔粗细
+			g2d.setColor(Color.RED);
+			g2d.setStroke(new BasicStroke(3));
+
+			// 遍历执行的任务,画图
+			for (Task task : tasks) {
+				// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+				Execution execution = runtimeService.createExecutionQuery()
+						.executionId(task.getExecutionId()).singleResult();
+
+				// 根据当前的执行对象的id获取正在执行的活动信息
+				ActivityImpl activityImpl = pd.findActivity(execution
+						.getActivityId());
+
+				// 绘制矩形
+				Rectangle2D rectangle = new Rectangle2D.Float(
+						activityImpl.getX(), activityImpl.getY(),
+						activityImpl.getWidth(), activityImpl.getHeight());
+				g2d.draw(rectangle);
+			}
+
+			// 写入response输出流中
+			ImageIO.write(bimg, "png", ServletActionContext.getResponse()
+					.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				in.close();
+		}
+	}
+
+	/**
+	 * 根据申请订单获取订单启动流程实例的key的值
+	 * 
+	 * @param order
+	 *            贷款申请单
+	 * @return 启动流程实例的key
+	 */
+	private String getProcessKey(LoanOrder order) {
+		String proDefKey = Constants.EMPTY;
+		// 判断如果贷款申请为事业贷
+		if ("A".equals(order.getLoanType())) {
+			// 进行启动流程
+			long mod = order.getAssignmentTaskCounter() % 2;
+			// 分配给IPC
+			if (mod == 1) {
+				// 启动流程实例的key
+				proDefKey = order.getClass().getSimpleName() + "IPC";
+			} else {
+				// 分配给信审
+				proDefKey = order.getClass().getSimpleName() + "Letter";
+			}
+		} else {
+			// 如果是共信贷的话全部分配给信审
+			proDefKey = order.getClass().getSimpleName() + "Letter";
+		}
+		return proDefKey;
+	}
+
+	/**
+	 * 获取当前用户的受理组信息
+	 * 
+	 * @return
+	 */
+	private List<String> getGroupIds() {
+		// 拼写该用户的角色组织机构的信息
+		List<String> roleCodes = Constants.getCurrendUser().getRoleCodes();
+		List<String> listGroupIds = null;
+		// 组织当前用户受理组信息,用来获取用户的ixnxi
+		if (Collections.listIsNotEmpty(roleCodes)) {
+			listGroupIds = new ArrayList<String>();
+			Integer organizationId = Constants.getCurrendUser().getUser()
+					.getOrganization().getOrganizationId();
+			for (String roleCode : roleCodes) {
+				listGroupIds.add(roleCode + "." + organizationId);
+			}
+		}
+		return listGroupIds;
+	}
+}

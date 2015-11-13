@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="com.qqjrbj.bpms.loan">
+  <process id="LoanOrderIPC" name="借款业务流程" isExecutable="true">
+    <extensionElements>
+      <activiti:executionListener event="start" class="com.bpms.listener.loan.LoanProcessStartExecutionListener"></activiti:executionListener>
+    </extensionElements>
+    <startEvent id="startevent1" name="流程开始">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.loan.LoanProcessStartExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="IPCData" name="IPC数据岗" activiti:formKey="IPC/taskIPCDataForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCDataTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="IPCInitialAudit" name="电核专员" activiti:formKey="IPC/taskIPCInitialAuditForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCInitialAuditTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCDataThrough" name="IPC数据岗通过" sourceRef="IPCData" targetRef="IPCTrialSupervisor2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCDataThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway21" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow41" sourceRef="IPCInitialAudit" targetRef="exclusivegateway21"></sequenceFlow>
+    <userTask id="IPCTrialSupervisor" name="电核部主管" activiti:formKey="IPC/taskIPCInitialAuditManagerForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCTrialSupervisorTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCInitialAuditReject" name="电核专员驳回" sourceRef="exclusivegateway21" targetRef="IPCTrialSupervisor">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCInitialAuditReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCInitialAuditThrough" name="电核专员通过" sourceRef="exclusivegateway21" targetRef="IPCEduAnalyzer">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCInitialAuditThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="IPCEduAnalyzer" name="额度分析器" activiti:expression="${loanServiceTaskDelegate.ipcDistrbuteByLimit(execution)}"></serviceTask>
+    <exclusiveGateway id="exclusivegateway22" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow44" sourceRef="IPCTrialSupervisor" targetRef="exclusivegateway22"></sequenceFlow>
+    <sequenceFlow id="IPCTrialSupervisorThrough" name="电核部主管通过" sourceRef="exclusivegateway22" targetRef="IPCInitialAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCTrialSupervisorThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway23" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow46" sourceRef="IPCEduAnalyzer" targetRef="exclusivegateway23"></sequenceFlow>
+    <userTask id="IPCPerformOutbound" name="小额调查" activiti:formKey="IPC/taskIPCPerformOutboundForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCPerformOutboundTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCEduAnalyzerLessThan" name="小于额度" sourceRef="exclusivegateway23" targetRef="IPCPerformOutbound">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCEduAnalyzerLessThan"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="IPCInitialAudit2" name="电核专员" activiti:formKey="IPC/taskIPCInitialAudit2Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCInitialAuditTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCPerformOutboundThrough" name="小额调查完毕" sourceRef="IPCPerformOutbound" targetRef="IPCInitialAudit2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCPerformOutboundThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="IPCFinalAudit" name="审核专员" activiti:formKey="IPC/taskIPCFinalAuditForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCFinalAuditTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCInitialAudit2Through" name="电荷专员通过" sourceRef="IPCInitialAudit2" targetRef="IPCFinalAudit"></sequenceFlow>
+    <userTask id="IPCGroupLeader" name="当地IPC组长" activiti:formKey="IPC/taskIPCGroupLeaderForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCGroupLeaderTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCEduAnalyzerMoreThan" name="大于等于额度" sourceRef="exclusivegateway23" targetRef="IPCGroupLeader">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCEduAnalyzerMoreThan"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway24" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow51" sourceRef="IPCGroupLeader" targetRef="exclusivegateway24"></sequenceFlow>
+    <sequenceFlow id="IPCGroupLeaderReject" name="IPC组长驳回" sourceRef="exclusivegateway24" targetRef="IPCPerformOutbound">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCGroupLeaderReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="IPCCensor" name="IPC调查员" activiti:formKey="IPC/taskIPCCensorForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCCensorTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCGroupLeaderThrough" name="IPC组长通过" sourceRef="exclusivegateway24" targetRef="IPCCensor">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCGroupLeaderThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="IPCLoanSupervisor" name="审贷部主管" activiti:formKey="IPC/taskIPCLoanSupervisorForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCLoanSupervisorTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway26" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow56" sourceRef="IPCLoanSupervisor" targetRef="exclusivegateway26"></sequenceFlow>
+    <sequenceFlow id="IPCLoanSupervisorReject" name="审贷主管驳回" sourceRef="exclusivegateway26" targetRef="IPCFinalAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCLoanSupervisorReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway27" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow58" sourceRef="IPCCensor" targetRef="exclusivegateway27"></sequenceFlow>
+    <userTask id="IPCDepartmentSupervisor" name="IPC部门主管" activiti:formKey="IPC/taskIPCPersonInChargeForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCDepartmentSupervisorTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCCensorReject" name="IPC调查员驳回" sourceRef="exclusivegateway27" targetRef="IPCDepartmentSupervisor">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCCensorReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="IPCData2" name="IPC数据岗" activiti:formKey="IPC/taskIPCData2Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCDataTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCCensorThrough" name="IPC调查员通过" sourceRef="exclusivegateway27" targetRef="IPCData2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCCensorThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCData2Through" name="IPC数据岗通过" sourceRef="IPCData2" targetRef="parallelgateway1"></sequenceFlow>
+    <parallelGateway id="parallelgateway1" name="Exclusive Gateway"></parallelGateway>
+    <userTask id="IPCLRC01 " name="贷审委1" activiti:formKey="IPC/taskIPCLRC01Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCLRC01TaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow62" sourceRef="parallelgateway1" targetRef="IPCLRC01 "></sequenceFlow>
+    <userTask id="IPCLRC02" name="贷审委2" activiti:formKey="IPC/taskIPCLRC02Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCLRC02TaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow63" sourceRef="parallelgateway1" targetRef="IPCLRC02"></sequenceFlow>
+    <userTask id="IPCLRC03" name="贷审委3" activiti:formKey="IPC/taskIPCLRC03Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCLRC03TaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow64" sourceRef="parallelgateway1" targetRef="IPCLRC03"></sequenceFlow>
+    <sequenceFlow id="IPCLRC02Through" name="贷审委2完成" sourceRef="IPCLRC02" targetRef="parallelgateway2"></sequenceFlow>
+    <parallelGateway id="parallelgateway2" name="Exclusive Gateway"></parallelGateway>
+    <sequenceFlow id="IPCLRC01Through" name="贷审委1完成" sourceRef="IPCLRC01 " targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="IPCLRC03Through" name="贷审委3完成" sourceRef="IPCLRC03" targetRef="parallelgateway2"></sequenceFlow>
+    <userTask id="IPCPersonInCharge2" name="IPC负责人" activiti:formKey="IPC/taskIPCPersonInCharge2Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCPersonInChargeTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCLRCThrough" name="贷审委完成" sourceRef="parallelgateway2" targetRef="IPCPersonInCharge2">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="IPCLoanSupervisorRefuse" name="审贷主管拒贷" sourceRef="exclusivegateway26" targetRef="endevent4">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCSendEmailExecutionListener">
+          <activiti:field name="defId">
+            <activiti:string><![CDATA[IPCLoanSupervisor]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCLoanSupervisorRefuse"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway28" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow70" sourceRef="IPCPersonInCharge2" targetRef="exclusivegateway28"></sequenceFlow>
+    <userTask id="IPCCarLoan" name="车贷负责人" activiti:formKey="IPC/taskIPCCarLoanForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCCarLoanTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="IPCSignatory" name="签约人" activiti:formKey="IPC/taskIPCSignatoryForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCSignatoryTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="IPCPersonInCharge3" name="IPC负责人" activiti:formKey="IPC/taskIPCPersonInCharge3Form.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCPersonInChargeTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCCarLoanThrough" name="车贷负责人通过" sourceRef="IPCCarLoan" targetRef="IPCPersonInCharge3">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCCarShujuSendEmailExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="IPCPersonInCharge3Through" name="IPC负责人通过" sourceRef="IPCPersonInCharge3" targetRef="IPCSignatory">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCPersonInChargeSendEmailExecutionListener">
+          <activiti:field name="defId">
+            <activiti:string><![CDATA[IPCPersonInCharge3]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway29" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow75" sourceRef="IPCSignatory" targetRef="exclusivegateway29"></sequenceFlow>
+    <endEvent id="endevent4" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.loan.LoanProcessStopExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="IPCSignatoryThrough" name="客户已签约" sourceRef="exclusivegateway29" targetRef="endevent4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCSignatoryThrough"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCSignatoryRefuse" name="客户拒签" sourceRef="exclusivegateway29" targetRef="endevent4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCSignatoryRefuse"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway30" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow80" sourceRef="IPCDepartmentSupervisor" targetRef="exclusivegateway30"></sequenceFlow>
+    <sequenceFlow id="IPCPersonInChargeReject" name="IPC部门主管驳回" sourceRef="exclusivegateway30" targetRef="IPCCensor">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='IPCPersonInChargeReject'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCPersonInChargeRefuse" name="IPC部门主管拒贷" sourceRef="exclusivegateway30" targetRef="endevent4">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCSendEmailExecutionListener">
+          <activiti:field name="defId">
+            <activiti:string><![CDATA[IPCPersonInCharge]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCPersonInChargeRefuse"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCTrialSupervisorReject" name="电核部主管拒贷" sourceRef="exclusivegateway22" targetRef="endevent4">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCSendEmailExecutionListener">
+          <activiti:field name="defId">
+            <activiti:string><![CDATA[IPCTrialSupervisor]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCTrialSupervisorReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCPersonInCharge2Refuse" name="IPC负责人拒贷" sourceRef="exclusivegateway28" targetRef="endevent4">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCSendEmailExecutionListener">
+          <activiti:field name="defId">
+            <activiti:string><![CDATA[IPCPersonInCharge2]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCPersonInCharge2Refuse"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCPersonInCharge2Reject" name="IPC负责人驳回" sourceRef="exclusivegateway28" targetRef="IPCData2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCPersonInCharge2Reject"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCPersonInCharge2Through" name="IPC负责人通过" sourceRef="exclusivegateway28" targetRef="CarCredit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCPersonInCharge2Through"}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="CarCredit" name="是否车抵+信贷" activiti:expression="${loanServiceTaskDelegate.isCarCredit(execution)}"></serviceTask>
+    <exclusiveGateway id="exclusivegateway31" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow85" sourceRef="CarCredit" targetRef="exclusivegateway31"></sequenceFlow>
+    <sequenceFlow id="CarCreditNotNeed" name="不需要车贷+信贷" sourceRef="exclusivegateway31" targetRef="IPCSignatory">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.ipc.LoanIPCPersonInChargeSendEmailExecutionListener">
+          <activiti:field name="defId">
+            <activiti:string><![CDATA[IPCPersonInCharge2]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="CarCreditNotNeed"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="CarCreditNeed" name="车贷+信贷" sourceRef="exclusivegateway31" targetRef="IPCCarLoan">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="CarCreditNeed"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="IPCTrialSupervisor2" name="电核部主管" activiti:formKey="IPC/taskIPCInitialAuditManagerForm2.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.loan.ipc.LoanIPCTrialSupervisorTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="IPCTrialSupervisor2Through" name="指派电核专员" sourceRef="IPCTrialSupervisor2" targetRef="IPCInitialAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCTrialSupervisor2Through"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="IPCPersonInCharge2Reject2" name="IPC负责人驳回" sourceRef="exclusivegateway28" targetRef="IPCLoanSupervisor">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCPersonInCharge2Reject2"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="BusinessSubmit" name="业务员提交任务" sourceRef="startevent1" targetRef="IPCData">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.bpms.listener.loan.LoanOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="IPCFinalAuditThrough" name="审核专员完成" sourceRef="IPCFinalAudit" targetRef="IPCLoanSupervisor"></sequenceFlow>
+    <sequenceFlow id="IPCLoanSupervisorThrough" name="审贷部主管通过" sourceRef="exclusivegateway26" targetRef="IPCPersonInCharge2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="IPCLoanSupervisorThrough"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <process id="process_pool1" name="process_pool1" isExecutable="true">
+    <laneSet id="laneSet_process_pool1">
+      <lane id="lane1"></lane>
+    </laneSet>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_LoanOrderIPC">
+    <bpmndi:BPMNPlane bpmnElement="LoanOrderIPC" id="BPMNPlane_LoanOrderIPC">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="635.0" y="53.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCData" id="BPMNShape_IPCData">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCInitialAudit" id="BPMNShape_IPCInitialAudit">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="322.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway21" id="BPMNShape_exclusivegateway21">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="409.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCTrialSupervisor" id="BPMNShape_IPCTrialSupervisor">
+        <omgdc:Bounds height="55.0" width="105.0" x="427.0" y="402.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCEduAnalyzer" id="BPMNShape_IPCEduAnalyzer">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="478.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway22" id="BPMNShape_exclusivegateway22">
+        <omgdc:Bounds height="40.0" width="40.0" x="287.0" y="409.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway23" id="BPMNShape_exclusivegateway23">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="571.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCPerformOutbound" id="BPMNShape_IPCPerformOutbound">
+        <omgdc:Bounds height="55.0" width="105.0" x="717.0" y="564.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCInitialAudit2" id="BPMNShape_IPCInitialAudit2">
+        <omgdc:Bounds height="55.0" width="105.0" x="906.0" y="564.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCFinalAudit" id="BPMNShape_IPCFinalAudit">
+        <omgdc:Bounds height="55.0" width="105.0" x="906.0" y="680.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCGroupLeader" id="BPMNShape_IPCGroupLeader">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="658.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway24" id="BPMNShape_exclusivegateway24">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="745.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCCensor" id="BPMNShape_IPCCensor">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="827.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCLoanSupervisor" id="BPMNShape_IPCLoanSupervisor">
+        <omgdc:Bounds height="55.0" width="105.0" x="906.0" y="821.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway26" id="BPMNShape_exclusivegateway26">
+        <omgdc:Bounds height="40.0" width="40.0" x="938.0" y="938.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway27" id="BPMNShape_exclusivegateway27">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="919.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCDepartmentSupervisor" id="BPMNShape_IPCDepartmentSupervisor">
+        <omgdc:Bounds height="55.0" width="105.0" x="457.0" y="912.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCData2" id="BPMNShape_IPCData2">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="988.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="1081.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCLRC01 " id="BPMNShape_IPCLRC01 ">
+        <omgdc:Bounds height="55.0" width="105.0" x="447.0" y="1165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCLRC02" id="BPMNShape_IPCLRC02">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="1165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCLRC03" id="BPMNShape_IPCLRC03">
+        <omgdc:Bounds height="55.0" width="105.0" x="745.0" y="1165.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="1255.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCPersonInCharge2" id="BPMNShape_IPCPersonInCharge2">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="1335.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway28" id="BPMNShape_exclusivegateway28">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="1425.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCCarLoan" id="BPMNShape_IPCCarLoan">
+        <omgdc:Bounds height="55.0" width="105.0" x="796.0" y="1588.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCSignatory" id="BPMNShape_IPCSignatory">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="1690.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCPersonInCharge3" id="BPMNShape_IPCPersonInCharge3">
+        <omgdc:Bounds height="55.0" width="105.0" x="794.0" y="1690.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway29" id="BPMNShape_exclusivegateway29">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="1789.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
+        <omgdc:Bounds height="35.0" width="35.0" x="635.0" y="1870.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway30" id="BPMNShape_exclusivegateway30">
+        <omgdc:Bounds height="40.0" width="40.0" x="337.0" y="919.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CarCredit" id="BPMNShape_CarCredit">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="1495.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway31" id="BPMNShape_exclusivegateway31">
+        <omgdc:Bounds height="40.0" width="40.0" x="632.0" y="1595.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="IPCTrialSupervisor2" id="BPMNShape_IPCTrialSupervisor2">
+        <omgdc:Bounds height="55.0" width="105.0" x="600.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="IPCDataThrough" id="BPMNEdge_IPCDataThrough">
+        <omgdi:waypoint x="652.0" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="223.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="569.0" y="194.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow41" id="BPMNEdge_flow41">
+        <omgdi:waypoint x="652.0" y="377.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="409.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCInitialAuditReject" id="BPMNEdge_IPCInitialAuditReject">
+        <omgdi:waypoint x="632.0" y="429.0"></omgdi:waypoint>
+        <omgdi:waypoint x="532.0" y="429.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="550.0" y="409.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCInitialAuditThrough" id="BPMNEdge_IPCInitialAuditThrough">
+        <omgdi:waypoint x="652.0" y="449.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="478.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="662.0" y="449.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow44" id="BPMNEdge_flow44">
+        <omgdi:waypoint x="427.0" y="429.0"></omgdi:waypoint>
+        <omgdi:waypoint x="327.0" y="429.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCTrialSupervisorThrough" id="BPMNEdge_IPCTrialSupervisorThrough">
+        <omgdi:waypoint x="307.0" y="409.0"></omgdi:waypoint>
+        <omgdi:waypoint x="307.0" y="349.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="349.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="310.0" y="390.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow46" id="BPMNEdge_flow46">
+        <omgdi:waypoint x="652.0" y="533.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="571.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCEduAnalyzerLessThan" id="BPMNEdge_IPCEduAnalyzerLessThan">
+        <omgdi:waypoint x="672.0" y="591.0"></omgdi:waypoint>
+        <omgdi:waypoint x="717.0" y="591.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="667.0" y="572.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPerformOutboundThrough" id="BPMNEdge_IPCPerformOutboundThrough">
+        <omgdi:waypoint x="822.0" y="591.0"></omgdi:waypoint>
+        <omgdi:waypoint x="906.0" y="591.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="826.0" y="572.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCInitialAudit2Through" id="BPMNEdge_IPCInitialAudit2Through">
+        <omgdi:waypoint x="958.0" y="619.0"></omgdi:waypoint>
+        <omgdi:waypoint x="958.0" y="680.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="962.0" y="624.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCEduAnalyzerMoreThan" id="BPMNEdge_IPCEduAnalyzerMoreThan">
+        <omgdi:waypoint x="652.0" y="611.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="658.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="659.0" y="624.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow51" id="BPMNEdge_flow51">
+        <omgdi:waypoint x="652.0" y="713.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="745.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCGroupLeaderReject" id="BPMNEdge_IPCGroupLeaderReject">
+        <omgdi:waypoint x="672.0" y="765.0"></omgdi:waypoint>
+        <omgdi:waypoint x="769.0" y="764.0"></omgdi:waypoint>
+        <omgdi:waypoint x="769.0" y="619.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="63.0" x="674.0" y="746.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCGroupLeaderThrough" id="BPMNEdge_IPCGroupLeaderThrough">
+        <omgdi:waypoint x="652.0" y="785.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="827.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="63.0" x="661.0" y="797.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow56" id="BPMNEdge_flow56">
+        <omgdi:waypoint x="958.0" y="876.0"></omgdi:waypoint>
+        <omgdi:waypoint x="958.0" y="938.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLoanSupervisorReject" id="BPMNEdge_IPCLoanSupervisorReject">
+        <omgdi:waypoint x="978.0" y="958.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1067.0" y="957.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1067.0" y="707.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1011.0" y="707.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="967.0" y="939.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow58" id="BPMNEdge_flow58">
+        <omgdi:waypoint x="652.0" y="882.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="919.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCCensorReject" id="BPMNEdge_IPCCensorReject">
+        <omgdi:waypoint x="632.0" y="939.0"></omgdi:waypoint>
+        <omgdi:waypoint x="562.0" y="939.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="570.0" y="919.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCCensorThrough" id="BPMNEdge_IPCCensorThrough">
+        <omgdi:waypoint x="652.0" y="959.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="988.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="662.0" y="959.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCData2Through" id="BPMNEdge_IPCData2Through">
+        <omgdi:waypoint x="652.0" y="1043.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1081.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="662.0" y="1054.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow62" id="BPMNEdge_flow62">
+        <omgdi:waypoint x="632.0" y="1101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="1101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="1165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow63" id="BPMNEdge_flow63">
+        <omgdi:waypoint x="652.0" y="1121.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow64" id="BPMNEdge_flow64">
+        <omgdi:waypoint x="672.0" y="1101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="797.0" y="1101.0"></omgdi:waypoint>
+        <omgdi:waypoint x="797.0" y="1165.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLRC02Through" id="BPMNEdge_IPCLRC02Through">
+        <omgdi:waypoint x="652.0" y="1220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1255.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="66.0" x="662.0" y="1231.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLRC01Through" id="BPMNEdge_IPCLRC01Through">
+        <omgdi:waypoint x="499.0" y="1220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="1275.0"></omgdi:waypoint>
+        <omgdi:waypoint x="632.0" y="1275.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="66.0" x="509.0" y="1231.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLRC03Through" id="BPMNEdge_IPCLRC03Through">
+        <omgdi:waypoint x="797.0" y="1220.0"></omgdi:waypoint>
+        <omgdi:waypoint x="797.0" y="1275.0"></omgdi:waypoint>
+        <omgdi:waypoint x="672.0" y="1275.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="66.0" x="770.0" y="1231.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLRCThrough" id="BPMNEdge_IPCLRCThrough">
+        <omgdi:waypoint x="652.0" y="1295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1335.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="662.0" y="1295.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLoanSupervisorRefuse" id="BPMNEdge_IPCLoanSupervisorRefuse">
+        <omgdi:waypoint x="958.0" y="978.0"></omgdi:waypoint>
+        <omgdi:waypoint x="957.0" y="1887.0"></omgdi:waypoint>
+        <omgdi:waypoint x="670.0" y="1887.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="960.0" y="995.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow70" id="BPMNEdge_flow70">
+        <omgdi:waypoint x="652.0" y="1390.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1425.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCCarLoanThrough" id="BPMNEdge_IPCCarLoanThrough">
+        <omgdi:waypoint x="848.0" y="1643.0"></omgdi:waypoint>
+        <omgdi:waypoint x="846.0" y="1690.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="850.0" y="1650.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInCharge3Through" id="BPMNEdge_IPCPersonInCharge3Through">
+        <omgdi:waypoint x="794.0" y="1717.0"></omgdi:waypoint>
+        <omgdi:waypoint x="705.0" y="1717.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="717.0" y="1725.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow75" id="BPMNEdge_flow75">
+        <omgdi:waypoint x="652.0" y="1745.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1789.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCSignatoryThrough" id="BPMNEdge_IPCSignatoryThrough">
+        <omgdi:waypoint x="652.0" y="1829.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1870.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="662.0" y="1829.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCSignatoryRefuse" id="BPMNEdge_IPCSignatoryRefuse">
+        <omgdi:waypoint x="632.0" y="1809.0"></omgdi:waypoint>
+        <omgdi:waypoint x="554.0" y="1809.0"></omgdi:waypoint>
+        <omgdi:waypoint x="554.0" y="1887.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="1887.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="562.0" y="1789.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow80" id="BPMNEdge_flow80">
+        <omgdi:waypoint x="457.0" y="939.0"></omgdi:waypoint>
+        <omgdi:waypoint x="377.0" y="939.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInChargeReject" id="BPMNEdge_IPCPersonInChargeReject">
+        <omgdi:waypoint x="357.0" y="919.0"></omgdi:waypoint>
+        <omgdi:waypoint x="357.0" y="854.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="854.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="87.0" x="366.0" y="876.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInChargeRefuse" id="BPMNEdge_IPCPersonInChargeRefuse">
+        <omgdi:waypoint x="357.0" y="959.0"></omgdi:waypoint>
+        <omgdi:waypoint x="357.0" y="1362.0"></omgdi:waypoint>
+        <omgdi:waypoint x="357.0" y="1887.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="1887.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="87.0" x="367.0" y="959.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCTrialSupervisorReject" id="BPMNEdge_IPCTrialSupervisorReject">
+        <omgdi:waypoint x="307.0" y="449.0"></omgdi:waypoint>
+        <omgdi:waypoint x="307.0" y="939.0"></omgdi:waypoint>
+        <omgdi:waypoint x="307.0" y="1395.0"></omgdi:waypoint>
+        <omgdi:waypoint x="307.0" y="1887.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="1887.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="310.0" y="477.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInCharge2Refuse" id="BPMNEdge_IPCPersonInCharge2Refuse">
+        <omgdi:waypoint x="652.0" y="1465.0"></omgdi:waypoint>
+        <omgdi:waypoint x="523.0" y="1499.0"></omgdi:waypoint>
+        <omgdi:waypoint x="523.0" y="1887.0"></omgdi:waypoint>
+        <omgdi:waypoint x="635.0" y="1887.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="547.0" y="1462.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInCharge2Reject" id="BPMNEdge_IPCPersonInCharge2Reject">
+        <omgdi:waypoint x="632.0" y="1445.0"></omgdi:waypoint>
+        <omgdi:waypoint x="424.0" y="1424.0"></omgdi:waypoint>
+        <omgdi:waypoint x="424.0" y="1015.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="1015.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="527.0" y="1415.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInCharge2Through" id="BPMNEdge_IPCPersonInCharge2Through">
+        <omgdi:waypoint x="652.0" y="1465.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1495.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="669.0" y="1464.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow85" id="BPMNEdge_flow85">
+        <omgdi:waypoint x="652.0" y="1550.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1595.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CarCreditNotNeed" id="BPMNEdge_CarCreditNotNeed">
+        <omgdi:waypoint x="652.0" y="1635.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="1690.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="662.0" y="1649.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CarCreditNeed" id="BPMNEdge_CarCreditNeed">
+        <omgdi:waypoint x="672.0" y="1615.0"></omgdi:waypoint>
+        <omgdi:waypoint x="796.0" y="1615.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="54.0" x="679.0" y="1595.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCTrialSupervisor2Through" id="BPMNEdge_IPCTrialSupervisor2Through">
+        <omgdi:waypoint x="652.0" y="278.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="322.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="569.0" y="297.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCPersonInCharge2Reject2" id="BPMNEdge_IPCPersonInCharge2Reject2">
+        <omgdi:waypoint x="672.0" y="1445.0"></omgdi:waypoint>
+        <omgdi:waypoint x="860.0" y="1444.0"></omgdi:waypoint>
+        <omgdi:waypoint x="860.0" y="856.0"></omgdi:waypoint>
+        <omgdi:waypoint x="906.0" y="848.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="75.0" x="668.0" y="1419.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BusinessSubmit" id="BPMNEdge_BusinessSubmit">
+        <omgdi:waypoint x="652.0" y="88.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="130.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="657.0" y="99.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCFinalAuditThrough" id="BPMNEdge_IPCFinalAuditThrough">
+        <omgdi:waypoint x="958.0" y="735.0"></omgdi:waypoint>
+        <omgdi:waypoint x="958.0" y="821.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="962.0" y="771.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="IPCLoanSupervisorThrough" id="BPMNEdge_IPCLoanSupervisorThrough">
+        <omgdi:waypoint x="938.0" y="958.0"></omgdi:waypoint>
+        <omgdi:waypoint x="907.0" y="956.0"></omgdi:waypoint>
+        <omgdi:waypoint x="907.0" y="1362.0"></omgdi:waypoint>
+        <omgdi:waypoint x="705.0" y="1362.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="870.0" y="939.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
