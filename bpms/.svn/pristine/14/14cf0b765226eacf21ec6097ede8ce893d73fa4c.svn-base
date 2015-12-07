@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.ContactsMapper">
+
+	<!-- 查询的条件 -->
+	<sql id="findContactList_Where">
+		LEFT JOIN t_bp_loanorder_and_contacts tbplac ON tbplac.CONTACT_ID  = tbpc.CONTACT_ID AND tbplac.LOAN_ORDER_ID  = #{loanOrderId}
+		LEFT JOIN t_bp_address tbpa1 ON tbpa1.ADDR_ID = tbpc.COMP_ADDR
+		LEFT JOIN t_bp_address tbpa2 ON tbpa2.ADDR_ID = tbpc.CURR_ADDR
+		<where>
+			 tbpc.CUS_ID = #{cusId}
+		</where>
+	</sql>
+	
+	<!-- 获取订单信息列表的查询语句SQL -->
+	<select id="findContactList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT 
+			tbpc.CONTACT_ID "contactId",             
+			tbpc.CUS_ID "cusId",                  
+			tbpc.CUS_TYPE "cusType",               
+			tbpc.CONTACT_STATUS "contactStatus",
+			tbpc.CH_NAME "chName",                
+			tbpc.EN_NAME "enName",              
+			tbpc.GENDER_TYPE "genderType",           
+			tbpc.age "age",                  
+			tbpc.JOB_TITLE "jobTitle",               
+			tbpc.ANNUAL_SALARY "annualSalary",       
+			tbpc.YEARS_OF_WORK "yearsOfWork",           
+			tbpc.COMP_TEL "compTel",                
+			tbpc.COMP_ADDR "compAddr",              
+			tbpc.CURR_ADDR "currAddr",               
+			tbpc.BIRTHDAY "birthday",                 
+			tbpc.ID_TYPE "idType",                
+			tbpc.ID_NO "idNo",                  
+			tbpc.tel "tel" ,                    
+			tbpc.FIXED_TEL "fixedTel",              
+			tbpc.EMAIL "email",                  
+			tbpc.RELATIONSHIP "relationship",
+			get_dict_code_func("relationship_type",tbpc.RELATIONSHIP) "relationshipName",           
+			tbpc.ZIP "zip",                    
+			tbpc.WORKPLACE "workplace" ,            
+			tbpc.CREATOR "creator",                
+			tbpc.CREATE_DATE "createDate", 
+			tbpa1.PROVINCE_ID "compProvince",      
+			tbpa1.CITY_ID "compCity",         
+			tbpa1.AREA_ID "compArea" ,  
+			tbpa1.ADDR_DETAILS "compAddrDetails",
+			get_area_name_func('1',tbpa1.PROVINCE_ID) "compProvinceName",
+			get_area_name_func(tbpa1.PROVINCE_ID,tbpa1.CITY_ID) "compCityName",
+			get_area_name_func(tbpa1.CITY_ID,tbpa1.AREA_ID) "compAreaName",
+			tbpa2.PROVINCE_ID "familyProvince",      
+			tbpa2.CITY_ID "familyCity",         
+			tbpa2.AREA_ID "familyArea" ,  
+			tbpa2.ADDR_DETAILS "familyAddrDetails",
+			get_area_name_func('1',tbpa2.PROVINCE_ID) "familyProvinceName",
+			get_area_name_func(tbpa2.PROVINCE_ID,tbpa2.CITY_ID) "familyCityName",
+			get_area_name_func(tbpa2.CITY_ID,tbpa2.AREA_ID) "familyAreaName",
+			IF(ISNULL(tbplac.LOAN_ORDER_ID),'','checked') "checkedLinkMan"
+		FROM t_bp_contacts tbpc
+		<include refid="findContactList_Where"/>
+		ORDER BY tbplac.LOAN_ORDER_ID DESC
+	</select>
+
+    <!-- 根据条件查询获取订单信息列表的个数查询语句SQL -->
+	<select id="findContactListCount" resultType="java.lang.Long">
+		SELECT
+		 COUNT(*)
+		FROM t_bp_contacts tbpc
+		<include refid="findContactList_Where"/>
+	</select>
+</mapper>

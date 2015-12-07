@@ -13,10 +13,10 @@ $(function(){
 	}
 	// 渲染用户的信息的列表
 	var assignUsersGrid = $("#assignUsersGrid").datagrid({
-		url : "loanOrder/loanOrderAction!findCandidatePersonsByCode.action",
+		url : "loanOrder/loanOrderAction!findCandidatePersons.action",
 		width : 'auto',
 		height :  $(this).height()-190,
-		queryParams: {"roleCode":"IPCDiFangDiaoCha"},
+		queryParams: {"loanOrderId": $row.loanOrderId,"roleCode":"IPCDiFangDiaoCha"},
 		rownumbers:true,
 		border:false,
 		singleSelect:true,

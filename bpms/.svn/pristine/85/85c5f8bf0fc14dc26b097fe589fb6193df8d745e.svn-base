@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.LoanOrderMapper">
+
+	<!-- 查询的条件 -->
+	<sql id="findLoanOrderList_Where">
+		<where>
+				tblo.CREATOR =#{creator}
+			<if test="name !=null and name !='' ">
+				AND tblo.NAME LIKE '%${name}%'
+			</if>
+			<if test="idNo !=null and idNo !='' ">
+				AND tblo.ID_NO LIKE '%${idNo}%'
+			</if>
+			<if test="mobileTile !=null and mobileTile !='' ">
+				AND tblo.MOBILE_TEL LIKE '%${mobileTile}%'
+			</if>
+			<if test="loanType !=null and loanType !='' ">
+				AND tblo.LOAN_TYPE = #{loanType}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 获取订单信息列表的查询语句SQL -->
+	<select id="findLoanOrderList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT
+			tblo.LOAN_ORDER_ID "loanOrderId",
+			tblo.STATUS_ID "statusId",
+			tblo.LOANER_ID "loanerId",
+			tblo.ORDER_DESC "orderDesc",
+			tblo.SUBJECT_TYPE "subjectType",
+			get_dict_code_func('subject_type',tblo.SUBJECT_TYPE) "subjectTypeName",
+			tblo.LOAN_TYPE "loanType",
+			get_dict_code_func('loan_type',tblo.LOAN_TYPE) "loanTypeName",
+			tblo.LOAN_AMOUNT "loanAmount",
+			tblo.LOAN_MIN "loanMin",
+			tblo.LOAN_PERIOD "loanPeriod",
+			tblo.REPAY_METHOD "repayMethod",
+			get_dict_code_func('repay_method',tblo.REPAY_METHOD) "repayMethodName",
+			tblo.PURPOSE "purpose",
+			tblo.CREATOR "creator",
+			tblo.CREATE_DATE "createDate",
+			tblo.DEP_MENAGER "depMenager",
+			tblo.SIGN_DATE "sinDate",
+			tblo. NAME "name",
+			tblo.GENDER_TYPE "genderType",
+			get_dict_code_func('genderType',tblo.GENDER_TYPE) "genderTypeName",
+			tblo.ID_NO "idNo",
+			tblo.AGE "age",
+			tblo.HUKOU_ADDR "hukouAddr",
+			tblo.CUR_ADDR "curAddr",
+			tblo.MOBILE_TEL "mobileTel",
+			tblo.FIXED_TEL "fixedTel",
+			tblo.MARRIAGE_TYPE "marriageType",
+			get_dict_code_func('marriage_type',tblo.MARRIAGE_TYPE) "marriageTypeName",
+			tblo.HAS_CHILD "hasChild",
+			get_dict_code_func('hasChild',tblo.HAS_CHILD) "hasChildName",
+			tblo.EMAIL "email",
+			tblo.QQ_NO "qqNo",
+			tblo.ANNUAL_SALARY "annualSalary",
+			tblo.INCOME_SRC "incomeSrc",
+			tblo.MORTGAGE_STATUS "mortgageStatus",
+			get_dict_code_func('mortgage_status',tblo.MORTGAGE_STATUS) "mortgageStatusName",
+			tblo.HOUSE_INSTALL_PAY "houseInstallPay",
+			tblo.RENT "rent",
+			tblo.APPLY_DATE "applyDate",
+			tblo.FINISH_DATE "finishDate",
+			tblo.PROCESS_STATUS "processStatus",
+			tblo.SALESMAN "salesman",
+			tblo.ORGANIZATION_ID "organizationId",
+			tblo.TASK_ALLOT_CNT  "taskAllotCnt",
+			tblo.BELONG_TO "belongTo",
+			tblo.LOAN_INFO "loanInfo",
+			tbos.STATUS_NAME "statusName"
+		FROM
+			t_bp_loan_order tblo
+		LEFT JOIN t_bp_order_status tbos ON tbos.STATUS_ID = tblo.STATUS_ID
+		<include refid="findLoanOrderList_Where"/>
+		ORDER BY tblo.CREATE_DATE DESC , tblo.PROCESS_STATUS ASC
+		LIMIT #{start},#{end}
+	</select>
+
+    <!-- 根据条件查询获取订单信息列表的个数查询语句SQL -->
+	<select id="findLoanOrderListCount" resultType="java.lang.Long">
+		SELECT
+		 COUNT(*)
+		FROM
+			t_bp_loan_order tblo
+		LEFT JOIN t_bp_order_status tbos ON tbos.STATUS_ID = tblo.STATUS_ID
+		<include refid="findLoanOrderList_Where"/>
+	</select>
+</mapper>

@@ -82,6 +82,7 @@ function saveMicrocreditOpinion(formId){
 					return isValid; // 返回false终止表单提交
 				},
 				success : function(data) {
+					console.info(data);
 					data = $.parseJSON(data);
 					$("#"+formId+" input[name='mcbrId']").val(data.data);
 					submitTask("IPCCensorReject");

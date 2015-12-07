@@ -1,0 +1,229 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<script type="text/javascript">
+//开户行信息列表
+function initBankGrid(queryParams) {
+	$("#bankGrid").datagrid({
+		width : 863,
+		height : 370,
+		pagination : false,
+		rownumbers : true,
+		border : true,
+		singleSelect : false,
+		nowrap : true,
+		multiSort : false,
+		url:"accountInfo/accountInfoAction!findAllListChacked.action",
+		queryParams:queryParams,
+		columns : [ [    {field : 'ck',rowspan:2,checkbox : true},
+			             {field : 'accountName',title : '开户名称',width : 100,align : 'center'},
+			             {field : 'bankName',title : '开户行名称',width : 100,align : 'center'},
+			             {field : 'accountNum',title : '开户账号',width : 180,align : 'center'},
+			             {field : 'actMediumName',title : '账户介质',width : 100,align : 'center'},
+			             {field : 'actNatureName',title : '账户性质',width : 100,align : 'center'},
+			             {field : 'primaryBackupName',title : '主副银行卡',width : 100,align : 'center'},
+			             {field : 'isICBCName',title : '是否工商银行卡',width : 100,align : 'center'}
+	              ] ],
+		toolbar : [ {
+			iconCls : 'icon-edit',
+			text : '编辑',
+			handler : doEditBank
+		}, "-", {
+			iconCls : 'icon-cut',
+			text : '删除',
+			handler : doDeleteBank
+		}, '-', {
+			iconCls : 'icon-save',
+			text : '保存',
+			handler : doSaveBank
+		} ],
+		onLoadSuccess : function(data) {
+			for (var i = 0; i < data.rows.length; i++) {
+				if ("checked" == data.rows[i].stateChecked) {
+					$("#bankGrid").datagrid("selectRow", i);
+				}
+			}
+		}
+	});
+}
+
+//保存开户行信息
+function toSaveBankInfo(){
+	//客户基本信息是否保存的标志
+	if(!checkIsSaveLoaner()) return false;
+	if(!$("#bankForm").form('validate')){return false;}
+	//贷款人客户id
+	var loanerId = $("#loanerId").val();
+	$("#bankCusId").val(loanerId);
+	//发送请求保存紧急联系人
+	$.ajax({
+		cache: true,
+		type: "POST",
+		url:"accountInfo/accountInfoAction!saveAccountInfo.action",
+		data:$('#bankForm').serialize(),
+		async: false,
+	    error: function(request) {
+	        alert("Connection error");
+	    },
+	    success: function(res) {
+	    	if(res.status){
+	    		$("#bankForm").form('clear');
+		    	$("#bankGrid").datagrid("reload",{loanerId:loanerId});
+	    	}
+	    	parent.$.messager.show({
+				title : '提示',
+				msg : res.message,
+				timeout : 4000 * 2
+			});
+	    }
+	});
+}
+//编辑
+function doEditBank(){
+	//客户基本信息是否保存的标志
+	if(!checkIsSaveLoaner()) return false;
+	var row = $("#bankGrid").datagrid("getSelected");
+	var rows = $('#bankGrid').datagrid('getSelections');
+	if (row == null) {
+		$.messager.alert("提示", "请选择一条记录进行编辑!", "warning");
+		return;
+	}
+	if(rows.length >1){
+		$.messager.alert("提示", "您只能选择一条记录执行编辑!", "warning");
+		return;
+	}
+	
+	//获取订单id
+	var $loanOrderId = $("#loanOrderId").val();
+	$.ajax( {
+		type : "POST",
+		url : 'accountInfo/accountInfoAction!doEditAccountInfo.action',
+		data : "accountId="+row.accountId+"&loanOrderId="+$loanOrderId,
+		dataType:'JSON',
+		success : function(result) {
+			if(result.status){
+				$("#bankForm").form('load',row);
+			}else{
+				parent.$.messager.show({
+					title : result.title,
+					msg : result.message,
+					timeout : 2000
+				});
+			}
+		}
+	});
+}
+//删除
+function doDeleteBank(){
+	//客户基本信息是否保存的标志
+	if(!checkIsSaveLoaner()) return false;
+	var $loanOrderId = $("#loanOrderId").val();//获取订单id
+	var selected = $('#bankGrid').datagrid('getSelections');
+	if (selected.length <= 0) {
+		$.messager.alert("提示", "请至少选择一条记录执行删除!", "warning");
+		return;
+	}
+	var ids = new Array();
+	for(var i=0,len=selected.length; i<len; i++){
+		ids.push(selected[i].accountId);
+	}
+	ids = ids.join(",");
+	$.messager.confirm('删除', '确定要删除所选的记录吗?', function(d) {
+		if (d) {
+			$.ajax( {
+				type : "POST",
+				url : 'accountInfo/accountInfoAction!doDeleteById.action',
+				data : "accountIds="+ids+"&loanOrderId="+$loanOrderId,
+				dataType:'JSON',
+				success : function(result) {
+					if(result.status){
+						var $loanerId = $("#loanerId").val();
+						$("#bankGrid").datagrid("reload",{loanerId:$loanerId});
+					}
+					parent.$.messager.show({
+						title : result.title,
+						msg : result.message,
+						timeout : 4000 * 2
+					});
+				}
+			});
+		}
+	});
+}
+//保存订单与开户行的关系
+function doSaveBank(){
+	//客户基本信息是否保存的标志
+	if(!checkIsSaveLoaner()) return false;
+	var $loanOrderId = $("#loanOrderId").val();//订单id
+	var selected = $('#bankGrid').datagrid('getSelections');
+	
+	var ids = "";
+	// 判断银行卡的个数,如果个数少于两个则进行提示
+	if(selected.length!=2){
+		$.messager.alert("提示", "主卡、副卡各只能为一个!", "warning");
+		return;
+	}else{
+		// 如果两个银行卡的类型不同,则说明一个主卡一个副卡.
+		if(selected[0].primaryBackup!=selected[1].primaryBackup){
+			ids = selected[0].accountId+','+selected[1].accountId;
+		}else{
+			$.messager.alert("提示", "主卡、副卡各只能为一个!", "warning");
+			return;
+		}
+	}
+	
+	// 保存用户的银行卡信息
+	$.ajax( {
+		type : "POST",
+		url : 'accountInfo/accountInfoAction!saveAccountInfoActionLoanOrder.action',
+		data: "accountIds="+ids+"&loanOrderId="+$loanOrderId,
+		dataType:'json',
+		success : function(result) {
+			parent.$.messager.show({
+				title : result.title,
+				msg : result.message,
+				timeout : 4000 * 2
+			});
+		}
+	});
+}
+</script>
+<div class="well well-small" style="margin-left: 5px;margin-top: 5px;width: 850px;">
+   <form id="bankForm" method="post">
+        <input id="bankCusId" name="cusId" type="hidden"/><!-- 贷款人id -->
+        <input id="accountId" name="accountId" type="hidden"/><!-- 开户行信息id -->
+        <input name="cusType" type="hidden"/><!-- 客户类型 -->
+        <input name="creator" type="hidden"/><!-- 创建人 -->
+        <input name="createDate" type="hidden"/><!-- 创建时间 -->
+		<table class="table">
+			<tr>
+				<th>开户行名称:</th>
+				<td><input name="bankName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,60]'" type="text" /></td>
+				<th>开户名称:</th>
+				<td><input name="accountName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,60]'" type="text" /></td>
+				<th>开户账号:</th>
+				<td><input name="accountNum" type="text" class="easyui-textbox easyui-validatebox easyui-numberbox" data-options="required:true" /></td>
+			</tr>
+			<tr>
+				<th>主副银行卡:</th>
+			    <td><input name="primaryBackup" type="text" class="easyui-textbox easyui-validatebox"  panelHeight="auto" editable="false"/></td>
+			    <th>账户介质:</th>
+			    <td><input name="actMedium" type="text" class="easyui-textbox easyui-validatebox" panelHeight="auto" editable="false"/></td>
+			    <th>账户性质:</th>
+			    <td><input name="actNature" type="text" class="easyui-textbox easyui-validatebox" panelHeight="auto" editable="false"/></td>
+			</tr>
+			<tr>
+			    <th>是否工商银行:</th>
+			    <td><input name="isICBC" type="text" class="easyui-textbox easyui-validatebox" panelHeight="auto" editable="false"/></td>
+			</tr>
+			<tr>
+			  <td colspan="6" style="text-align: right;">
+			    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reload" onclick="$('#bankForm').form('clear');">重置</a>
+			    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveBankInfo();">保存</a>
+			  </td>
+			</tr>
+		</table>
+   </form>
+</div>
+<div style="margin-left: 5px;margin-top: 5px;">
+  <table id="bankGrid"></table>
+</div>

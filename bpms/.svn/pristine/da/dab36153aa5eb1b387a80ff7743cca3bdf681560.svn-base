@@ -1,0 +1,616 @@
+package com.bpms.action;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.AccountInfo;
+import com.bpms.model.FinalAuditReport;
+import com.bpms.model.LoanContract;
+import com.bpms.model.LoanOrder;
+import com.bpms.model.Loaner;
+import com.bpms.model.MicrocreditOpinion;
+import com.bpms.model.vo.LoanContractInfoModel;
+import com.bpms.service.AccountInfoService;
+import com.bpms.service.CommonService;
+import com.bpms.service.FinalAuditReportService;
+import com.bpms.service.LoanContractService;
+import com.bpms.service.LoanCustRepaymentDetailService;
+import com.bpms.service.LoanOrderService;
+import com.bpms.service.LoanerService;
+import com.bpms.service.MicrocreditOpinionService;
+import com.bpms.util.NumberToCN;
+import com.bpms.util.PageUtil;
+import com.bpms.util.WordGeneratorUtil;
+import com.bpms.view.model.DataModel;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 合同 控制器
+ */
+@Namespace("/loanContract")
+@Action(value = "loanContractAction")
+public class LoanContractAction extends BaseAction implements
+		ModelDriven<LoanContract> {
+	private static final long serialVersionUID = 6361458777773218094L;
+
+	@Autowired
+	private LoanContractService loanContractService;
+	@Autowired
+	private MicrocreditOpinionService microcreditOpinionService;
+	@Autowired
+	private FinalAuditReportService finalAuditReportService;
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private AccountInfoService accountInfoService;
+	@Autowired
+	private LoanOrderService loanOrderService;
+	@Autowired
+	private LoanerService loanerService;
+	@Autowired
+	private LoanCustRepaymentDetailService loanCustRepaymentDetailService;
+	
+	private LoanContract loanContract = new LoanContract();
+
+	@Override
+	public LoanContract getModel() {
+		return loanContract;
+	}
+
+	private String organizationId;
+	private String loanName;
+	private String loanBgDateS;
+	private String loanBgDateE;
+	private String loanCity;
+	
+	private String id;
+	private String type;
+	private String visitFee;
+	
+	private String loanerId;
+
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public String getLoanName() {
+		return loanName;
+	}
+
+	public void setLoanName(String loanName) {
+		this.loanName = loanName;
+	}
+
+	public String getLoanBgDateS() {
+		return loanBgDateS;
+	}
+
+	public void setLoanBgDateS(String loanBgDateS) {
+		this.loanBgDateS = loanBgDateS;
+	}
+
+	public String getLoanBgDateE() {
+		return loanBgDateE;
+	}
+
+	public void setLoanBgDateE(String loanBgDateE) {
+		this.loanBgDateE = loanBgDateE;
+	}
+
+	/**
+	 * 保存合同信息
+	 */
+	public void saveLoanContract() {
+		boolean b = loanContractService.saveLoanContract(loanContract);
+		String msg = b ? "保存成功" : "保存失败";
+		OutputJson(new DataModel("", msg, b, loanContract), "text/html");
+	}
+
+	/**
+	 * 根据合同的id查询合同信息
+	 */
+	public void findLoanContract() {
+		OutputJson(loanContractService.findLoanContract(loanContract.getLcId()));
+	}
+
+	/**
+	 * 导出合同信息
+	 */
+	public void downloadContract() {
+		try {
+			LoanContract contract = loanContractService
+					.findLoanContractByLoanOrderId(loanContract
+							.getLoanOrderId());
+			if (contract != null) {
+				contract.exportDocDataHanding();
+				File file = WordGeneratorUtil.createDoc(contract,
+						File.separator + "temp" + File.separator + "loan"
+								+ File.separator + "借款协议模板.ftl");
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode(contract.getContractNo()
+										+ ".doc", "utf-8"));
+				// 写入流中
+				IOUtils.write(FileUtils.readFileToByteArray(file),
+						ServletActionContext.getResponse().getOutputStream());
+				// 删除文件
+				if (file.exists())
+					file.delete();
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 导出还款管理服务说明书
+	 */
+	public void exportRepaymentSpecification() {
+		try {
+			LoanOrder lo = loanOrderService.findLoanOrderById(loanContract.getLoanOrderId());
+			Loaner loaner = loanerService.findById(lo.getLoanerId());
+			LoanContract contract = loanContractService.findLoanContractByLoanOrderId(loanContract.getLoanOrderId());
+			//List<LoanCustRepaymentDetail> lcrdList = loanCustRepaymentDetailService.findAllRepaymentDetailByCno(contract.getContractNo());
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("loaner", loaner.getName());
+			String type = commonService.findDictName("gender_type", loaner.getGenderType());
+			if("男".equals(type)) {
+				map.put("mrOrmrs", "先生");
+			} else {
+				map.put("mrOrmrs", "女士");
+			}
+			map.put("monthlyRepayment", contract.getMonthlyRepayment());
+			map.put("monthlyRepaymentDate", contract.getMonthlyRepaymentDate());
+			map.put("lateFeeOne",contract.getMonthlyRepayment().multiply(new BigDecimal(0.1)));
+			//罚息，计算公式为月还金额*0.0005*分期期数*逾期天数（累计）
+			map.put("defaultInterestOne", contract.getMonthlyRepayment().multiply(new BigDecimal(contract.getLoanPeriods()).multiply(new BigDecimal(0.0005).multiply(new BigDecimal(1)))));
+			map.put("lateFeeSixteen",contract.getMonthlyRepayment().multiply(new BigDecimal(0.1)));
+			//罚息，计算公式为月还金额*0.0005*分期期数*逾期天数（累计）
+			map.put("defaultInterestSixteen", contract.getMonthlyRepayment().multiply(new BigDecimal(contract.getLoanPeriods()).multiply(new BigDecimal(0.0005).multiply(new BigDecimal(16)))));
+			map.put("accountName", contract.getLoanerActName());
+			map.put("accountNum", contract.getLoanerActNum());
+			map.put("bankName", contract.getLoanerBankName());
+			List<Map<String,Object>> lcrd = new ArrayList<Map<String,Object>>();
+			//int i = 1;
+			Map<String,Object> repayDetail = new HashMap<String,Object>();
+			/*for(LoanCustRepaymentDetail lcr : lcrdList) {
+				if(i == 2) {
+					repayDetail.put("evenPeriods", lcr.getPeriods());
+					repayDetail.put("evenPlanRepmtDate", lcr.getPlanRepmtDate());
+					repayDetail.put("evenPlanRepmtAmt", lcr.getPlanRepmtAmt());
+					lcrd.add(repayDetail);
+					repayDetail = new HashMap<String,Object>();
+					i = 0;
+				} else {
+					repayDetail.put("oddPeriods", lcr.getPeriods());
+					repayDetail.put("oddPlanRepmtDate", lcr.getPlanRepmtDate());
+					repayDetail.put("oddPlanRepmtAmt", lcr.getPlanRepmtAmt());
+				}
+				i++;
+			}*/
+			for(int j = 1 ; j <= contract.getLoanPeriods(); j++) {
+				if(j%2==0) {
+					repayDetail.put("evenPeriods", j);
+					repayDetail.put("evenPlanRepmtAmt", contract.getMonthlyRepayment());
+					lcrd.add(repayDetail);
+					repayDetail = new HashMap<String,Object>();
+				} else {
+					repayDetail.put("oddPeriods", j);
+					repayDetail.put("oddPlanRepmtAmt", contract.getMonthlyRepayment());
+				}
+				
+			}
+			map.put("repaymentDetailList", lcrd);
+			
+			if (!map.isEmpty()) {
+				File file = WordGeneratorUtil.createDoc(map,
+						File.separator + "temp" + File.separator + "loan"
+								+ File.separator + "还款管理服务说明书.ftl");
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode(loaner.getName()+"还款管理服务说明书"+new Date()
+										+ ".doc", "utf-8"));
+				// 写入流中
+				IOUtils.write(FileUtils.readFileToByteArray(file),
+						ServletActionContext.getResponse().getOutputStream());
+				// 删除文件
+				if (file.exists())
+					file.delete();
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 导出资信授权书
+	 */
+	public void exportCreditAuthorization() {
+		try {
+			File file = WordGeneratorUtil.createDoc(null,
+					File.separator + "temp" + File.separator + "loan"
+							+ File.separator + "资信授权书.ftl");
+			// 设置头文件
+			ServletActionContext.getResponse().setHeader(
+					"Content-disposition",
+					"attachment;filename="
+							+ URLEncoder.encode("资信授权书"+new Date()
+							+ ".doc", "utf-8"));
+			// 写入流中
+			IOUtils.write(FileUtils.readFileToByteArray(file),
+					ServletActionContext.getResponse().getOutputStream());
+			// 删除文件
+			if (file.exists())
+				file.delete();
+				
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 导出工商银行授权书
+	 */
+	public void exportICBCAuthorizationLetter() {
+		AccountInfo ai = accountInfoService.hasICBCAccount(loanerId);
+		Loaner lo = loanerService.findById(loanerId);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("loaner", lo.getName());
+		map.put("accountName", ai.getAccountName());
+		map.put("accountNum", ai.getAccountNum());
+		try {
+			File file = WordGeneratorUtil.createDoc(map,
+					File.separator + "temp" + File.separator + "loan"
+							+ File.separator + "工商银行授权书.ftl");
+			// 设置头文件
+			ServletActionContext.getResponse().setHeader(
+					"Content-disposition",
+					"attachment;filename="
+							+ URLEncoder.encode("工商银行授权书"+new Date()
+							+ ".doc", "utf-8"));
+			// 写入流中
+			IOUtils.write(FileUtils.readFileToByteArray(file),
+					ServletActionContext.getResponse().getOutputStream());
+			// 删除文件
+			if (file.exists())
+				file.delete();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 导出借款人委托划款授权书
+	 */
+	public void exportBorrowerCommissionedAuthorizationLetter() {
+		try {
+			LoanOrder lo = loanOrderService.findLoanOrderById(loanContract.getLoanOrderId());
+			Loaner loaner = loanerService.findById(lo.getLoanerId());
+			List<AccountInfo> accountList = accountInfoService.findListByLoanerId(lo.getLoanerId());
+			Map<String,String> map = new HashMap<String,String>();
+			map.put("loanerIdno", loaner.getIdNo());
+			map.put("loanerTel", loaner.getMobileTel());
+			map.put("loanerBankNameF", "");
+			map.put("loanerActNumF", "");
+			if(null != accountList && accountList.size()>0) {
+				for(AccountInfo ai : accountList) {
+						if("A".equals(ai.getPrimaryBackup())) {
+							map.put("loanerActNameZ", ai.getAccountName());
+							map.put("loanerBankNameZ", ai.getBankName());
+							map.put("loanerActNumZ", ai.getAccountNum());
+						} else {
+							if(StringUtils.isEmpty(ai.getBankName()) || StringUtils.isEmpty(ai.getAccountNum())) {
+								map.put("loanerBankNameF", "");
+								map.put("loanerActNumF", "");
+							} else {
+								map.put("loanerBankNameF", ai.getBankName());
+								map.put("loanerActNumF", ai.getAccountNum());
+							}
+						}
+				}
+			}
+			
+			if (!map.isEmpty()) {
+				File file = WordGeneratorUtil.createDoc(map,
+						File.separator + "temp" + File.separator + "loan"
+								+ File.separator + "借款人委托划款授权书.ftl");
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode("借款人委托划款授权书"+new Date()
+										+ ".doc", "utf-8"));
+				// 写入流中
+				IOUtils.write(FileUtils.readFileToByteArray(file),
+						ServletActionContext.getResponse().getOutputStream());
+				// 删除文件
+				if (file.exists())
+					file.delete();
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 导出信用咨询及管理服务协议
+	 */
+	public void exportCreditCounselingAndManagementServices() {
+		try {
+			LoanContract contract = loanContractService
+					.findLoanContractByLoanOrderId(loanContract
+							.getLoanOrderId());
+			MicrocreditOpinion mic = microcreditOpinionService.findMicrocreditOpinionByOid(loanContract.getLoanOrderId());
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("lc", contract);
+			if (null!=mic) {
+				map.put("visitFeeChinese", NumberToCN.number2CNMontrayUnit(mic.getVisitFee()));
+				map.put("visitFee", mic.getVisitFee());
+			} else {
+				FinalAuditReport far = finalAuditReportService.findFinalAuditReportByLoanOrderId(loanContract.getLoanOrderId());
+				map.put("visitFeeChinese", NumberToCN.number2CNMontrayUnit(far.getVisitFee()));
+				map.put("visitFee", far.getVisitFee());
+			}
+			
+			if (!map.isEmpty()) {
+				File file = WordGeneratorUtil.createDoc(map,
+						File.separator + "temp" + File.separator + "loan"
+								+ File.separator + "信用咨询及管理服务协议.ftl");
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode("信用咨询及管理服务协议"+new Date()
+								+ ".doc", "utf-8"));
+				// 写入流中
+				IOUtils.write(FileUtils.readFileToByteArray(file),
+						ServletActionContext.getResponse().getOutputStream());
+				// 删除文件
+				if (file.exists())
+					file.delete();
+				
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 验证合同是否存在
+	 */
+	public void checkIsContractExist() {
+		OutputJson(loanContractService
+				.findLoanContractByLoanOrderId(loanContract.getLoanOrderId()));
+	}
+
+	/**
+	 * 完善和合同信息
+	 */
+	public void completeContract() {
+		boolean b = loanContractService.saveCompleteContract(loanContract);
+		String msg = b ? "保存成功" : "保存失败";
+		OutputJson(new DataModel("", msg, b), "text/html");
+	}
+
+	/**
+	 * 查询合同信息列表
+	 */
+	public void findLoanContractInfo() {
+		GridModel gridModel = new GridModel();
+		Map<String, Object> map = new HashMap<String, Object>();
+		// map.put("organizationId", organizationId);
+		map.put("loanName", loanName);
+		map.put("loanBgDateS", loanBgDateS);
+		map.put("loanBgDateE", loanBgDateE);
+		map.put("contractNo", loanContract.getContractNo());
+		map.put("loanCity", loanCity);
+		List<LoanContractInfoModel> contractInfoModes = loanContractService
+				.findLoanConractInfoModelList(map, new PageUtil(page, rows));
+		gridModel.setRows(contractInfoModes);
+		gridModel.setTotal(loanContractService.getCountOfConractInfoModel(map));
+		OutputJson2(gridModel);
+	}
+
+	/**
+	 * 导出合同信息列表
+	 */
+	public void exprotLoanConractInfoModel() {
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			// map.put("organizationId", organizationId);
+			map.put("loanName", loanName);
+			map.put("loanBgDateS", loanBgDateS);
+			map.put("loanBgDateE", loanBgDateE);
+			map.put("contractNo", loanContract.getContractNo());
+			map.put("loanCity", loanCity);
+			this.loanContractService.exprotLoanConractInfoModel(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 查询合同相关信息
+	 */
+	public void findLoanContractRelativeInfo() {
+		LoanContract lc = loanContractService.findLoanContractRelativeInfo(loanContract);
+		OutputJson(lc);
+	}
+	
+	/**
+	 * 查询银行卡信息
+	 */
+	public void findBankAccountInfo() {
+		// 获取贷款客户的住银行卡
+		LoanOrder loanOrder = loanOrderService.findLoanOrderById(loanContract.getLoanOrderId());
+		List<AccountInfo> accountList = accountInfoService.findListByLoanerId(loanOrder.getLoanerId());
+		OutputJson(accountList);
+	}
+	
+	/**
+	 * 查询微贷呈报意见表或者终审报告
+	 * @return
+	 */
+	public void findVisitFee() {
+		Map<String,Object> map = new HashMap<String,Object>();
+		MicrocreditOpinion mic = microcreditOpinionService.findMicrocreditOpinionByOid(loanContract.getLoanOrderId());
+		if(null == mic) {
+			FinalAuditReport far = finalAuditReportService.findFinalAuditReportByLoanOrderId(loanContract.getLoanOrderId());
+			map.put("id", far.getFinaId());
+			map.put("type", "0");
+			map.put("contractLoanAmount", far.getContractLoanAmount());
+			map.put("loanPeriodType", commonService.findDictName("loan_period_type", far.getLoanPeriodType()));
+			map.put("monthServiceFeeRate", commonService.findDictName("month_service_fee_rate", far.getMonthServiceFeeRate()));
+			map.put("loanInterestRate", far.getLoanInterestRate());
+			map.put("visitFee", far.getVisitFee());
+			map.put("actualLoanAmount", far.getActualLoanAmount());
+			map.put("monthRepay", far.getMonthRepay());
+		} else {
+			map.put("id", mic.getMcbrId());
+			map.put("type", "1");
+			map.put("contractLoanAmount", mic.getFinalLoanAmt());
+			map.put("loanPeriodType", commonService.findDictName("loan_period_type", mic.getFinalLoanPeriod()));
+			map.put("monthServiceFeeRate", mic.getCounselingRate());
+			map.put("loanInterestRate", mic.getLoanRate());
+			map.put("visitFee", mic.getVisitFee());
+			map.put("actualLoanAmount", mic.getActualLoanAmount());
+			map.put("monthRepay", mic.getMonthRepay());
+		}
+		OutputJson(map);
+	}
+	
+	/**
+	 * 保存信访费用
+	 * @return
+	 */
+	public void saveVisitFee() {
+		boolean b = false;
+		String msg = "保存失败";
+		if("0".equals(type)) {
+			FinalAuditReport far = finalAuditReportService.findAuditReportById(id);
+			far.setVisitFee(new BigDecimal(visitFee));
+			far.setActualLoanAmount(loanContract.getActualLoanAmount());
+			b = finalAuditReportService.persistenceFinalAuditReport(far);
+		} else {
+			MicrocreditOpinion mic = microcreditOpinionService.findMicrocreditOpinionByOid(loanContract.getLoanOrderId());
+			mic.setVisitFee(new BigDecimal(visitFee));
+			mic.setActualLoanAmount(loanContract.getActualLoanAmount());
+			b = microcreditOpinionService.saveMicrocreditOpinion(mic);
+		}
+		if (b) {
+			msg = "保存成功";
+		}
+		OutputJson(new DataModel("提示", msg, b));
+	}
+	
+	/**
+	 * 保存银行账户信息
+	 */
+	public void modifyBankInfo() {
+		boolean b = false;
+		String msg = "保存失败";
+		LoanContract lc = loanContractService.findLoanContract(loanContract.getLcId());
+		lc.setLoanerBankName(loanContract.getLoanerBankName());
+		lc.setLoanerActName(loanContract.getLoanerActName());
+		lc.setLoanerActNum(loanContract.getLoanerActNum());
+		b = loanContractService.persistenceLoanContract(lc);
+		if (b) {
+			msg = "保存成功";
+		}
+		OutputJson(new DataModel("提示 ",msg,b));
+	}
+
+	public String getLoanCity() {
+		return loanCity;
+	}
+
+	public void setLoanCity(String loanCity) {
+		this.loanCity = loanCity;
+	}
+
+	public LoanContractService getLoanContractService() {
+		return loanContractService;
+	}
+
+	public void setLoanContractService(LoanContractService loanContractService) {
+		this.loanContractService = loanContractService;
+	}
+
+	public MicrocreditOpinionService getMicrocreditOpinionService() {
+		return microcreditOpinionService;
+	}
+
+	public void setMicrocreditOpinionService(
+			MicrocreditOpinionService microcreditOpinionService) {
+		this.microcreditOpinionService = microcreditOpinionService;
+	}
+
+	public LoanContract getLoanContract() {
+		return loanContract;
+	}
+
+	public void setLoanContract(LoanContract loanContract) {
+		this.loanContract = loanContract;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getVisitFee() {
+		return visitFee;
+	}
+
+	public void setVisitFee(String visitFee) {
+		this.visitFee = visitFee;
+	}
+
+	public String getLoanerId() {
+		return loanerId;
+	}
+
+	public void setLoanerId(String loanerId) {
+		this.loanerId = loanerId;
+	}
+
+}

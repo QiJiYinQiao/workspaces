@@ -98,22 +98,4 @@ public interface WorkFlowService {
 	 */
 	public abstract String findTaskFormKeyByTaskId(String taskId);
 
-	/**
-	 * 获取运行中的task指定的候选人列表，不包含自身
-	 * 
-	 * @param taskId
-	 *            任务的ID
-	 * @return 人员列表
-	 */
-	public abstract List<String> findRunTaskHandlePersons(String taskId);
-
-	/**
-	 * 获取运行中的task指定的所有候选人和受理人ID，包含自身并去重复
-	 * 
-	 * @param taskId
-	 *            任务的ID
-	 * @return 人员列表
-	 */
-	public abstract List<String> findRunTaskAllHandlePersons(String taskId);
-
 }
