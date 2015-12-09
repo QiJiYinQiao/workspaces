@@ -1,0 +1,72 @@
+package com.oasys.listener.ad;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.runtime.Execution;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.oasys.model.Organization;
+import com.oasys.model.Parameter;
+import com.oasys.model.PurchaseApp;
+import com.oasys.service.CommonService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.PurchaseAppService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Constants;
+
+public class ServiceTaskDelegate implements Serializable{
+	
+	private static final long serialVersionUID = 6552961243415010173L;
+
+	/** TaskService判断申请人为财富端或借款端 */
+	public void getRoleCodeType(Execution execution){
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+		// 强转为excutionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		// 获取service
+		WorkFlowTaskService workFlowTaskService = (WorkFlowTaskService) ctx.getBean("workFlowTaskService");
+		String roleCode = workFlowTaskService.getStartProcRoleCode(executionEntity.getVariable(Constants.CURRENT_USER_KEY).toString(),"");
+		//发送流程变量 提交到下一task处理
+		executionEntity.setVariable("result",roleCode);
+	}
+	
+	/** TaskService判断申请人类型为总部或分部 **/
+	public void getOrgLevelByUserID(Execution execution){
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+		// 强转为excutionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		// 获取service
+		OrganizationService orgService = (OrganizationService) ctx.getBean("organizationService");
+		//根据申请人ID获取申请人为总部还是分部 部门类型 0为总部 1为分部
+		Organization org = orgService.findOrganizationByUserId(Integer.valueOf(executionEntity.getVariable(Constants.CURRENT_USER_KEY).toString()));
+		//发送流程变量 提交到下一task处理
+		executionEntity.setVariable("result",org.getDeptLevel());
+	}
+	
+	/**500元以下走财务总监，500元以上要走总经理**/
+	public void findRoleByTotalAmt(Execution execution){
+		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+		PurchaseAppService purchaseAppService = (PurchaseAppService) ctx.getBean("purchaseAppService");
+		CommonService commonService = (CommonService) ctx.getBean("commonService");
+		// 强转为excutionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		String busId = executionEntity.getBusinessKey().split("\\.")[1];
+		PurchaseApp purchaseApp = purchaseAppService.findPurchaseAppById(busId);
+		Parameter parameter = commonService.findParameterByParmCode("amount");
+		if (purchaseApp!=null && parameter!=null) {
+			BigDecimal totalAmt = purchaseApp.getTotalAmt();
+			String parmValue = parameter.getParmValue();
+			//-1表示小于,0是等于,1是大于.
+			if (new BigDecimal(parmValue).compareTo(totalAmt)==1) {
+				executionEntity.setVariable("result","CaiWuZongJian");//小于500走财务总监
+			}else{
+				executionEntity.setVariable("result","ZongJingLi");//大于500走总经理
+			}
+		}
+	}
+}

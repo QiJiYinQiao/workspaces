@@ -1,0 +1,345 @@
+<%@page import="com.fasterxml.jackson.annotation.JsonInclude.Include"%>
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<script type="text/javascript" src="js/validate.js"></script>
+
+<script type="text/javascript">	
+	var selectRow;
+	var $grid2;
+	/** 保存增加或者修改名片申请的数据**/
+	function saveInvestProductInfo(){
+		$('#investProductInputOrSaveForm').submit(); 
+	};
+	//展示附表数据
+	$(function(){
+		// 渲染form
+		$('#investProductInputOrSaveForm').form({    
+			url:"callingCard/addCard.do",
+		    onSubmit: function(param){   
+		    	//校验输入的信息
+				var isValid = $("#investProductInputOrSaveForm").form('validate');
+				if(!isValid){
+					return false;
+				} 
+				     	    	
+				var lowLendEdu = $("#lowLendEdu").val();
+				if(lowLendEdu == "" ){
+					$("#lowLendEdu").val(null);
+				}
+			
+				var higLendEdu = $("#higLendEdu").val();
+				if(higLendEdu == "" ){
+					$("#higLendEdu").val(null);
+				} 
+		    },    
+		    success:function(data){   
+				$.messager.alert("提示","操作成功","warning");
+				$("#lookLoanOrderdgAdd").datagrid("reload");	 
+		    }    
+		});    
+		
+		// 渲染下拉列表框
+		createSelect();
+		
+		if($row!=null){
+			$("#saveCardApp").css("display","none");
+		}
+		var uri = "";
+		if($row==null){
+			if($("#caID").val()==null){
+				uri = "callingCard/indexCardAppAttach.do";
+			}else{
+				uri = "callingCard/indexCardAppAttach.do?caID="+$("#caID").val()
+			}
+		}else{
+			uri = "callingCard/indexCardAppAttach.do?caID="+$row.caID;
+		}
+		$grid2 = $("#lookLoanOrderdgAdd").datagrid({
+			url : uri,
+			width : 920,
+			height : $(this).height()*0.7,
+			pagination:true,
+			rownumbers:true,
+			border:true,
+			singleSelect:false,
+			nowrap:true,
+			multiSort:false,
+			columns : [ [ 
+			              {field : 'applicantNo',title : '申请人',width : parseInt($(this).width()*0.05),align : 'center' },
+			              {field : 'position',title : '申请人职位',width : parseInt($(this).width()*0.08),align : 'center'},
+			              {field : 'deptNo',title : '所属部门',width : parseInt($(this).width()*0.08),align : 'center'},
+			              {field : 'personalTel',title : '个人电话',width : parseInt($(this).width()*0.05),align : 'center'},
+			              {field : 'officeTel',title : '办公电话',width : parseInt($(this).width()*0.05),align : 'center'},
+			              {field : 'email',title : '邮箱',width : parseInt($(this).width()*0.05),align : 'center'},
+			              {field : 'branchAddr',title : '分公司地址',width : parseInt($(this).width()*0.08),align : 'center'},
+			              {field : 'comUrl',title : '公司网址',width : parseInt($(this).width()*0.08),align : 'center'},
+			              {field : 'appQty',title : '申请数量',width : parseInt($(this).width()*0.05),align : 'center'},
+			              {field : 'unit',title : '单位',width : parseInt($(this).width()*0.05),align : 'center'},
+			              {field : 'remark',title : '备注信息',width : parseInt($(this).width()*0.1),align : 'center'}
+			              ] ],
+			toolbar:'#tbAdd'
+			});
+	});
+	
+	// 根据索引获取每一行的基本信息
+	function getRowData2 (index) {
+        if (!$.isNumeric(index) || index < 0) { return undefined; }
+        var rows = $grid2.datagrid("getRows");
+        return rows[index];
+    }
+
+	/** 点击按钮，新增或者修改,加载编辑的值**/			
+	function toSaveOrUpdateInvestProductOpenDlg2(index){		
+	    var selectedRow = getRowData2(index);
+	    createSelect();
+    	$("#investProductInputOrSaveForm").form("load",selectedRow);
+        $("#deptNo").combotree('setValue',selectedRow.organizationId);
+     	$("#applicantNo").combobox('setValue',selectedRow.userId);
+    	
+	}
+
+	/** 清空新添加的的的数据**/
+	function clearForm(){
+		$("#investProductInputOrSaveForm").form("clear");		
+	}	
+	
+	//添加上传
+	function addAccessory(){
+		$(".table tr:eq(5)").after('<tr><th>上传附件:</th><td colspan="4"><input id="prodName" name="prodName" class="easyui-textbox easyui-validatebox" data-options="validType:"length[0,100]", required:true"/><input type="file"/><a class="add" style="font-size: 20px;" onclick="addAccessory();">+</a><a class="del" style="font-size: 20px;margin-left:10px;" onclick="delAccessory(this);">x</a></td></tr>');
+	}
+	
+	//删除上传
+	function delAccessory(id){
+		$(id).parent().parent().remove();
+	}
+	
+	function createSelect(){
+		//初始化组织机构
+		$("#deptNo").combotree({
+			width:171,
+			url:"Organization/organizationList.do",
+			idFiled:'id',
+		 	textFiled:'name',
+		 	valueFiled:'id',
+		 	parentField:'pid',
+		 	onLoadSuccess:function(data){
+		 	},
+		 	onChange:function(){
+		 		$("#applicantNo").combobox('clear');
+		 		$("#deptNo").val($(this).combotree('getValue'));
+		 		$("#applicantNo").combobox({
+		 			width:171,
+		 			multiple:false,
+		 			separator:",",
+		 			editable:false, 
+		 			url:'callingCard/getUserInfo.do?q='+$("#deptNo").val(),
+		 			valueField:'code',
+		 		 	textFiled:'text',
+		 		 	onLoadSuccess:function(data){
+		 		 		//加一个全部
+		 		 	},
+		 		 	onChange:function(n,o){
+		 		 		$.ajax({
+				    		type: "POST",
+				    		url:"callingCard/loadUserInfo.do?q="+n,
+				    		async: false,//默认true设置下，所有请求均为异步请求
+				    		cache: true,
+				    	    success: function(iJson) {
+				     	    	$("#deptNo").val(iJson.fullName);
+				     	    	$("#position").val(iJson.name);
+				     	    	$("#personalTel").val(iJson.mobile);
+				     	    	$("#officeTel").val(iJson.tel);
+				     	    	$("#email").val(iJson.email);
+				    	    }
+				    	});		
+		 		 	}
+		 		});
+		 	}
+		});
+	}
+	
+	
+	//1为删除名片附件，2为删除名片
+	function urlChange(index){
+		if(index==1){
+			return "callingCard/removeCardAttach.do";
+		}else if(index==2){
+			return "callingCard/removeCard.do";
+		}
+	}
+	
+	//保存到主表
+	$(function(){
+		$("#saveCardApp").click(function(){
+			$.ajax({
+				type : "POST",
+				url : "callingCard/addCardTable.do",
+				data:$('#investProductInputOrSaveForm').serialize(),
+				dataType:'JSON',
+				success : function(flag) {
+					if(flag.status==true){	
+						$('#addWindow').dialog("close");
+		    			//刷新列表		    							
+			    		$("#dg").datagrid("reload");//刷新表格    
+						$.messager.alert("提示","保存成功","warning");
+					}else{
+						$.messager.alert("提示","保存失败","warning");
+					}
+				},error:function(){
+					$.messager.alert("提示","失败了","warning");
+				}
+			});
+		});
+	});
+	
+/* 	$(function(){
+// 		 $("#investProductInputOrSaveForm").form('load',$row);	//编辑时load
+		//上传附件
+		$("#upploadAttachment").click(function(){
+			alert($row.appNo);
+			fileUploadsDlg($row.appNo);
+		});
+		//查看附件
+		$("#checkAttachment").click(function(){
+			checkAttachementDetail($row.appNo,'');
+		});
+	}); */
+	
+	/*编辑*/
+	function toEditAttach(){
+		 var rowdata = $('#lookLoanOrderdgAdd').datagrid('getSelections');//获取选中的记录
+		 if(rowdata==null || rowdata.length<=0){
+			$.messager.alert("提示","请选择一条记录!","warning");
+			return false;
+		 }else if(rowdata.length>1){
+			$.messager.alert("提示","只能选择一条记录编辑!","warning");
+			return false;
+		 }else{
+			rowdata = $('#lookLoanOrderdgAdd').datagrid('getSelected');//获取选中的记录  
+			createSelect();
+	    	$("#investProductInputOrSaveForm").form("load",rowdata);
+	        $("#deptNo").combotree('setValue',rowdata.organizationId);
+	     	$("#applicantNo").combobox('setValue',rowdata.userId);
+			/* createSelect();
+	    	$("#investProductInputOrSaveForm").form("load",rowdata);
+	        $("#deptNo").combotree('setValue',rowdata.organizationId);
+	     	$("#applicantNo").combogrid('setValue',rowdata.userId); */
+		 }
+	}
+	
+	/*删除*/
+	function toDelAttach(){
+		var ids = new Array();
+		 var rowdata = $('#lookLoanOrderdgAdd').datagrid('getSelections');//获取选中的记录
+		 if(rowdata==null || rowdata.length<=0){
+				$.messager.alert("提示","请选择至少一条记录!","warning");
+		 }else{
+			 for(var i=0;i<rowdata.length;i++){
+					ids.push(rowdata[i].caId);
+				}
+			ids = ids.join(",");
+			$.messager.confirm('删除', '执行删除后，数据将不可恢复,是否执行?', function(d) {
+	    		if (d) {
+	    			$.ajax({
+	    				type : "POST",
+	    				url : 'callingCard/removeCardAttach.do',
+	    				data : "id="+ids,
+	    				dataType:'JSON',
+	    				success : function(iJson) {
+	    					if(iJson.status){
+	    						$.messager.alert("提示","删除申请成功","warning");
+// 		    					//刷新列表	
+		    					$("#lookLoanOrderdgAdd").datagrid("reload");
+	    					}else{
+	    						$.messager.alert("提示","删除申请失败","warning");
+	    					}
+	    				}
+		    		});
+	    		}
+	    	});			
+		 }
+	}
+</script>
+	<div style="margin-left: 5px;margin-top: 5px;" data-options="iconCls:'icon-cstbase'">
+	<div id="tbAdd" style="padding:2px 0">
+      		<table cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="toEditAttach();">编辑</a>
+						<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="toDelAttach();">批量删除</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	   <form id="investProductInputOrSaveForm"  method="post">
+ 	   		<input id="caId" name="caId" type="hidden"/><!-- 理财产品的ID -->
+ 	   		<input id="appNo" name=appNo type="hidden"/><!-- 理财产品的ID -->
+ 	   		<input id="unit" name=unit type="hidden"/><!-- 理财产品的ID -->
+ 	   		<input id="registrantNO" name=registrantNO type="hidden"/><!-- 理财产品的ID -->
+			<table class="table" width="100%">
+				<tr>
+					<th>部门:</th>
+					<td>
+						<input name="deptNo" id="deptNo" class="easyui-textbox" readonly="true" data-options="validType:'length[0,100]', required:true"/>
+					</td>
+					<th>姓名:</th>
+					<td id="name">
+						<input name="applicantNo" id="applicantNo" class="easyui-textbox easyui-combogrid" data-options="validType:'length[0,100]', required:true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>职务:</th>
+					<td>
+						<input name="position" id="position" class="easyui-textbox" readonly="true"/>
+					</td>
+					<th>个人电话:</th>
+					<td>
+						<input name="personalTel" id="personalTel" class="easyui-textbox" readonly="true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>办公电话:</th>
+					<td>
+						<input name="officeTel" id="officeTel" class="easyui-textbox" readonly="true"/>
+					</td>
+					<th>邮箱:</th>
+					<td>
+						<input name="email" id="email" class="easyui-textbox" readonly="true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>地址:</th>
+					<td>
+						<input id="branchAddr" name="branchAddr" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,100]', required:true"/>
+					</td><th>数量:</th>
+					<td>
+						<input id="appQty" name="appQty" type="text" class="easyui-textbox easyui-validatebox easyui-numberbox" data-options="validType:'integer',required:true" maxlength="5"/>
+					</td>
+				</tr>
+				<tr>
+					<th>公司网址:</th>
+					<td>
+						<input id="comUrl" name="comUrl" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,100]', required:true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>备注:</th>
+					<td colspan="3">
+						<textarea id="remark" name="remark" class="easyui-textbox" data-options="validType:'length[0,400]', required:true" style="width:560px;"></textarea>
+					</td>
+				</tr>
+				<tr>
+				   <td colspan="4">
+				      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm();">重置</a>
+				      <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="saveInvestProductInfo();">保存</a>
+				   </td>
+				</tr>					
+			</table>
+		</form>
+	</div>	
+		<!--添加名片列表 -->
+		<table id="lookLoanOrderdgAdd" title="添加名片" style="margin-top: 60px;"></table>
+		<div style="float:right;">
+			 <a href="javascript:void(0)" id="saveCardApp" class="easyui-linkbutton" iconCls="icon-save" style="margin-bottom: 20px;margin-top: 20px;">保存</a>
+		</div>
+		<!--查看附件-->
+		<div id="saveOrUpdateInvestProductDialog"></div>		

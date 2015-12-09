@@ -1,0 +1,67 @@
+package com.oasys.listener;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.TaskRoleService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Constants;
+
+public abstract class BaseTaskListener implements TaskListener {
+
+	private static final long serialVersionUID = 1L;
+	
+	// 上下文
+	protected WebApplicationContext webContext;
+	// 用户的UserService
+	protected UserService userService;
+	// 角色的service
+	protected RoleService roleService;
+	
+	protected OrganizationService orgService;
+	
+	protected TaskRoleService taskRoleService;
+	
+	//流程的service
+	protected WorkFlowTaskService workFlowTaskService;
+	{
+		webContext = ContextLoader.getCurrentWebApplicationContext();
+		userService = (UserService) webContext.getBean("userService");
+		roleService = (RoleService) webContext.getBean("roleService");
+		workFlowTaskService = (WorkFlowTaskService) webContext.getBean("workFlowTaskService");
+		orgService = (OrganizationService) webContext.getBean("organizationService");
+		taskRoleService = (TaskRoleService) webContext.getBean("taskRoleService");
+		
+	}
+	
+	/***
+	 * 根据节点找到节点对象所对应的候选组 如找不到 则跳转下一流程节点进行处理
+	 * @param task 节点对象
+	 * @param taskGroupCode 节点对象对应的候选组code
+	 * @param orgID 组织机构ID
+	 */
+	protected void setTaskGroupOrVariables(DelegateTask task,String taskGroupCode){
+		//如果未找到候选组
+		if(StringUtils.isBlank(taskGroupCode)){
+			String result = Constants.TASK_COMMIT_RESULT;
+			//获取task节点的formKeyJson 判断是 角色比对 或 财富端借款端比对
+			if(StringUtils.isNotBlank(task.getFormKey()) && task.getFormKey().indexOf("?") > 0){
+				result = workFlowTaskService.getResultByFormKey(task.getFormKey(),task.getVariable(Constants.CURRENT_USER_KEY).toString(), Constants.TASK_COMMIT_RESULT);
+			}
+			task.setVariable(Constants.RCN_RESULT, result);//设置跳转流程变量 跳转下一节点处理 
+		}else{
+			task.addCandidateGroup(taskGroupCode);
+		}
+	}
+	
+	protected void setTaskRoleCodeByTask(DelegateTask task) {
+		taskRoleService.setTaskRoleCodeByTask(task);
+	}
+	
+}

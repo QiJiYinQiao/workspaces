@@ -1,0 +1,352 @@
+package com.oasys.serviceImpl;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.EmpSalPositionChgApp;
+import com.oasys.model.Organization;
+import com.oasys.model.StatusNameRef;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.EmpSalPositionChgAppService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+/**
+ * @Title: EmpSalPositionChgAppServiceImpl
+ * @Package com.oasys.serviceImpl
+ * @Description: 员工薪资岗位变动申请Service实现类
+ * @author lida
+ * @date 2015/10/26
+ * @version V1.0
+ */
+@Service("empSalPositionChgAppService")
+public class EmpSalPositionChgAppServiceImpl extends WorkFlowBaseServiceImpl
+		implements EmpSalPositionChgAppService {
+
+	@Autowired
+	private PublicDao<EmpSalPositionChgApp> publicDao;
+
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+
+	@Autowired
+	private WorkFlowService workFlowService;
+
+	@Autowired
+	private StatusNameRefService statusNameService;
+
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+
+	@Autowired
+	private OrganizationService orgService;
+
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private RoleService roleService;
+
+	@Override
+	public EmpSalPositionChgApp getEmpSalPositionByID(Integer id) {
+		// TODO Auto-generated method stub
+		return publicDao.get(EmpSalPositionChgApp.class, id);
+	}
+
+	@Override
+	public String empSalPositionStartProcessInstance(Integer id) {
+		//更新流程状态
+		EmpSalPositionChgApp empSal = publicDao.get(EmpSalPositionChgApp.class, id);
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setAppNo(empSal.getAppNo());
+		taskModel.setBusinessID(id.toString());//业务ID
+		taskModel.setBusinessDefineKey(getProcDefKey(empSal).get("procDefKey"));// 获取启动实例的key
+//		taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+		Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+		if(null != resultMap.get(Constants.STATUS_REF_ID) && StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+			updEmpSalPositionChgAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+
+	@Override
+	public void updEmpSalPositionProcessStatus(Integer id, String status) {
+		// TODO Auto-generated method stub
+		EmpSalPositionChgApp empSalApp = getEmpSalPositionByID(id);
+		empSalApp.setProcStatus(status);
+		publicDao.saveOrUpdate(empSalApp);
+	}
+
+	@Override
+	public void updEmpSalPositionChgAppStatus(Integer id, String statusID) {
+		// TODO Auto-generated method stub
+		EmpSalPositionChgApp empSal = getEmpSalPositionByID(id);
+		empSal.setAppStatus(statusID.toString());
+		publicDao.saveOrUpdate(empSal);
+	}
+
+	@Override
+	public List<EmpSalPositionChgApp> findEmpSalPositionTask(PageUtil pageUtil,
+			EmpSalPositionChgApp empSal) throws ParseException {
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setProcessKey(empSal.getDefinitionKey());
+		List<WorkFlowTasksModel> workList = workFlowTaskService
+				.findAcceptTaskByGroup(taskModel);
+		if (null == workList || workList.size() == 0)
+			return new ArrayList<EmpSalPositionChgApp>();// 判断是否存在流程
+		String hql = getFindHQL(empSal, 0, getTaskEmpSalIds(workList));// 获取sql语句
+		return getEmpSalAppList(hql, pageUtil, workList);// 查询list
+	}
+
+	@Override
+	public Long findEmpSalPositionTaskCount(EmpSalPositionChgApp empSal) {
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setProcessKey(empSal.getDefinitionKey());
+		List<WorkFlowTasksModel> workList = workFlowTaskService
+				.findAcceptTaskByGroup(taskModel);
+		if (null == workList || workList.size() == 0)
+			return Long.valueOf(0);// 判断是否存在流程
+		String hql = getFindHQL(empSal, 1, getTaskEmpSalIds(workList));// 获取sql语句
+		return publicDao.findTotalCount(hql);
+	}
+
+	@Override
+	public String saveSubmitTask(WorkFlowTasksModel taskModel) throws Exception {
+		Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+		if(null != resultMap.get(Constants.STATUS_REF_ID)){
+			updEmpSalPositionChgAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+
+	@Override
+	public StatusNameRef findAppStatusByID(String appStatusID) {
+		// TODO Auto-generated method stub
+		return statusNameService.getStatusNameRefByStatusID(appStatusID);
+	}
+
+
+	@Override
+	public List<EmpSalPositionChgApp> findEmpSalAppList(PageUtil pageUtil,
+			EmpSalPositionChgApp empSalApp) throws ParseException {
+		return getEmpSalAppList(getFindHQL(empSalApp, 0, ""), pageUtil, null);
+	}
+
+	@Override
+	public Long findEmpSalAppListCount(EmpSalPositionChgApp empSalApp) {
+		// TODO Auto-generated method stub
+		return publicDao.findTotalCount(getFindHQL(empSalApp, 1, ""));
+	}
+
+	@Override
+	public void saveOrUpdateEmpSalAppEntity(EmpSalPositionChgApp empSalApp) {
+		// TODO Auto-generated method stub
+		publicDao.saveOrUpdate(empSalApp);
+	}
+
+	@Override
+	public void delEmpSalAppScrap(String appNo) {
+		// TODO Auto-generated method stub
+		publicDao.executeHql("delete from EmpSalPositionChgApp where appNo = '" + appNo + "'");
+	}
+	
+	@Override
+	public Map<String,String> getProcDefKey(EmpSalPositionChgApp empSal){
+		Organization org = orgService.findOrganizationByUserId(empSal.getApplicantNo());//申请人部门信息
+		String roleId = empSal.getCurPosition().split(",").length <= 0 ? empSal.getCurPosition() : empSal.getCurPosition().split(",")[0];
+		String curRole = roleService.findRoleByRoleId(Integer.valueOf(roleId)).getRoleType();//目前所在职位的职位类型
+		String aftRole = roleService.findRoleByRoleId(Integer.valueOf(empSal.getAftPosition())).getRoleType();//调整后所在职位的职位类型
+		String procDefKey = "";
+		String procDefKeyRes = "";
+		Map<String,String> map = new HashMap<String, String>();
+		switch (org.getDeptLevel()) {
+		case "0"://总部
+			if("3".equals(empSal.getChgType())){//部门间调岗
+				procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DO_HO;
+				procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DO_HO_RES;
+			}else{//部门内调岗或调薪
+				procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DI_HO;
+				procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DI_HO_RES;
+			}
+			break;
+		case "1"://分部 
+			//职位类型判断 1为业务端 2为职能端
+			if("1".equals(curRole)){
+				if("2".equals(empSal.getChgType())){//分公司 业务端 部门内异动
+					procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DI_BO_BU;
+					procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DI_BO_BU_RES;
+				}else if("3".equals(empSal.getChgType())){//分公司 业务端 部门间
+					procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DO_BO_BU;
+					procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DO_BO_BU_RES;
+				}
+			}else if("2".equals(curRole)){
+				if("2".equals(empSal.getChgType())){//分公司 职能端 部门内异动
+					procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DI_BO_FU;
+					procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DI_BO_FU_RES;
+				}else if("3".equals(empSal.getChgType())){//分公司 部门间
+					if(curRole.equals(aftRole)){//分公司 职能端 部门间 不涉及职能端和业务端异动 
+						procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DO_BSJ_BO_BU;
+						procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DO_BSJ_BO_BU_RES;
+					}else{//分公司 职能端 部门间 涉及职能端和业务端异动
+						procDefKey = Constants.EMPSAL_POSITION_CHG_APP_DO_SJ_BO_BU;
+						procDefKeyRes = Constants.EMPSAL_POSITION_CHG_APP_DO_SJ_BO_BU_RES;
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		map.put("procDefKey", procDefKey);
+		map.put("procDefKeyRes", procDefKeyRes);
+		return map;
+	}
+
+	/** --------- 自定义方法 --------- **/
+
+	// 获取task中员工薪资岗位变动表的id集合
+	private String getTaskEmpSalIds(List<WorkFlowTasksModel> workList) {
+		String ids = "";
+		for (WorkFlowTasksModel workFlowTasksModel : workList) {
+			ids += workFlowTasksModel.getBusinessID() + ",";
+		}
+		if (ids.length() > 0) {
+			ids = ids.substring(0, ids.length() - 1);
+		}
+		return ids;
+	}
+
+	// 获取员工薪资岗位变动HQL通用语句方法
+	private String getFindHQL(EmpSalPositionChgApp empSalApp, Integer isCount,
+			String ids) {
+		String hql = "";
+		if (isCount == 0) {
+			hql += "SELECT SPCA.EFA_ID," + "SPCA.APP_NO," + "SPCA.APP_DATE,"
+					+ "SPCA.CUR_DEPT_NO," + "SPCA.CUR_DEPT_NAME,"
+					+ "SPCA.CUR_POSITION," + "SPCA.CUR_SAL,"
+					+ "SPCA.CUR_WORKING," + "SPCA.ENTRY_DATE,"
+					+ "SPCA.CHG_TYPE," + "SPCA.AFT_DEPT_NO,"
+					+ "SPCA.AFT_DEPT_NAME," + "SPCA.AFT_POSITION,"
+					+ "SPCA.AFT_SAL," + "SPCA.AFT_WORKING,"
+					+ "SPCA.SAL_CHG_MODE," + "SPCA.CHG_RESON,"
+					+ "SPCA.CHG_RESON_OTHER," + "SPCA.EFFECTIVE_DATE,"
+					+ "SPCA.TRIAL_PERIODS," + "SPCA.TRIAL_SAL,"
+					+ "SPCA.REMARK," + "USERS.LOGIN_ACT,"
+					+ "CHG_TYPE.DICT_NAME ch_dict_name,"
+					+ "SAL_CHG_TYPE.DICT_NAME s_dict_name,"
+					+ "CHG_RESON.DICT_NAME c_dict_name," + "SPCA.APPLICANT_NO,"
+					+ "SPCA.PROC_STATUS";
+		} else {
+			hql += "SELECT COUNT(*) ";
+		}
+		String hqlStr = " FROM OASYS.T_OA_HR_EMP_SAL_POSITION_CHG_APP SPCA "
+				+ "LEFT JOIN QQMS.T_USERS USERS "
+				+ "  ON SPCA.APPLICANT_NO = USERS.USER_ID "
+				+ " LEFT JOIN QQMS.V_SYS_DICT_CHG_TYPE CHG_TYPE "
+				+ "  ON SPCA.CHG_TYPE = CHG_TYPE.DICT_CODE "
+				+ " LEFT JOIN QQMS.V_SYS_DICT_SAL_CHG_TYPE SAL_CHG_TYPE "
+				+ "  ON SPCA.SAL_CHG_MODE = SAL_CHG_TYPE.DICT_CODE "
+				+ " LEFT JOIN QQMS.V_SYS_DICT_CHG_RESON CHG_RESON "
+				+ "  ON SPCA.CHG_RESON = CHG_RESON.DICT_CODE" + " WHERE 1=1";
+		// 判断办理任务页面 根据id加载列表 则不添加申请人查询条件
+		if (StringUtils.isNotBlank(ids)) {
+			hqlStr += " AND SPCA.EFA_ID in (" + ids + ")";
+		} else {
+			hqlStr += " AND APPLICANT_NO="
+					+ Constants.getCurrendUser().getUserId();
+		}
+		if (StringUtils.isNotBlank(empSalApp.getAppDateBefore())) {
+			hqlStr += " AND APP_DATE >='" + empSalApp.getAppDateBefore().trim()
+					+ "'";
+		}
+		if (StringUtils.isNotBlank(empSalApp.getAppDateAfter())) {
+			hqlStr += " AND APP_DATE <='" + empSalApp.getAppDateAfter().trim()
+					+ "'";
+		}
+		if (StringUtils.isNotBlank(empSalApp.getProcStatus())) {
+			hqlStr += " AND PROC_STATUS =" + empSalApp.getProcStatus().trim();
+		}
+		hql += hqlStr;
+		hql += "  ORDER BY spca.EFA_ID DESC,spca.APP_NO";
+		return hql;
+	}
+
+	// 通用填充实体对象方法
+	private List<EmpSalPositionChgApp> getEmpSalAppList(String hql,
+			PageUtil pageUtil, List<WorkFlowTasksModel> workList)
+			throws ParseException {
+		List<Object> list = publicDao.findBySql(hql, pageUtil);
+		List<EmpSalPositionChgApp> empSalList = new ArrayList<EmpSalPositionChgApp>();
+		if (Collections.listIsNotEmpty(list)) {
+			EmpSalPositionChgApp empSalApp = new EmpSalPositionChgApp();
+			Object[] obj;
+			for (int i = 0; i < list.size(); i++) {
+				empSalApp = new EmpSalPositionChgApp();
+				obj = (Object[]) list.get(i);
+				empSalApp.setEfaId(obj[0] == null ? 0 : (Integer) obj[0]);
+				empSalApp.setAppNo(obj[1] == null ? "" : String.valueOf(obj[1]));
+				empSalApp.setAppDate(obj[2] == null ? "" : String.valueOf(obj[2]));
+				empSalApp.setCurDeptNo(obj[3] == null ? 0 : (Integer) obj[3]);
+				empSalApp.setCurDeptName(obj[4] == null ? "" : String.valueOf(obj[4]));
+				empSalApp.setCurPosition(roleService.getRoleStrByIDs(obj[5] == null ? "" : String.valueOf(obj[5]), ",")); //根据职位ID翻译职位名称
+				empSalApp.setCurSal(obj[6] == null ? new BigDecimal(0): new BigDecimal(String.valueOf(obj[6])));
+				empSalApp.setCurWorking(obj[7] == null ? "" : String.valueOf(obj[7]));
+				empSalApp.setEntryDate(obj[8] == null ? "" : String.valueOf(obj[8]));
+				empSalApp.setChgType(obj[9] == null ? "" : String.valueOf(obj[9]));
+				empSalApp.setAftDeptNo(obj[10] == null ? 0 : (Integer) obj[10]);
+				empSalApp.setAftDeptName(obj[11] == null ? "" : String.valueOf(obj[11]));
+				empSalApp.setAftPosition(roleService.getRoleStrByIDs(obj[12] == null ? "" : String.valueOf(obj[12]), ","));
+				empSalApp.setAftSal(obj[13] == null ? new BigDecimal(0): new BigDecimal(String.valueOf(obj[13])));
+				empSalApp.setAftWorking(obj[14] == null ? "" : String.valueOf(obj[14]));
+				empSalApp.setSalChgMode(obj[15] == null ? "" : String.valueOf(obj[15]));
+				empSalApp.setChgReson(obj[16] == null ? "" : String.valueOf(obj[16]));
+				empSalApp.setChgResonOther(obj[17] == null ? "" : String.valueOf(obj[17]));
+				empSalApp.setEffectiveDate(obj[18] == null ? "" : String.valueOf(obj[18]));
+				empSalApp.setTrialPeriods(obj[19] == null ? 0: (Integer) obj[19]);
+				empSalApp.setTrialSal(obj[20] == null ? new BigDecimal(0): new BigDecimal(String.valueOf(obj[20])));
+				empSalApp.setRemark(obj[21] == null ? "" : String.valueOf(obj[21]));
+				empSalApp.setUserName(obj[22] == null ? "" : String.valueOf(obj[22]));
+				empSalApp.setChgTypeName(obj[23] == null ? "" : String.valueOf(obj[23]));
+				empSalApp.setSalChgTypeName(obj[24] == null ? "" : String.valueOf(obj[24]));
+				empSalApp.setChgResonName(obj[25] == null ? "" : String.valueOf(obj[25]));
+				empSalApp.setApplicantNo(obj[26] == null ? 0: (Integer) obj[26]);
+				empSalApp.setProcStatus(obj[27] == null ? "" : String.valueOf(obj[27]));
+				// 将工作流信息字段更新到PPEScrapApp对象中
+				if (null != workList && workList.size() > 0) {
+					for (WorkFlowTasksModel wl : workList) {
+						if (Integer.valueOf(wl.getBusinessID()) == empSalApp
+								.getEfaId()) {
+							empSalApp.setTaskModel(wl);
+							empSalApp.setTaskID(wl.getTaskID());
+							empSalApp.setAssistant(wl.getAssistant());
+							empSalApp.setFormKey(wl.getFormKey());
+							break;
+						}
+					}
+				}
+				empSalList.add(empSalApp);
+			}
+		}
+		return empSalList;
+	}
+	
+	
+}

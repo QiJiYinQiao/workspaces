@@ -1,0 +1,215 @@
+package com.oasys.service;
+
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.oasys.model.LeaveApp;
+import com.oasys.model.StatusNameRef;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.ComboBoxModel;
+/**
+ * 请假申请
+ * @author Administrator
+ *
+ */
+public interface LeaveAppService extends WorkFlowBaseService
+{	
+	/**
+	 * 查询请假申请列表
+	 * @Title: findLeaveAppList 
+	 * @Description: TODO
+	 * @param @param useStampApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<UseStampApp>
+	 * @date 2015年10月10日 下午4:05:58
+	 * @throws
+	 */
+	List<LeaveApp> findLeaveAppList(LeaveApp leaveApp,PageUtil pageUtil);
+	
+	/**
+	 * 查询请假申请数量
+	 * @Title: getTotal 
+	 * @Description: TODO
+	 * @param @param useStampApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return Long
+	 * @date 2015年10月16日 上午9:21:12
+	 * @throws
+	 */
+	Long getTotal(LeaveApp leaveApp);
+	
+
+	/**
+	 * 保存或更新休假申请
+	 * @Title: saveOrUpdLeaveApp 
+	 * @Description: TODO
+	 * @param @param leaveApp
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年10月20日 上午10:12:48
+	 * @throws
+	 */
+	LeaveApp saveOrUpdLeaveApp(LeaveApp leaveApp);
+	/**
+	 * 根据休假申请id删除申请
+	 * @Title: deleteLeaveApp 
+	 * @Description: TODO
+	 * @param @param leaId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return boolean
+	 * @date 2015年10月26日 上午11:11:23
+	 * @throws
+	 */
+	boolean deleteLeaveApp(Integer leaId);
+	
+	/**
+	 * 查看流程图片
+	 * @Title: getDiagramResourceByPaId 
+	 * @Description: TODO
+	 * @param @param response
+	 * @param @param pnrId
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年10月13日 上午9:26:27
+	 * @throws
+	 */
+	void getDiagramResourceByPaId(HttpServletResponse response,
+			Integer leaId);
+	/**
+	 * 根据申请id查询休假申请
+	 * @Title: findLeaveAppbyId 
+	 * @Description: TODO
+	 * @param @param leaId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return LeaveApp
+	 * @date 2015年10月26日 下午3:44:09
+	 * @throws
+	 */
+	LeaveApp findLeaveAppbyId(Integer leaId);
+	/**
+	 * 更改流程状态
+	 * @Title: upLeaveProcStatus 
+	 * @Description: TODO
+	 * @param @param procKey
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年10月26日 下午3:47:10
+	 * @throws
+	 */
+	void upLeaveProcStatus(Integer leaId,String procKey);
+	/**
+	 * 更改申请状态
+	 * @Title: upLeaveAppStatus 
+	 * @Description: TODO
+	 * @param @param leaId
+	 * @param @param appStatus
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年10月26日 下午3:57:06
+	 * @throws
+	 */
+	void upLeaveAppStatus(Integer leaId,String appStatus);
+	/**
+	 * 根据申请人的id判断当前申请的业务
+	 * @Title: findProDefKey 
+	 * @Description: TODO
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月26日 下午4:40:53
+	 * @throws
+	 */
+	String findProDefKey(Integer leaId);
+	/**
+	 * 根据当前登录人的id查询申请的流程图
+	 * @Title: findimgName 
+	 * @Description: TODO
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月26日 下午4:42:47
+	 * @throws
+	 */
+	String findimgName(Integer leaId);
+	/**
+	 * 校验时间是否是工作日
+	 * @Title: getValDate 
+	 * @Description: TODO
+	 * @param @param date
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return boolean
+	 * @date 2015年10月28日 上午9:36:29
+	 * @throws
+	 */
+	boolean getValDate(String date);
+	
+	/**
+	 * 查询申请状态
+	 * @Title: findAppStatusByID 
+	 * @Description: TODO
+	 * @param @param appStatusID
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return StatusNameRef
+	 * @date 2015年11月4日 上午10:10:36
+	 * @throws
+	 */
+	StatusNameRef findAppStatusByID(String appStatusID);
+	/**
+	 * 职务代理人
+	 * @Title: findOrgUserList 
+	 * @Description: TODO
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ComboBoxModel>
+	 * @date 2015年11月5日 下午7:11:12
+	 * @throws
+	 */
+	List<ComboBoxModel> findOrgUserList();
+	
+	/**
+	 * 判断是否可以调休
+	 * @Title: getDatemistiming 
+	 * @Description: TODO
+	 * @param @param beDate 请假开始时间
+	 * @param @param edDate 请假结束时间
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return boolean
+	 * @date 2015年11月6日 下午3:53:19
+	 * @throws
+	 */
+	double getDatemistiming(String beDate,String edDate);
+	
+	/**
+	 * 年假校验
+	 * @Title: getAnnualLeaDays 
+	 * @Description: TODO
+	 * @param @param beDate 年假开始时间
+	 * @param @param edDate 年假结束时间
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月9日 上午11:16:19
+	 * @throws
+	 */
+	double getAnnualLeaDays(String beDate,String edDate);
+	/**
+	 * 申请完成后更改加班时间
+	 * @Title: upOverTimeApp 
+	 * @Description: TODO
+	 * @param 
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月9日 下午3:44:28
+	 * @throws
+	 */
+	void updateFallsTime(Integer leaId);
+	
+}

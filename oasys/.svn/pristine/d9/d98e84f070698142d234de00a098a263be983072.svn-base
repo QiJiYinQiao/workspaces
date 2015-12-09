@@ -1,0 +1,606 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.AuditProcHis;
+import com.oasys.model.EmpFullmemberApp;
+import com.oasys.model.Organization;
+import com.oasys.model.Role;
+import com.oasys.model.Users;
+import com.oasys.model.VO.EmpFullmemberAppModel;
+import com.oasys.model.VO.ProposerModel;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.EmpFullmemberAppService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.MoneyUtil;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.DataModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+/**
+ * 费用申请serviceImpl
+ * @ClassName: EmpFullmemberAppServiceImpl 
+ * @Description: TODO
+ * @author PANCHUANHE
+ * @date 2015年10月12日 上午9:21:59
+ */
+@Service(value="empFullmemberAppService")
+public class EmpFullmemberAppServiceImpl extends WorkFlowBaseServiceImpl implements EmpFullmemberAppService {
+
+	@Autowired
+	private PublicDao<EmpFullmemberApp> publicDao;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private StatusNameRefService statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	//流程图片名称
+	private String imgName;
+	@Override
+	public boolean saveEmpFullmemberApp(EmpFullmemberApp empFullmemberApp) {
+		try {
+			if (empFullmemberApp.getEfaId() == null) {//主键
+				String appNum = UniqueIdUtil.generate("YGZZ");
+				Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+				String orgName = organizationService.getOrgNameByID(user.getOrganizeId());
+				empFullmemberApp.setDeptNo(user.getOrganizeId());;//申请单位
+				empFullmemberApp.setDeptName(orgName);
+				empFullmemberApp.setApplicantNo(Constants.getCurrendUser().getUserId());//申请人
+				empFullmemberApp.setAppNo(appNum);//申请编号
+				empFullmemberApp.setProcStatus("1");//流程状态
+				publicDao.save(empFullmemberApp);
+			}else{//更新
+				publicDao.update(empFullmemberApp);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public List<EmpFullmemberAppModel> findEmpFullmemberAppList(PageUtil pageUtil,EmpFullmemberAppModel empFullmemberAppModel) {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			Integer userId = Constants.getCurrendUser().getUserId();
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT ");
+			sql.append("f.EFA_ID AS '主键',");
+			sql.append("f.APP_NO AS '申请编号',");
+			sql.append("f.APP_DATE AS '申请日期',");
+			sql.append("f.APPLICANT_NO AS '申请人',");
+			sql.append("f.DEPT_NO AS '部门编号',");
+			sql.append("f.DEPT_NAME AS '部门名称',");
+			sql.append("f.POSITION AS '职位',");
+			sql.append("f.GRADUATE_SCHOOL AS '毕业院校',");
+			sql.append("f.MAJOR AS '专业',");
+			sql.append("IFNULL(f.EDUCATION,'') AS '学历',");
+			sql.append("f.AGE AS '年龄',");
+			sql.append("f.ENTRY_DATE AS '入职日期',");
+			sql.append("f.REGULAR_SAL AS '转正薪资',");
+			sql.append("f.BG_PROB_DATE AS '试用期开始日期',");
+			sql.append("f.ED_PROB_DATE AS '试用期结束日期',");
+			sql.append("IFNULL(f.CHOOSE_MODE,'') AS '甄选方式',");
+			sql.append("f.WORK_YEARS AS '工作经验年限',");
+			sql.append("f.COR_WORK_YEARS AS '相关工作经验年限',");
+			sql.append("f.NOCOR_WORK_YEARS AS '非相关工作经验年限',");
+			sql.append("f.WORK_EXPLAIN AS '工作说明',");
+			sql.append("f.REMARK AS '备注',");
+			sql.append("u.USER_NAME AS '用户名称',");
+			//sql.append("o.FULL_NAME AS '部门名称',");
+			sql.append("s.DICT_NAME AS '学历名称',");
+			sql.append("ss.DICT_NAME AS '甄选方式名称',");
+			sql.append("f.APP_STATUS AS '申请状态',");
+			sql.append("f.PROC_STATUS AS '流程状态',");
+			sql.append("r.APP_STATUS_NAME AS '申请状态名称' ");
+			sql.append("FROM t_oa_hr_emp_fullmember_app f ");
+			//sql.append("LEFT JOIN qqms.t_organization o ON f.DEPT_NO = o.ORGANIZATION_ID ");
+			sql.append("LEFT JOIN qqms.t_users u ON f.APPLICANT_NO = u.USER_ID ");
+			sql.append("LEFT JOIN t_oa_app_status_name_ref r ON r.APP_STATUS_CODE = f.APP_STATUS ");
+			sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'degree_type')) s ON s.DICT_CODE = f.EDUCATION ");
+			sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'choose_mode')) ss ON ss.DICT_CODE = f.CHOOSE_MODE ");
+			sql.append("WHERE f.APPLICANT_NO = '"+userId+"' ");
+			if (StringUtils.isNotBlank(empFullmemberAppModel.getAppNo())) {
+				sql.append("AND e.APP_NO like '%"+empFullmemberAppModel.getAppNo()+"%' ");
+			}
+			if (StringUtils.isNotBlank(empFullmemberAppModel.getAppDateMini())) {
+				sql.append("AND e.APP_DATE >= '"+empFullmemberAppModel.getAppDateMini()+"' ");
+			}
+			if (StringUtils.isNotBlank(empFullmemberAppModel.getAppDateMax())) {
+				sql.append("AND e.APP_DATE <= '"+empFullmemberAppModel.getAppDateMax()+"' ");
+			}
+			sql.append("ORDER BY f.EFA_ID DESC");
+			List<Object> list = publicDao.findBySql(sql.toString(), pageUtil);
+			List<EmpFullmemberAppModel> empFullmemberAppList = new ArrayList<EmpFullmemberAppModel>();
+			if (Collections.listIsNotEmpty(list)) {
+				EmpFullmemberAppModel model = new EmpFullmemberAppModel();
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[])list.get(i);
+					EmpFullmemberAppModel cmodel = (EmpFullmemberAppModel)model.clone();
+					cmodel.setEfaId(obj[0]==null?null:(Integer)obj[0]);
+					cmodel.setAppNo(obj[1]==null?"":String.valueOf(obj[1]));
+					cmodel.setAppDate(obj[2]==null?null:sdf.parse(String.valueOf(obj[2])));
+					cmodel.setApplicantNo(obj[3]==null?null:(Integer)obj[3]);
+					cmodel.setDeptNo(obj[4]==null?null:(Integer)obj[4]);
+					cmodel.setDeptName(obj[5]==null?"":String.valueOf(obj[5]));
+					cmodel.setPosition(obj[6]==null?"":String.valueOf(obj[6]));
+					cmodel.setGraduateSchool(obj[7]==null?"":String.valueOf(obj[7]));
+					cmodel.setMajor(obj[8]==null?null:String.valueOf(obj[8]));
+					cmodel.setEducation(obj[9]==null?"":String.valueOf(obj[9]));
+					cmodel.setAge(obj[10]==null?null:(Integer)obj[10]);
+					cmodel.setEntryDate(obj[11]==null?null:sdf.parse(String.valueOf(obj[11])));
+					cmodel.setRegularSal(obj[12]==null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[12])));
+					cmodel.setBgProbDate(obj[13]==null?null:sdf.parse(String.valueOf(obj[13])));
+					cmodel.setEdProbDate(obj[14]==null?null:sdf.parse(String.valueOf(obj[14])));
+					cmodel.setChooseMode(obj[15]==null?"":String.valueOf(obj[15]));
+					cmodel.setWorkYears(obj[16]==null?null:(Integer)obj[16]);
+					cmodel.setCorWorkYears(obj[17]==null?null:(Integer)obj[17]);
+					cmodel.setNocorWorkYears(obj[18]==null?null:(Integer)obj[18]);
+					cmodel.setWorkExplain(obj[19]==null?"":String.valueOf(obj[19]));
+					cmodel.setRemark(obj[20]==null?null:String.valueOf(obj[20]));
+					cmodel.setUserName(obj[21]==null?null:String.valueOf(obj[21]));
+					cmodel.setEducationName(obj[22]==null?null:String.valueOf(obj[22]));
+					cmodel.setChooseModeName(obj[23]==null?null:String.valueOf(obj[23]));
+					cmodel.setAppStatus(obj[24]==null?null:String.valueOf(obj[24]));
+					cmodel.setProcStatus(obj[25]==null?null:String.valueOf(obj[25]));
+					cmodel.setAppStatusName(obj[26]==null?null:String.valueOf(obj[26]));
+					empFullmemberAppList.add(cmodel);
+				}
+			}
+			return empFullmemberAppList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Long countFindEmpFullmemberAppList() {
+		Integer userId = Constants.getCurrendUser().getUserId();
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT COUNT(*) FROM t_oa_hr_emp_fullmember_app f ");
+		//sql.append("LEFT JOIN qqms.t_organization o ON f.DEPT_NO = o.ORGANIZATION_ID ");
+		sql.append("LEFT JOIN qqms.t_users u ON f.APPLICANT_NO = u.USER_ID ");
+		sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'degree_type')) s ON s.DICT_CODE = f.EDUCATION ");
+		sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'choose_mode')) ss ON ss.DICT_CODE = f.CHOOSE_MODE ");
+		sql.append("WHERE f.APPLICANT_NO = '"+userId+"' ");
+		sql.append("ORDER BY f.EFA_ID DESC");
+		return publicDao.findTotalCount(sql.toString());
+	}
+
+	@Override
+	public boolean delEmpFullmemberAppByEfaId(Integer efaId) {
+		try {
+			EmpFullmemberApp empFullmemberApp = new EmpFullmemberApp();
+			empFullmemberApp.setEfaId(efaId);
+			publicDao.delete(empFullmemberApp);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public String sumitApply(EmpFullmemberApp empFullmemberApp) {
+		try {
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setBusinessID(empFullmemberApp.getEfaId().toString());//业务ID
+			taskModel.setBusinessDefineKey(getProcessImgName(empFullmemberApp));// 获取启动实例的key
+			taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+			taskModel.setAppNo(empFullmemberApp.getAppNo());//申请编号
+			Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public void updateEmpFullmemberAppStatus(Integer efaId, String state) {
+		//更新申请状态
+		EmpFullmemberApp empFullmemberApp = publicDao.get(EmpFullmemberApp.class,efaId);
+		empFullmemberApp.setAppStatus(state);
+		publicDao.saveOrUpdate(empFullmemberApp);
+	}
+	
+	@Override
+	public void updateEmpFullmemberAppProcessStatus(Integer efaId, String status) {
+		//更新申请状态
+		EmpFullmemberApp empFullmemberApp = publicDao.get(EmpFullmemberApp.class,efaId);
+		if (empFullmemberApp!=null) {
+			empFullmemberApp.setProcStatus(status);
+			if("2".equals(status)){
+				//申请时间
+				empFullmemberApp.setAppDate(new Date());
+			}
+		}
+		//跟新订单状态
+		publicDao.saveOrUpdate(empFullmemberApp);
+	}
+	
+	@Override
+	public String getProcessImgName(EmpFullmemberApp empFullmemberApp) {
+		try {
+			EmpFullmemberApp empFullmemberApp2 = publicDao.get(EmpFullmemberApp.class,empFullmemberApp.getEfaId());
+			if (empFullmemberApp2!=null) {
+				Integer appDeptId = empFullmemberApp2.getDeptNo();//部门id
+				Organization organization = organizationService.findOrganizationByOrganizationId(appDeptId);
+				if(organization!=null){
+					//0是总部，1是分部
+					if("0".equals(organization.getDeptLevel())){
+						imgName = "OA_PD_EmpFullmemberApp_HO";
+						return Constants.EMPFULLMEMBERAPPHO;//走总部流程图
+					}else{
+						Integer userId = empFullmemberApp2.getApplicantNo();//申请人id
+						List<Role> roleList = userService.findRoleListByUserId(userId);
+						if (Collections.listIsNotEmpty(roleList)) {
+							//目前只考虑一个用户只有一个角色
+							Role role = roleList.get(0);
+							//1－业务，2－职能，3－其他
+							if ("1".equals(role.getRoleType())) {
+								imgName = "OA_PD_EmpFullmemberApp_BO_BU";
+								return Constants.EMPFULLMEMBERAPPBOBU; 
+							}else if("2".equals(role.getRoleType())){
+								imgName = "OA_PD_EmpFullmemberApp_BO_FU";
+								return Constants.EMPFULLMEMBERAPPBOFU; 
+							}else{
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	@Override
+	public List<EmpFullmemberAppModel> findAllEmpFullmemberAppTaskList(PageUtil pageUtil,WorkFlowTasksModel wf) {
+		try {
+		    //登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(wf);
+			//返回的结果集
+			List<EmpFullmemberAppModel> empFullmemberAppModelList = new ArrayList<EmpFullmemberAppModel>();
+			String ids = "";
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				for (WorkFlowTasksModel workFlowTasksModel : taskModelList) {
+					ids += workFlowTasksModel.getBusinessKey()+",";
+				}
+				//id字符串
+				ids = ids.substring(0, ids.length()-1);
+				//根据id字符串查出的集合
+				List<EmpFullmemberAppModel> pamList = findEmpFullmemberAppByIds(ids,pageUtil);
+				for (WorkFlowTasksModel wl : taskModelList) {
+					for (EmpFullmemberAppModel empFullmemberAppModel : pamList) {
+						if(Integer.valueOf(wl.getBusinessKey()) == empFullmemberAppModel.getEfaId()){
+							empFullmemberAppModel.setTaskModel(wl);
+							empFullmemberAppModel.setTaskId(wl.getTaskID());
+							empFullmemberAppModel.setFormKey(wl.getFormKey());
+							empFullmemberAppModelList.add(empFullmemberAppModel);
+						}
+					}
+				}
+			}
+			return empFullmemberAppModelList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public List<EmpFullmemberAppModel> findEmpFullmemberAppByIds(String ids,PageUtil pageUtil){
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT ");
+			sql.append("f.EFA_ID AS '主键',");
+			sql.append("f.APP_NO AS '申请编号',");
+			sql.append("f.APP_DATE AS '申请日期',");
+			sql.append("f.APPLICANT_NO AS '申请人',");
+			sql.append("f.DEPT_NO AS '部门编号',");
+			sql.append("f.DEPT_NAME AS '部门名称',");
+			sql.append("f.POSITION AS '职位',");
+			sql.append("f.GRADUATE_SCHOOL AS '毕业院校',");
+			sql.append("f.MAJOR AS '专业',");
+			sql.append("IFNULL(f.EDUCATION,'') AS '学历',");
+			sql.append("f.AGE AS '年龄',");
+			sql.append("f.ENTRY_DATE AS '入职日期',");
+			sql.append("f.REGULAR_SAL AS '转正薪资',");
+			sql.append("f.BG_PROB_DATE AS '试用期开始日期',");
+			sql.append("f.ED_PROB_DATE AS '试用期结束日期',");
+			sql.append("IFNULL(f.CHOOSE_MODE,'') AS '甄选方式',");
+			sql.append("f.WORK_YEARS AS '工作经验年限',");
+			sql.append("f.COR_WORK_YEARS AS '相关工作经验年限',");
+			sql.append("f.NOCOR_WORK_YEARS AS '非相关工作经验年限',");
+			sql.append("f.WORK_EXPLAIN AS '工作说明',");
+			sql.append("f.REMARK AS '备注',");
+			sql.append("u.USER_NAME AS '用户名称',");
+			//sql.append("o.FULL_NAME AS '部门名称',");
+			sql.append("s.DICT_NAME AS '学历名称',");
+			sql.append("ss.DICT_NAME AS '甄选方式名称',");
+			sql.append("f.APP_STATUS AS '申请状态',");
+			sql.append("f.PROC_STATUS AS '流程状态',");
+			sql.append("r.APP_STATUS_NAME AS '申请状态名称' ");
+			sql.append("FROM t_oa_hr_emp_fullmember_app f ");
+			//sql.append("LEFT JOIN qqms.t_organization o ON f.DEPT_NO = o.ORGANIZATION_ID ");
+			sql.append("LEFT JOIN qqms.t_users u ON f.APPLICANT_NO = u.USER_ID ");
+			sql.append("LEFT JOIN t_oa_app_status_name_ref r ON r.APP_STATUS_CODE = f.APP_STATUS ");
+			sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'degree_type')) s ON s.DICT_CODE = f.EDUCATION ");
+			sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'choose_mode')) ss ON ss.DICT_CODE = f.CHOOSE_MODE ");
+			sql.append("WHERE 1=1 ");
+			sql.append("AND f.EFA_ID in ("+ids+") ");
+			sql.append("ORDER BY f.EFA_ID DESC");
+			List<Object> list = publicDao.findBySql(sql.toString(), pageUtil);
+			List<EmpFullmemberAppModel> empFullmemberAppList = new ArrayList<EmpFullmemberAppModel>();
+			if (Collections.listIsNotEmpty(list)) {
+				EmpFullmemberAppModel model = new EmpFullmemberAppModel();
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[])list.get(i);
+					EmpFullmemberAppModel cmodel = (EmpFullmemberAppModel)model.clone();
+					cmodel.setEfaId(obj[0]==null?null:(Integer)obj[0]);
+					cmodel.setAppNo(obj[1]==null?"":String.valueOf(obj[1]));
+					cmodel.setAppDate(obj[2]==null?null:sdf.parse(String.valueOf(obj[2])));
+					cmodel.setApplicantNo(obj[3]==null?null:(Integer)obj[3]);
+					cmodel.setDeptNo(obj[4]==null?null:(Integer)obj[4]);
+					cmodel.setDeptName(obj[5]==null?"":String.valueOf(obj[5]));
+					cmodel.setPosition(obj[6]==null?"":String.valueOf(obj[6]));
+					cmodel.setGraduateSchool(obj[7]==null?"":String.valueOf(obj[7]));
+					cmodel.setMajor(obj[8]==null?null:String.valueOf(obj[8]));
+					cmodel.setEducation(obj[9]==null?"":String.valueOf(obj[9]));
+					cmodel.setAge(obj[10]==null?null:(Integer)obj[10]);
+					cmodel.setEntryDate(obj[11]==null?null:sdf.parse(String.valueOf(obj[11])));
+					cmodel.setRegularSal(obj[12]==null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[12])));
+					cmodel.setBgProbDate(obj[13]==null?null:sdf.parse(String.valueOf(obj[13])));
+					cmodel.setEdProbDate(obj[14]==null?null:sdf.parse(String.valueOf(obj[14])));
+					cmodel.setChooseMode(obj[15]==null?"":String.valueOf(obj[15]));
+					cmodel.setWorkYears(obj[16]==null?null:(Integer)obj[16]);
+					cmodel.setCorWorkYears(obj[17]==null?null:(Integer)obj[17]);
+					cmodel.setNocorWorkYears(obj[18]==null?null:(Integer)obj[18]);
+					cmodel.setWorkExplain(obj[19]==null?"":String.valueOf(obj[19]));
+					cmodel.setRemark(obj[20]==null?null:String.valueOf(obj[20]));
+					cmodel.setUserName(obj[21]==null?null:String.valueOf(obj[21]));
+					cmodel.setEducationName(obj[22]==null?null:String.valueOf(obj[22]));
+					cmodel.setChooseModeName(obj[23]==null?null:String.valueOf(obj[23]));
+					cmodel.setAppStatus(obj[24]==null?null:String.valueOf(obj[24]));
+					cmodel.setProcStatus(obj[25]==null?null:String.valueOf(obj[25]));
+					cmodel.setAppStatusName(obj[26]==null?null:String.valueOf(obj[26]));
+					empFullmemberAppList.add(cmodel);
+				}
+			}
+			return empFullmemberAppList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public Long countFindAllEmpFullmemberAppTaskList() {
+		try {
+			//登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(new WorkFlowTasksModel());
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				return Long.valueOf(taskModelList.size());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+	
+	@Override
+	public boolean saveHoldWorkTask(String taskId) {
+		try {
+			//获取用户的id
+			Integer userId = Constants.getCurrendUser().getUserId();
+			//签收任务
+			this.taskService.claim(taskId, String.valueOf(userId));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public String saveSubmitTaskBo(WorkFlowTasksModel taskModel) {
+		Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+		if(resultMap.get(Constants.STATUS_REF_ID)!=null){
+			updateEmpFullmemberAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+	@Override
+	public boolean saveSubmitTaskHo(EmpFullmemberAppModel empFullmemberAppModel,String result,AuditProcHis auditProcHis) {
+		try {
+			/*Task task = this.taskService.createTaskQuery().taskId(empFullmemberAppModel.getTaskId()).singleResult();// 获取当前执行任务
+			Integer userId = Constants.getCurrendUser().getUserId();//获取登录人的id
+			updateEmpFullmemberAppStatus(empFullmemberAppModel.getBtaId(),Constants.EXPENSESAPP_HO +"_"+result);// 修改订单的状态
+			
+			*//***保存审批流程履历表 start****//*
+			String roleCode = (String) taskService.getVariableLocal(task.getId(), "role");
+			StatusNameRef statusNameRef = statusNameRefService.getstatusNameRefByStatusCode(Constants.EXPENSESAPP_HO+"_"+result);
+			auditProcHis.setAppNo(empFullmemberAppModel.getAppNo());
+			auditProcHis.setAppStatus(statusNameRef.getRefId());
+			auditProcHis.setHandleDate(new Date());
+			auditProcHis.setHandler(userId);
+			auditProcHis.setHandlerRole(roleCode);
+			auditProcHisService.saveAuditProcHis(auditProcHis);
+			*//***保存审批流程履历表 start****//*
+			
+			Map<String, Object> variables = new HashMap<String, Object>();
+			variables.put("result", result);
+			taskService.complete(task.getId(), variables);
+			return true;*/
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,Integer efaId){
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			EmpFullmemberApp empFullmemberApp = new EmpFullmemberApp();
+			empFullmemberApp.setEfaId(efaId);
+			String proDefKey = getProcessImgName(empFullmemberApp);
+			String businessKey = proDefKey + "." + efaId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			if(pi!=null){
+				// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+				ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+				// 获取当前执行任务流程
+				List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+				// 获取图片的流程图片名称
+				String resourceName = imgName + ".png";
+				// 获取图片的文件的流
+				in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+				// 获取图片对象
+				BufferedImage bimg;
+				bimg = ImageIO.read(in);
+				// 得到Graphics2D 对象
+				Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+				// 设置颜色和画笔粗细
+				g2d.setColor(Color.RED);
+				g2d.setStroke(new BasicStroke(3));
+				// 遍历执行的任务,画图
+				for (Task task : tasks) {
+					// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+					Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+					// 根据当前的执行对象的id获取正在执行的活动信息
+					ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+					// 绘制矩形
+					Rectangle2D rectangle = new Rectangle2D.Float(
+							activityImpl.getX(), activityImpl.getY(),
+							activityImpl.getWidth(), activityImpl.getHeight());
+					g2d.draw(rectangle);
+				}
+				// 写入response输出流中
+				ImageIO.write(bimg, "png", response.getOutputStream());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+
+	@Override
+	public ProposerModel findCreateCombogrid(String q) {
+		try {
+			Integer userId = Constants.getCurrendUser().getUserId();
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT ");
+			sql.append("u.USER_ID AS '用户id',");
+			sql.append("u.USER_NAME AS '用户名',");
+			sql.append("u.ORGANIZATION_ID AS '部门id',");
+			sql.append("o.FULL_NAME AS '部门名称',");
+			sql.append("r.DUTY AS '职位',");
+			sql.append("u.GRADUATE_SCHOOL AS '毕业院校',");
+			sql.append("u.MAJOR AS '专业',");
+			sql.append("IFNULL(u.EDUCATION,'') AS '学历',");
+			sql.append("u.AGE AS '年龄',");
+			sql.append("r.ENTRY_DATE AS '入职日期',");
+			sql.append("r.REGULAR_BASE_SAL AS '转正基本工资',");
+			sql.append("r.REGULAR_POST_SAL AS '转正岗位工资',");
+			sql.append("r.REGULAR_PERF_SAL AS '转正绩效工资',");
+			sql.append("r.TRIAL_ED_DATE AS '试用期结束日期',");
+			sql.append("u.TAKEJOB_DATE AS '参加工作时间',");
+			sql.append("s.DICT_NAME AS '学历名称' ");
+			sql.append("FROM qqms.t_users u ");
+			sql.append("LEFT JOIN t_oa_hr_emp_roster_reg r ON u.USER_ID = r.USER_ID ");
+			sql.append("LEFT JOIN qqms.t_organization o ON u.ORGANIZATION_ID = o.ORGANIZATION_ID ");
+			sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'degree_type')) s ON s.DICT_CODE = u.EDUCATION ");
+			sql.append("WHERE 1=1 ");
+			sql.append("and u.USER_ID = '"+userId+"' ");
+			List<Object[]> list = publicDao.findBySQL(sql.toString());
+			ProposerModel cmodel = new ProposerModel();
+			if (Collections.listIsNotEmpty(list)) {
+				Object[] obj = list.get(0);
+				cmodel.setApplicantNo(obj[0]==null?null:(Integer)obj[0]);
+				cmodel.setUserName(obj[1]==null?"":String.valueOf(obj[1]));
+				cmodel.setDeptNo(obj[2]==null?null:(Integer)obj[2]);
+				cmodel.setDeptName(obj[3]==null?"":String.valueOf(obj[3]));
+				cmodel.setPosition(obj[4]==null?"":String.valueOf(obj[4]));
+				cmodel.setGraduateSchool(obj[5]==null?"":String.valueOf(obj[5]));
+				cmodel.setMajor(obj[6]==null?"":String.valueOf(obj[6]));
+				cmodel.setEducation(obj[7]==null?"":String.valueOf(obj[7]));
+				cmodel.setAge(obj[8]==null?"":String.valueOf(obj[8]));
+				cmodel.setEntryDate(obj[9]==null?"":String.valueOf(obj[9]));
+				//转正基本工资
+				BigDecimal baseSal = obj[10]==null?new BigDecimal(0):new BigDecimal(String.valueOf(obj[10]));
+				//转正岗位工资
+				BigDecimal postSal = obj[11]==null?new BigDecimal(0):new BigDecimal(String.valueOf(obj[11]));
+				//转正绩效工资
+				BigDecimal perfSal = obj[12]==null?new BigDecimal(0):new BigDecimal(String.valueOf(obj[12]));
+				BigDecimal count1 = baseSal.add(postSal);
+				BigDecimal count2 = count1.add(perfSal);
+				//转正后工资
+				cmodel.setRegularSal(String.valueOf(count2));
+				//试用期开始日期也是入职日期
+				cmodel.setBgProbDate(obj[9]==null?"":String.valueOf(obj[9]));
+				//试用期结束日期
+				cmodel.setEdProbDate(obj[14]==null?"":String.valueOf(obj[14]));
+				cmodel.setEducationName(obj[15]==null?"":String.valueOf(obj[15]));
+			}
+			return cmodel;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getImgName() {
+		return imgName;
+	}
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+}

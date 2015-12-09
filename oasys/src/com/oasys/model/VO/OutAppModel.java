@@ -1,0 +1,217 @@
+package com.oasys.model.VO;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * 外出申请实体类vo
+ * @ClassName: OutApp 
+ * @Description: TODO
+ * @author PANCHUANHE
+ * @date 2015年11月10日 下午7:29:15
+ */
+public class OutAppModel implements java.io.Serializable,Cloneable{
+
+	private static final long serialVersionUID = 1L;
+	/**
+	 * 主键id
+	 */
+	private Integer outId;
+	/**
+	 * 申请编号
+	 */
+	private String appNo;
+	/**
+	 * 申请人
+	 */
+	private Integer applicantNo;
+	/**
+	 * 所属部门
+	 */
+	private Integer deptNo;
+	/**
+	 * 申请日期
+	 */
+	private Date appDate;
+	/**
+	 * 申请状态
+	 */
+	private String appStatus;
+	/**
+	 * 外出事由
+	 */
+	private String outReason;
+	/**
+	 * 计划外出开始时间
+	 */
+	private Date planBgDtime;
+	/**
+	 * 计划外出结束时间
+	 */
+	private Date planEdDtime;
+	/**
+	 * 计划外出合计时长
+	 */
+	private BigDecimal planOutCnt;
+	/**
+	 * 实际外出开始时间
+	 */
+	private Date realBgDtime;
+	/**
+	 * 实际外出结束时间
+	 */
+	private Date realEdDtime;
+	/**
+	 * 实际外出合计时长
+	 */
+	private BigDecimal realOutCnt;
+	/**
+	 * 流程状态
+	 */
+	private String procStatus;
+	/**
+	 * 备注信息
+	 */
+	private String remark;
+	/**
+	 * 申请人姓名
+	 */
+	private String userName;
+	/**
+	 * 申请人部门
+	 */
+	private String deptName;
+	/**
+	 * 最大时间
+	 */
+	private String appDateMini;
+	/**
+	 * 最小时间
+	 */
+	private String appDateMax;
+	
+	public Integer getOutId() {
+		return outId;
+	}
+	public void setOutId(Integer outId) {
+		this.outId = outId;
+	}
+	public String getAppNo() {
+		return appNo;
+	}
+	public void setAppNo(String appNo) {
+		this.appNo = appNo;
+	}
+	public Integer getApplicantNo() {
+		return applicantNo;
+	}
+	public void setApplicantNo(Integer applicantNo) {
+		this.applicantNo = applicantNo;
+	}
+	public Integer getDeptNo() {
+		return deptNo;
+	}
+	public void setDeptNo(Integer deptNo) {
+		this.deptNo = deptNo;
+	}
+	public Date getAppDate() {
+		return appDate;
+	}
+	public void setAppDate(Date appDate) {
+		this.appDate = appDate;
+	}
+	public String getAppStatus() {
+		return appStatus;
+	}
+	public void setAppStatus(String appStatus) {
+		this.appStatus = appStatus;
+	}
+	public String getOutReason() {
+		return outReason;
+	}
+	public void setOutReason(String outReason) {
+		this.outReason = outReason;
+	}
+	public Date getPlanBgDtime() {
+		return planBgDtime;
+	}
+	public void setPlanBgDtime(Date planBgDtime) {
+		this.planBgDtime = planBgDtime;
+	}
+	public Date getPlanEdDtime() {
+		return planEdDtime;
+	}
+	public void setPlanEdDtime(Date planEdDtime) {
+		this.planEdDtime = planEdDtime;
+	}
+	public BigDecimal getPlanOutCnt() {
+		return planOutCnt;
+	}
+	public void setPlanOutCnt(BigDecimal planOutCnt) {
+		this.planOutCnt = planOutCnt;
+	}
+	public Date getRealBgDtime() {
+		return realBgDtime;
+	}
+	public void setRealBgDtime(Date realBgDtime) {
+		this.realBgDtime = realBgDtime;
+	}
+	public Date getRealEdDtime() {
+		return realEdDtime;
+	}
+	public void setRealEdDtime(Date realEdDtime) {
+		this.realEdDtime = realEdDtime;
+	}
+	public BigDecimal getRealOutCnt() {
+		return realOutCnt;
+	}
+	public void setRealOutCnt(BigDecimal realOutCnt) {
+		this.realOutCnt = realOutCnt;
+	}
+	public String getProcStatus() {
+		return procStatus;
+	}
+	public void setProcStatus(String procStatus) {
+		this.procStatus = procStatus;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getDeptName() {
+		return deptName;
+	}
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+	public String getAppDateMini() {
+		return appDateMini;
+	}
+	public void setAppDateMini(String appDateMini) {
+		this.appDateMini = appDateMini;
+	}
+	public String getAppDateMax() {
+		return appDateMax;
+	}
+	public void setAppDateMax(String appDateMax) {
+		this.appDateMax = appDateMax;
+	}
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+}

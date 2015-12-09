@@ -1,0 +1,789 @@
+package com.oasys.serviceImpl;
+
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.BusinessTripAttach;
+import com.oasys.model.LoanApp;
+import com.oasys.model.Role;
+import com.oasys.model.TravelExpensesApp;
+import com.oasys.model.TravelExpensesOther;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.LoanAppService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.TravelExpensesAppService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.ComboBoxModel;
+
+@Service("travelExpensesAppService")
+@SuppressWarnings("unchecked")
+public class TravelExpensesAppServiceImpl  extends WorkFlowBaseServiceImpl  implements TravelExpensesAppService
+{
+
+	
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private  StatusNameRefService  statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private RoleService roleService;
+	@Autowired
+	private PublicDao<TravelExpensesApp> travelDao;
+	/**费用项目附加表*/
+	@Autowired
+	private PublicDao<TravelExpensesOther> otherDao;
+	/**交通项目*/
+	@Autowired
+	private PublicDao<BusinessTripAttach> busattDao;
+	/**借款*/
+	@Autowired
+	private PublicDao<LoanApp> loanDao;
+	@Autowired
+	private SystemCodeService systemCodeService;
+	@Autowired
+	private LoanAppService loanAppService;
+	
+	/**
+	 * 查询申请列表
+	 */
+	@Override
+	public List<TravelExpensesApp> findTravelAppList(
+			TravelExpensesApp travelExpensesApp, PageUtil pageUtil) {
+		try {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			Integer userId = Constants.getCurrendUser().getUserId();//登录人id
+			Role role = userService.findRoleListByUserId(userId).get(0);//获得角色
+			String deptLeave = organizationService.findOrgDeptLevelByUserID(userId);//获取总部，分部
+			//获得sql语句
+			StringBuffer sql = this.getUseStampSql();
+			if(userId!=1){
+				//如果是分部的对接主管，能查询对接主管所管辖的申请
+				if(role.getRoleCode().equals("DuiJieZhuGuan") && deptLeave.equals("1")){
+					Integer organizeId = userService.findUserById(userId).getOrganizeId();
+					sql.append(" AND tea.DEPT_NO="+organizeId);
+				}else{
+					sql.append(" AND tea.APPLICANT_NO="+userId);
+				}
+			}
+			
+			if(StringUtils.isNotBlank(travelExpensesApp.getAppNo())){
+				sql.append(" AND tea.APP_NO='"+travelExpensesApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(travelExpensesApp.getAppDateS())){
+					sql.append(" AND tea.APP_DATE >='" + travelExpensesApp.getAppDateS()+"' ") ;  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(travelExpensesApp.getAppDateE())){
+					sql.append(" AND tea.APP_DATE <='" + travelExpensesApp.getAppDateE()+"' ") ;  //申请结束日期
+				}
+				if(StringUtils.isNotBlank(travelExpensesApp.getProcStatus())){
+					sql.append(" AND tea.PROC_STATUS='"+travelExpensesApp.getProcStatus()+"' ");
+				}
+			}
+			//排序
+			sql.append(" ORDER BY tea.TEA_ID DESC ");
+			List<Object> list = travelDao.findBySql(sql.toString(), pageUtil);
+			List<TravelExpensesApp> travelList=new ArrayList<TravelExpensesApp>();
+			if(Collections.listIsNotEmpty(list)){
+				TravelExpensesApp expensesApp=new TravelExpensesApp();
+				
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[]) list.get(i);
+					TravelExpensesApp app=(TravelExpensesApp) expensesApp.clone();
+					app.setTeaId(obj[0] == null?0:(Integer)obj[0]);//申请id
+					app.setAppNo(obj[1] == null?"":String.valueOf(obj[1]));//申请编号
+					app.setApplicantNo(obj[2] == null?0:(Integer)obj[2]);//申请人id
+					app.setApplicantName(obj[3] == null?"":String.valueOf(obj[3]));//申请人名字
+					app.setDeptNo(obj[4] == null?0:(Integer)obj[4]);
+					app.setFullName(obj[5] == null?"":String.valueOf(obj[5]));//部门名字
+					app.setDeptLevel(obj[6] == null?"":String.valueOf(obj[6]));//总部级别
+					app.setAppDate(obj[7] == null?null:sdf.parse(String.valueOf(obj[7])));//申请日期
+					app.setBtDays((BigDecimal) (obj[8] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[8])).doubleValue())));//出差天数
+					app.setSubsidyAmt((BigDecimal) (obj[9] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[9])).doubleValue())));//出差补助
+					app.setExpAmt((BigDecimal) (obj[10] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[10])).doubleValue())));//报销总额
+					app.setGrantExp((BigDecimal) (obj[11] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[11])).doubleValue())));//预借旅费
+					app.setSupplyAmt((BigDecimal) (obj[12] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[12])).doubleValue())));//补领费用
+					app.setGivebackAmt((BigDecimal) (obj[13] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[13])).doubleValue())));//退还金额
+					app.setBtReason(obj[14] == null?"":String.valueOf(obj[14]));//出差事由
+					app.setAppStatus(obj[15] == null?"":String.valueOf(obj[15]));//申请状态
+					app.setProcStatus(obj[16] == null?"":String.valueOf(obj[16]));//流程状态
+					app.setRemark(obj[17] == null?"":String.valueOf(obj[17]));//备注信息
+					app.setJkAppNo(obj[18] == null?"":String.valueOf(obj[18]));//借款编号
+					app.setRoleCode(role.getRoleCode());//角色编码
+					app.setDeptLevel(deptLeave);//部门级别
+					
+					travelList.add(app);
+				}
+			}
+			return travelList;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<TravelExpensesApp>();
+	}
+	/**
+	 * 查询申请总数量
+	 */
+	@Override
+	public Long findtravelAppListCount(TravelExpensesApp travelExpensesApp) {
+		try {
+			Integer userId = Constants.getCurrendUser().getUserId();//登录人id
+			Role role = userService.findRoleListByUserId(userId).get(0);//获得角色
+			String deptLeave = organizationService.findOrgDeptLevelByUserID(userId);//获取总部，分部
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT COUNT(*) FROM t_oa_fd_travel_expenses_app tea  ");
+			sql.append("WHERE 1=1 ");
+			if(userId!=1){
+				//如果是分部的对接主管，能查询对接主管所管辖的申请
+				if(role.getRoleCode().equals("DuiJieZhuGuan") && deptLeave.equals("1")){
+					Integer organizeId = userService.findUserById(userId).getOrganizeId();
+					sql.append(" AND tea.DEPT_NO="+organizeId);
+				}else{
+					sql.append(" AND tea.APPLICANT_NO="+userId);
+				}
+			}
+			
+			if(StringUtils.isNotBlank(travelExpensesApp.getAppNo())){
+				sql.append(" AND tea.APP_NO='"+travelExpensesApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(travelExpensesApp.getAppDateS())){
+					sql.append(" AND tea.APP_DATE >='" + travelExpensesApp.getAppDateS()+"' ") ;  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(travelExpensesApp.getAppDateE())){
+					sql.append(" AND tea.APP_DATE <='" + travelExpensesApp.getAppDateE()+"' ") ;  //申请结束日期
+				}
+				if(StringUtils.isNotBlank(travelExpensesApp.getProcStatus())){
+					sql.append(" AND tea.PROC_STATUS='"+travelExpensesApp.getProcStatus()+"' ");
+				}
+			}
+			Long count = travelDao.findTotalCount(sql.toString());
+			return count;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 0L;
+	}
+	/**
+	 * 获取查询申请列表语句
+	 * @Title: getUseStampSql 
+	 * @Description: TODO
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return StringBuffer
+	 * @date 2015年11月13日 下午1:35:06
+	 * @throws
+	 */
+	public StringBuffer getUseStampSql(){
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT  ");
+		sql.append("tea.TEA_ID '申请id',  ");
+		sql.append("tea.APP_NO '申请编号',  ");
+		sql.append("tea.APPLICANT_NO '申请人id',  ");
+		sql.append("u.USER_NAME '申请人名字',  ");
+		sql.append("tea.DEPT_NO '部门id',  ");
+		sql.append("r.FULL_NAME '部门名字',  ");
+		sql.append("r.DEPT_LEVEL '部门级别',  ");
+		sql.append("tea.APP_DATE '申请日期',   ");
+		sql.append(" tea.BT_DAYS '出差天数', ");
+		sql.append(" tea.SUBSIDY_AMT '补贴金额', ");
+		sql.append("tea.EXP_AMT '报销总额',  ");
+		sql.append("tea.GRANT_EXP '预借旅费',  ");
+		sql.append("tea.SUPPLY_AMT '补领金额',  ");
+		sql.append("tea.GIVEBACK_AMT '退还金额',  ");
+		sql.append("tea.BT_REASON '出差事由',  ");
+		sql.append("tea.APP_STATUS '申请状态',  ");
+		sql.append("tea.PROC_STATUS '流程状态',  ");
+		sql.append("tea.REMARK '备注信息',	");
+		sql.append(" tea.JK_APP_NO '借款编号' ");
+		sql.append("FROM	t_oa_fd_travel_expenses_app tea  ");
+		sql.append("LEFT JOIN qqms.t_organization r ON tea.DEPT_NO = r.ORGANIZATION_ID  ");
+		sql.append("LEFT JOIN qqms.t_users u ON tea.APPLICANT_NO = u.USER_ID  ");
+		sql.append("WHERE 1=1  ");
+		
+		return sql;
+	}
+
+	/**
+	 * 查询申请人下的用于差旅申请未报销的申请
+	 */
+	@Override
+	public List<ComboBoxModel> findLoanByUserId() {
+		try {
+			List<String> appNos=new ArrayList<String>();
+			Integer userId=Constants.getCurrendUser().getUserId();
+			String sql="SELECT JK_APP_NO FROM t_oa_fd_travel_expenses_app WHERE APPLICANT_NO="+userId+" AND PROC_STATUS IN ('1','2')";
+			List list = travelDao.findBySQL(sql);
+			if(Collections.listIsNotEmpty(list) && StringUtils.isNotBlank(String.valueOf(list.get(0))) && list.get(0)!=null){
+				for(int i=0;i<list.size();i++){
+					Object obj=(Object)list.get(i);
+					String jkappNo=String.valueOf(obj);
+					if(obj!=null){
+						if(jkappNo.split(",").length==2){
+							return new ArrayList<ComboBoxModel>();
+						}else{
+							appNos.add(jkappNo);
+						}
+					}
+				}
+				if(appNos.size()==2){
+					return new ArrayList<ComboBoxModel>();
+				}
+				return loanAppService.findLoanApp(userId, "1", appNos.get(0));
+			}
+			
+			return loanAppService.findLoanApp(userId, "1", "");
+				
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<ComboBoxModel>();
+	}
+
+	
+	/**
+	 * 保存差旅报销申请主表信息
+	 */
+	@Override
+	public TravelExpensesApp saveTravelExpensesApp(TravelExpensesApp travelExpensesApp) {
+		try {
+			if(StringUtils.isBlank(travelExpensesApp.getAppNo())){
+				Integer userId=Constants.getCurrendUser().getUserId();
+				travelExpensesApp.setAppNo(UniqueIdUtil.generate("CL"));//编号
+				travelExpensesApp.setApplicantNo(userId);//申请人id
+				travelExpensesApp.setDeptNo(userService.findOrgByuserId(userId).getOrganizationId());//部门id
+				travelExpensesApp.setProcStatus("1");//流程状态
+				BigDecimal number=travelExpensesApp.getGrantExp();
+				if(number!=null && number.doubleValue()!=0){
+					travelExpensesApp.setGrantExp(number);
+				}else{
+					travelExpensesApp.setGrantExp(BigDecimal.valueOf(0));
+				}
+				travelDao.save(travelExpensesApp);
+				
+				//如果补贴金额不为空，则计算其他金额
+				TravelExpensesApp travelExpenses = this.setTravelMoney(travelExpensesApp.getAppNo());
+				if(travelExpensesApp!=null){
+					//保存申请信息主表
+					travelDao.saveOrUpdate(travelExpenses);
+				}
+				return travelExpenses;
+			}else{
+				TravelExpensesApp expensesApp = this.findTravelExpenseByAppNo(travelExpensesApp.getAppNo());
+				//借款编号
+				expensesApp.setJkAppNo(travelExpensesApp.getJkAppNo());
+				//预借旅费
+				expensesApp.setGrantExp(travelExpensesApp.getGrantExp()==null?BigDecimal.valueOf(0):travelExpensesApp.getGrantExp());
+				//出差天数
+				expensesApp.setBtDays(travelExpensesApp.getBtDays()==null?BigDecimal.valueOf(0):travelExpensesApp.getBtDays());
+				//出差补贴
+				expensesApp.setSubsidyAmt(travelExpensesApp.getSubsidyAmt()==null?BigDecimal.valueOf(0):travelExpensesApp.getSubsidyAmt());
+				//出差事由
+				expensesApp.setBtReason(travelExpensesApp.getBtReason());
+				//备注
+				expensesApp.setRemark(travelExpensesApp.getRemark());
+				
+				travelDao.saveOrUpdate(expensesApp);
+				//如果补贴金额不为空，则计算其他金额
+				TravelExpensesApp travelExpenses = this.setTravelMoney(travelExpensesApp.getAppNo());
+				if(travelExpensesApp!=null){
+					//保存申请信息主表
+					travelDao.saveOrUpdate(travelExpenses);
+				}
+				
+				return travelExpenses;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 根据差旅费申请编号查询借款申请
+	 */
+	@Override
+	public List<ComboBoxModel> findUserLoan(String appNo) {
+		try {
+			List<ComboBoxModel> comBoList = this.findLoanByUserId();
+			TravelExpensesApp travelExpensesApp = this.findTravelExpenseByAppNo(appNo);
+			//获得借款申请编号
+			String jkAppNo=travelExpensesApp.getJkAppNo();
+			if(StringUtils.isNotBlank(jkAppNo)){
+				String[] jAppNos = jkAppNo.split(",");
+				for (int i = 0; i < jAppNos.length; i++) {
+					LoanApp loanApp = loanAppService.findLoanByAppNo(jAppNos[i]);
+					String code=loanApp.getAppNo();
+					String text=String.valueOf(loanApp.getLoanAmt());
+					ComboBoxModel comboBoxModel=new ComboBoxModel(code, text);
+					comBoList.add(comboBoxModel);
+				}
+			}
+			return comBoList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<ComboBoxModel>();
+	}
+	
+
+	/**
+	 * 保存申请项目信息
+	 */
+	public String savetravelExpensesOther(
+			TravelExpensesOther travelExpensesOther) {
+		try {
+			//保存费用申请项目信息
+			if (travelExpensesOther.getTeoId()==null) {
+				otherDao.save(travelExpensesOther);
+			}else{
+				otherDao.saveOrUpdate(travelExpensesOther);
+			}
+			//据算金额
+			TravelExpensesApp travelExpensesApp = this.setTravelMoney(travelExpensesOther.getAppNo());
+			if(travelExpensesApp!=null){
+				//保存申请信息主表
+				travelDao.saveOrUpdate(travelExpensesApp);
+			}
+			
+			return travelExpensesOther.getAppNo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	/**
+	 * 批量删除报销费用项目
+	 */
+	@Override
+	public boolean deleteTravelOther(String ids,String appNo) {
+		try {
+			String sql="DELETE FROM t_oa_fd_travel_expenses_other WHERE TEO_ID IN ("+ids+") ";
+			otherDao.executeBySql(sql);
+			//从新据算金额数据
+			TravelExpensesApp travelExpensesApp = this.setTravelMoney(appNo);
+			travelDao.saveOrUpdate(travelExpensesApp);
+			
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	/**
+	 * 根据编号查询差旅报销申请
+	 */
+	@Override
+	public TravelExpensesApp findTravelExpenseByAppNo(String appNo) {
+		String hql="from TravelExpensesApp where appNo='"+appNo+"'";
+		List<TravelExpensesApp> list = travelDao.find(hql);
+		if(list!=null && list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+	/**
+	 * 根据编号查询费用项目合计总额，获得费用项目和交通费用
+	 */
+	@Override
+	public BigDecimal findTravelOtherTotal(String appNo) {
+		//获取费用项目消费金额
+		String sql="SELECT SUM(TOTAL) FROM t_oa_fd_travel_expenses_other WHERE APP_NO='"+appNo+"' ";
+		BigDecimal number = otherDao.getNumber(sql);
+		if(number==null){
+			number=BigDecimal.valueOf(0);
+		}
+		//获取交通工具
+		String sql1="SELECT SUM(TOTAL) FROM t_oa_business_trip_attach WHERE APP_NO='"+appNo+"' ";
+		BigDecimal number2 = busattDao.getNumber(sql1);
+		if(number2==null){
+			number2=BigDecimal.valueOf(0);
+		}
+		return BigDecimal.valueOf(number.doubleValue()+number2.doubleValue());
+	}
+	
+	/**
+	 * 根据申请编号删除申请信息
+	 */
+	@Override
+	public boolean deleteTravelExpensesApp(String appNo) {
+		try {
+			//删除附加表信息
+			String sql="DELETE FROM t_oa_fd_travel_expenses_other WHERE APP_NO='"+appNo+"' ";
+			otherDao.executeBySql(sql);
+			//删除主表信息
+			String sql2="DELETE FROM t_oa_fd_travel_expenses_app WHERE  APP_NO='"+appNo+"' ";
+			travelDao.executeBySql(sql2);
+			//删除交通项目
+			String sql3="DELETE FROM t_oa_business_trip_attach WHERE APP_NO='"+appNo+"' ";
+			busattDao.executeBySql(sql3);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 根据申请编号查询费用项目列表
+	 */
+	@Override
+	public List<TravelExpensesOther> findTravelOtherList(String appNo,PageUtil pageUtil) {
+		try {
+			String hql="from TravelExpensesOther where appNo='"+appNo+"' order by teoId desc ";
+			List<TravelExpensesOther> list = otherDao.find(hql, pageUtil);
+			for (TravelExpensesOther travelExpensesOther : list) {
+				String name = systemCodeService.findSystemName(Constants.TRAVELEXPENSES_TYPE, travelExpensesOther.getExpItemNo());
+				travelExpensesOther.setExpItemName(name);
+			}
+			return list;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new ArrayList<TravelExpensesOther>();
+	}
+	/**
+	 * 根据申请编号查询申请下的附加表数量
+	 */
+	@Override
+	public Long findTravelOtherCount(String appNo) {
+		try {
+				String sql="SELECT COUNT(*) FROM t_oa_fd_travel_expenses_other WHERE APP_NO='"+appNo+"' ";
+				Long count = otherDao.findTotalCount(sql);
+				return count;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+	
+	/**
+	 * 根据申请编号计算金额
+	 */
+	@Override
+	public TravelExpensesApp setTravelMoney(String appNo) {
+		//获得预借旅费
+		try {
+			TravelExpensesApp travelExpensesApp = this.findTravelExpenseByAppNo(appNo);
+			BigDecimal grantExp = travelExpensesApp.getGrantExp();
+			//获得报销总额
+			BigDecimal bigDecimal = this.findTravelOtherTotal(appNo);
+			double big=0;
+			if(travelExpensesApp.getSubsidyAmt()==null || travelExpensesApp.getSubsidyAmt().doubleValue()==0){
+				big=bigDecimal.doubleValue();
+			}else{
+				big=bigDecimal.doubleValue()+travelExpensesApp.getSubsidyAmt().doubleValue();
+			}
+			if( big==0){
+				travelExpensesApp.setExpAmt(BigDecimal.valueOf(0));
+				travelExpensesApp.setSupplyAmt(BigDecimal.valueOf(0));
+				travelExpensesApp.setGivebackAmt(grantExp);
+			}else{
+				travelExpensesApp.setExpAmt(BigDecimal.valueOf(big));
+				if(grantExp.doubleValue()>big){
+					//退换费用
+					travelExpensesApp.setGivebackAmt(BigDecimal.valueOf(grantExp.doubleValue()-big));
+					travelExpensesApp.setSupplyAmt(BigDecimal.valueOf(0));
+				}else if(grantExp.doubleValue()<big){
+					//补领费用
+					travelExpensesApp.setSupplyAmt(BigDecimal.valueOf(big-grantExp.doubleValue()));
+					travelExpensesApp.setGivebackAmt(BigDecimal.valueOf(0));
+				}else{
+					travelExpensesApp.setSupplyAmt(BigDecimal.valueOf(0));
+					travelExpensesApp.setGivebackAmt(BigDecimal.valueOf(0));
+				}
+			}
+			return travelExpensesApp;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 查看流程图
+	 */
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,
+			Integer teaId) {
+		// 图片的文件的流
+				InputStream in = null;
+				try {
+					String proDefKey = Constants.TRAVELEXPENSESAPP;
+					String imgName ="OA_FD_TravelExpensesApp";
+					
+					String businessKey = proDefKey + "." + teaId;
+					// 获取当前执行的流程实例
+					ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+					// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+					ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+					// 获取当前执行任务流程
+					List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+					// 获取图片的流程图片名称
+					String resourceName = imgName + ".png";
+					// 获取图片的文件的流
+					in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+					// 获取图片对象
+					BufferedImage bimg;
+					bimg = ImageIO.read(in);
+					// 得到Graphics2D 对象
+					Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+					// 设置颜色和画笔粗细
+					g2d.setColor(Color.RED);
+					g2d.setStroke(new BasicStroke(3));
+					// 遍历执行的任务,画图
+					for (Task task : tasks) {
+						// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+						Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+						// 根据当前的执行对象的id获取正在执行的活动信息
+						ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+						// 绘制矩形
+						Rectangle2D rectangle = new Rectangle2D.Float(
+								activityImpl.getX(), activityImpl.getY(),
+								activityImpl.getWidth(), activityImpl.getHeight());
+						g2d.draw(rectangle);
+					}
+					// 写入response输出流中
+					ImageIO.write(bimg, "png", response.getOutputStream());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (in != null)
+						try {
+							in.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+	
+	}
+	
+	/**
+	 * 更该申请状态
+	 */
+	@Override
+	public void updateAppStatus(Integer teaId, String appStatus) {
+		TravelExpensesApp travelExpensesApp = travelDao.get(TravelExpensesApp.class, teaId);
+		travelExpensesApp.setAppStatus(appStatus);
+		travelDao.saveOrUpdate(travelExpensesApp);
+	}
+	
+	/**
+	 * 更改流程状态
+	 */
+	@Override
+	public void updateProcStatus(Integer teaId, String procStatus) {
+		TravelExpensesApp travelExpensesApp = travelDao.get(TravelExpensesApp.class, teaId);
+		travelExpensesApp.setProcStatus(procStatus);
+		travelDao.saveOrUpdate(travelExpensesApp);
+	}
+	
+	//更新用于差旅费报销申请的借款申请
+	@Override
+	public void updateLoanApp(Integer teaId) {
+		try {
+			TravelExpensesApp travelExpensesApp = travelDao.get(TravelExpensesApp.class, teaId);
+			String jkAppNo = travelExpensesApp.getJkAppNo();
+			if(StringUtils.isNotBlank(jkAppNo)){
+				String[] jks = jkAppNo.split(",");
+				for (String jk : jks) {
+					loanAppService.updateLoanBalance(jk);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * 查看差旅报销申请未完成任务
+	 */
+	@Override
+	public TravelExpensesApp findTravelNotTaskByTeaId(Integer teaId) {
+		try {
+			TravelExpensesApp travelExpensesApp = travelDao.get(TravelExpensesApp.class, teaId);
+			String hql="from TravelExpensesApp where applicantNo="+travelExpensesApp.getApplicantNo()+" and procStatus='2' ";
+			List<TravelExpensesApp> list = travelDao.find(hql);
+			if(list!=null && list.size()>1){
+				return list.get(0);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	//---------------------------------交通费用-----------------------------------------------
+	/**
+	 * 交通费用
+	 */
+	@Override
+	public List<BusinessTripAttach> findBusinessAtt(String appNo) {
+		try {
+			String hql="from BusinessTripAttach where appNo='"+appNo+"'";
+			List<BusinessTripAttach> list = busattDao.find(hql);
+			if(Collections.listIsNotEmpty(list)){
+				for (BusinessTripAttach businessTripAttach : list) {
+					String name = systemCodeService.findSystemName(Constants.BUSINESSTRIPATTACHE, String.valueOf(businessTripAttach.getVehicle()));
+					businessTripAttach.setVehicleName(name);
+				}
+			}
+			return list;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<BusinessTripAttach>();
+	}
+	/**
+	 * 交通费信息数量
+	 */
+	@Override
+	public Long findBusinessAttCount(String appNo) {
+		try {
+			//if(StringUtils.isNotBlank(appNo)){
+				String sql="SELECT COUNT(*) FROM t_oa_business_trip_attach WHERE APP_NO='"+appNo+"'";
+				Long count = busattDao.findTotalCount(sql);
+				return count;
+			//}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 0L;
+	}
+	/**
+	 * 批量删除交通费用
+	 */
+	@Override
+	public boolean deleteBusinessTripAtt(String ids,String appNo) {
+		try {
+			String	sql="DELETE FROM t_oa_business_trip_attach WHERE BTA_ID IN ("+ids+") ";
+			busattDao.executeBySql(sql);
+			//从新据算金额数据
+			TravelExpensesApp travelExpensesApp = this.setTravelMoney(appNo);
+			travelDao.saveOrUpdate(travelExpensesApp);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	/**
+	 * 保存交通费用
+	 */
+	@Override
+	public String savebusinessTripAtt(BusinessTripAttach businessTripAttach) {
+		try {
+			if(businessTripAttach.getBtaId()==null){
+				busattDao.save(businessTripAttach);
+			}else{
+				busattDao.saveOrUpdate(businessTripAttach);
+			}
+			TravelExpensesApp travelExpensesApp = this.setTravelMoney(businessTripAttach.getAppNo());
+			if(travelExpensesApp!=null){
+				//保存申请信息主表
+				travelDao.saveOrUpdate(travelExpensesApp);
+			}
+			
+			return travelExpensesApp.getAppNo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * 出差补助
+	 */
+	@Override
+	public double setTravelSubsidyAmt(Double btDays) {
+		try {
+			if(btDays==null){
+				btDays=0.0;
+			}
+			
+			double days = btDays.doubleValue();
+			double subsidyAmt=days*Constants.TRAVELSUBSIDYAMTDAY.doubleValue();
+			return subsidyAmt;
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	
+
+		
+
+
+
+	
+	
+	
+	
+}

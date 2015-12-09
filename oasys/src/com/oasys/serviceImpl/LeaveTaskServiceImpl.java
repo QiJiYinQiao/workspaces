@@ -1,0 +1,267 @@
+package com.oasys.serviceImpl;
+
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.LeaveApp;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.LeaveAppService;
+import com.oasys.service.LeaveTaskService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+@Service("leaveTaskService")
+@SuppressWarnings("unchecked")
+public class LeaveTaskServiceImpl  extends WorkFlowBaseServiceImpl  implements LeaveTaskService
+{
+
+	
+	//申请状态
+	@Autowired
+	private StatusNameRefService  statusNameRefService;
+
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	
+	@Autowired
+	private LeaveAppService leaveAppService;
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private PublicDao<LeaveApp> leaveDao;
+	
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private SystemCodeService systemCodeService;
+	
+	@Override
+	public String addLeaveStartProcessInstance(Integer leaId) {
+		try {
+			//开启流程时，判断提交申请时间和计划时间是否是同一天
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat sd=new SimpleDateFormat("yyyy-Mm-dd HH:mm:ss");
+			LeaveApp leave = leaveDao.get(LeaveApp.class, leaId);
+			
+			if(leave.getRealLeDays().doubleValue()<=0){
+				return null;
+			}
+			
+			if(!sdf.format(new Date()).equals(sdf.format(leave.getPlanBgDtime()))){
+				//判断调休
+				if(leave.getLeType().equals("8")){
+					double dou = leaveAppService.getDatemistiming(sd.format(leave.getPlanBgDtime()), sd.format(leave.getPlanEdDtime()));
+					if(dou!=0){
+						return null;
+					}
+				}
+			}
+			
+			
+			// TODO Auto-generated method stub
+			// 获取启动实例的keygg
+			String proDefKey = leaveAppService.findProDefKey(leaId);
+			// 定义businessKey
+			String businessKey = proDefKey + "." + leaId;
+			
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setBusinessID(leaId.toString());//业务ID
+			taskModel.setBusinessDefineKey(proDefKey);// 获取启动实例的key
+
+			//如果是设计婚产假，
+			if(proDefKey.equals(Constants.LEAVEAPP_Woman)){
+				Map<String,Object> var=new HashMap<String, Object>();
+				if(leave.getLeType().equals("4") || leave.getLeType().equals("6")){
+					//设计婚产假
+					var.put(Constants.CONDITIONS_KEY, Constants.LEAVEAPP_WOMAN_HC);
+				}else{
+					//不涉及婚产假
+					var.put(Constants.CONDITIONS_KEY, Constants.LEAVEAPP_WOMAN_NOTHC);
+				}
+				taskModel.setVariables(var);
+			}
+			
+			taskModel.setAppNo(leave.getAppNo());//编号
+			Map<String, Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+			
+			//更新申请时间
+			leave.setAppDate(new Date());
+			leaveDao.saveOrUpdate(leave);
+			
+			//判断任务未结束
+			if(null != resultMap.get(Constants.STATUS_REF_ID) && StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+				leaveAppService.upLeaveAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新申请状态
+			}
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+	@Override
+	public List<LeaveApp> findNotTaskClimList(LeaveApp leaveApp,PageUtil pageUtil) {
+		
+		
+		try {
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setProcessKey(leaveApp.getDefinitionKey());
+			List<WorkFlowTasksModel> workList = workFlowTaskService.findAcceptTaskByGroup(taskModel);
+			if(null == workList || workList.size() == 0)return new ArrayList<LeaveApp>();
+			String hql=" from LeaveApp where 1=1 ";
+			hql+=" and leaId in ("+getTaskPPEids(workList)+")";
+			if(StringUtils.isNotBlank(leaveApp.getAppNo())){
+				hql+=" and appNo='"+leaveApp.getAppNo()+"' ";
+			}else{
+				if(StringUtils.isNotBlank(leaveApp.getAppDateS())){
+					hql+=" and appDate >='" + leaveApp.getAppDateS()+"' ";  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(leaveApp.getAppDateE())){
+					hql+=" and appDate <='" + leaveApp.getAppDateE()+"' ";  //申请结束日期
+				}
+			}
+			hql+=" order by leaId desc ";
+			List<LeaveApp> modelList = leaveDao.find(hql, pageUtil);
+			
+			for (WorkFlowTasksModel wl : workList) {
+				for (LeaveApp leave : modelList) {
+					//申请人姓名
+					leave.setApplicantName(userService.findUserById(leave.getApplicantNo()).getName());
+					//申请人部门
+					leave.setFullName(organizationService.getOrgNameByID(leave.getDeptNo()));
+					//代理人姓名
+					leave.setAgentName(userService.findUserById(leave.getAgentNo()).getName());
+					//判断请假类型，当类型为其他时填写其他类型、
+					if(StringUtils.equals(leave.getLeType(), "9")){
+						leave.setLeName(leave.getLeTypeOther());
+					}else{
+						leave.setLeName(systemCodeService.findSystemName(Constants.LEAVEAPP_TYPE, leave.getLeType()));
+					}
+					if( Integer.valueOf(wl.getBusinessID()).intValue() == leave.getLeaId().intValue() ){
+						leave.setTaskModel(wl);
+						leave.setTaskID(wl.getTaskID());
+						leave.setAssistant(wl.getAssistant());
+						leave.setFormKey(wl.getFormKey());
+					}
+				}
+			}
+			return modelList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+
+	@Override
+	public Long findTotal(LeaveApp leaveApp) {
+		try {
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setProcessKey(leaveApp.getDefinitionKey());
+			List<WorkFlowTasksModel> workList = workFlowTaskService.findAcceptTaskByGroup(taskModel);
+			if(null == workList || workList.size() == 0)return 0L;
+			String hql="select count(*) from LeaveApp where 1=1 ";
+			hql+=" and leaId in ("+getTaskPPEids(workList)+")";
+			if(StringUtils.isNotBlank(leaveApp.getAppNo())){
+				hql+=" and appNo='"+leaveApp.getAppNo()+"' ";
+			}else{
+				if(StringUtils.isNotBlank(leaveApp.getAppDateS())){
+					hql+=" and appDate >='" + leaveApp.getAppDateS()+"' ";  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(leaveApp.getAppDateE())){
+					hql+=" and appDate <='" + leaveApp.getAppDateE()+"' ";  //申请结束日期
+				}
+			}
+			Long totalCount = leaveDao.count(hql);
+			
+			return totalCount;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+
+	//获取task中工牌申请表的id集合
+	private String getTaskPPEids(List<WorkFlowTasksModel> workList){
+		String ids = "";
+		for (WorkFlowTasksModel workFlowTasksModel : workList) {
+			ids+=workFlowTasksModel.getBusinessID()+",";
+		}
+		if(ids.length()>0){
+			ids = ids.substring(0, ids.length()-1);
+		}
+		return ids;
+	}
+	
+	/**
+	 * 领取任务
+	 */
+	@Override
+	public void getTaskUserClaim(String taskId) throws ActivitiTaskAlreadyClaimedException{
+		//领取人id
+		Integer userId=Constants.getCurrendUser().getUserId();
+		this.taskService.claim(taskId, String.valueOf(userId));
+	}
+	
+	/**
+	 * 办理任务。公共
+	 */
+	@Override
+	public String saveSubmitTask(WorkFlowTasksModel taskModel) throws Exception {
+		LeaveApp leaveApp = leaveDao.get(LeaveApp.class, Integer.valueOf(taskModel.getBusinessID()));
+		if(leaveApp.getRealLeDays().doubleValue()<=0){
+			return null;
+		}
+		
+		Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+		if(StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+			updLeaveAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+	/**
+	 * 保存申请状态
+	 * @Title: updLeaveAppStatus 
+	 * @Description: TODO
+	 * @param @param id
+	 * @param @param statusID
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月4日 上午10:00:47
+	 * @throws
+	 */
+	public void updLeaveAppStatus(Integer id, String statusID) {
+		LeaveApp leaveApp = leaveDao.get(LeaveApp.class,id);
+		leaveApp.setAppStatus(statusID);
+		leaveDao.saveOrUpdate(leaveApp);
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+}

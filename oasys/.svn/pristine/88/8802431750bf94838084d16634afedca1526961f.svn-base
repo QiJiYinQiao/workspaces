@@ -1,0 +1,389 @@
+package com.oasys.serviceImpl;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.POIXMLDocument;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.PpeStockInfo;
+import com.oasys.service.PpeStockInfoService;
+import com.oasys.util.Collections;
+import com.oasys.util.PageUtil;
+
+@Service("ppetockInfoService")
+public class PpeStockInfoServiceImpl implements PpeStockInfoService {
+
+	@Autowired
+	PublicDao<PpeStockInfo> publicDao;
+
+	//创建excel工作集
+	private static Workbook create(InputStream inp) throws IOException,
+			InvalidFormatException {
+		if (!inp.markSupported()) {
+			inp = new PushbackInputStream(inp, 8);
+		}
+		if (POIFSFileSystem.hasPOIFSHeader(inp)) {//.xls
+			return new HSSFWorkbook(inp);
+		}
+		if (POIXMLDocument.hasOOXMLHeader(inp)) {//.xlsx
+			return new XSSFWorkbook(OPCPackage.open(inp));
+		}
+		throw new IllegalArgumentException("你的excel版本目前poi解析不了");
+	}
+
+	@Override
+	public List<String> startImportExcelToDB(File file) {
+		// TODO Auto-generated method stub
+		List<String> duplicateList = new ArrayList<String>();
+		try {
+			FileInputStream fin = new FileInputStream(file);
+			Workbook workbook = create(fin);
+
+			Sheet sheet = workbook.getSheetAt(0);
+
+			int last = sheet.getLastRowNum();
+
+			int index;
+
+			Date dt = null;
+			for (index =1;index <= last;index++) {
+				PpeStockInfo model = new PpeStockInfo();
+
+				Row row = sheet.getRow(index);
+				/*
+				 * 循环读取每一列的数据并存入数据库
+				 * 检查固定资产编码是否有重复:提示前5个编码具体是哪一个重复
+				 */
+				Cell cell = row.getCell((short) 0);// 固定资产编码
+				
+				//检查固定资产编码是否重复
+				if(isExistsPpeCode(cell.getStringCellValue())){
+					duplicateList.add(cell.getStringCellValue());
+				}
+				if (cell != null) {
+					model.setPpeCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 1);// 固定资产名称
+				if (cell != null) {
+					model.setPpeName(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 2);// 固定资产类型编码
+				if (cell != null) {
+					model.setPpeTypeCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 3);// 部门编码
+				if (cell != null) {
+					model.setOrganizationCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 4);// 增加方式编码
+				if (cell != null) {
+					model.setAddWayCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 5);// 使用状况编码
+				if (cell != null) {
+					model.setUseStatusCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 6);// 使用年限
+				if (cell != null) {
+					model.setUseYears(((int)(cell.getNumericCellValue())));
+				}
+				cell = row.getCell((short) 7);// 使用比例
+				if (cell != null) {
+					model.setUsePercent(new BigDecimal(cell.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 8);// 折旧方法编码
+				if (cell != null) {
+					model.setDepreciationWayCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 9);// 开始使用日期
+				if (cell != null) {
+					if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						dt = HSSFDateUtil.getJavaDate(cell
+								.getNumericCellValue());
+						if (dt != null && dt.getTime() > 0) {
+							model.setBeginUseDate(dt);
+						}
+					}
+				}
+				cell = row.getCell((short) 10);// 币种
+				if (cell != null) {
+					model.setCurrency(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 11);// 汇率
+				if (cell != null) {
+					model.setExchangeRate(new BigDecimal(cell
+							.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 12);// 原值
+				if (cell != null) {
+					model.setOriginalValue(new BigDecimal(cell
+							.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 13);// 期初减值准备
+				if (cell != null) {
+					model.setPpeSubstractValue(new BigDecimal(cell
+							.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 14);// 资产组编码
+				if (cell != null) {
+					model.setPpeGroupCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 15);// 规格型号
+				if (cell != null) {
+					model.setSize(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 16);// 存放地点
+				if (cell != null) {
+					model.setPlace(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 17);// 累计折旧
+				if (cell != null) {
+					model.setSumDepreciation(new BigDecimal(cell
+							.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 18);// 项目大类
+				if (cell != null) {
+					model.setProjectClass(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 19);// 工作总量
+				if (cell != null) {
+					model.setWorkTotal(new BigDecimal(cell.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 20);// 累计工作量
+				if (cell != null) {
+					model.setSumWork(new BigDecimal(cell.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 21);// 工作量单位
+				if (cell != null) {
+					model.setUnit(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 22);// 已使用月份
+				if (cell != null) {
+					model.setUsedMonths(((int)(cell.getNumericCellValue())));
+				}
+				cell = row.getCell((short) 23);// 外币原值
+				if (cell != null) {
+					model.setForCurrencryOriValue(new BigDecimal(cell
+							.getStringCellValue()));
+				}
+				cell = row.getCell((short) 24);// 净残值率
+				if (cell != null) {
+					model.setScrapValueRate(new BigDecimal(cell
+							.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 25);// 净残值
+				if (cell != null) {
+					model.setScrapValue(new BigDecimal(cell
+							.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 26);// 折旧科目编码
+				if (cell != null) {
+					model.setDepreciationProjectCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 27);// 项目编码
+				if (cell != null) {
+					model.setProjectCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 28);// 电机功率
+				if (cell != null) {
+					model.setMotorRate(new BigDecimal(cell.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 29);// 电机数量
+				if (cell != null) {
+					model.setMotorNum(((int)(cell.getNumericCellValue())));
+				}
+				cell = row.getCell((short) 30);// 间数
+				if (cell != null) {
+					model.setRoomNum(((int)(cell.getNumericCellValue())));
+				}
+				cell = row.getCell((short) 31);// 建筑面积
+				if (cell != null) {
+					model.setArea(new BigDecimal(cell.getNumericCellValue()));
+				}
+				cell = row.getCell((short) 32);// 录入日期
+				if (cell != null) {
+					if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						dt = HSSFDateUtil.getJavaDate(cell
+								.getNumericCellValue());
+						if (dt != null && dt.getTime() > 0) {
+							model.setEnteringDate(dt);
+						}
+					}
+				}
+				cell = row.getCell((short) 33);// 录入员
+				if (cell != null) {
+					model.setEnteringor(Integer.valueOf(cell
+							.getStringCellValue()));
+				}
+				cell = row.getCell((short) 34);// 增值税
+				if (cell != null) {
+					model.setValueAddedTax(new BigDecimal(cell
+							.getStringCellValue()));
+				}
+				cell = row.getCell((short) 35);// 保管人
+				if (cell != null) {
+					model.setEnteringor(Integer.valueOf(cell
+							.getStringCellValue()));
+				}
+				cell = row.getCell((short) 36);// 资金构成编码
+				if (cell != null) {
+					model.setCapitalConstitutionCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 37);// 资金构成比例
+				if (cell != null) {
+					model.setCapitalConstitutionPercent(new BigDecimal(cell
+							.getStringCellValue()));
+				}
+				cell = row.getCell((short) 38);// 供应商编码
+				if (cell != null) {
+					model.setSupplierCode(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 39);// 供应商名称
+				if (cell != null) {
+					model.setSuplierName(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 40);// 采购日期
+				if (cell != null) {
+					if (HSSFDateUtil.isCellDateFormatted(cell)) {
+						dt = HSSFDateUtil.getJavaDate(cell
+								.getNumericCellValue());
+						if (dt != null && dt.getTime() > 0) {
+							model.setPurchaseDate(dt);
+						}
+					}
+				}
+				cell = row.getCell((short) 41);// 序列号
+				if (cell != null) {
+					model.setSerializeNo(cell.getStringCellValue());
+				}
+				cell = row.getCell((short) 42);// 商品码
+				if (cell != null) {
+					model.setGoodsCode(cell.getStringCellValue());
+				}
+				model.setPpeStatus("1");
+				if(duplicateList.size()<=0){
+					publicDao.saveOrUpdate(model);//保存或更新操作
+				}
+			}
+
+			fin.close();
+
+		} catch (FileNotFoundException e) {
+
+			// TODO Auto-generated catch block
+
+			e.printStackTrace();
+
+		} catch (IOException e) {
+
+			// TODO Auto-generated catch block
+
+			e.printStackTrace();
+
+		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return duplicateList;
+
+	}
+
+	@Override
+	public PpeStockInfo getPpeStockInfo(PpeStockInfo ppeStockInfo){
+		String hql="from PpeStockInfo t where 1=1";
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeCode())){
+			hql+=" and t.ppeCode like '"+ppeStockInfo.getPpeCode()+"'";
+		}
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeStatus())){
+			hql+=" and t.ppeStatus in("+ppeStockInfo.getPpeStatus()+")";
+		}
+		if (ppeStockInfo.getCustodian()!=null) {
+			hql+=" and t.custodian = "+ppeStockInfo.getCustodian();
+		}
+		List<PpeStockInfo> ppeStockList = publicDao.find(hql);
+		if(Collections.listIsNotEmpty(ppeStockList)){
+			return ppeStockList.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	@Override
+	public boolean isExistsPpeCode(String ppeCode) {
+		// TODO Auto-generated method stub
+		String hql=" from PpeStockInfo t where 1=1 and t.ppeCode='"+ppeCode+"'";
+		List<PpeStockInfo> list = publicDao.find(hql);
+		if(list.size()>0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	@Override
+	public List<PpeStockInfo> findPpeStockInfoList(PpeStockInfo ppeStockInfo,PageUtil pageUtil) {
+		// TODO Auto-generated method stub
+		String hql="from PpeStockInfo t where 1=1";
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeCode())){
+			hql+=" and t.ppeCode like '%"+ppeStockInfo.getPpeCode()+"%'";
+		}
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeName())){
+			hql+=" and t.ppeName like '%"+ppeStockInfo.getPpeName()+"%' ";
+		}
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeStatus())){
+			hql+=" and t.ppeStatus = '"+ppeStockInfo.getPpeStatus()+"'";
+		}
+		List<PpeStockInfo> ppeStockList = publicDao.find(hql, pageUtil);
+		return ppeStockList;
+	}
+	
+	@Override
+	public void updPpeStockInfoStatus(String ppeCode,String ppeStatus){
+		if(StringUtils.isNotBlank(ppeCode) && ppeCode.split(",").length > 1){
+			for(String pc : ppeCode.split(",")){
+				publicDao.executeHql("update PpeStockInfo set ppeStatus = "+ppeStatus +" where ppeCode = "+pc);
+			}
+		}else{
+			publicDao.executeHql("update PpeStockInfo set ppeStatus = "+ppeStatus +" where ppeCode = "+ppeCode);
+		}
+	}
+
+	@Override
+	public Long getCount(PpeStockInfo ppeStockInfo) {
+		// TODO Auto-generated method stub
+		String hql="from PpeStockInfo t where 1=1";
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeCode())){
+			hql+=" and t.ppeCode like '%"+ppeStockInfo.getPpeCode()+"%'";
+		}
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeName())){
+			hql+=" and t.ppeName like '%"+ppeStockInfo.getPpeName()+"%' ";
+		}
+		if(StringUtils.isNotBlank(ppeStockInfo.getPpeStatus())){
+			hql+=" and t.ppeStatus = '"+ppeStockInfo.getPpeStatus()+"'";
+		}
+		return publicDao.count("select count(*) "+hql);
+	}
+
+}

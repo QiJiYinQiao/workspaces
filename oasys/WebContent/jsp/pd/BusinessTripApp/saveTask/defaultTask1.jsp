@@ -1,0 +1,132 @@
+<%@page import="com.oasys.util.Constants"%>
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<script type="text/javascript">
+function toSaveOrUpdateInvestProductOpenDlg(){
+	var btaId = $('#btaId').val();
+	$tiaozheng=$("<div></div>").dialog({
+		title : '编辑',
+		width : 900,
+		height : 450,
+		modal:true,
+		href : "jsp/pd/BusinessTripApp/businessTripAppForm.jsp",
+		onLoad:function(){
+			createUser('baseForm');
+			$("#vehicle").combobox({
+				url:"commonController/findDicList.do?codeMyid=vehicle_type",
+				valueField: 'code',
+				textField: 'text',
+				required:true,
+				onSelect:function(rec){
+					if(rec.code=='6'){
+						$("#hiddenOne").attr("class","");
+						$("#hiddenTwo").attr("class","");
+						$("#vehicleOther").validatebox({required:true});
+					}else{
+						$("#hiddenOne").attr("class","dis");
+						$("#hiddenTwo").attr("class","dis");
+						$("#vehicleOther").validatebox({required:false});
+						$("#vehicleOther").val("");
+					}
+				}
+			});
+			var f = $("#baseForm");
+			f.form("load", $selRow);
+			f.form("load",$selRow.businessTripAttach);
+			var code=$("#vehicle").combobox('getValue');
+			if(code=="6"){
+				$("#hiddenOne").attr("class","");
+				$("#hiddenTwo").attr("class","");
+				$("#vehicleOther").validatebox({required:true});
+			}
+		},
+		onClose:function(){
+			$("#dg").datagrid("reload");
+			$(this).dialog('destroy');
+		},
+		buttons : [ {
+			text : '关闭',
+			iconCls : 'icon-cancel',
+			handler : function() {
+				$tiaozheng.dialog('close');
+				$tiaozheng.dialog('destroy');
+			}
+		}]
+	}); 
+}
+function resetVali(){
+	$("#dimissionDate").datebox({disabled:false});
+	$("#takeoverUserName").combobox({disabled:false});
+	$("#takeoverDeptName").combo({disabled:false});
+}
+/** 增加或者修改理财产品的数据**/
+function saveTaskFunc(isSuccess){
+	//校验理财产品输入的信息
+	var remark = $("#taskComment").val();
+	$("#result").val(isSuccess);
+	$("#isSuccess").val(isSuccess);
+	var data1 = $('#taskForm').serialize();
+	if(data1.indexOf("&appNo")==-1){
+		data1+=("&appNo="+$selRow.appNo);
+	}
+	 if((isSuccess == 0 || isSuccess == 2)  && remark == ""){
+		$.messager.alert("提示","请填写备注信息!","info");
+		return false;
+	}
+	 
+	 
+	 $.ajax({
+		 type:"POST",
+	 	 url:"businessTripAttach/saveBusinessTripAttach.do",
+	 	 data:data1,
+	 	success: function(iJson) {
+	 		$.ajax({
+	 			type: "POST",
+	 			url:"businessTripApp/saveTask.do",
+	 			data:data1,
+	 		    success: function(iJson) {
+	 	 	    	if(iJson.status){
+	 		    		$("#saveTaskDialog").dialog("close");//关闭弹窗
+	 		    		$("#dg").datagrid("reload");//刷新表格
+	 		    	}
+	 	 	    	$.messager.alert(iJson.title,iJson.message,'info');
+	 		    }
+	 		});
+	 	}
+	 });
+}
+</script>
+    <form id="taskForm"  method="post" style="width: 780px;margin-left:5px;">
+    <input id="applyStr" name="applyStr" type="hidden"  value="<%= Constants.APPLY_FOR_ADJUSTMENT %>" />
+    	<input id="btaId" name="btaId" type="hidden"/>
+ 		<table class="table"  width="95%">
+				<tr>
+					<th>申请编号:</th>
+					<td>
+						<input id="appNo" name="appNo" class="easyui-textbox" disabled="disabled"/>
+					</td>
+				</tr>
+				<tr>
+			        <th>实际出差开始时间:</th>
+	                <td><input id="realBgDtime" name="realBgDtime" class="easyui-datetimebox"  required="required"/></td>
+	                <th>实际出差结束时间:</th>
+	                <td><input id="realEdDtime" name="realEdDtime" class="easyui-datetimebox"  required="required"/></td>
+	             </tr>
+				<tr>
+					<td colspan="1"></td>
+				   <td colspan="5" align="right">
+						 <jsp:include page="/jsp/pd/taskHiddenJsp.jsp" flush="true" />
+				   </td>
+				</tr>	
+				<tr>
+					<td colspan="6">
+						<jsp:include page="/jsp/pd/optionsList.jsp" flush="true" />
+					</td>
+				</tr>					
+			</table>
+			<div id="saveOrUpdateEmpSalDialog"></div>	
+    </form>

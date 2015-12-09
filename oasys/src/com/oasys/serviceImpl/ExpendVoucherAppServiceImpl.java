@@ -1,0 +1,769 @@
+package com.oasys.serviceImpl;
+
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.ExpendVoucherApp;
+import com.oasys.model.LoanApp;
+import com.oasys.model.Role;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.ExpendVoucherAppService;
+import com.oasys.service.LoanAppService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.ComboBoxModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+@Service("expendVoucherAppService")
+@SuppressWarnings("unchecked")
+public class ExpendVoucherAppServiceImpl  extends WorkFlowBaseServiceImpl  implements ExpendVoucherAppService
+{
+
+	
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private  StatusNameRefService  statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private RoleService roleService;
+	@Autowired
+	private SystemCodeService systemCodeService;
+	/**支出凭单*/
+	@Autowired
+	private PublicDao<ExpendVoucherApp> expendDao;
+	@Autowired
+	private LoanAppService loanAppService;
+	
+	/**
+	 * 查询支出凭单列表
+	 * @Title: findExpendVoucherAppList 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @param pageUtil
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ExpendVoucherApp>
+	 * @date 2015年11月19日 下午8:41:51
+	 * @throws
+	 */
+	@Override
+	public List<ExpendVoucherApp> findExpendVoucherAppList(
+			ExpendVoucherApp expendVoucherApp, PageUtil pageUtil) {
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		
+		try {
+			Integer userId=Constants.getCurrendUser().getUserId();
+			Role role = userService.findRoleListByUserId(userId).get(0);//获得角色
+			String deptLeave = organizationService.findOrgDeptLevelByUserID(userId);//获取总部，分部
+			String users="";
+			
+			StringBuffer sql = this.getExpendBySQL();
+			if(userId!=1){
+				//如果是分部的对接主管，能查询对接主管所管辖的申请
+				if(role.getRoleCode().equals("DuiJieZhuGuan") && deptLeave.equals("1")){
+					Integer organizationId = userService.findOrgByuserId(userId).getOrganizationId();
+					List<ComboBoxModel> userList = userService.findOrgUserList(String.valueOf(organizationId));
+					for(int i=0;i<userList.size();i++){
+						if(i!=userList.size()-1){
+							users+=userList.get(i).getCode();
+						}else{
+							users+=userList.get(i).getCode();
+						}
+						
+					}
+					sql.append(" AND ex.APPLICANT_NO IN ("+users+") ");
+				}else{
+					sql.append(" AND ex.APPLICANT_NO="+userId);
+				}
+			}
+			
+			if(StringUtils.isNotBlank(expendVoucherApp.getAppNo())){
+				sql.append(" AND ex.APP_NO='"+expendVoucherApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateS())){
+					sql.append(" AND ex.APP_DATE >='" + expendVoucherApp.getAppDateS()+"' ") ;  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateE())){
+					sql.append(" AND ex.APP_DATE <='" + expendVoucherApp.getAppDateE()+"' ") ;  //申请结束日期
+				}
+				if(StringUtils.isNotBlank(expendVoucherApp.getProcStatus())){
+					sql.append(" AND ex.PROC_STATUS='"+expendVoucherApp.getProcStatus()+"' ");
+				}
+			}
+			sql.append(" ORDER BY ex.EVA_ID DESC ");
+			
+			List<Object> list = expendDao.findBySql(sql.toString(), pageUtil);
+			List<ExpendVoucherApp> expendLIst=new ArrayList<ExpendVoucherApp>();
+			if(Collections.listIsNotEmpty(list)){
+				ExpendVoucherApp voucherApp=new ExpendVoucherApp();
+				for(int i=0;i<list.size();i++){
+					Object[] obj = (Object[]) list.get(i);
+					ExpendVoucherApp app= (ExpendVoucherApp) voucherApp.clone();
+					app.setEvaId(obj[0] == null?0:(Integer)obj[0]);//申请id
+					app.setAppNo(obj[1] == null?"":String.valueOf(obj[1]));//申请编号
+					app.setApplicantNo(obj[2] == null?0:(Integer)obj[2]);//申请人id
+					app.setApplicationName(obj[3] == null?"":String.valueOf(obj[3]));//申请人名字
+					app.setAppDate(obj[4] == null?null:sdf.parse(String.valueOf(obj[4])));//申请日期
+					app.setAppStatus(obj[5] == null?"":String.valueOf(obj[5]));//申请状态
+					app.setClause(obj[6] == null?"":String.valueOf(obj[6]));//即付款项
+					app.setTotal((BigDecimal) (obj[7] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[7])).doubleValue())));//合计金额
+					app.setGrantExp((BigDecimal) (obj[8] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[8])).doubleValue())));//预借金额
+					app.setSupplyAmt((BigDecimal) (obj[9] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[9])).doubleValue())));//补领金额
+					app.setGivebackAmt((BigDecimal) (obj[10] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[10])).doubleValue())));//退还金额
+					app.setProcStatus(obj[11] == null?"":String.valueOf(obj[11]));//流程状态
+					app.setRemark(obj[12] == null?"":String.valueOf(obj[12]));//备注
+					app.setJkAppNo(obj[13] == null?"":String.valueOf(obj[13]));//借款编号
+					app.setRoleCode(role.getRoleCode());//角色
+					app.setDeptLeave(deptLeave);//判断总部分部
+					
+					expendLIst.add(app);
+				}
+			}
+			return expendLIst;
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new ArrayList<ExpendVoucherApp>();
+	}
+
+	/**
+	 * sql语句
+	 */
+	@Override
+	public StringBuffer getExpendBySQL() {
+		StringBuffer sql=new StringBuffer();
+		sql.append("SELECT ");
+		sql.append(" ex.EVA_ID '申请id', ");
+		sql.append(" ex.APP_NO '申请编号', ");
+		sql.append(" ex.APPLICANT_NO '申请人id', ");
+		sql.append(" u.USER_NAME '申请人姓名', ");
+		sql.append(" ex.APP_DATE '申请日期', ");
+		sql.append(" ex.APP_STATUS '申请状态', ");
+		sql.append(" ex.CLAUSE '即付款项', ");
+		sql.append(" ex.TOTAL '合计金额',");
+		sql.append(" ex.GRANT_EXP '预借旅费', ");
+		sql.append(" ex.SUPPLY_AMT '补领金额', ");
+		sql.append(" ex.GIVEBACK_AMT '退还金额', ");
+		sql.append(" ex.PROC_STATUS '流程状态', ");
+		sql.append(" ex.REMARK '备注', ");
+		sql.append(" ex.JK_APP_NO '借款编号' ");
+		sql.append(" FROM t_oa_fd_expend_voucher_app ex ");
+		sql.append(" LEFT JOIN QQMS.t_users u ON ex.APPLICANT_NO=u.USER_ID ");
+		sql.append(" WHERE 1=1 ");
+		return sql;
+	}
+
+	@Override
+	public Long findExpendCount(ExpendVoucherApp expendVoucherApp) {
+		try {
+			Integer userId=Constants.getCurrendUser().getUserId();
+			Role role = userService.findRoleListByUserId(userId).get(0);//获得角色
+			String deptLeave = organizationService.findOrgDeptLevelByUserID(userId);//获取总部，分部
+			String users="";
+			
+			StringBuffer sql=new StringBuffer();
+			sql.append("SELECT COUNT(*) FROM t_oa_fd_expend_voucher_app ex WHERE 1=1 ");
+			if(userId!=1){
+				//如果是分部的对接主管，能查询对接主管所管辖的申请
+				if(role.getRoleCode().equals("DuiJieZhuGuan") && deptLeave.equals("1")){
+					Integer organizationId = userService.findOrgByuserId(userId).getOrganizationId();
+					List<ComboBoxModel> userList = userService.findOrgUserList(String.valueOf(organizationId));
+					for(int i=0;i<userList.size();i++){
+						if(i!=userList.size()-1){
+							users+=userList.get(i).getCode();
+						}else{
+							users+=userList.get(i).getCode();
+						}
+						
+					}
+					sql.append(" AND ex.APPLICANT_NO IN ("+users+") ");
+				}else{
+					sql.append(" AND ex.APPLICANT_NO="+userId);
+				}
+			}
+			if(StringUtils.isNotBlank(expendVoucherApp.getAppNo())){
+				sql.append(" AND ex.APP_NO='"+expendVoucherApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateS())){
+					sql.append(" AND ex.APP_DATE >='" + expendVoucherApp.getAppDateS()+"' ") ;  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateE())){
+					sql.append(" AND ex.APP_DATE <='" + expendVoucherApp.getAppDateE()+"' ") ;  //申请结束日期
+				}
+				if(StringUtils.isNotBlank(expendVoucherApp.getProcStatus())){
+					sql.append(" AND ex.PROC_STATUS='"+expendVoucherApp.getProcStatus()+"' ");
+				}
+			}
+			Long count = expendDao.findTotalCount(sql.toString());
+			return count;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return 0L;
+	}
+
+	/**
+	 * 保存或更新支出凭单申请
+	 * @Title: saveOrUpdExpend 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ExpendVoucherApp
+	 * @date 2015年11月20日 上午11:42:25
+	 * @throws
+	 */
+	@Override
+	public ExpendVoucherApp saveOrUpdExpend(ExpendVoucherApp expendVoucherApp) {
+		try {
+			if(expendVoucherApp.getEvaId()==null){
+				Integer userId=Constants.getCurrendUser().getUserId();
+				expendVoucherApp.setAppNo(UniqueIdUtil.generate("ZC"));//编号
+				expendVoucherApp.setApplicantNo(userId);//申请人id
+				expendVoucherApp.setProcStatus("1");//流程状态
+				if(expendVoucherApp.getGrantExp()==null){
+					expendVoucherApp.setGrantExp(BigDecimal.valueOf(0));
+				}
+				if(expendVoucherApp.getTotal()==null){
+					expendVoucherApp.setTotal(BigDecimal.valueOf(0));
+				}
+				expendDao.save(expendVoucherApp);
+			}else{
+				ExpendVoucherApp expendAppNo = this.findExpendAppNo(expendVoucherApp.getAppNo());
+				expendAppNo.setJkAppNo(expendVoucherApp.getJkAppNo());//借款编号
+				if(expendVoucherApp.getGrantExp()!=null){
+					expendAppNo.setGrantExp(expendVoucherApp.getGrantExp());//借款金额
+				}else{
+					expendAppNo.setGrantExp(BigDecimal.valueOf(0));
+				}
+				expendAppNo.setClause(expendVoucherApp.getClause());//支付款项
+				if(expendVoucherApp.getTotal()!=null){
+					expendAppNo.setTotal(expendVoucherApp.getTotal());//合计金额
+				}else{
+					expendAppNo.setTotal(BigDecimal.valueOf(0));
+				}
+				expendAppNo.setRemark(expendVoucherApp.getRemark());//备注信息
+				expendDao.saveOrUpdate(expendAppNo);
+			}
+			//更新金额
+			ExpendVoucherApp voucherApp = this.setExpendEXP(expendVoucherApp.getAppNo());
+			expendDao.saveOrUpdate(voucherApp);
+			return voucherApp;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 查询申请人下的用于支出凭单申请未报销的申请
+	 */
+	@Override
+	public List<ComboBoxModel> findLoanByUserId() {
+		try {
+			List<String> appNos=new ArrayList<String>();
+			Integer userId=Constants.getCurrendUser().getUserId();
+			String sql="SELECT JK_APP_NO FROM t_oa_fd_expend_voucher_app WHERE APPLICANT_NO="+userId+" AND PROC_STATUS IN ('1','2')";
+			List list = expendDao.findBySQL(sql);
+			if(Collections.listIsNotEmpty(list) && StringUtils.isNotBlank(String.valueOf(list.get(0))) && list.get(0)!=null){
+				for(int i=0;i<list.size();i++){
+					Object obj=(Object)list.get(i);
+					String jkappNo=String.valueOf(obj);
+					if(obj!=null){
+						if(jkappNo.split(",").length==2){
+							return new ArrayList<ComboBoxModel>();
+						}else{
+							appNos.add(jkappNo);
+						}
+					}
+				}
+				if(appNos.size()==2){
+					return new ArrayList<ComboBoxModel>();
+				}
+				return loanAppService.findLoanApp(userId, "2", appNos.get(0));
+			}
+			
+			return loanAppService.findLoanApp(userId, "2", "");
+				
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<ComboBoxModel>();
+	}
+	
+	/**
+	 * 根据支出凭单申请编号查询借款申请
+	 */
+	@Override
+	public List<ComboBoxModel> findUserLoan(String appNo) {
+		try {
+			List<ComboBoxModel> comBoList = this.findLoanByUserId();
+			ExpendVoucherApp expendVoucherApp = this.findExpendAppNo(appNo);
+			//获得借款申请编号
+			String jkAppNo=expendVoucherApp.getJkAppNo();
+			if(StringUtils.isNotBlank(jkAppNo)){
+				String[] jAppNos = jkAppNo.split(",");
+				for (int i = 0; i < jAppNos.length; i++) {
+					LoanApp loanApp = loanAppService.findLoanByAppNo(jAppNos[i]);
+					String code=loanApp.getAppNo();
+					String text=String.valueOf(loanApp.getLoanAmt());
+					ComboBoxModel comboBoxModel=new ComboBoxModel(code, text);
+					comBoList.add(comboBoxModel);
+				}
+			}
+			return comBoList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<ComboBoxModel>();
+	}
+	
+	/**
+	 * 计算支出凭单的金额
+	 * @Title: setExpendEXP 
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ExpendVoucherApp
+	 * @date 2015年11月20日 上午11:14:58
+	 * @throws
+	 */
+	@Override
+	public ExpendVoucherApp setExpendEXP(String appNo) {
+		ExpendVoucherApp expendVoucherApp = this.findExpendAppNo(appNo);
+		//预借金额
+		BigDecimal grantExp =expendVoucherApp.getGrantExp();
+		//获取消费合计金额
+		BigDecimal total = expendVoucherApp.getTotal();
+		if(total==null){
+			//p判断合计金额为空
+			expendVoucherApp.setTotal(BigDecimal.valueOf(0));//合计金额
+			expendVoucherApp.setSupplyAmt(BigDecimal.valueOf(0));//补领金额
+			expendVoucherApp.setGivebackAmt(grantExp);//退换金额
+		}else if(grantExp.doubleValue()>total.doubleValue()){
+			//p判断预借金额大于合计金额为空
+			expendVoucherApp.setTotal(total);//合计金额
+			expendVoucherApp.setSupplyAmt(BigDecimal.valueOf(0));//补领金额
+			expendVoucherApp.setGivebackAmt(BigDecimal.valueOf(grantExp.doubleValue()-total.doubleValue()));//退换金额
+		}else if(grantExp.doubleValue()<total.doubleValue()){
+			//p判断预借金额小于合计金额为空
+			expendVoucherApp.setTotal(total);//合计金额
+			expendVoucherApp.setSupplyAmt(BigDecimal.valueOf(total.doubleValue()-grantExp.doubleValue()));//补领金额
+			expendVoucherApp.setGivebackAmt(BigDecimal.valueOf(0));//退换金额
+		}else{
+			//p判断预借金额等于合计金额为空
+			expendVoucherApp.setTotal(total);//合计金额
+			expendVoucherApp.setSupplyAmt(BigDecimal.valueOf(0));//补领金额
+			expendVoucherApp.setGivebackAmt(BigDecimal.valueOf(0));//退换金额
+		}
+		
+		return expendVoucherApp;
+	}
+	/**
+	 * 根据申请编号获得支出凭单申请
+	 * @Title: findExpendAppNo 
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ExpendVoucherApp
+	 * @date 2015年11月20日 上午11:16:29
+	 * @throws
+	 */
+	@Override
+	public ExpendVoucherApp findExpendAppNo(String appNo) {
+		String hql=" from ExpendVoucherApp where appNo='"+appNo+"' ";
+		List<ExpendVoucherApp> list = expendDao.find(hql);
+		if(list!=null && list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+	/**
+	 * 删除支出凭单
+	 */
+	@Override
+	public boolean deleteExpendVoucherApp(String appNo) {
+		try {
+			String sql="DELETE FROM t_oa_fd_expend_voucher_app WHERE APP_NO='"+appNo+"'";
+			expendDao.executeBySql(sql);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	/**
+	 * 更新申请状态
+	 */
+	@Override
+	public void updateAppStatus(Integer evaId, String appStatus) {
+		ExpendVoucherApp expendVoucherApp = expendDao.get(ExpendVoucherApp.class, evaId);
+		expendVoucherApp.setAppStatus(appStatus);
+		expendDao.saveOrUpdate(expendVoucherApp);
+	}
+
+	/**
+	 * 更新流程状态
+	 */
+	@Override
+	public void updateProcStatus(Integer evaId, String procStatus) {
+		ExpendVoucherApp expendVoucherApp = expendDao.get(ExpendVoucherApp.class, evaId);
+		expendVoucherApp.setProcStatus(procStatus);
+		expendDao.saveOrUpdate(expendVoucherApp);
+	}
+	
+	/**
+	 * 查询流程图
+	 */
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,
+			Integer evaId) {
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			String proDefKey = Constants.EXPENDVOUCHERAPP;
+			String imgName =Constants.EXPENDVOUCHERIMAGE;
+			
+			String businessKey = proDefKey + "." + evaId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+			ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+			// 获取当前执行任务流程
+			List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+			// 获取图片的流程图片名称
+			String resourceName = imgName + ".png";
+			// 获取图片的文件的流
+			in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+			// 获取图片对象
+			BufferedImage bimg;
+			bimg = ImageIO.read(in);
+			// 得到Graphics2D 对象
+			Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+			// 设置颜色和画笔粗细
+			g2d.setColor(Color.RED);
+			g2d.setStroke(new BasicStroke(3));
+			// 遍历执行的任务,画图
+			for (Task task : tasks) {
+				// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+				Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+				// 根据当前的执行对象的id获取正在执行的活动信息
+				ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+				// 绘制矩形
+				Rectangle2D rectangle = new Rectangle2D.Float(
+						activityImpl.getX(), activityImpl.getY(),
+						activityImpl.getWidth(), activityImpl.getHeight());
+				g2d.draw(rectangle);
+			}
+			// 写入response输出流中
+			ImageIO.write(bimg, "png", response.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	//----------------------------------------------------------流程------------------------------------------------------------------
+	
+	/**
+	 * 查看未完成的任务列表
+	 */
+	@Override
+	public List<ExpendVoucherApp> findExpendNotTaskList(Integer evaId) {
+		ExpendVoucherApp expendVoucherApp = expendDao.get(ExpendVoucherApp.class, evaId);
+		String hql="from ExpendVoucherApp where 1=1 and applicantNo="+expendVoucherApp.getApplicantNo()+" and procStatus='2' ";
+		List<ExpendVoucherApp> list = expendDao.find(hql);
+		if(list!=null && list.size()>0){
+			return list;
+		}else{
+			return null;
+		}
+	}
+	
+	/**
+	 * 提交申请
+	 */
+	@Override
+	public String addExpendTask(Integer evaId) {
+		try {
+			//查询未办理完成的任务，一个人只能提交一次申请，只有申请完成之后才能提交另一个申请
+			List<ExpendVoucherApp> list = this.findExpendNotTaskList(evaId);
+			if(Collections.listIsNotEmpty(list)){
+				return null;
+			}
+			
+			ExpendVoucherApp expendVoucherApp = expendDao.get(ExpendVoucherApp.class, evaId);
+			String proDefKey =Constants.EXPENDVOUCHERAPP;
+			// 定义businessKey
+			String businessKey = proDefKey + "." + evaId;
+			
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setBusinessID(evaId.toString());//业务ID
+			taskModel.setBusinessDefineKey(proDefKey);// 获取启动实例的key
+//			taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+			taskModel.setAppNo(expendVoucherApp.getAppNo());//编号
+			
+			Map<String,Object> var=new HashMap<String, Object>();
+			var.put(Constants.APPUSER, expendVoucherApp.getApplicantNo());
+			taskModel.setVariables(var);//提交人可能不是申请人
+			Map<String, Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+			
+			//更新申请时间
+			expendVoucherApp.setAppDate(new Date());
+			expendDao.saveOrUpdate(expendVoucherApp);
+			
+			//判断任务未结束
+			if(null != resultMap.get(Constants.STATUS_REF_ID) && StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+				this.updateAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新申请状态
+			}
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 查询任务列表
+	 */
+	@Override
+	public List<ExpendVoucherApp> findExpendAppTasKList(
+			ExpendVoucherApp expendVoucherApp, PageUtil pageUtil) {
+		try {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			Integer userId = Constants.getCurrendUser().getUserId();//登录人id
+			Role role = userService.findRoleListByUserId(userId).get(0);//获得角色
+			String deptLeave = organizationService.findOrgDeptLevelByUserID(userId);//获取总部，分部
+			
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setProcessKey(expendVoucherApp.getDefinitionKey());
+			List<WorkFlowTasksModel> workList = workFlowTaskService.findAcceptTaskByGroup(taskModel);
+			if(null == workList || workList.size() == 0)return new ArrayList<ExpendVoucherApp>();
+			
+			StringBuffer sql = this.getExpendBySQL();
+			sql.append(" AND ex.EVA_ID IN ("+getTaskPPEids(workList)+")");
+			if(StringUtils.isNotBlank(expendVoucherApp.getAppNo())){
+				sql.append(" AND ex.APP_NO='"+expendVoucherApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateS())){
+					sql.append(" AND ex.APP_DATE >='" + expendVoucherApp.getAppDateS()+"' ") ;  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateE())){
+					sql.append(" AND ex.APP_DATE <='" + expendVoucherApp.getAppDateE()+"' ") ;  //申请结束日期
+				}
+			}
+			sql.append(" ORDER BY ex.EVA_ID DESC ");
+			
+			List<Object> list = expendDao.findBySql(sql.toString(), pageUtil);
+			List<ExpendVoucherApp> expendLIst=new ArrayList<ExpendVoucherApp>();
+			if(Collections.listIsNotEmpty(list)){
+				for (WorkFlowTasksModel wl : workList) {
+					ExpendVoucherApp voucherApp=new ExpendVoucherApp();
+					for(int i=0;i<list.size();i++){
+						Object[] obj = (Object[]) list.get(i);
+						ExpendVoucherApp app= (ExpendVoucherApp) voucherApp.clone();
+						app.setEvaId(obj[0] == null?0:(Integer)obj[0]);//申请id
+						app.setAppNo(obj[1] == null?"":String.valueOf(obj[1]));//申请编号
+						app.setApplicantNo(obj[2] == null?0:(Integer)obj[2]);//申请人id
+						app.setApplicationName(obj[3] == null?"":String.valueOf(obj[3]));//申请人名字
+						app.setAppDate(obj[4] == null?null:sdf.parse(String.valueOf(obj[4])));//申请日期
+						app.setAppStatus(obj[5] == null?"":String.valueOf(obj[5]));//申请状态
+						app.setClause(obj[6] == null?"":String.valueOf(obj[6]));//即付款项
+						app.setTotal((BigDecimal) (obj[7] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[7])).doubleValue())));//合计金额
+						app.setGrantExp((BigDecimal) (obj[8] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[8])).doubleValue())));//预借金额
+						app.setSupplyAmt((BigDecimal) (obj[9] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[9])).doubleValue())));//补领金额
+						app.setGivebackAmt((BigDecimal) (obj[10] == null?BigDecimal.valueOf(0):BigDecimal.valueOf(Double.valueOf(String.valueOf(obj[10])).doubleValue())));//退还金额
+						app.setProcStatus(obj[11] == null?"":String.valueOf(obj[11]));//流程状态
+						app.setRemark(obj[12] == null?"":String.valueOf(obj[12]));//备注
+						app.setJkAppNo(obj[13] == null?"":String.valueOf(obj[13]));//借款编号
+						
+						//添加任务信息
+						if( Integer.valueOf(wl.getBusinessID()).intValue() == app.getEvaId().intValue() ){
+							app.setTaskModel(wl);
+							app.setTaskID(wl.getTaskID());
+							app.setAssistant(wl.getAssistant());
+							app.setFormKey(wl.getFormKey());
+						}
+						expendLIst.add(app);
+					}
+				}
+				
+			}
+			return expendLIst;
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return new ArrayList<ExpendVoucherApp>();
+	}
+
+	
+	//获取task中工牌申请表的id集合
+	private String getTaskPPEids(List<WorkFlowTasksModel> workList){
+		String ids = "";
+		for (WorkFlowTasksModel workFlowTasksModel : workList) {
+			ids+=workFlowTasksModel.getBusinessID()+",";
+		}
+		if(ids.length()>0){
+			ids = ids.substring(0, ids.length()-1);
+		}
+		return ids;
+	}
+
+	/**
+	 * 查询任务列表总数据
+	 */
+	@Override
+	public Long findExpendTaskCount(ExpendVoucherApp expendVoucherApp) {
+		try {
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setProcessKey(expendVoucherApp.getDefinitionKey());
+			List<WorkFlowTasksModel> workList = workFlowTaskService.findAcceptTaskByGroup(taskModel);
+			if(null == workList || workList.size() == 0)return 0L;
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT COUNT(*) FROM t_oa_fd_expend_voucher_app ex WHERE 1=1 ");
+			sql.append(" AND ex.EVA_ID IN ("+getTaskPPEids(workList)+")");
+			if(StringUtils.isNotBlank(expendVoucherApp.getAppNo())){
+				sql.append(" AND ex.APP_NO='"+expendVoucherApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateS())){
+					sql.append(" AND ex.APP_DATE >='" + expendVoucherApp.getAppDateS()+"' ") ;  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(expendVoucherApp.getAppDateE())){
+					sql.append(" AND ex.APP_DATE <='" + expendVoucherApp.getAppDateE()+"' ") ;  //申请结束日期
+				}
+			}
+			Long count = expendDao.findTotalCount(sql.toString());
+			return count;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+
+	/**
+	 * 个人领取任务
+	 */
+	@Override
+	public void getUserTravelTask(String taskId) throws ActivitiTaskAlreadyClaimedException{
+		//领取人id
+		Integer userId=Constants.getCurrendUser().getUserId();
+		this.taskService.claim(taskId, String.valueOf(userId));
+	}
+
+	/**
+	 * 个人任务办理
+	 */
+	@Override
+	public String saveSubmitTask(WorkFlowTasksModel taskModel) {
+		try {
+			Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+			if(StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+				this.updateAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+			}
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	//更新用于差旅费报销申请的借款申请
+	@Override
+	public void updateLoanApp(Integer evaId) {
+		try {
+			ExpendVoucherApp expendVoucherApp = expendDao.get(ExpendVoucherApp.class, evaId);
+			String jkAppNo = expendVoucherApp.getJkAppNo();
+			if(StringUtils.isNotBlank(jkAppNo)){
+				String[] jks = jkAppNo.split(",");
+				for (String jk : jks) {
+					loanAppService.updateLoanBalance(jk);
+				}
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+
+	
+	
+	
+	
+}

@@ -1,0 +1,286 @@
+package com.oasys.controller;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.oasys.model.AuditProcHis;
+import com.oasys.model.OvertimeApp;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.OvertimeAppService;
+import com.oasys.util.Constants;
+import com.oasys.util.DateUtils;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.GridModel;
+import com.oasys.viewModel.Json;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+@Controller
+public class OvertimeControoler extends BaseController{
+	@Autowired
+	private OvertimeAppService overtimeAppService;
+	@Autowired
+	private OrganizationService organizationService;
+	/**
+	 * 展示数据
+	 * @Title: index 
+	 * @Description: 展示数据
+	 * @param @param request
+	 * @param @param response
+	 * @param @param page
+	 * @param @param rows
+	 * @param @return
+	 * @author Guo
+	 * @return String
+	 * @date 2015年10月27日 下午3:25:54
+	 * @throws
+	 */
+	@RequestMapping(value="/overtime/index")
+	public String index(HttpServletRequest request,HttpServletResponse response,Integer page,Integer rows){
+		GridModel gridModel = new GridModel();
+		PageUtil pageUtil = new PageUtil(page,rows);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("status", request.getParameter("procStatus"));
+		map.put("dateBegin", request.getParameter("appDateBefore"));
+		map.put("dateEnd", request.getParameter("appDateAfter"));
+		gridModel.setRows(overtimeAppService.getList(map, pageUtil,1));//0查询所有人的申请,1查询登录人申请
+		gridModel.setTotal(overtimeAppService.getCount(map,1));
+		OutputJson(response,gridModel);
+		return null;
+	}
+	
+	/**
+	 * 添加数据
+	 * @Title: addOvertime 
+	 * @Description: 添加数据
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @author Guo
+	 * @return String
+	 * @date 2015年10月27日 下午7:50:47
+	 * @throws
+	 */
+	@RequestMapping(value="/overtime/addOvertime")
+	public String addOvertime(HttpServletRequest request,HttpServletResponse response){
+		DecimalFormat df=new DecimalFormat("#.0");
+		long diff=DateUtils.parse(request.getParameter("planEdDtime")).getTime()-DateUtils.parse(request.getParameter("planBgDtime")).getTime();
+		long day = diff / (24 * 60 * 60 * 1000);//天数
+        long hour = (diff / (60 * 60 * 1000) - day * 24);//小时数
+		long diffreal=DateUtils.parse(request.getParameter("realEdDtime")).getTime()-DateUtils.parse(request.getParameter("realBgDtime")).getTime();
+		long dayreal = diffreal/ (24 * 60 * 60 * 1000);
+		long hourreal=(diffreal / (60 * 60 * 1000) - dayreal * 24);
+//		String minreal = df.format(((diffreal / (60 * 1000)) - dayreal * 24 * 60 - hourreal * 60));
+		
+		
+		OvertimeApp overtimeApp = new OvertimeApp();
+		if(request.getParameter("oveId")!=null && !"".equals(request.getParameter("oveId"))){
+			overtimeApp.setOveId(Integer.parseInt(request.getParameter("oveId")));
+		}
+		overtimeApp.setAppNo(UniqueIdUtil.generate("JB"));
+		overtimeApp.setAppDate(DateUtils.parse(DateUtils.getNowTime()));
+		overtimeApp.setApplicantNo(Constants.getCurrendUser().getUserId() );
+		overtimeApp.setDeptNo(organizationService.findOrganizationByUserId(Constants.getCurrendUser().getUserId()).getOrganizationId());
+		overtimeApp.setPosition(organizationService.findOrganizationByUserId(Constants.getCurrendUser().getUserId()).getFullName());
+		overtimeApp.setPlanBgDtime(DateUtils.parse(request.getParameter("planBgDtime")));
+		overtimeApp.setPlanEdDtime(DateUtils.parse(request.getParameter("planEdDtime")));
+		overtimeApp.setPlanOtCnt(Double.parseDouble(df.format(Double.parseDouble(hour+""))));//计算计划加班小时数
+		overtimeApp.setRealBgDtime(DateUtils.parse(request.getParameter("realBgDtime")));
+		overtimeApp.setRealEdDtime(DateUtils.parse(request.getParameter("realEdDtime")));
+		overtimeApp.setRealOtCnt(Double.parseDouble(df.format(Double.parseDouble(hourreal+""))));//计算实际加班小时数
+//		overtimeApp.setRealOtCnt(Double.parseDouble(df.format(Double.parseDouble((dayreal*24+hourreal+Double.parseDouble(minreal)/60)+""))));//取小数点后一位  计算加班小时数+分钟数
+		//加班小时数大于3等于3小时小于6小时加班天数为0.5天
+		if(hour>=3 && hour<6){
+			overtimeApp.setRealOtDays(Double.parseDouble(df.format(0.5)));//实际加班天数
+			overtimeApp.setRealAllocateDays(Double.parseDouble(df.format(0.5)));//实际可调配天数
+		}else if(hour>=6){//加班小时数大于等于6小时为1天
+			overtimeApp.setRealOtDays(Double.parseDouble(df.format(1)));//实际加班天数
+			overtimeApp.setRealAllocateDays(Double.parseDouble(df.format(1)));//实际可调配天数
+		}
+		overtimeApp.setProcStatus(1);
+		overtimeApp.setRemark(request.getParameter("remark"));
+		boolean flag=overtimeAppService.saveOvertime(overtimeApp);
+		if(flag){
+	 		 OutputJson2(response,new Json("提示","添加申请成功!",flag));
+		}else {
+	 		 OutputJson2(response,new Json("提示","添加申请失败!",flag));
+		}
+		return null;
+	}
+	
+	/**
+	 * 删除数据
+	 * @Title: removeOvertime 
+	 * @Description: 删除数据
+	 * @param @param request
+	 * @param @param response
+	 * @param @return
+	 * @author Guo
+	 * @return String
+	 * @date 2015年10月27日 下午7:50:56
+	 * @throws
+	 */
+	@RequestMapping(value="/overtime/removeOvertime")
+	public String removeOvertime(HttpServletRequest request,HttpServletResponse response){
+		boolean flag=overtimeAppService.delOvertime(Integer.parseInt(request.getParameter("id")));
+		if(flag){
+	 		 OutputJson2(response,new Json("提示","删除申请成功!",flag));
+		}else {
+	 		 OutputJson2(response,new Json("提示","删除申请失败!",flag));
+		}
+		return null;
+	}
+	
+	/**
+	 * 提交申请
+	 * @Title: saveCardApply 
+	 * @Description: 提交申请
+	 * @param @param id
+	 * @param @param response
+	 * @param @return
+	 * @author Guo
+	 * @return String
+	 * @date 2015年10月28日 下午2:48:37
+	 * @throws
+	 */
+	@RequestMapping(value="/overtime/saveOvertimeApply")
+	public String saveCardApply(@RequestParam("id")String id,HttpServletResponse response){
+		boolean isSuccess = true;
+		String resultStr = "";
+		try {
+			resultStr = overtimeAppService.submitCardApply(Integer.parseInt(id));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(e.toString());
+			isSuccess = false;
+		}
+		Json json = StringUtils.isBlank(resultStr)?getMessage(isSuccess):new Json("提示", resultStr, true);
+		OutputJson(response,json);
+		return null;
+	}
+	
+	/**
+	 * 查看待办任务
+	 * @Title: findAllPurchaseAppTaskList 
+	 * @Description: 查看待办任务
+	 * @param @param httpServletResponse
+	 * @param @param page
+	 * @param @param rows
+	 * @param @return
+	 * @author Guo
+	 * @return String
+	 * @date 2015年10月28日 下午3:30:48
+	 * @throws
+	 */
+	@RequestMapping(value="/overtie/QueryOvertimeTask",method=RequestMethod.POST)
+	 public String findAllPurchaseAppTaskList(HttpServletResponse httpServletResponse,Integer page,Integer rows,WorkFlowTasksModel workFlowTasksModel){
+	    	Integer firstResult = (page-1)*rows;
+	        Integer maxResults = rows;
+	        GridModel gridModel = new GridModel();
+	        gridModel.setRows(overtimeAppService.getTaskByGroup(firstResult,maxResults,workFlowTasksModel));
+	        OutputJson(httpServletResponse, gridModel);
+	    	return null;
+	  }
+	
+	/**
+	 * 查看流程图
+	 * @Title: showProcessImg 
+	 * @Description: 查看流程图
+	 * @param @param response
+	 * @param @param caId
+	 * @param @return
+	 * @author Guo
+	 * @return String
+	 * @date 2015年10月28日 下午5:02:15
+	 * @throws
+	 */
+	 @RequestMapping(value="/overtime/showProcessImg",method=RequestMethod.GET)
+	 public String showProcessImg(HttpServletResponse response,Integer oveId){
+		 overtimeAppService.getDiagramResourceByCaId(response, oveId);
+	    return null;
+	 }
+	 
+	 /**
+	  * 办理任务
+	  * @Title: handleTast 
+	  * @Description: 办理任务
+	  * @param @param taskId
+	  * @param @param handleResult
+	  * @param @param cardAppVO
+	  * @param @param auditProcHis
+	  * @param @param result
+	  * @param @param paId
+	  * @param @param httpServletResponse
+	  * @param @return
+	  * @author Guo
+	  * @return String
+	  * @date 2015年10月28日 下午7:02:35
+	  * @throws
+	  */
+//	 @RequestMapping(value="/overtime/handleTask",method=RequestMethod.POST)
+//	 public String handleTast(String taskId,String handleResult,CardAppVO cardAppVO,AuditProcHis auditProcHis,String result,String paId,HttpServletResponse httpServletResponse){
+//		 boolean flag=overtimeAppService.handleTask(taskId,result,cardAppVO,auditProcHis,paId);
+//	     OutputJson2(httpServletResponse, getMessage(flag));
+//	     return null;
+//	  }
+	 
+	 @ResponseBody
+	 @RequestMapping(value="/overtime/handleTask",method=RequestMethod.POST)
+	public String saveTaskEmpSalPositionChgApp(HttpServletRequest httpRequest,HttpServletResponse httpServletResponse, @ModelAttribute("taskModel") WorkFlowTasksModel taskModel,  BindingResult bindingResult) {
+		boolean saveSuccess = true;
+		String resultStr = "";
+		try {
+			resultStr = overtimeAppService.saveSubmitTask(taskModel);//执行受理申请
+		} catch (Exception e) {
+			e.printStackTrace();
+			saveSuccess = false;
+		}
+		Json json = StringUtils.isBlank(resultStr)?getMessage(saveSuccess):new Json("提示", resultStr, true);
+		OutputJson(httpServletResponse, json);
+		return null;
+	}
+	 
+	 /**
+	  * 加班确认
+	  * @Title: confirmOvertimeApp 
+	  * @Description: 加班确认
+	  * @param @param taskId
+	  * @param @param handleResult
+	  * @param @param auditProcHis
+	  * @param @param result
+	  * @param @param oveId
+	  * @param @param httpServletResponse
+	  * @param @param status
+	  * @param @return
+	  * @author Guo
+	  * @return String
+	  * @date 2015年11月17日 上午11:27:47
+	  * @throws
+	  */
+	 @RequestMapping(value="/overtime/handleTaskConfirmApp",method=RequestMethod.POST)
+	 public String confirmOvertimeApp(String taskId,String handleResult,AuditProcHis auditProcHis,String result,String oveId,HttpServletResponse httpServletResponse,String status){
+		boolean flag=overtimeAppService.saveSubmitConfirmOvertimeApp(taskId,result,auditProcHis,oveId);
+		Json json = null;
+		if(flag){
+			json = new Json("提示", "已将任务提交到【人事专员】流程节点进行审核", true);
+		}else{
+			json = new Json("提示", "提交失败了", true);
+		}
+		OutputJson(httpServletResponse, json);
+		return null;
+	 }
+}

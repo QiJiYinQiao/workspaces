@@ -1,0 +1,262 @@
+package com.oasys.service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
+
+import com.oasys.model.BusinessTripAttach;
+import com.oasys.model.ExpendVoucherApp;
+import com.oasys.model.TravelExpensesApp;
+import com.oasys.model.TravelExpensesOther;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.ComboBoxModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+
+/**
+ * 支出凭单申请
+ * @author Administrator
+ *
+ */
+public interface ExpendVoucherAppService extends WorkFlowBaseService
+{	
+	/**
+	 * 查询支出凭单列表
+	 * @Title: findExpendVoucherAppList 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @param pageUtil
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ExpendVoucherApp>
+	 * @date 2015年11月19日 下午8:38:00
+	 * @throws
+	 */
+	List<ExpendVoucherApp> findExpendVoucherAppList(ExpendVoucherApp  expendVoucherApp ,PageUtil pageUtil);
+	/**
+	 * 查询列表sql语句
+	 * @Title: getExpendBySQL 
+	 * @Description: TODO
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return StringBuffer
+	 * @date 2015年11月19日 下午8:45:59
+	 * @throws
+	 */
+	StringBuffer getExpendBySQL();
+	/**
+	 * 查询支出凭单数量
+	 * @Title: findExpendCount 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return Long
+	 * @date 2015年11月20日 上午9:55:56
+	 * @throws
+	 */
+	Long findExpendCount(ExpendVoucherApp  expendVoucherApp );
+	
+	/**
+	 * 查询申请人下的借款申请
+	 * @Title: findLoanByUserId 
+	 * @Description: TODO
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ComboBoxModel>
+	 * @date 2015年11月26日 上午10:22:16
+	 * @throws
+	 */
+	List<ComboBoxModel> findLoanByUserId();
+	/**
+	 * 根据申请编号 查询该申请下的借款申请
+	 * @Title: findUserLoan 
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ComboBoxModel>
+	 * @date 2015年11月26日 上午10:30:07
+	 * @throws
+	 */
+	List<ComboBoxModel> findUserLoan(String appNo);
+	
+	
+	/**
+	 * 设置金额
+	 * @Title: setExpendEXP 
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ExpendVoucherApp
+	 * @date 2015年11月20日 上午11:13:46
+	 * @throws
+	 */
+	ExpendVoucherApp setExpendEXP(String appNo);
+	/**
+	 * 根据申请编号获得支出凭单申请
+	 * @Title: findExpendAppNo 
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ExpendVoucherApp
+	 * @date 2015年11月20日 上午11:15:45
+	 * @throws
+	 */
+	ExpendVoucherApp findExpendAppNo(String appNo);
+	/**
+	 * 保存或更新支出凭单
+	 * @Title: saveOrUpdExpend 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ExpendVoucherApp
+	 * @date 2015年11月20日 上午10:48:17
+	 * @throws
+	 */
+	ExpendVoucherApp saveOrUpdExpend(ExpendVoucherApp expendVoucherApp);
+	/**
+	 * 根据申请编号删除支出凭单申请
+	 * @Title: deleteExpendVoucherApp 
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return boolean
+	 * @date 2015年11月20日 上午11:57:18
+	 * @throws
+	 */
+	boolean deleteExpendVoucherApp(String appNo);
+	/**
+	 * 更新申请状态
+	 * @Title: updateAppStatus 
+	 * @Description: TODO
+	 * @param @param evaId
+	 * @param @param appStatus
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月23日 上午10:19:34
+	 * @throws
+	 */
+	void updateAppStatus(Integer evaId,String appStatus);
+	/**
+	 * 更新流程状态
+	 * @Title: updateProcStatus 
+	 * @Description: TODO
+	 * @param @param evaId
+	 * @param @param procStatus
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月23日 上午10:20:08
+	 * @throws
+	 */
+	void updateProcStatus(Integer evaId,String procStatus);
+	/**
+	 * 查询流程图
+	 * @Title: getDiagramResourceByPaId 
+	 * @Description: TODO
+	 * @param @param response
+	 * @param @param teaId
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月23日 上午11:18:15
+	 * @throws
+	 */
+	void getDiagramResourceByPaId(HttpServletResponse response,
+			Integer evaId);
+	
+	
+	//--------------------------------------------------流程----------------------------------------------------------------------
+	
+	/**
+	 * 查询未完成的支出凭单申请任务
+	 * @Title: findExpendNotTaskList 
+	 * @Description: TODO
+	 * @param @param evaId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ExpendVoucherApp>
+	 * @date 2015年11月23日 下午1:48:21
+	 * @throws
+	 */
+	List<ExpendVoucherApp> findExpendNotTaskList(Integer evaId);
+	/**
+	 * 提交申请
+	 * @Title: addExpendTask 
+	 * @Description: TODO
+	 * @param @param evaId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年11月23日 上午10:13:27
+	 * @throws
+	 */
+	String addExpendTask(Integer evaId);
+	
+	/**
+	 * 查询个人任务列表
+	 * @Title: findExpendAppTasKList 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @param pageUtil
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return List<ExpendVoucherApp>
+	 * @date 2015年11月23日 上午10:31:09
+	 * @throws
+	 */
+	List<ExpendVoucherApp> findExpendAppTasKList(ExpendVoucherApp expendVoucherApp ,PageUtil pageUtil);
+	/**
+	 * 查询任务总数量
+	 * @Title: findExpendTaskCount 
+	 * @Description: TODO
+	 * @param @param expendVoucherApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return Long
+	 * @date 2015年11月23日 上午10:44:17
+	 * @throws
+	 */
+	Long findExpendTaskCount(ExpendVoucherApp expendVoucherApp);
+	/**
+	 * 个人领取任务
+	 * @Title: getUserTravelTask 
+	 * @Description: TODO
+	 * @param @param taskId
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月23日 上午11:02:14
+	 * @throws
+	 */
+	void getUserTravelTask(String taskId)throws ActivitiTaskAlreadyClaimedException;
+	/**
+	 * 个人任务办理
+	 * @Title: saveSubmitTask 
+	 * @Description: TODO
+	 * @param @param taskModel
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年11月23日 上午11:03:28
+	 * @throws
+	 */
+	String saveSubmitTask(WorkFlowTasksModel taskModel);
+	/**
+	 * 更改报销状态
+	 * @Title: updateLoanApp 
+	 * @Description: TODO
+	 * @param @param evaId
+	 * @author WANGXINCHENG
+	 * @return void
+	 * @date 2015年11月23日 下午12:00:47
+	 * @throws
+	 */
+	 void updateLoanApp(Integer evaId);
+	
+}

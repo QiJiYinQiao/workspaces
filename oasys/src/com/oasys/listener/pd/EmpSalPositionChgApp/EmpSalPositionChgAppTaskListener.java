@@ -1,0 +1,176 @@
+package com.oasys.listener.pd.EmpSalPositionChgApp;
+
+import java.util.List;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.context.ContextLoader;
+
+import com.oasys.listener.BaseTaskListener;
+import com.oasys.model.EmpSalPositionChgApp;
+import com.oasys.model.Role;
+import com.oasys.service.EmpSalPositionChgAppService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+
+/**
+ * @Creater lida
+ * @File_Name EmpSalPositionChgAppTaskListener.java
+ * @Version v1.0
+ * @Creation_Date 2015年10月27日 
+ * @Modifier
+ * @Modified_Date
+ * @Description 流程运行时的监听器
+ */
+public class EmpSalPositionChgAppTaskListener extends BaseTaskListener implements TaskListener{
+	
+	private static final long serialVersionUID = -344720324571393495L;
+
+	@Override
+	public void notify(DelegateTask task) {
+		switch (task.getTaskDefinitionKey()) {
+			//调入直属上级
+			case Constants.PD_ROLE_CODE_CALLBACK_DIRECT_SUPERIOR:
+				setDirectSuperiorTaskGroup(task,0);
+				break;
+			//调出直属上级
+			case Constants.PD_ROLE_CODE_CALLUP_DIRECT_SUPERIOR:
+				setDirectSuperiorTaskGroup(task,1);
+				break;
+			//调入部门对接主管
+			case Constants.PD_ROLE_CODE_CALLBACK_BUTTJOINTCHARGE:
+				setButtJointCharge(task,0,Constants.PD_ROLE_CODE_BUTTJOINTCHARGE);
+				break;
+			//调出部门对接主管
+			case Constants.PD_ROLE_CODE_CALLUP_BUTTJOINTCHARGE:
+				setButtJointCharge(task,1,Constants.PD_ROLE_CODE_BUTTJOINTCHARGE);
+				break;	
+			//调入中心负责人	
+			case Constants.PD_ROLE_CODE_CALLBACK_CENTRECHIEFIN_DIRECTOR:
+				setBackUpRoleCode(task,0,Constants.PD_ROLE_CODE_CENTRECHIEFIN_DIRECTOR);
+				break;
+			//调出中心负责人	
+			case Constants.PD_ROLE_CODE_CALLUP_CENTRECHIEFIN_DIRECTOR:
+				setBackUpRoleCode(task,1,Constants.PD_ROLE_CODE_CENTRECHIEFIN_DIRECTOR);
+				break;
+			//调入部门经理
+			case Constants.PD_ROLE_CODE_CALLBACK_DIVISION_JL:
+				setBackUpRoleCode(task,0,Constants.OA_ROLE_CODE_DEPARTMENTHEADS);
+				break;
+			//调出部门经理
+			case Constants.PD_ROLE_CODE_CALLUP_DIVISION_JL:
+				setBackUpRoleCode(task,1,Constants.OA_ROLE_CODE_DEPARTMENTHEADS);
+				break;
+			//调入部门主管
+			case Constants.PD_ROLE_CODE_CALLBACK_DIVISION:
+				setBackUpRoleCode(task,0,Constants.HR_ROLE_CODE_DIVISION);
+				break;
+			//调出部门主管
+			case Constants.PD_ROLE_CODE_CALLUP_DIVISION:
+				setBackUpRoleCode(task,1,Constants.HR_ROLE_CODE_DIVISION);
+				break;
+			default:
+				if(task.getTaskDefinitionKey().startsWith(Constants.APPLY_FOR_ADJUSTMENT)){
+					if(null != task.getVariable(Constants.CURRENT_USER_KEY))
+						task.setAssignee(task.getVariable(Constants.CURRENT_USER_KEY).toString());//申请调整时 将任务指定回提交申请人
+				}else{
+					setTaskRoleCodeByTask(task);
+				}
+			break;
+		}
+	}
+
+	/***
+	 * 处理调出直属上级 调入直属上级方法
+	 * @param task 节点对象
+	 * @param type 类型 0为调入方 1为调出方
+	 */
+	protected void setDirectSuperiorTaskGroup(DelegateTask task,Integer type) {
+		webContext = ContextLoader.getCurrentWebApplicationContext();
+		EmpSalPositionChgAppService empService = (EmpSalPositionChgAppService) webContext.getBean("empSalPositionChgAppService");
+		EmpSalPositionChgApp empSal = empService.getEmpSalPositionByID(Integer.valueOf(task.getVariable(Constants.CURRENT_BUSINESS_ID).toString()));//获取异动信息
+		String[] roleIDs = null;
+		String taskGroupCode = "";
+		switch (type) {
+		case 0:
+			roleIDs = empSal.getAftPosition().split(",") ;//获取调入方 角色ids
+			break;
+		case 1:
+			roleIDs = empSal.getCurPosition().split(",");//获取调出方 角色ids
+			break;
+		default:
+			roleIDs = null;
+			break;
+		}
+		for (String roleID : roleIDs) {
+			Role role = roleService.findRoleByRoleId(Integer.valueOf(roleID));//获取角色
+			if(role.getPid() != null){
+				role = roleService.findRoleByRoleId(role.getPid());//获取角色直属上级
+				String orgRoleCode = taskRoleService.getOrgIdRoleByDefKeyByUser(task.getVariable(Constants.CURRENT_USER_KEY).toString(), role.getRoleCode());//获取直属上级的roleCode
+				if(StringUtils.isNotBlank(orgRoleCode)){
+					taskGroupCode = orgRoleCode;
+					break;
+				}
+			}
+		}
+		setTaskGroupOrVariables(task,taskGroupCode);//调用设置候选组方法
+	}
+
+	/***
+	 * 处理调入调出对接主管方法
+	 * @param task 节点对象
+	 * @param type 类型 0为调入方 1为调出方
+	 */
+	protected void setButtJointCharge(DelegateTask task,Integer type,String roleCode){
+		List<String> userIdList = userService.getUserIdsByOrgAndRoleOrg(getDeptNoByType(task,type).toString(),roleCode);
+		//如果定制区域候选用户找不到 则进行跳转流程操作
+		if(Collections.listIsEmpty(userIdList)){
+			String result = Constants.TASK_COMMIT_RESULT;//默认执行通过操作
+			//获取task节点的formKeyJson获取通过表达式的值
+			if(StringUtils.isNotBlank(task.getFormKey()) && task.getFormKey().indexOf("?") > 0){
+				WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+				taskModel.setFormKey(task.getFormKey());
+				taskModel.setTaskID(task.getId());
+				result = workFlowTaskService.getResultByFormKey(taskModel,task.getVariable(Constants.CURRENT_USER_KEY).toString());
+			}
+			task.setVariable(Constants.RCN_RESULT, result);//设置跳转流程变量
+		}else{
+			task.removeVariable(Constants.RCN_RESULT);//移除跳转流程变量
+			task.addCandidateUsers(userIdList);//添加候选人
+		}
+	}
+	
+	/***
+	 * 处理调入调出角色方法
+	 * @param task 节点对象
+	 * @param type 类型 0为调入方 1为调出方
+	 * @param roleType 角色类型 传递常量类中配置的角色编码
+	 */
+	protected void setBackUpRoleCode(DelegateTask task,Integer type,String roleCode){
+		String taskGroupCode="";//候选组code
+		//获取调入 或调出部门 中心负责人所在中心的部门ID
+		String orgID = taskRoleService.getOrgIdRoleByDefKeyByOrg(getDeptNoByType(task,type).toString(),roleCode);
+		if(StringUtils.isNotBlank(orgID)){
+			taskGroupCode = roleCode+"."+orgID;
+		}
+		setTaskGroupOrVariables(task,taskGroupCode);
+	}
+	
+	
+	//根据类型获取调入部门或调出部门 0为调入 1为调出
+	protected Integer getDeptNoByType(DelegateTask task,Integer type){
+		webContext = ContextLoader.getCurrentWebApplicationContext();
+		EmpSalPositionChgAppService empService = (EmpSalPositionChgAppService) webContext.getBean("empSalPositionChgAppService");
+		EmpSalPositionChgApp empSal = empService.getEmpSalPositionByID(Integer.valueOf(task.getVariable(Constants.CURRENT_BUSINESS_ID).toString()));//获取异动信息
+		Integer deptNo;//部门ID
+		if(type == 0){
+			deptNo = empSal.getAftDeptNo();//调入部门
+		}else{
+			deptNo = empSal.getCurDeptNo();//调出部门
+		}
+		return deptNo;
+	} 
+}

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="CallingCard" name="名片申请(总部)" isExecutable="true">
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[start]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="DepartmentPerson" name="部门经理" activiti:formKey="jsp/ad/callingCard/hoForm/bmfzrForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[DepartmentHeads]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="StartApply" name="提交申请" sourceRef="startevent1" targetRef="DepartmentPerson">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow4" sourceRef="DepartmentPerson" targetRef="exclusivegateway2"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <userTask id="TransferApply" name="申请调整" activiti:assignee="${curUserId}" activiti:formKey="jsp/ad/callingCard/hoForm/sqtzForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[XingZhengQianTai]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="DepartmentPersonApplyReject" name="部门负责人审批驳回" sourceRef="exclusivegateway2" targetRef="TransferApply">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="DepartmentPersonApplyReject"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="AdministrationManagerRejectApply" name="行政经理申请驳回" sourceRef="exclusivegateway3" targetRef="TransferApply">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[reject]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="AdministrationManagerRejectApply"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="AdminPerson" name="行政专员" activiti:formKey="jsp/ad/callingCard/hoForm/xzzyForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[XingZhengZhuanYuan]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="PublicityCenter" name="企业宣传管理中心" activiti:formKey="jsp/ad/callingCard/hoForm/qyxcglzxForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[QiXuanZhuanYuan]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="AdministrationManagerSuccess" name="行政经理申请通过" sourceRef="exclusivegateway3" targetRef="PublicityCenter">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="AdministrationManagerSuccess"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="PublicityCenterSuccess" name="企业宣传管理中心通过" sourceRef="PublicityCenter" targetRef="AdminPerson">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="PublicityCenterSuccess"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow20" sourceRef="TransferApply" targetRef="exclusivegateway5"></sequenceFlow>
+    <sequenceFlow id="DepartmentPersonAlignApply" name="重新申请" sourceRef="exclusivegateway5" targetRef="DepartmentPerson">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[start]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="DepartmentPersonAlignApply"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="AdministrationManager" name="行政经理" activiti:formKey="jsp/ad/callingCard/hoForm/xzjlForm.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[ExecutiveManager]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow21" sourceRef="AdministrationManager" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="DepartmentPersonSuccess" name="部门负责人审批通过" sourceRef="exclusivegateway2" targetRef="AdministrationManager">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="DepartmentPersonSuccess"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="AdminPersonSuccess" name="行政专员通过" sourceRef="AdminPerson" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[end]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="AdminPersonSuccess"}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="DepartmentPersonTransferApply" name="申请撤销" sourceRef="exclusivegateway5" targetRef="endevent1">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStatusListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[cancel]]></activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="DepartmentPersonTransferApply"}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_CallingCard">
+    <bpmndi:BPMNPlane bpmnElement="CallingCard" id="BPMNPlane_CallingCard">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="330.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DepartmentPerson" id="BPMNShape_DepartmentPerson">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="400.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="TransferApply" id="BPMNShape_TransferApply">
+        <omgdc:Bounds height="55.0" width="105.0" x="148.0" y="243.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AdminPerson" id="BPMNShape_AdminPerson">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="600.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PublicityCenter" id="BPMNShape_PublicityCenter">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="500.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="60.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AdministrationManager" id="BPMNShape_AdministrationManager">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="320.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="330.0" y="690.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="StartApply" id="BPMNEdge_StartApply">
+        <omgdi:waypoint x="347.0" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="160.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="350.0" y="129.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="347.0" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DepartmentPersonApplyReject" id="BPMNEdge_DepartmentPersonApplyReject">
+        <omgdi:waypoint x="327.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="253.0" y="270.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="253.0" y="279.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="AdministrationManagerRejectApply" id="BPMNEdge_AdministrationManagerRejectApply">
+        <omgdi:waypoint x="327.0" y="420.0"></omgdi:waypoint>
+        <omgdi:waypoint x="202.0" y="419.0"></omgdi:waypoint>
+        <omgdi:waypoint x="200.0" y="298.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="96.0" x="221.0" y="431.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="AdministrationManagerSuccess" id="BPMNEdge_AdministrationManagerSuccess">
+        <omgdi:waypoint x="347.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="500.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="96.0" x="352.0" y="454.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="PublicityCenterSuccess" id="BPMNEdge_PublicityCenterSuccess">
+        <omgdi:waypoint x="347.0" y="555.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="600.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="352.0" y="558.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="148.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="100.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DepartmentPersonAlignApply" id="BPMNEdge_DepartmentPersonAlignApply">
+        <omgdi:waypoint x="80.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="295.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="110.0" y="191.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="347.0" y="375.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="400.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DepartmentPersonSuccess" id="BPMNEdge_DepartmentPersonSuccess">
+        <omgdi:waypoint x="347.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="320.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="347.0" y="290.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="AdminPersonSuccess" id="BPMNEdge_AdminPersonSuccess">
+        <omgdi:waypoint x="347.0" y="655.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="690.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="352.0" y="659.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DepartmentPersonTransferApply" id="BPMNEdge_DepartmentPersonTransferApply">
+        <omgdi:waypoint x="80.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="707.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="707.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="84.0" y="319.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

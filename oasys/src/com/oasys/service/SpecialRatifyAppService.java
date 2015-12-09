@@ -1,0 +1,38 @@
+package com.oasys.service;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.oasys.model.SpecialRatifyApp;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+public interface SpecialRatifyAppService {
+
+	List<SpecialRatifyApp> findSpecialRatifyAppList(PageUtil pageUtil,
+			SpecialRatifyApp specialRatifyApp);
+
+	Long findSpecialRatifyAppCount(SpecialRatifyApp specialRatifyApp);
+
+	boolean saveSpecialRatifyApp(SpecialRatifyApp specialRatifyApp);
+
+	void delSpecialRatifyApp(String appNo);
+
+	void updateSpecialRatifyAppProceStatus(Integer id, String status);
+
+	String saveStartProcess(SpecialRatifyApp specialRatifyApp);
+
+	void updateSpecialRatifyAppStatus(Integer id, String status);
+
+	List<SpecialRatifyApp> findSpecialRatifyAppTask(PageUtil pageUtil,
+			SpecialRatifyApp specialRatifyApp);
+
+	Long findSpecialRatifyAppTaskCount(SpecialRatifyApp specialRatifyApp);
+
+	void getDiagramResourceBySraId(HttpServletResponse httpServletResponse,
+			Integer sraId);
+
+	String saveTask(WorkFlowTasksModel taskModel);
+
+}

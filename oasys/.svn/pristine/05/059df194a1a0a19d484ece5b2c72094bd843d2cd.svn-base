@@ -1,0 +1,45 @@
+package com.oasys.listener.ad;
+
+import java.io.Serializable;
+
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
+import org.activiti.engine.runtime.Execution;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.oasys.model.Organization;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Constants;
+
+public class ServiceTaskDelegate implements Serializable{
+	
+	private static final long serialVersionUID = 6552961243415010173L;
+
+	/** TaskService判断申请人为财富端或借款端 */
+	public void getRoleCodeType(Execution execution){
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+		// 强转为excutionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		// 获取service
+		WorkFlowTaskService workFlowTaskService = (WorkFlowTaskService) ctx.getBean("workFlowTaskService");
+		String roleCode = workFlowTaskService.getStartProcRoleCode(executionEntity.getVariable(Constants.CURRENT_USER_KEY).toString(),"");
+		//发送流程变量 提交到下一task处理
+		executionEntity.setVariable("result",roleCode);
+	}
+	
+	/** TaskService判断申请人类型为总部或分部 **/
+	public void getOrgLevelByUserID(Execution execution){
+		// 获取上下文环境
+		WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+		// 强转为excutionEntity
+		ExecutionEntity executionEntity = (ExecutionEntity) execution;
+		// 获取service
+		OrganizationService orgService = (OrganizationService) ctx.getBean("organizationService");
+		//根据申请人ID获取申请人为总部还是分部 部门类型 0为总部 1为分部
+		Organization org = orgService.findOrganizationByUserId(Integer.valueOf(executionEntity.getVariable(Constants.CURRENT_USER_KEY).toString()));
+		//发送流程变量 提交到下一task处理
+		executionEntity.setVariable("result",org.getDeptLevel());
+	}
+}

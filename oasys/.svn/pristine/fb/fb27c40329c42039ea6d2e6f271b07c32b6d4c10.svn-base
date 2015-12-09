@@ -1,0 +1,200 @@
+package com.oasys.model;
+
+// Generated 2015-11-13 9:43:53 by Hibernate Tools 4.0.0
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+
+import static javax.persistence.GenerationType.IDENTITY;
+
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+/**
+ * 借款申请
+ * @author Administrator
+ *
+ */
+@Entity
+@Table(name = "t_oa_fd_loan_app", catalog = "oasys", uniqueConstraints = @UniqueConstraint(columnNames = "APP_NO"))
+public class LoanApp implements java.io.Serializable {
+
+	private Integer btaId;
+	private String appNo;
+	private Integer applicantNo;
+	private Date appDate;
+	private String appStatus;
+	private Character isBalance;
+	private String capitalNature;
+	private String loanReson;
+	private BigDecimal loanAmt;
+	private Integer payerNo;
+	private Date payDate;
+	private Character payMode;
+	private Character procStatus;
+	private String remark;
+
+	public LoanApp() {
+	}
+
+	public LoanApp(String appNo, Integer applicantNo, Date appDate,
+			String appStatus, Character isBalance, String capitalNature,
+			String loanReson, BigDecimal loanAmt, Integer payerNo,
+			Date payDate, Character payMode, Character procStatus, String remark) {
+		this.appNo = appNo;
+		this.applicantNo = applicantNo;
+		this.appDate = appDate;
+		this.appStatus = appStatus;
+		this.isBalance = isBalance;
+		this.capitalNature = capitalNature;
+		this.loanReson = loanReson;
+		this.loanAmt = loanAmt;
+		this.payerNo = payerNo;
+		this.payDate = payDate;
+		this.payMode = payMode;
+		this.procStatus = procStatus;
+		this.remark = remark;
+	}
+
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "BTA_ID", unique = true, nullable = false)
+	public Integer getBtaId() {
+		return this.btaId;
+	}
+
+	public void setBtaId(Integer btaId) {
+		this.btaId = btaId;
+	}
+
+	@Column(name = "APP_NO", unique = true, length = 25)
+	public String getAppNo() {
+		return this.appNo;
+	}
+
+	public void setAppNo(String appNo) {
+		this.appNo = appNo;
+	}
+
+	@Column(name = "APPLICANT_NO")
+	public Integer getApplicantNo() {
+		return this.applicantNo;
+	}
+
+	public void setApplicantNo(Integer applicantNo) {
+		this.applicantNo = applicantNo;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "APP_DATE", length = 10)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	public Date getAppDate() {
+		return this.appDate;
+	}
+
+	public void setAppDate(Date appDate) {
+		this.appDate = appDate;
+	}
+
+	@Column(name = "APP_STATUS", length = 100)
+	public String getAppStatus() {
+		return this.appStatus;
+	}
+
+	public void setAppStatus(String appStatus) {
+		this.appStatus = appStatus;
+	}
+
+	@Column(name = "IS_BALANCE", length = 1)
+	public Character getIsBalance() {
+		return this.isBalance;
+	}
+
+	public void setIsBalance(Character isBalance) {
+		this.isBalance = isBalance;
+	}
+
+	@Column(name = "CAPITAL_NATURE", length = 80)
+	public String getCapitalNature() {
+		return this.capitalNature;
+	}
+
+	public void setCapitalNature(String capitalNature) {
+		this.capitalNature = capitalNature;
+	}
+
+	@Column(name = "LOAN_RESON", length = 200)
+	public String getLoanReson() {
+		return this.loanReson;
+	}
+
+	public void setLoanReson(String loanReson) {
+		this.loanReson = loanReson;
+	}
+
+	@Column(name = "LOAN_AMT", precision = 10)
+	public BigDecimal getLoanAmt() {
+		return this.loanAmt;
+	}
+
+	public void setLoanAmt(BigDecimal loanAmt) {
+		this.loanAmt = loanAmt;
+	}
+
+	@Column(name = "PAYER_NO")
+	public Integer getPayerNo() {
+		return this.payerNo;
+	}
+
+	public void setPayerNo(Integer payerNo) {
+		this.payerNo = payerNo;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "PAY_DATE", length = 10)
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	public Date getPayDate() {
+		return this.payDate;
+	}
+
+	public void setPayDate(Date payDate) {
+		this.payDate = payDate;
+	}
+
+	@Column(name = "PAY_MODE", length = 1)
+	public Character getPayMode() {
+		return this.payMode;
+	}
+
+	public void setPayMode(Character payMode) {
+		this.payMode = payMode;
+	}
+
+	@Column(name = "PROC_STATUS", length = 1)
+	public Character getProcStatus() {
+		return this.procStatus;
+	}
+
+	public void setProcStatus(Character procStatus) {
+		this.procStatus = procStatus;
+	}
+
+	@Column(name = "REMARK", length = 200)
+	public String getRemark() {
+		return this.remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+}

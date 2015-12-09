@@ -1,0 +1,482 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.AuditProcHis;
+import com.oasys.model.EmpDimissionApp;
+import com.oasys.model.EmpDimissionTakeoverInfo;
+import com.oasys.model.Organization;
+import com.oasys.model.Role;
+import com.oasys.model.StatusNameRef;
+import com.oasys.model.Users;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.EmpDimissionAppService;
+import com.oasys.service.EmpDimissionTakeoverInfoService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.UserRoleModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+@Service(value="empDimissionAppService")
+public class EmpDimissionAppServiceImpl extends WorkFlowBaseServiceImpl implements EmpDimissionAppService {
+	@Autowired
+	public PublicDao<EmpDimissionApp> publicDao;
+	@Autowired
+	private OrganizationService orgService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private StatusNameRefService statusNameService;
+	@Autowired
+	private EmpDimissionTakeoverInfoService empDimissionTakeoverInfoService;
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private WorkFlowService workFlowService;
+	@Autowired
+	private RoleService roleService;
+	//流程图片名称
+	private String imgName;
+	@Override
+	public List<EmpDimissionTakeoverInfo> findEmpDimissionTakeoverList(
+			PageUtil pageUtil, EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		String hql = getFindHQL(empDimissionApp);
+		List<EmpDimissionApp> list = publicDao.find(hql, pageUtil);
+		List<EmpDimissionTakeoverInfo> attachList = new ArrayList<EmpDimissionTakeoverInfo>();
+		for (EmpDimissionApp empDimission : list) {
+			Users user = userService.getUserByID(empDimission.getApplicantNo());
+//			Organization org = orgService.findOrganizationByOrganizationId(user.getOrganizeId());
+			//判断为总部还是分部
+			/*if(null != org.getDeptLevel() && org.getDeptLevel().equals("0")){
+				empDimission.setResourcesName(Constants.EMPDIMISSIONAPP_HO_RES);
+				empDimission.setDefinitionKey(Constants.EMPDIMISSIONAPP_HO);
+			}else{
+				List<Role> roleList = userService.findRoleListByUserId(empDimissionApp.getApplicantNo());
+				if (Collections.listIsNotEmpty(roleList)) {
+					//目前只考虑一个用户只有一个角色
+					Role role = roleList.get(0);
+					//1－业务，2－职能，3－其他
+					if ("1".equals(role.getRoleType())) {
+						empDimission.setResourcesName(Constants.EMPDIMISSIONAPP_BO_BU_RES);
+						empDimission.setDefinitionKey(Constants.EMPDIMISSIONAPP_BO_BU);
+					}else if("2".equals(role.getRoleType())){
+						empDimission.setResourcesName(Constants.EMPDIMISSIONAPP_BO_FU_RES);
+						empDimission.setDefinitionKey(Constants.EMPDIMISSIONAPP_BO_FU);
+					}else{
+					}
+				}
+			}*/
+			
+			empDimission.setDeptName(orgService.getOrgNameByID(user.getOrganizeId()));
+			empDimission.setAccount(userService.getUserByID(empDimission.getApplicantNo()).getName());//翻译用户名
+			List<EmpDimissionTakeoverInfo> tmpList = empDimissionTakeoverInfoService.findEmpDimissionTakeoverList(empDimission.getAppNo());//设置查询条件 查询固定资产列表信息
+			//填充List对象
+			if(tmpList.size()>0){
+				for(EmpDimissionTakeoverInfo empDimissionTakeoverInfo : tmpList){
+					empDimissionTakeoverInfo.setReceiverName(userService.getUserByID(empDimissionTakeoverInfo.getReceiverNo()).getName());
+					empDimissionTakeoverInfo.setEmpDimissionApp(empDimission);
+				}
+				attachList.addAll(tmpList);
+			}else{
+				EmpDimissionTakeoverInfo empDimissionTakeoverInfoBak = new EmpDimissionTakeoverInfo();
+				empDimissionTakeoverInfoBak.setAppNo(empDimission.getAppNo());
+				empDimissionTakeoverInfoBak.setEmpDimissionApp(empDimission);
+				attachList.add(empDimissionTakeoverInfoBak);
+			}
+		}
+		return attachList;
+	}
+
+	@Override
+	public Long findDimissionAppCount(EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		String hql = "select count(*) "+ getFindHQL(empDimissionApp);
+		return publicDao.count(hql);
+	}
+	private String getFindHQL(EmpDimissionApp empDimissionApp){
+		String hql = "from EmpDimissionApp where 1=1 and applicantNo = "+Constants.getCurrendUser().getUserId();
+		
+		if(StringUtils.isNotBlank(empDimissionApp.getAppDateBefore())){
+			hql += " and appDate >='" + empDimissionApp.getAppDateBefore()+"'";  //申请开始日期
+		}
+		if(StringUtils.isNotBlank(empDimissionApp.getAppDateAfter())){
+			hql += " and appDate <='" + empDimissionApp.getAppDateAfter()+"'";  //申请结束日期
+		}
+		if(StringUtils.isNotBlank(empDimissionApp.getProcStatus())){
+			hql+=" and procStatus='"+empDimissionApp.getProcStatus()+"'";
+		}
+		hql += " order by edaId desc";
+		return hql;
+	}
+
+	@Override
+	public boolean saveEmpDimissionApp(EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		try {
+			if(empDimissionApp.getEdaId()==null){
+				//新增
+				String appNo=UniqueIdUtil.generate("LZ");
+				Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+				empDimissionApp.setAppNo(appNo);//申请编号
+				empDimissionApp.setApplicantNo(Constants.getCurrendUser().getUserId());//用户ID
+				empDimissionApp.setAppDate(new Date());//申请日期
+				empDimissionApp.setDeptNo(user.getOrganizeId());//部门ID
+				empDimissionApp.setDeptName(orgService.getOrgNameByID(user.getOrganizeId()));//部门名称
+				empDimissionApp.setMobile(user.getTel());
+				empDimissionApp.setProcStatus("1");
+				publicDao.save(empDimissionApp);
+			}else{
+				//更新
+				publicDao.update(empDimissionApp);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public void delEmpDimissionApp(String appNo) {
+		// TODO Auto-generated method stub
+		publicDao.executeHql("delete from EmpDimissionApp where appNo = '" + appNo+"'");
+		publicDao.executeHql("delete from EmpDimissionTakeoverInfo where appNo = '" + appNo+"'");
+	}
+
+	@Override
+	public void updateEmpDimissionAppStatus(Integer id, String state) {
+		// TODO Auto-generated method stub
+		EmpDimissionApp empDimissionApp = publicDao.get(EmpDimissionApp.class, id);
+		empDimissionApp.setAppStatus(state.toString());
+		publicDao.saveOrUpdate(empDimissionApp);
+	}
+
+	@Override
+	public void updateEmpDimissionAppProceStatus(Integer id, String status) {
+		// TODO Auto-generated method stub
+		EmpDimissionApp empDimissionApp = publicDao.get(EmpDimissionApp.class, id);
+		empDimissionApp.setProcStatus(status);
+		publicDao.saveOrUpdate(empDimissionApp);
+	}
+
+	@Override
+	public boolean findZongBuOrFenBu(EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		EmpDimissionApp empDimissionApp2 = publicDao.get(EmpDimissionApp.class,empDimissionApp.getEdaId());
+		if (empDimissionApp2!=null) {
+			Integer appDeptId = empDimissionApp2.getDeptNo();
+			Organization organization = orgService.findOrganizationByOrganizationId(appDeptId);
+			if(organization!=null){
+				//0是总部，1是分部
+				if("0".equals(organization.getDeptLevel())){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public EmpDimissionApp getEmpDimissionAppByID(Integer id) {
+		// TODO Auto-generated method stub
+		return publicDao.get(EmpDimissionApp.class, id);
+	}
+
+	@Override
+	public StatusNameRef findAppStatusByID(String appStatus) {
+		// TODO Auto-generated method stub
+		return statusNameService.getStatusNameRefByStatusID(appStatus);
+	}
+
+	@Override
+	public void getDiagramResourceByPaId(
+			HttpServletResponse httpServletResponse, Integer edaId) {
+		// TODO Auto-generated method stub
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			String proDefKey =getProcessKey(edaId);
+			String businessKey = proDefKey + "." + edaId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+			ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+			// 获取当前执行任务流程
+			List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+			// 获取图片的流程图片名称
+			String resourceName = imgName + ".png";
+			// 获取图片的文件的流
+			in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+			// 获取图片对象
+			BufferedImage bimg;
+			bimg = ImageIO.read(in);
+			// 得到Graphics2D 对象
+			Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+			// 设置颜色和画笔粗细
+			g2d.setColor(Color.RED);
+			g2d.setStroke(new BasicStroke(3));
+			// 遍历执行的任务,画图
+			for (Task task : tasks) {
+				// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+				Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+				// 根据当前的执行对象的id获取正在执行的活动信息
+				ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+				// 绘制矩形
+				Rectangle2D rectangle = new Rectangle2D.Float(
+						activityImpl.getX(), activityImpl.getY(),
+						activityImpl.getWidth(), activityImpl.getHeight());
+				g2d.draw(rectangle);
+			}
+			// 写入response输出流中
+			ImageIO.write(bimg, "png", httpServletResponse.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	
+	private String getTaskEMPids(List<WorkFlowTasksModel> workList){
+		String ids = "";
+		for (WorkFlowTasksModel workFlowTasksModel : workList) {
+			ids+=workFlowTasksModel.getBusinessKey()+",";
+		}
+		if(ids.length()>0){
+			ids = ids.substring(0, ids.length()-1);
+		}
+		return ids;
+	}
+	
+	@Override
+	public List<EmpDimissionTakeoverInfo> findEmpDimissionTask(
+			PageUtil pageUtil, EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setProcessKey(empDimissionApp.getDefinitionKey());
+		List<WorkFlowTasksModel> workList = workFlowTaskService.findAcceptTaskByGroup(taskModel);
+		if(null == workList || workList.size() == 0)return new ArrayList<EmpDimissionTakeoverInfo>();
+		String hql ="from EmpDimissionApp where edaId in ("+getTaskEMPids(workList)+") ";
+		if(StringUtils.isNotBlank(empDimissionApp.getAppDateBefore())){
+			hql += " and appDate >='" + empDimissionApp.getAppDateBefore()+"'";  //申请开始日期
+		}
+		if(StringUtils.isNotBlank(empDimissionApp.getAppDateAfter())){
+			hql += " and appDate <='" + empDimissionApp.getAppDateAfter()+"'";  //申请结束日期
+		}
+		if(StringUtils.isNotBlank(empDimissionApp.getProcStatus())){
+			hql+=" and procStatus='"+empDimissionApp.getProcStatus()+"'";
+		}
+		hql += " order by edaId desc";
+		List<EmpDimissionApp> empDimissionAppList = publicDao.find(hql, pageUtil);
+		List<EmpDimissionTakeoverInfo> attachList = new ArrayList<EmpDimissionTakeoverInfo>();
+		//将工作流信息字段更新到PPEScrapApp对象中
+		for (WorkFlowTasksModel wl : workList) {
+			for (EmpDimissionApp empDimission : empDimissionAppList) {
+				if(Integer.valueOf(wl.getBusinessKey()) == empDimission.getEdaId()){
+					empDimission.setTaskModel(wl);
+					empDimission.setTaskID(wl.getTaskID());
+					empDimission.setAssistant(wl.getAssistant());
+					empDimission.setFormKey(wl.getFormKey());
+					empDimission.setDeptName(orgService.getOrgNameByID(empDimission.getDeptNo()));
+					break;
+				}
+			}
+		}
+		//循环处理固定资产实体与附加表实体对象 多对一关系
+		for (EmpDimissionApp empDimission : empDimissionAppList) {
+			empDimission.setDeptName(orgService.getOrgNameByID(empDimission.getDeptNo()));//翻译部门名称
+			empDimission.setAccount(userService.getUserByID(empDimission.getApplicantNo()).getName());//翻译用户名
+			List<EmpDimissionTakeoverInfo> tmpList = empDimissionTakeoverInfoService.findEmpDimissionTakeoverList(empDimission.getAppNo());//设置查询条件 查询固定资产列表信息
+			//填充List对象 如果有附加表信息 则将信息查询出后 循环将固定资产信息set到对应的属性中
+			if(tmpList.size()>0){
+				for(EmpDimissionTakeoverInfo appAttach : tmpList){
+					appAttach.setEmpDimissionApp(empDimission);
+				}
+				attachList.addAll(tmpList);
+			}else{
+				EmpDimissionTakeoverInfo empDimissionTakeoverInfo = new EmpDimissionTakeoverInfo();
+				empDimissionTakeoverInfo.setAppNo(empDimission.getAppNo());
+				empDimissionTakeoverInfo.setEmpDimissionApp(empDimission);
+				attachList.add(empDimissionTakeoverInfo);
+			}
+		}
+		return attachList;
+	}
+
+	@Override
+	public Long findEmpDimissionListTaskCount(EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		List<WorkFlowTasksModel> workList = workFlowTaskService.findAcceptTaskByGroup(new WorkFlowTasksModel());
+		if(null == workList || workList.size() == 0)return (long) 0;
+		Long counts = publicDao.count("select count(*) from EmpDimissionApp where edaId in ("+getTaskEMPids(workList)+")");
+		return counts;
+	}
+
+	@Override
+	public void saveSubmitTask(EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		Task task = this.taskService.createTaskQuery().taskId(empDimissionApp.getTaskID()).singleResult();// 获取当前执行任务
+		StatusNameRef statusNameRef = new StatusNameRef();
+		statusNameRef = statusNameService.getstatusNameRefByStatusCode(Constants.EMPDIMISSIONAPP_HO+"_"+empDimissionApp.getResult());
+		if(StringUtils.isNotBlank(empDimissionApp.getTaskID())){
+			String appStatusCode = empDimissionApp.getResult();
+			updateEmpDimissionAppStatus(empDimissionApp.getEdaId(),appStatusCode);//更新流程状态
+			Map<String, Object> variables = new HashMap<String, Object>();
+			if(StringUtils.isNotBlank(appStatusCode)){
+				variables.put("result", appStatusCode);// 设置流程变量
+			}
+			taskService.complete(empDimissionApp.getTaskID(), variables);//向task发送消息 跳转下一流程
+			/***保存审批流程履历表 start****/
+			AuditProcHis auditProcHis = new AuditProcHis();
+			auditProcHis.setAppNo(empDimissionApp.getAppNo());
+			auditProcHis.setAppStatus(statusNameRef.getRefId());
+			auditProcHis.setHandleDate(new Date());
+			auditProcHis.setHandler(Constants.getCurrendUser().getUserId());
+			auditProcHis.setHandleResult(empDimissionApp.getIsSuccess());
+			auditProcHis.setHandlerRole(Constants.getTaskRoleCodeMap().get(task.getTaskDefinitionKey()));
+			auditProcHis.setRemark(empDimissionApp.getTaskModel().getRemark());
+			auditProcHisService.saveAuditProcHis(auditProcHis);
+			/***保存审批流程履历表 end ****/
+		}
+	}
+
+	@Override
+	public String saveStartProcess(EmpDimissionApp empDimissionApp) {
+		// TODO Auto-generated method stub
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setAppNo(empDimissionApp.getAppNo());
+		taskModel.setBusinessID(empDimissionApp.getEdaId().toString());//业务ID
+		taskModel.setBusinessDefineKey(getProcessKey(empDimissionApp.getEdaId()));// 获取启动实例的key
+		taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+		Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+		//判断任务未结束
+		if(null != resultMap.get(Constants.STATUS_REF_ID) && StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+			if(StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+				updateEmpDimissionAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+			}
+		}
+		EmpDimissionApp empDimissionApp2 = publicDao.get(EmpDimissionApp.class, empDimissionApp.getEdaId());
+		empDimissionApp2.setAppDate(new Date());//申请日期更新为提交日期
+		//更新流程状态
+		empDimissionApp2.setProcStatus("2");//审批中
+		publicDao.saveOrUpdate(empDimissionApp2);
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+
+	@Override
+	public String saveTask(WorkFlowTasksModel taskModel) {
+		// TODO Auto-generated method stub
+		Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+		if(resultMap.get(Constants.STATUS_REF_ID)!=null){
+			updateEmpDimissionAppStatus(Integer.valueOf(taskModel.getBusinessID()), resultMap.get(Constants.STATUS_REF_ID).toString());
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+	
+	@Override
+	public String getProcessKey(Integer edaid) {
+		String resultCode = "";
+		try {
+			EmpDimissionApp empDimissionApp2 = publicDao.get(EmpDimissionApp.class,edaid);
+			if (empDimissionApp2!=null) {
+				Integer appDeptId = empDimissionApp2.getDeptNo();//部门id
+				Organization organization = orgService.findOrganizationByOrganizationId(appDeptId);
+				if(organization!=null){
+					//0是总部，1是分部
+					if("0".equals(organization.getDeptLevel())){
+						imgName =Constants.EMPDIMISSIONAPP_HO_RES;
+						resultCode = Constants.EMPDIMISSIONAPP_HO;//走总部流程图
+					}else{
+						Integer userId = empDimissionApp2.getApplicantNo();//申请人id
+						List<Role> roleList = userService.findRoleListByUserId(userId);
+						if (Collections.listIsNotEmpty(roleList)) {
+							//目前只考虑一个用户只有一个角色
+							Role role = roleList.get(0);
+							//1－业务，2－职能，3－其他
+							if ("1".equals(role.getRoleType())) {
+								List<UserRoleModel> userRoleList =  userService.findUsersRolesList(Integer.valueOf(userId));
+								if(null != userRoleList && userRoleList.size() > 0){
+									List<Role> roleList2 = roleService.findRoleListsByRoleCode(userRoleList.get(0).getRoleId());
+									if (!roleList2.isEmpty()) {
+										for (Role role2 : roleList2) {
+											//如果该角色的子集中 存在要比对的角色 说明该角色比进行比对的角色权限大 所以执行该角色以上职级流程
+											if("TuanDuiJingLi".equals(role2.getRoleCode())){
+												imgName = Constants.EMPDIMISSIONAPP_BO_BU_YS_RES;
+												resultCode = Constants.EMPDIMISSIONAPP_BO_BU_YS;
+												break;
+											}else {
+												imgName = Constants.EMPDIMISSIONAPP_BO_BU_YX_RES;
+												resultCode = Constants.EMPDIMISSIONAPP_BO_BU_YX;
+											}
+										}
+									} else {
+										imgName = Constants.EMPDIMISSIONAPP_BO_BU_YX_RES;
+										resultCode = Constants.EMPDIMISSIONAPP_BO_BU_YX;
+									}
+								}
+							}else if("2".equals(role.getRoleType())){
+								imgName = Constants.EMPDIMISSIONAPP_BO_FU_RES;
+								resultCode = Constants.EMPDIMISSIONAPP_BO_FU; 
+							}else{
+								imgName = Constants.EMPDIMISSIONAPP_BO_FU_RES;
+								resultCode = Constants.EMPDIMISSIONAPP_BO_FU;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return resultCode;
+	}
+
+	public String getImgName() {
+		return imgName;
+	}
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+	
+	
+}

@@ -1,0 +1,608 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.EmpFullmemberApp;
+import com.oasys.model.Organization;
+import com.oasys.model.Role;
+import com.oasys.model.StaffRecruitAppModel;
+import com.oasys.model.Users;
+import com.oasys.model.VO.EmpFullmemberAppModel;
+import com.oasys.model.VO.StaffRecruitAppVOModel;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.StaffRecruitAppService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+import common.Logger;
+
+/**
+ * 员工招聘申请ServiceImpl
+ * @ClassName: StaffRecruitAppServiceImpl 
+ * @author ZHANGJIAN
+ * @date 2015年11月10日 
+ */
+@Service(value="staffRecruitAppService")
+public class StaffRecruitAppServiceImpl extends WorkFlowBaseServiceImpl implements StaffRecruitAppService {
+	
+	private static Logger logger = Logger.getLogger(StaffRecruitAppServiceImpl.class);
+	
+	@Autowired
+	private PublicDao<StaffRecruitAppModel> publicDao;
+	
+	@Autowired //与当前的登录用户相关的Service
+	private UserService userService;  
+	
+	@Autowired //与公司组织相关的Service
+	private OrganizationService organizationService;
+	
+	@Autowired //与Activiti工作流相关的Service
+	private WorkFlowTaskService workFlowTaskService; 
+	
+	//流程图片名称
+	private String imgName;	
+
+	@Override
+	public boolean saveStaffRecruitApp(StaffRecruitAppModel staffRecruitAppModel) {		
+		try {
+			//判断是新增信息
+			if(staffRecruitAppModel.getMraId() == null){
+				logger.info("--------------在saveStaffRecruitApp()方法中，是新增方法-------------------");
+				
+				//01.设置当前登陆用户的信息：申请人 和 申请部门
+				Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+				staffRecruitAppModel.setApplicantNo(user.getUserId());
+				staffRecruitAppModel.setDeptNo(user.getOrganizeId());				
+				
+				//02.设置流程状态为“初始状态(1)” (1－初始状态，2－审批中，3－已完成，4－已失效，5－已撤销)
+				staffRecruitAppModel.setProcStatus('1');
+				
+				//03.设置申请编号
+				String appNo = UniqueIdUtil.generate("MR");
+				staffRecruitAppModel.setAppNo(appNo);
+				
+				//0X.保存其他表单信息				
+				publicDao.save(staffRecruitAppModel);			
+			}
+			//判断是修改信息
+			else{
+				logger.info("--------------在saveStaffRecruitApp()方法中，是修改方法-------------------");
+				publicDao.update(staffRecruitAppModel);
+			}					
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return false;
+	}
+
+	@Override
+	public List<StaffRecruitAppVOModel> findStaffRecruitAppList(PageUtil pageUtil, StaffRecruitAppVOModel voModel){		
+
+		List<StaffRecruitAppVOModel> voModelList = new ArrayList<StaffRecruitAppVOModel>();
+		
+		//获得当前登录用户所在的部门名称
+		Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+		String curLoginUserName = user.getName();
+		String deptName = organizationService.getOrgNameByID(user.getOrganizeId());
+		Integer userId = user.getUserId();
+		
+		try {
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT ");
+			sql.append("t_mra.MRA_ID AS '主键', ");
+			sql.append("t_mra.APP_NO AS '申请编号', ");
+			sql.append("t_mra.APPLICANT_NO AS '申请人', ");
+			sql.append("t_mra.DEPT_NO AS '所属部门', ");
+			sql.append("t_mra.APP_DATE AS '申请日期', ");
+			sql.append("t_mra.APP_STATUS AS '申请状态', ");
+			sql.append("t_mra.EXISTING_STAFF AS '现有人员', ");
+			sql.append("t_mra.JOB_TITLE AS '职位名称', ");
+			sql.append("t_mra.RECRUIT_QTY AS '招聘数量', ");
+			sql.append("t_mra.IS_TARGET_INSIDE AS '是否部门目标内', ");
+			sql.append("t_mra.RECRUIT_PURPOSE AS '招聘目的', ");
+			sql.append("t_mra.RECRUIT_TYPE AS '招聘人员类型', ");
+			sql.append("t_mra.RECRUIT_PLACE AS '招聘渠道', ");
+			sql.append("t_mra.JOB_DTIME AS '上岗时间', ");
+			sql.append("t_mra.SERVICE_LIFE AS '服务年限', ");
+			sql.append("t_mra.ADVICE_SAL_LOWER AS '建议薪资下限', ");
+			sql.append("t_mra.ADVICE_SAL_UPPER As '建议薪资上限', ");
+			sql.append("t_mra.JOB_DESCRIPTION AS '工作职责', ");
+			sql.append("t_mra.QUALIFICATION AS '任职资格', ");
+			sql.append("t_mra.PROC_STATUS AS '流程状态', ");
+			sql.append("t_mra.REMARK AS '备注信息', ");			
+			sql.append("t_statusNameRef.APP_STATUS_NAME AS '申请状态名称' ");			
+			sql.append("FROM ");
+			sql.append("t_oa_hr_manpower_requisition_app t_mra ");
+			sql.append("LEFT JOIN t_oa_app_status_name_ref t_statusNameRef ON t_mra.APP_STATUS = t_statusNameRef.REF_ID ");						
+			sql.append("WHERE 1=1 ");			
+			//拼接高级查询的条件   
+			//(1)按照申请日期进行查询
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			if(voModel.getAppDateStart() != null){
+				sql.append("AND t_mra.APP_DATE >= '"+df.format(voModel.getAppDateStart())+"' ");				
+			}
+			if(voModel.getAppDateEnd() != null){
+				sql.append("AND t_mra.APP_DATE <= '"+df.format(voModel.getAppDateEnd())+"' ");				
+			}
+			sql.append("AND t_mra.APPLICANT_NO = '"+userId+"' ");
+			sql.append("ORDER BY t_mra.APP_DATE DESC ");
+			
+			List<Object> tmpResult = publicDao.findBySql(sql.toString(), pageUtil);
+			
+			DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");		
+			
+			if(Collections.listIsNotEmpty(tmpResult)){
+				StaffRecruitAppVOModel tmpModel = new StaffRecruitAppVOModel();
+				
+				for(int i=0; i<tmpResult.size(); i++){
+					//创建一个容器对象，用于封装从SQL中查询的结果集的每一行数据。
+					StaffRecruitAppVOModel oneModel = (StaffRecruitAppVOModel) tmpModel.clone();					
+					Object[] tmpArray = (Object[]) tmpResult.get(i);
+					
+					oneModel.setMraId(tmpArray[0]==null ? null : Integer.parseInt(String.valueOf(tmpArray[0])) );       //设置主键
+					oneModel.setAppNo(tmpArray[1]==null ? "" : String.valueOf(tmpArray[1]) );                           //设置申请编号
+					oneModel.setApplicantNo(tmpArray[2]==null ? null : Integer.parseInt(String.valueOf(tmpArray[2])) ); //设置申请人
+					oneModel.setDeptNo(tmpArray[3]==null ? null : Integer.parseInt( String.valueOf(tmpArray[3]) ) );    //设置所属部门
+					oneModel.setAppDate(tmpArray[4]==null ? null : dateFormatter.parse( String.valueOf(tmpArray[4]) ) ); //设置申请日期
+					oneModel.setAppStatus( tmpArray[5]==null ? "" : String.valueOf(tmpArray[5])  );                    //设置申请状态,记录流程中各分支线路名称，例如：AdminDirectorReject
+					oneModel.setExistingStaff(tmpArray[6]==null ? null : Integer.parseInt( String.valueOf(tmpArray[6]) ) ); //设置现有人员					
+					oneModel.setJobTitle( tmpArray[7]==null ? "" : String.valueOf(tmpArray[7]) ); //设置职位名称					
+					oneModel.setRecruitQty( tmpArray[8]==null ? null : Integer.parseInt( String.valueOf(tmpArray[8])) ); //设置招聘数量					
+					oneModel.setIsTargetInside( tmpArray[9]==null ? null :  String.valueOf(tmpArray[9]).charAt(0) ); //设置是否部门目标内					
+					oneModel.setRecruitPurpose( tmpArray[10]==null ? "1".charAt(0) : String.valueOf(tmpArray[10]).charAt(0) ); //设置招聘目的,取值范围：1－补充新人，2－替换现职员，默认为1					
+					oneModel.setRecruitType( tmpArray[11]==null ? "1".charAt(0) : String.valueOf(tmpArray[11]).charAt(0) ); //设置招聘人员类型，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=recruit_type的记录的code_id的所有数据，取值范围：1－正式员工，2－季节工，3－临时工，4－计时工，默认为1					
+					oneModel.setRecruitPlace( tmpArray[12]==null ? "1".charAt(0) : String.valueOf(tmpArray[12]).charAt(0) ); //设置招聘渠道，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=recruit_place的记录的code_id的所有数据，取值范围：1－从公司外部招聘，2－从公司内部调配，默认为1
+					oneModel.setJobDtime(tmpArray[13]==null ? null : dateFormatter.parse( String.valueOf(tmpArray[13]) ) ); //设置上岗时间
+					oneModel.setServiceLife( tmpArray[14]==null ? null : BigDecimal.valueOf(new Double(String.valueOf(tmpArray[14]))) ); //设置服务年限
+					oneModel.setAdviceSalLower( tmpArray[15]==null ? new BigDecimal("0") : BigDecimal.valueOf(new Double(String.valueOf(tmpArray[15]))) ); //建议薪资下限
+					oneModel.setAdviceSalUpper( tmpArray[16]==null ? new BigDecimal("0") : BigDecimal.valueOf(new Double(String.valueOf(tmpArray[16]))) ); //建议薪资上限
+					oneModel.setJobDescription( tmpArray[17]==null ? "" : String.valueOf(tmpArray[17]) ); //设置工作职责
+					oneModel.setQualification( tmpArray[18]==null ? "" : String.valueOf(tmpArray[18]) ); //设置工作职责
+					oneModel.setProcStatus( tmpArray[19]==null ? null : String.valueOf(tmpArray[19]).charAt(0) ); //设置流程状态，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=proc_status的记录的code_id的所有数据，取值范围：1－初始状态，2－审批中，3－已完成，4－已失效，5－已撤销															
+					oneModel.setRemark( tmpArray[20]==null ? "" : String.valueOf(tmpArray[20]) ); //设置备注信息
+					oneModel.setAppStatusName(tmpArray[21]==null ? "" : String.valueOf(tmpArray[21]));  //设置当前流程的申请状态名称，比如：营业部经理通过
+					
+					//设置当前登录用户的用户名子										
+					oneModel.setCurLoginUserName(curLoginUserName);
+					//当前登录用户所在的部门名称					
+					oneModel.setDeptName(deptName);
+					
+					//将接过对象封装到List中。
+					voModelList.add(oneModel);
+				}
+			}			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}    
+			
+		return voModelList;
+	}
+
+	@Override
+	public List<StaffRecruitAppVOModel> findStaffRecruitAppByIds(String ids, PageUtil pageUtil, StaffRecruitAppVOModel voModel) {
+
+		List<StaffRecruitAppVOModel> voModelList = new ArrayList<StaffRecruitAppVOModel>();
+		
+		//获得当前登录用户所在的部门名称
+		Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+		String curLoginUserName = user.getName();
+		String deptName = organizationService.getOrgNameByID(user.getOrganizeId());
+		Integer userId = user.getUserId();
+		
+		try {
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT ");
+			sql.append("t_mra.MRA_ID AS '主键', ");
+			sql.append("t_mra.APP_NO AS '申请编号', ");
+			sql.append("t_mra.APPLICANT_NO AS '申请人', ");
+			sql.append("t_mra.DEPT_NO AS '所属部门', ");
+			sql.append("t_mra.APP_DATE AS '申请日期', ");
+			sql.append("t_mra.APP_STATUS AS '申请状态', ");
+			sql.append("t_mra.EXISTING_STAFF AS '现有人员', ");
+			sql.append("t_mra.JOB_TITLE AS '职位名称', ");
+			sql.append("t_mra.RECRUIT_QTY AS '招聘数量', ");
+			sql.append("t_mra.IS_TARGET_INSIDE AS '是否部门目标内', ");
+			sql.append("t_mra.RECRUIT_PURPOSE AS '招聘目的', ");
+			sql.append("t_mra.RECRUIT_TYPE AS '招聘人员类型', ");
+			sql.append("t_mra.RECRUIT_PLACE AS '招聘渠道', ");
+			sql.append("t_mra.JOB_DTIME AS '上岗时间', ");
+			sql.append("t_mra.SERVICE_LIFE AS '服务年限', ");
+			sql.append("t_mra.ADVICE_SAL_LOWER AS '建议薪资下限', ");
+			sql.append("t_mra.ADVICE_SAL_UPPER As '建议薪资上限', ");
+			sql.append("t_mra.JOB_DESCRIPTION AS '工作职责', ");
+			sql.append("t_mra.QUALIFICATION AS '任职资格', ");
+			sql.append("t_mra.PROC_STATUS AS '流程状态', ");
+			sql.append("t_mra.REMARK AS '备注信息', ");
+			sql.append("t_statusNameRef.APP_STATUS_NAME AS '申请状态名称' ");			
+			sql.append("FROM ");
+			sql.append("t_oa_hr_manpower_requisition_app t_mra ");
+			sql.append("LEFT JOIN t_oa_app_status_name_ref t_statusNameRef ON t_mra.APP_STATUS = t_statusNameRef.REF_ID ");
+			sql.append("WHERE 1=1 ");	
+			sql.append("AND t_mra.MRA_ID in ("+ids+") ");
+			//拼接高级查询的条件   
+			//(1)按照申请日期进行查询
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			if( null != voModel ){				
+				if(voModel.getAppDateStart() != null){
+					sql.append("AND t_mra.APP_DATE >= '"+df.format(voModel.getAppDateStart())+"' ");				
+				}
+				if(voModel.getAppDateEnd() != null){
+					sql.append("AND t_mra.APP_DATE <= '"+df.format(voModel.getAppDateEnd())+"' ");				
+				}
+			}
+//			sql.append("AND t_mra.APPLICANT_NO = '"+userId+"' ");
+			sql.append("ORDER BY t_mra.APP_DATE DESC ");
+			
+			List<Object> tmpResult = publicDao.findBySql(sql.toString(), pageUtil);
+			
+			DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");		
+			
+			if(Collections.listIsNotEmpty(tmpResult)){
+				StaffRecruitAppVOModel tmpModel = new StaffRecruitAppVOModel();
+				
+				for(int i=0; i<tmpResult.size(); i++){
+					//创建一个容器对象，用于封装从SQL中查询的结果集的每一行数据。
+					StaffRecruitAppVOModel oneModel = (StaffRecruitAppVOModel) tmpModel.clone();					
+					Object[] tmpArray = (Object[]) tmpResult.get(i);
+					
+					oneModel.setMraId(tmpArray[0]==null ? null : Integer.parseInt(String.valueOf(tmpArray[0])) );       //设置主键
+					oneModel.setAppNo(tmpArray[1]==null ? "" : String.valueOf(tmpArray[1]) );                           //设置申请编号
+					oneModel.setApplicantNo(tmpArray[2]==null ? null : Integer.parseInt(String.valueOf(tmpArray[2])) ); //设置申请人
+					oneModel.setDeptNo(tmpArray[3]==null ? null : Integer.parseInt( String.valueOf(tmpArray[3]) ) );    //设置所属部门
+					oneModel.setAppDate(tmpArray[4]==null ? null : dateFormatter.parse( String.valueOf(tmpArray[4]) ) ); //设置申请日期
+					oneModel.setAppStatus( tmpArray[5]==null ? "" : String.valueOf(tmpArray[5])  );                    //设置申请状态,记录流程中各分支线路名称，例如：AdminDirectorReject
+					oneModel.setExistingStaff(tmpArray[6]==null ? null : Integer.parseInt( String.valueOf(tmpArray[6]) ) ); //设置现有人员					
+					oneModel.setJobTitle( tmpArray[7]==null ? "" : String.valueOf(tmpArray[7]) ); //设置职位名称					
+					oneModel.setRecruitQty( tmpArray[8]==null ? null : Integer.parseInt( String.valueOf(tmpArray[8])) ); //设置招聘数量					
+					oneModel.setIsTargetInside( tmpArray[9]==null ? null :  String.valueOf(tmpArray[9]).charAt(0) ); //设置是否部门目标内					
+					oneModel.setRecruitPurpose( tmpArray[10]==null ? "1".charAt(0) : String.valueOf(tmpArray[10]).charAt(0) ); //设置招聘目的,取值范围：1－补充新人，2－替换现职员，默认为1					
+					oneModel.setRecruitType( tmpArray[11]==null ? "1".charAt(0) : String.valueOf(tmpArray[11]).charAt(0) ); //设置招聘人员类型，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=recruit_type的记录的code_id的所有数据，取值范围：1－正式员工，2－季节工，3－临时工，4－计时工，默认为1					
+					oneModel.setRecruitPlace( tmpArray[12]==null ? "1".charAt(0) : String.valueOf(tmpArray[12]).charAt(0) ); //设置招聘渠道，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=recruit_place的记录的code_id的所有数据，取值范围：1－从公司外部招聘，2－从公司内部调配，默认为1
+					oneModel.setJobDtime(tmpArray[13]==null ? null : dateFormatter.parse( String.valueOf(tmpArray[13]) ) ); //设置上岗时间
+					oneModel.setServiceLife( tmpArray[14]==null ? null : BigDecimal.valueOf(new Double(String.valueOf(tmpArray[14]))) ); //设置服务年限
+					oneModel.setAdviceSalLower( tmpArray[15]==null ? new BigDecimal("0") : BigDecimal.valueOf(new Double(String.valueOf(tmpArray[15]))) ); //建议薪资下限
+					oneModel.setAdviceSalUpper( tmpArray[16]==null ? new BigDecimal("0") : BigDecimal.valueOf(new Double(String.valueOf(tmpArray[16]))) ); //建议薪资上限
+					oneModel.setJobDescription( tmpArray[17]==null ? "" : String.valueOf(tmpArray[17]) ); //设置工作职责
+					oneModel.setQualification( tmpArray[18]==null ? "" : String.valueOf(tmpArray[18]) ); //设置工作职责
+					oneModel.setProcStatus( tmpArray[19]==null ? null : String.valueOf(tmpArray[19]).charAt(0) ); //设置流程状态，查询系统字典表（t_sys_dict）中所有parent_id等于dict_code=proc_status的记录的code_id的所有数据，取值范围：1－初始状态，2－审批中，3－已完成，4－已失效，5－已撤销															
+					oneModel.setRemark( tmpArray[20]==null ? "" : String.valueOf(tmpArray[20]) ); //设置备注信息
+					oneModel.setAppStatusName(tmpArray[21]==null ? "" : String.valueOf(tmpArray[21]));  //设置当前流程的申请状态名称，比如：营业部经理通过
+					
+					//设置当前登录用户的用户名子										
+					oneModel.setCurLoginUserName(curLoginUserName);
+					//当前登录用户所在的部门名称					
+					oneModel.setDeptName(deptName);										
+					
+					//将接过对象封装到List中。
+					voModelList.add(oneModel);
+				}
+			}			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}    			
+		return voModelList;						
+	}
+
+	@Override
+	public Long countAllStaffRecruitAppModel() {
+		Integer userId = Constants.getCurrendUser().getUserId();
+		Long totalRowNum = null;
+		try {
+			StringBuffer sql = new StringBuffer();
+			sql.append("select count(1) from t_oa_hr_manpower_requisition_app t_mra where t_mra.APPLICANT_NO='"+userId+"'");			
+			totalRowNum = publicDao.findTotalCount(sql.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return (totalRowNum==null) ? 0 : totalRowNum;
+	}
+
+	@Override
+	public Long countSatisfyiedStaffRecruitAppModel(StaffRecruitAppVOModel voModel) {
+		Integer userId = Constants.getCurrendUser().getUserId();
+		Long totalRowNum = null;
+		try {
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT count(1) FROM t_oa_hr_manpower_requisition_app t_mra WHERE 1=1 ");			
+			//拼接高级查询的条件   
+			//(1)按照申请日期进行查询
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			if(voModel.getAppDateStart() != null){
+				sql.append("AND t_mra.APP_DATE >= '"+df.format(voModel.getAppDateStart())+"' ");				
+			}
+			if(voModel.getAppDateEnd() != null){
+				sql.append("AND t_mra.APP_DATE <= '"+df.format(voModel.getAppDateEnd())+"' ");				
+			}
+			sql.append("AND t_mra.APPLICANT_NO = '"+userId+"' ");
+			sql.append("ORDER BY t_mra.APP_DATE DESC ");			
+			totalRowNum = publicDao.findTotalCount(sql.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return (totalRowNum==null) ? 0 : totalRowNum;
+	}
+	
+	
+	@Override
+	public boolean deleteStaffRecruitAppByMraID(Integer mraId) {
+		
+		try {
+			StaffRecruitAppModel oneModel = new StaffRecruitAppModel();
+			oneModel.setMraId(mraId);
+			publicDao.delete(oneModel);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return false;
+	}
+
+	
+	/*******************************************************************/
+	/************************ 与流程处理相关的方法    *****************************/
+	/*******************************************************************/
+	
+	/**
+	 * 当启动流程时，根据当前用户ID，判断是选择“总部”还是“分部”的流程图。
+	 * @Title: getProcessDefinitionKey4HOBO 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年11月20日 上午11:21:11
+	 */
+	private String getProcessDefinitionKey4HOBO(){
+		// 声明 流程定义主键（即，自定义流程图的ID）
+		String processDefinitionKey = "";
+		Organization orgObj = organizationService.findOrganizationByUserId(Constants.getCurrendUser().getUserId());
+		//DeptLevel若=0，则走总部的流程图。
+		if(null != orgObj && "0".equalsIgnoreCase(orgObj.getDeptLevel())){
+			imgName = "OA_PD_StaffRecruitApp_HO";
+			processDefinitionKey = Constants.STAFFRECRUITAPP_HO;
+		}
+		//DeptLevel若=1，则走分部的流程图。
+		else if(null != orgObj && "1".equalsIgnoreCase(orgObj.getDeptLevel())){
+			imgName = "OA_PD_StaffRecruitApp_BO";
+			processDefinitionKey = Constants.STAFFRECRUITAPP_BO;			
+		}		
+		return processDefinitionKey;
+	}
+	
+	
+	//更新申请状态，申请状态，记录流程中各分支线路名称，例如：AdminDirectorReject
+	@Override	
+	public void updateStaffRecruitAppStatus(Integer mraId, String appStatus) {
+		StaffRecruitAppModel staffRecruitAppModel = publicDao.get(StaffRecruitAppModel.class,mraId);
+		staffRecruitAppModel.setAppStatus(appStatus);
+		publicDao.saveOrUpdate(staffRecruitAppModel);
+	}
+	
+	//更新流程状态, 取值范围：1－初始状态，2－审批中，3－已完成，4－已失效，5－已撤销, 6-已拒绝
+	//在各个Task几点的listener上进行调用。
+	@Override
+	public void updateStaffRecruitProcessStatus(Integer mraId, String status) {
+		//更新申请状态
+		StaffRecruitAppModel staffRecruitAppModel = publicDao.get(StaffRecruitAppModel.class,mraId);
+		if (staffRecruitAppModel!=null) {
+			staffRecruitAppModel.setProcStatus(status.charAt(0));
+			if("2".equals(status)){
+				//申请时间
+				staffRecruitAppModel.setAppDate(new Date());
+			}
+		}
+		//更新订单状态
+		publicDao.saveOrUpdate(staffRecruitAppModel);		
+	}	
+	
+	
+	
+	@Override
+	public String startProcessStaffRecruitApp(StaffRecruitAppModel model) {
+		try {
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setBusinessID(model.getMraId().toString());//业务ID
+			taskModel.setBusinessDefineKey(getProcessDefinitionKey4HOBO());// 获取启动实例的key
+			taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+			taskModel.setAppNo(model.getAppNo());//申请编号
+			
+			Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+			//判断任务未结束			
+//			if(resultMap.get(Constants.STATUS_REF_ID) != null){
+//				//更新申请状态
+//				updateStaffRecruitAppStatus(model.getMraId(),resultMap.get(Constants.STATUS_REF_ID).toString());
+//			}
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	@Override
+	public void getDiagramResourceByPaId(
+			HttpServletResponse httpServletResponse, Integer mraId) {
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			StaffRecruitAppModel staffRecruitAppModel = new StaffRecruitAppModel();
+			staffRecruitAppModel.setMraId(mraId);
+//			String proDefKey = getProcessImgName(staffRecruitAppModel);
+			String proDefKey = getProcessDefinitionKey4HOBO();
+			String businessKey = proDefKey + "." + mraId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			if(pi!=null){
+				// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+				ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+				// 获取当前执行任务流程
+				List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+				// 获取图片的流程图片名称
+				String resourceName = imgName + ".png";
+				// 获取图片的文件的流
+				in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+				// 获取图片对象
+				BufferedImage bimg;
+				bimg = ImageIO.read(in);
+				// 得到Graphics2D 对象
+				Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+				// 设置颜色和画笔粗细
+				g2d.setColor(Color.RED);
+				g2d.setStroke(new BasicStroke(3));
+				// 遍历执行的任务,画图
+				for (Task task : tasks) {
+					// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+					Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+					// 根据当前的执行对象的id获取正在执行的活动信息
+					ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+					// 绘制矩形
+					Rectangle2D rectangle = new Rectangle2D.Float(
+							activityImpl.getX(), activityImpl.getY(),
+							activityImpl.getWidth(), activityImpl.getHeight());
+					g2d.draw(rectangle);
+				}
+				// 写入response输出流中
+				ImageIO.write(bimg, "png", httpServletResponse.getOutputStream());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}			
+	}
+
+	@Override
+	public String getProcessImgName(StaffRecruitAppModel staffRecruitAppModel) {
+
+//		try {
+//			StaffRecruitAppModel staffRecruitAppModel2 = publicDao.get(StaffRecruitAppModel.class,staffRecruitAppModel.getMraId());
+//			if (staffRecruitAppModel2!=null) {
+//				Integer appDeptId = staffRecruitAppModel2.getDeptNo();//部门id
+//				Organization organization = organizationService.findOrganizationByOrganizationId(appDeptId);
+//				if(organization!=null){
+//					//0是总部，1是分部
+//					if("0".equals(organization.getDeptLevel())){
+//						imgName = "OA_PD_StaffRecruitApp_HO";
+//						return Constants.STAFFRECRUITAPP_HO;//走总部流程图
+//					}
+//					else if("1".equals(organization.getDeptLevel())){						
+//						imgName = "OA_PD_StaffRecruitApp_BO";
+//						return Constants.STAFFRECRUITAPP_BO;//走分部流程图
+//					}
+//				}
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		return null;				
+	}
+
+	
+	@Override
+	public List<StaffRecruitAppVOModel> findAllStaffRecruitAppTaskList(PageUtil pageUtil,
+			WorkFlowTasksModel wf) {
+		try {
+		    //登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(wf);
+			//返回的结果集
+			List<StaffRecruitAppVOModel> staffRecruitAppVOModelList = new ArrayList<StaffRecruitAppVOModel>();
+			String ids = "";
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				for (WorkFlowTasksModel workFlowTasksModel : taskModelList) {
+					ids += workFlowTasksModel.getBusinessKey()+",";
+				}
+				//id字符串
+				ids = ids.substring(0, ids.length()-1);
+				//根据id字符串查出的集合
+				List<StaffRecruitAppVOModel> pamList = findStaffRecruitAppByIds(ids,pageUtil, null);
+				for (WorkFlowTasksModel wfTasksModel : taskModelList) {
+					for (StaffRecruitAppVOModel oneVOModel : pamList) {
+						if(Integer.valueOf(wfTasksModel.getBusinessKey()) == oneVOModel.getMraId()){
+							oneVOModel.setTaskModel(wfTasksModel);
+							oneVOModel.setTaskId(wfTasksModel.getTaskID());
+							oneVOModel.setFormKey(wfTasksModel.getFormKey());
+							staffRecruitAppVOModelList.add(oneVOModel);
+						}
+					}
+				}
+			}
+			return staffRecruitAppVOModelList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;		
+	}
+
+	@Override
+	public Long countFindAllStaffRecruitAppTaskList() {
+		try {
+			//登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(new WorkFlowTasksModel());
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				return Long.valueOf(taskModelList.size());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+
+	
+	@Override
+	public boolean saveHoldWorkTask(String taskId) {
+		try {
+			//获取用户的id
+			Integer userId = Constants.getCurrendUser().getUserId();
+			//签收任务
+			this.taskService.claim(taskId, String.valueOf(userId));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;		
+	}
+
+	@Override
+	public String saveSubmitTaskBo(WorkFlowTasksModel taskModel) {
+		Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+		if(resultMap.get(Constants.STATUS_REF_ID)!=null){
+			updateStaffRecruitAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();		
+	}	
+}

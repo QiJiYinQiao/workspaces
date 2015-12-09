@@ -1,0 +1,147 @@
+package com.oasys.service;
+
+import java.text.ParseException;
+import java.util.List;
+import java.util.Map;
+
+import com.oasys.model.EmpSalPositionChgApp;
+import com.oasys.model.StatusNameRef;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+
+
+/**   
+ * @Title: EmpSalPositionChgAppService
+ * @Package com.oasys.service
+ * @Description: 员工薪资岗位变动申请Service
+ * @author lida  
+ * @date 2015/10/26
+ * @version V1.0   
+ */
+public interface EmpSalPositionChgAppService {
+	
+	/** 
+	 * @Title: findEmpSalAppList
+	 * @Description: 查询所有员工薪资岗位变动申请申请记录集合
+	 * @param pageUtil 分页对象
+	 * @param empSalApp 页面绑定实体对象参数
+	 * @author lida
+	 * @return List<EmpSalPositionChgApp> 员工薪资岗位变动申请记录List
+	 * @date 2015/10/26
+	 */
+	List<EmpSalPositionChgApp> findEmpSalAppList(PageUtil pageUtil,EmpSalPositionChgApp empSalApp) throws ParseException;
+	
+	/** 
+	 * @Title: findEmpSalAppListCount
+	 * @Description: 	查询所有员工薪资岗位变动申请申请记录数量
+	 * @param empSalApp 页面绑定实体对象参数
+	 * @author lida
+	 * @return Long 员工薪资岗位变动申请记录总记录数
+	 * @date 2015/10/26
+	 */
+	Long findEmpSalAppListCount(EmpSalPositionChgApp empSalApp);
+	
+	/** 
+	 * @Title: saveOrUpdateEmpSalAppEntity
+	 * @Description: 	新增员工薪资岗位变动申请申请单
+	 * @param empSalApp 页面绑定实体对象参数
+	 * @author lida
+	 * @date 2015/10/26
+	 */
+	void saveOrUpdateEmpSalAppEntity(EmpSalPositionChgApp empSalApp);
+	
+	/**
+	 * @Title: delEmpSalAppScrap
+	 * @Description: 	根据申请编号删除员工薪资岗位变动申请记录
+	 * @param appNo 申请编号
+	 * 	@author lida
+	 * @date 2015/10/26
+	 */
+	void delEmpSalAppScrap(String appNo);
+	
+	/**
+	 * @Title: getEmpSalPositionByID
+	 * @Description: 	根据ID加载员工薪资岗位变动申请记录
+	 * @param id id标识
+	 * 	@author lida
+	 * @return EmpSalPositionChgApp 员工薪资岗位变动实体对象
+	 * @date 2015/10/26
+	 */
+	EmpSalPositionChgApp getEmpSalPositionByID(Integer id);
+	
+	/**
+	 * @Title: empSalPositionStartProcessInstance
+	 * @Description: 	开启流程
+	 * @param id id标识
+	 * 	@author lida
+	 * @return String 消息提示字符
+	 * @date 2015/10/26
+	 */
+	String empSalPositionStartProcessInstance(Integer id);
+	
+	/**
+	 * @Title: updEmpSalPositionProcessStatus
+	 * @Description: 	更新流程状态字段
+	 * @param id id标识
+	 * @param status 更新的状态Code
+	 * 	@author lida
+	 * @date 2015/10/26
+	 */
+	void updEmpSalPositionProcessStatus(Integer id,String status);
+	
+	/**
+	 * @Title: updEmpSalPositionChgAppStatus
+	 * @Description: 更新申请状态字段
+	 * @param id id标识
+	 * @param status 更新的状态Code
+	 * 	@author lida
+	 * @date 2015/10/26 
+	 */
+	void updEmpSalPositionChgAppStatus(Integer id,String status);
+	
+	/**
+	 * @Title: findEmpSalPositionTask
+	 * @Description: 查询员工薪资岗位变动申请任务列表
+	 * @param id id标识
+	 * @param status 更新的状态Code
+	 * @return List<EmpSalPositionChgApp> 员工薪资岗位变动申请申请附加表List
+	 * 	@author lida
+	 * @date 2015/10/26 
+	 */
+	List<EmpSalPositionChgApp> findEmpSalPositionTask(PageUtil pageUtil,EmpSalPositionChgApp empSal) throws ParseException ;
+	
+	/**
+	 * @Title: findEmpSalPositionTaskCount
+	 * @Description: 查询员工薪资岗位变动申请任务列表记录数量
+     * @param empSal 实体对象
+	 * @return Long 记录数
+	 * 	@author lida
+	 * @date 2015/10/26 
+	 */
+	Long findEmpSalPositionTaskCount(EmpSalPositionChgApp empSal);
+	
+	/**
+	 * @Title: saveSubmitTask
+	 * @Description: 受理任务
+	 * @param WorkFlowTasksModel 实体对象
+	 * 	@author lida
+	 * @date 2015/10/26
+	 */
+	public String saveSubmitTask(WorkFlowTasksModel workFlowTaskModel) throws Exception;
+	
+	/**
+	 * @Title: findAppStatusByID
+	 * @Description: 根据状态ID查询员工薪资岗位变动申请状态
+	 * @param appStatusID 状态ID
+	 * 	@author lida
+	 * @date 2015/10/26
+	 */
+	public StatusNameRef findAppStatusByID(String appStatusID);
+	
+	//根据异动申请 获取流程图ID
+	public Map<String,String> getProcDefKey(EmpSalPositionChgApp empSal);
+	
+//	public String getRoleCodeByUserID(String id);
+	
+}

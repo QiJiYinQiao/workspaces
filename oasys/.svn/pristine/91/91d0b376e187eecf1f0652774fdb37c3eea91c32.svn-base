@@ -1,0 +1,555 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.Organization;
+import com.oasys.model.PurchaseApp;
+import com.oasys.model.Users;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.PurchaseAppAttachService;
+import com.oasys.service.PurchaseAppService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.MoneyUtil;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.PurchaseAppModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+/**
+ * @ClassName: PurchaseAppServiceImpl 
+ * @Description: TODO 物料申请ServiceImpl
+ * @author PANCHUANHE
+ * @date 2015年9月16日 下午1:46:49
+ */
+@Service(value="purchaseAppService")
+public class PurchaseAppServiceImpl extends WorkFlowBaseServiceImpl implements PurchaseAppService {
+
+	@Autowired
+	private PublicDao<PurchaseApp> publicDao;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private StatusNameRefService statusNameRefService;
+	@Autowired
+	private PurchaseAppAttachService purchaseAppAttachService;
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private OrganizationService organizationService;
+	//流程图片名称
+	private String imgName;
+	@Override
+	public boolean savePurchaseApp(PurchaseApp purchaseApp) {
+		try {
+			if(purchaseApp.getPaId()==null){
+				//新增
+				String appNum = "";
+				if ("2".equals(purchaseApp.getAppType())) {
+					appNum = UniqueIdUtil.generate("CG");//固定资产采购
+				}else if("1".equals(purchaseApp.getAppType())){
+					appNum = UniqueIdUtil.generate("CW");//物料采购
+				}else{
+				}
+				Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+				//申请单位
+				purchaseApp.setAppDept(user.getOrganizeId());
+				//申请状态，初始状态
+				purchaseApp.setAppStatus("1");
+				//申请人
+		    	purchaseApp.setApplicantNo(Constants.getCurrendUser().getUserId());
+		    	//申请编号
+		    	purchaseApp.setAppNo(appNum);
+		    	//流程状态
+		    	purchaseApp.setProcStatus("1");
+				publicDao.save(purchaseApp);
+			}else{
+				//更新
+				publicDao.update(purchaseApp);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public void updatePurchaseAppTotalAmt(String appNo, BigDecimal count) {
+		try {
+			StringBuffer hql = new StringBuffer();
+			hql.append("update PurchaseApp p set p.totalAmt = '"+count+"' where p.appNo = '"+appNo+"'");
+			publicDao.executeHql(hql.toString(), null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public List<PurchaseAppModel> findPurchaseAppList(PageUtil pageUtil,PurchaseAppModel purchaseAppModel) {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			//获取sql语句
+			String sql = getListSql(purchaseAppModel);
+			List<Object> list = publicDao.findBySql(sql.toString(), pageUtil);
+			List<PurchaseAppModel> modelList = new ArrayList<PurchaseAppModel>();
+			if(Collections.listIsNotEmpty(list)){
+				PurchaseAppModel model = new PurchaseAppModel();
+				for (int i = 0; i < list.size(); i++) {
+					PurchaseAppModel cmodel = (PurchaseAppModel) model.clone();
+					Object[] obj = (Object[]) list.get(i);
+					cmodel.setAccount(obj[0] == null?"":String.valueOf(obj[0]));
+					cmodel.setFullName(obj[1] == null?"":String.valueOf(obj[1]));
+					cmodel.setPaId(obj[2] == null?null:(Integer)obj[2]);
+					cmodel.setAppNo(obj[3] == null?"":String.valueOf(obj[3]));
+					cmodel.setAppType(obj[4] == null?"":String.valueOf(obj[4]));
+					cmodel.setAppTypeOther(obj[5] == null?"":String.valueOf(obj[5]));
+					cmodel.setApplicantNo(obj[6] == null?null:(Integer)obj[6]);
+					cmodel.setAppDept(obj[7] == null?null:(Integer)obj[7]);
+					cmodel.setAppDate(obj[8] == null?null:sdf.parse(String.valueOf(obj[8])));
+					cmodel.setAppStatus(obj[9] == null?"":String.valueOf(obj[9]));
+					cmodel.setTotalAmt(obj[10] == null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[10])));
+					cmodel.setPlanRecDate(obj[11] == null?null:sdf.parse(String.valueOf(obj[11])));
+					cmodel.setProcStatus(obj[12] == null?"":String.valueOf(obj[12]));
+					cmodel.setRemark(obj[13] == null?"":String.valueOf(obj[13]));
+					cmodel.setAppTypeName(obj[14] == null?"":String.valueOf(obj[14]));
+					
+					cmodel.setArticleName(obj[15] == null?"":String.valueOf(obj[15]));
+					cmodel.setModel(obj[16] == null?"":String.valueOf(obj[16]));
+					cmodel.setPrice(obj[17] == null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[17])));
+					cmodel.setQty(obj[18] == null?null:(Integer)obj[18]);
+					cmodel.setZtotalAmt(obj[19] == null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[19])));
+					cmodel.setPurpose(obj[20] == null?"":String.valueOf(obj[20]));
+					cmodel.setUser(obj[21] == null?null:(Integer)obj[21]);
+					cmodel.setDepositary(obj[22] == null?null:(Integer)obj[22]);
+					cmodel.setZremark(obj[23] == null?"":String.valueOf(obj[23]));
+					cmodel.setUserName(obj[24] == null?"":String.valueOf(obj[24]));
+					cmodel.setDepositaryName(obj[25] == null?"":String.valueOf(obj[25]));
+					cmodel.setAppStatusName(obj[26] == null?"":String.valueOf(obj[26]));
+					cmodel.setPsaId(obj[27] == null?null:(Integer)obj[27]);
+					cmodel.setUnit(obj[28] == null?"":String.valueOf(obj[28]));
+					cmodel.setUnitOther(obj[29] == null?"":String.valueOf(obj[29]));
+					cmodel.setMyId(obj[30] == null?"":String.valueOf(obj[30]));
+					modelList.add(cmodel);
+				}
+			}
+			return modelList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Long countPurchaseAppList(PurchaseAppModel purchaseAppModel) {
+		try {
+			return publicDao.findTotalCount1(getListSql(purchaseAppModel));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
+	@Override
+	public String getListSql(PurchaseAppModel purchaseAppModel) {
+		Integer userId = Constants.getCurrendUser().getUserId();
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT ");
+		sql.append("u.USER_NAME as '申请人姓名',");
+		sql.append("o.FULL_NAME as '申请机构名称',");
+		sql.append("p.PA_ID as 'ID',");
+		sql.append("p.APP_NO as '申请编号',");
+		sql.append("IF(p.APP_TYPE='',1,p.APP_TYPE) as '申请类型',");
+		sql.append("p.APP_TYPE_OTHER as '其他申请类型',");
+		sql.append("p.APPLICANT_NO as '申请人id',");
+		sql.append("p.APP_DEPT as '申请部门id',");
+		sql.append("p.APP_DATE as '申请时间',");
+		sql.append("p.APP_STATUS as '申请状态',");
+		sql.append("p.TOTAL_AMT as '申请总额',");
+		sql.append("p.PLAN_REC_DATE as '计划到货时间',");
+		sql.append("IFNULL(p.PROC_STATUS,1) as '流程状态',");
+		sql.append("p.REMARK as '备注信息',");
+		sql.append("s.DICT_NAME as '申请类型名称',");
+		
+		sql.append("qqms.get_dict_code_func('article_name',pa.ARTICLE_NAME) AS '物品名称',");
+		sql.append("pa.MODEL AS '型号规格',");
+		sql.append("pa.PRICE AS '单价',");
+		sql.append("pa.QTY AS '数量',");
+		sql.append("pa.TOTAL_AMT AS '合计金额',");
+		sql.append("pa.PURPOSE AS '用途',");
+		sql.append("pa.`USER` AS '用户id',");
+		sql.append("pa.DEPOSITARY AS '保管人id',");
+		sql.append("pa.REMARK AS '备注',");
+		sql.append("uu.USER_NAME AS '使用人姓名',");
+		sql.append("uuu.USER_NAME AS '保管人姓名',");
+		sql.append("r.APP_STATUS_NAME AS '申请状态名称',");
+		sql.append("pa.PSA_ID AS '附件表主键',");
+		sql.append("pa.UNIT AS '单位',");
+		sql.append("pa.UNIT_OTHER AS '其他单位',");
+		sql.append("o.MYID AS '所属业务端' ");
+		sql.append("FROM t_oa_ad_purchase_app p ");
+		sql.append("LEFT JOIN t_oa_ad_purchase_app_attach pa ON p.APP_NO = pa.APP_NO ");
+		sql.append("LEFT JOIN t_oa_app_status_name_ref r ON p.APP_STATUS = r.APP_STATUS_CODE ");
+		sql.append("LEFT JOIN qqms.t_users u ON p.APPLICANT_NO = u.USER_ID ");
+		sql.append("LEFT JOIN qqms.t_users uu ON uu.USER_ID = pa.`USER` ");
+		sql.append("LEFT JOIN qqms.t_users uuu ON uuu.USER_ID = pa.DEPOSITARY ");
+		sql.append("LEFT JOIN qqms.t_organization o ON p.APP_DEPT = o.ORGANIZATION_ID ");
+		sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = (SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'app_type')) s ON s.DICT_CODE = p.APP_TYPE ");
+		sql.append("WHERE 1=1");
+		if(StringUtils.isNotBlank(purchaseAppModel.getIds())){
+			sql.append(" AND p.PA_ID IN ("+purchaseAppModel.getIds()+")");
+		}else{
+			sql.append(" AND p.APPLICANT_NO = "+userId);
+		}
+		if (StringUtils.isNotBlank(purchaseAppModel.getAppType())) {
+			sql.append(" And p.APP_TYPE = '"+purchaseAppModel.getAppType()+"'");
+		}
+		if(StringUtils.isNotBlank(purchaseAppModel.getAppNo())){
+			sql.append(" AND p.APP_NO like '%"+purchaseAppModel.getAppNo()+"%'");
+		}
+		if(StringUtils.isNotBlank(purchaseAppModel.getAppDateMini())){
+			sql.append(" AND p.APP_DATE >= '"+purchaseAppModel.getAppDateMini()+"'");
+		}
+		if(StringUtils.isNotBlank(purchaseAppModel.getAppDateMax())){
+			sql.append(" AND p.APP_DATE <= '"+purchaseAppModel.getAppDateMax()+"'");
+		}
+		sql.append(" ORDER BY p.PA_ID DESC");
+		return sql.toString();
+	}
+	
+	@Override
+	public boolean delPurchaseAppByPaId(Integer paId) {
+		try {
+			PurchaseApp purchaseApp = new PurchaseApp();
+			purchaseApp.setPaId(paId);
+			publicDao.delete(purchaseApp);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public PurchaseApp findPurchaseAppByAppNo(String appNo) {
+		StringBuffer hql = new StringBuffer();
+		hql.append("from PurchaseApp p where p.appNo = '"+appNo+"'");
+		List<PurchaseApp> list = publicDao.find(hql.toString());
+		if(Collections.listIsNotEmpty(list)){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	@Override
+	public String startWorkflow(PurchaseApp purchaseApp) {
+		//填充taskModel对象属性
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setAppNo(purchaseApp.getAppNo());//APPNO
+		taskModel.setBusinessID(purchaseApp.getPaId().toString());//业务ID
+		taskModel.setBusinessDefineKey(getProcDefKey(purchaseApp));// 获取启动实例的key
+		taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+		Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);//启动流程
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+
+	@Override
+	public String getProcDefKey(PurchaseApp purchaseApp) {
+		PurchaseApp purchaseApp2 = publicDao.get(PurchaseApp.class,purchaseApp.getPaId());
+		if (purchaseApp2!=null) {
+			Integer appDeptId = purchaseApp2.getAppDept();
+			Organization organization = organizationService.findOrganizationByOrganizationId(appDeptId);
+			if(organization!=null){
+				//0是总部，1是分部
+				if("0".equals(organization.getDeptLevel())){
+					imgName = "OA_AD_purchase_HO";
+					return Constants.PURCHASEAPP_HO;
+				}else if ("1".equals(organization.getDeptLevel())) {
+					//财富端
+					if (Constants.ORG_MYID_CF.equals(organization.getMyid())) {
+						imgName = "OA_AD_purchase_BO";
+						return Constants.PURCHASEAPP_BO;
+					}
+				}else {
+				}
+			}
+		}
+		return null;
+	}
+	@Override
+	public void updatePurchaseAppStatus(Integer paId, String state) {
+		//跟新订单状态
+		PurchaseApp purchaseApp = publicDao.get(PurchaseApp.class, paId);
+		purchaseApp.setAppStatus(state);
+		publicDao.saveOrUpdate(purchaseApp);
+	}
+
+	@Override
+	public List<PurchaseAppModel> findAllPurchaseAppTaskList(Integer page,Integer rows,WorkFlowTasksModel wftModel) {
+		//登录角色所要办理的的任务集合
+		List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(wftModel);
+		//返回的结果集
+		List<PurchaseAppModel> purchaseAppModelList = new ArrayList<PurchaseAppModel>();
+		String ids = "";
+		if (Collections.listIsNotEmpty(taskModelList)) {
+			for (WorkFlowTasksModel workFlowTasksModel : taskModelList) {
+				ids += workFlowTasksModel.getBusinessID()+",";
+			}
+			//id字符串
+			ids = ids.substring(0, ids.length()-1);
+			//根据id字符串查出的集合
+			List<PurchaseAppModel> pamList = findPurchaseAppByTask(ids,new PageUtil(page, rows));
+			for (WorkFlowTasksModel wl : taskModelList) {
+				for (PurchaseAppModel purchaseAppModel : pamList) {
+					if(Integer.valueOf(wl.getBusinessID()) == purchaseAppModel.getPaId()){
+						purchaseAppModel.setTaskModel(wl);
+						purchaseAppModel.setTaskId(wl.getTaskID());
+						purchaseAppModel.setFormKey(wl.getFormKey());
+						purchaseAppModelList.add(purchaseAppModel);
+					}
+				}
+			}
+		}
+		return purchaseAppModelList;
+	}
+	
+	@Override
+	public Long countAllPurchaseAppTaskList(WorkFlowTasksModel workFlowTasksModel) {
+		try {
+			//登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(workFlowTasksModel);
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				return Long.valueOf(taskModelList.size());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+	
+	/**
+	 * @throws ParseException 
+	 * 根据id字符串查询实体对象集合
+	 * @Title: findPurchaseAppByTask 
+	 * @Description: TODO
+	 * @param @param task
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return PurchaseApp
+	 * @date 2015年9月23日 上午9:28:03
+	 * @throws
+	 */
+	public List<PurchaseAppModel> findPurchaseAppByTask(String ids,PageUtil pageUtil){
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			List<PurchaseAppModel> modelList = new ArrayList<PurchaseAppModel>();
+			if (StringUtils.isNotBlank(ids)) {
+				String sql = getListSql(new PurchaseAppModel(ids));
+				List<Object> list = publicDao.findBySql(sql.toString(), pageUtil);
+				if(Collections.listIsNotEmpty(list)){
+					PurchaseAppModel model = new PurchaseAppModel();
+					for (int i = 0; i < list.size(); i++) {
+						PurchaseAppModel cmodel = (PurchaseAppModel) model.clone();
+						Object[] obj = (Object[]) list.get(i);
+						cmodel.setAccount(obj[0] == null?"":String.valueOf(obj[0]));
+						cmodel.setFullName(obj[1] == null?"":String.valueOf(obj[1]));
+						cmodel.setPaId(obj[2] == null?null:(Integer)obj[2]);
+						cmodel.setAppNo(obj[3] == null?"":String.valueOf(obj[3]));
+						cmodel.setAppType(obj[4] == null?"":String.valueOf(obj[4]));
+						cmodel.setAppTypeOther(obj[5] == null?"":String.valueOf(obj[5]));
+						cmodel.setApplicantNo(obj[6] == null?null:(Integer)obj[6]);
+						cmodel.setAppDept(obj[7] == null?null:(Integer)obj[7]);
+						cmodel.setAppDate(obj[8] == null?null:sdf.parse(String.valueOf(obj[8])));
+						cmodel.setAppStatus(obj[9] == null?"":String.valueOf(obj[9]));
+						cmodel.setTotalAmt(obj[10] == null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[10])));
+						cmodel.setPlanRecDate(obj[11] == null?null:sdf.parse(String.valueOf(obj[11])));
+						cmodel.setProcStatus(obj[12] == null?"":String.valueOf(obj[12]));
+						cmodel.setRemark(obj[13] == null?"":String.valueOf(obj[13]));
+						cmodel.setAppTypeName(obj[14] == null?"":String.valueOf(obj[14]));
+						
+						cmodel.setArticleName(obj[15] == null?"":String.valueOf(obj[15]));
+						cmodel.setModel(obj[16] == null?"":String.valueOf(obj[16]));
+						cmodel.setPrice(obj[17] == null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[17])));
+						cmodel.setQty(obj[18] == null?null:(Integer)obj[18]);
+						cmodel.setZtotalAmt(obj[19] == null?null:MoneyUtil.numberWithDelimiter(String.valueOf(obj[19])));
+						cmodel.setPurpose(obj[20] == null?"":String.valueOf(obj[20]));
+						cmodel.setUser(obj[21] == null?null:(Integer)obj[21]);
+						cmodel.setDepositary(obj[22] == null?null:(Integer)obj[22]);
+						cmodel.setZremark(obj[23] == null?"":String.valueOf(obj[23]));
+						cmodel.setUserName(obj[24] == null?"":String.valueOf(obj[24]));
+						cmodel.setDepositaryName(obj[25] == null?"":String.valueOf(obj[25]));
+						cmodel.setAppStatusName(obj[26] == null?"":String.valueOf(obj[26]));
+						cmodel.setPsaId(obj[27] == null?null:(Integer)obj[27]);
+						cmodel.setUnit(obj[28] == null?"":String.valueOf(obj[28]));
+						cmodel.setUnitOther(obj[29] == null?"":String.valueOf(obj[29]));
+						cmodel.setMyId(obj[30] == null?"":String.valueOf(obj[30]));
+						modelList.add(cmodel);
+					}
+				}
+			}
+		    return modelList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean saveHoldWorkTask(String taskId) {
+		try {
+			//获取用户的id
+			Integer userId = Constants.getCurrendUser().getUserId();
+			//签收任务
+			this.taskService.claim(taskId, String.valueOf(userId));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public String saveSubmitTask(WorkFlowTasksModel taskModel) {
+		try {
+			Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+			if(null != resultMap.get(Constants.STATUS_REF_ID)){
+				updatePurchaseAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+			}
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,Integer paId){
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			PurchaseApp purchaseApp = new PurchaseApp();
+			purchaseApp.setPaId(paId);
+			//流程图的id
+			String proDefKey = getProcDefKey(purchaseApp);
+			String businessKey = proDefKey + "." + paId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			if(pi!=null){
+				// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+				ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+				// 获取当前执行任务流程
+				List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+				// 获取图片的流程图片名称
+				String resourceName = imgName + ".png";
+				// 获取图片的文件的流
+				in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+				// 获取图片对象
+				BufferedImage bimg;
+				bimg = ImageIO.read(in);
+				// 得到Graphics2D 对象
+				Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+				// 设置颜色和画笔粗细
+				g2d.setColor(Color.RED);
+				g2d.setStroke(new BasicStroke(3));
+				// 遍历执行的任务,画图
+				for (Task task : tasks) {
+					// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+					Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+					// 根据当前的执行对象的id获取正在执行的活动信息
+					ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+					// 绘制矩形
+					Rectangle2D rectangle = new Rectangle2D.Float(
+							activityImpl.getX(), activityImpl.getY(),
+							activityImpl.getWidth(), activityImpl.getHeight());
+					g2d.draw(rectangle);
+				}
+				// 写入response输出流中
+				ImageIO.write(bimg, "png", response.getOutputStream());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+	@Override
+	public void updatePurchaseAppProcessStatus(Integer paId, String status) {
+		PurchaseApp purchaseApp = publicDao.get(PurchaseApp.class, paId);
+		if (purchaseApp!=null) {
+			purchaseApp.setProcStatus(status);
+			//开启流程
+			if (Constants.PROC_APPROVAL.equals(status)) {
+				//更新申请时间
+				purchaseApp.setAppDate(new Date());
+			}
+		}
+		//跟新订单状态
+		publicDao.saveOrUpdate(purchaseApp);
+	}
+
+	@Override
+	public String saveSubmitTaskBatch(WorkFlowTasksModel taskModel) {
+		//调用通用受理任务方法
+		List<Map<String,Object>> resultMapList = workFlowTaskService.saveSubmitTaskBatch(taskModel);
+		String resultStr = "";
+		if(Collections.listIsNotEmpty(resultMapList)){
+			for (Map<String, Object> map : resultMapList) {
+				if(map.containsKey(Constants.STATUS_REF_ID) && map.containsKey(Constants.BUSINESS_ID)){
+					updatePurchaseAppStatus(Integer.valueOf(map.get(Constants.BUSINESS_ID).toString()),map.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+					resultStr = map.get(Constants.RESULT_STR).toString();
+				}
+			}
+		}
+		return resultStr;
+	}
+	
+	@Override
+	public PurchaseApp findPurchaseAppById(String paId) {
+		return publicDao.get(PurchaseApp.class, Integer.parseInt(paId));
+	}
+	
+	public String getImgName() {
+		return imgName;
+	}
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+	
+}

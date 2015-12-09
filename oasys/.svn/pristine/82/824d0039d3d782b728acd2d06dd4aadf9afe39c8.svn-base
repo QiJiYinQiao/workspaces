@@ -1,0 +1,133 @@
+package com.oasys.serviceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.CredentialsApp;
+import com.oasys.service.CredentialsAppService;
+import com.oasys.util.DateUtils;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.CredentialsAppModel;
+
+@Service("credentialsAppService")
+public class CredentialsAppServiceImpl implements CredentialsAppService {
+	@Autowired
+	private PublicDao<CredentialsAppModel> publicDaoVO;
+	@Autowired
+	private PublicDao<CredentialsApp> publicDao;
+	
+	@Override
+	public List<CredentialsAppModel> getList(Map<String, Object> map,
+			PageUtil pageUtil) {
+		StringBuffer stringBuffer = new StringBuffer("SELECT c.APP_NO '申请编号',c.APPLICANT_NO '申请人编号',u.user_name '申请人',c.DEPT_NO '所属部门编号',o.FULL_NAME as '部门名称',c.APP_DATE '申请日期',c.PROC_STATUS '流程状态',a.CS_TYPE '证件类型' ,");
+		stringBuffer.append("a.CS_DESC '证章描述',a.IS_ORIGINAL '是否原件',a.PLAN_USE_DATE '计划使用日期',a.REAL_USE_DATE '实际使用日期',a.CS_PURPOSE '证章用途',");
+		stringBuffer.append("a.IS_LETOUT '是否外借',a.IS_RESTORED '是否已归还',a.PLAN_REST_DATE '计划归还日期',a.REAL_REST_DATE '实际归还日期',c.remark '备注',c.UQA_ID '主表Id',a.UQA_ID '附表Id'");
+		stringBuffer.append("FROM t_oa_fd_credentials_stamp_app c LEFT JOIN t_oa_fd_credentials_stamp_app_attach a ON c.APP_NO = a.APP_NO ");
+		stringBuffer.append(" LEFT JOIN qqms.t_users u ON u.USER_ID = c.APPLICANT_NO");
+		stringBuffer.append(" LEFT JOIN qqms.t_organization o ON o.ORGANIZATION_ID = c.DEPT_NO");
+		stringBuffer.append(" WHERE o.STATUS = 'A' AND 1=1");
+		if(StringUtils.isNotBlank(map.get("procStatus")+"") && map.get("procStatus")!=null){
+			stringBuffer.append(" AND c.PROC_STATUS = "+map.get("procStatus"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateBefore")+"") && map.get("appDateBefore")!=null){
+			stringBuffer.append(" AND c.APP_DATE >= "+map.get("appDateBefore"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateAffter")+"") && map.get("appDateAffter")!=null){
+			stringBuffer.append(" AND c.APP_DATE <= "+map.get("appDateAffter"));
+		} 
+		if(StringUtils.isNotBlank(map.get("useDateBefore")+"") && map.get("useDateBefore")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE >= "+map.get("useDateBefore"));
+		}
+		if(StringUtils.isNotBlank(map.get("useDateAffter")+"") && map.get("useDateAffter")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE <= "+map.get("useDateAffter"));
+		}
+		List<Object> list=publicDaoVO.findBySql(stringBuffer.toString(),pageUtil);
+		List<CredentialsAppModel> list2 = new ArrayList<CredentialsAppModel>();
+		for (int i = 0; i < list.size(); i++) {
+			Object[] item=(Object[]) list.get(i);
+			CredentialsAppModel credentialsAppModel = new CredentialsAppModel();
+			credentialsAppModel.setAppNo(item[0]+"");
+			credentialsAppModel.setApplicantNo(Integer.parseInt(item[1]+""));
+			credentialsAppModel.setApplicantName(item[2]+"");
+			credentialsAppModel.setDeptNo(Integer.parseInt(item[3]+""));
+			credentialsAppModel.setDeptName(item[4]+"");
+			credentialsAppModel.setAppDate(DateUtils.parse(item[5]+"",DateUtils.DATE_SMALL_STR));
+			Integer procStatus=Integer.parseInt(item[6]+"");
+			credentialsAppModel.setProcStatus(procStatus==1?"初始状态":procStatus==2?"审批中":procStatus==3?"已完成":procStatus==4?"已失效":"已撤销");
+			credentialsAppModel.setCsType(Integer.parseInt(item[7]+""));
+			Integer csType=Integer.parseInt(item[7]+"");
+			credentialsAppModel.setCsTypeName(csType==1?"财务章":csType==2?"法人章":csType==3?"法人身份证":csType==4?"资质":csType==5?"合同":"其他");
+			credentialsAppModel.setCsDesc(item[8]==null?"":item[8]+"");
+			credentialsAppModel.setIsOriginal(Integer.parseInt(item[9]+""));
+			Integer isOriginal = Integer.parseInt(item[9]+"");
+			credentialsAppModel.setIsOriginalName(isOriginal==1?"否":"是");
+			credentialsAppModel.setPlanUseDate(DateUtils.parse(item[10]+"",DateUtils.DATE_SMALL_STR));
+			credentialsAppModel.setRealUseDateStr(item[11]==null?"":item[11]+"");
+			credentialsAppModel.setCsPurpose(item[12]+"");
+			credentialsAppModel.setIsLetOut(Integer.parseInt(item[13]+""));
+			Integer isLetOut=Integer.parseInt(item[13]+"");
+			credentialsAppModel.setIsLetOutName(isLetOut==0?"是":"否");
+			credentialsAppModel.setIsRestored(Integer.parseInt(item[14]+""));
+			credentialsAppModel.setPlanRestDate(DateUtils.parse(item[15]+"",DateUtils.DATE_SMALL_STR));
+			credentialsAppModel.setRealRestDateStr(item[16]==null?"":item[16]+"");
+			credentialsAppModel.setRemark(item[17]==null?"":item[17]+"");
+			credentialsAppModel.setUqaId(Integer.parseInt(item[18]+""));
+			credentialsAppModel.setAuqaId(Integer.parseInt(item[19]+""));
+			list2.add(credentialsAppModel);
+		}
+		return list2;
+	}
+	
+	@Override
+	public Long getCount(Map<String, Object> map) {
+		StringBuffer stringBuffer = new StringBuffer("SELECT COUNT(1)");
+		stringBuffer.append("FROM t_oa_fd_credentials_stamp_app c LEFT JOIN t_oa_fd_credentials_stamp_app_attach a ON c.APP_NO = a.APP_NO ");
+		stringBuffer.append(" LEFT JOIN qqms.t_users u ON u.USER_ID = c.APPLICANT_NO");
+		stringBuffer.append(" LEFT JOIN qqms.t_organization o ON o.ORGANIZATION_ID = c.DEPT_NO");
+		stringBuffer.append(" WHERE o.STATUS = 'A' AND 1=1 ");
+		if(StringUtils.isNotBlank(map.get("procStatus")+"") && map.get("procStatus")!=null){
+			stringBuffer.append(" AND c.PROC_STATUS = "+map.get("procStatus"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateBefore")+"") && map.get("appDateBefore")!=null){
+			stringBuffer.append(" AND c.APP_DATE >= "+map.get("appDateBefore"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateAffter")+"") && map.get("appDateAffter")!=null){
+			stringBuffer.append(" AND c.APP_DATE <= "+map.get("appDateAffter"));
+		} 
+		if(StringUtils.isNotBlank(map.get("useDateBefore")+"") && map.get("useDateBefore")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE >= "+map.get("useDateBefore"));
+		}
+		if(StringUtils.isNotBlank(map.get("useDateAffter")+"") && map.get("useDateAffter")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE <= "+map.get("useDateAffter"));
+		}
+		return publicDaoVO.findTotalCount(stringBuffer.toString());
+	}
+
+	@Override
+	public boolean saveCredentialsApp(CredentialsApp credentialsApp) {
+		boolean flag = false;
+		try {
+			publicDao.saveOrUpdate(credentialsApp);
+			flag=true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean delCredentialsApp(Integer id) {
+		Integer count=publicDao.executeHql("delete CredentialsApp where uqaId = "+id);
+		if(count>0){
+			return true;
+		}else {
+			return false;
+		}
+	}
+}

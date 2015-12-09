@@ -1,0 +1,247 @@
+package com.oasys.controller;
+
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.oasys.model.LeaveApp;
+import com.oasys.model.SystemCode;
+import com.oasys.service.LeaveAppService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowService;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.ComboBoxModel;
+import com.oasys.viewModel.GridModel;
+import com.oasys.viewModel.UsersModel;
+/**
+ * 
+ * @ClassName: LoginController
+ * @Description: TODO
+ * @Author wangxincheng
+ * @Version 1.0
+ * @Date 2015年8月17日 下午2:24:06
+ *请假申请
+ */
+
+@Controller
+@RequestMapping("/LeaveApp")
+public class LeaveAppController extends BaseController{
+	
+	@Autowired
+	private LeaveAppService leaveAppService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private WorkFlowService workFlowService;
+	@Autowired
+	private SystemCodeService SystemCodeService;
+	
+	
+	/**
+	 * 查看请假申请列表
+	 * @Title: findLeaveAppList 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param page
+	 * @param @param rows
+	 * @param @param useStampApp
+	 * @param @param bindingResult
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月19日 下午2:23:08
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findLeaveAppList",method=RequestMethod.POST)
+	public String findLeaveAppList(HttpServletResponse httpServletResponse,Integer page,Integer rows,@ModelAttribute("leaveApp") LeaveApp leaveApp,  BindingResult bindingResult){
+		PageUtil pageUtil = new PageUtil(page,rows);
+		List<LeaveApp> leaveAppList = leaveAppService.findLeaveAppList(leaveApp, pageUtil);
+		Long count =leaveAppService.getTotal(leaveApp);
+		OutputJson(httpServletResponse, new GridModel(leaveAppList,count));
+		return null;
+	}
+	
+	/**
+	 * 查询休假类型
+	 * @Title: findDictNameList 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ModelAndView
+	 * @date 2015年10月20日 上午10:11:16
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findDictNameList",method=RequestMethod.POST)
+	public ModelAndView findDictNameList(HttpServletResponse httpServletResponse){
+		List<SystemCode> codeByTypeList = SystemCodeService.findSystemCodeByType(Constants.LEAVEAPP_TYPE);
+		OutputJson(httpServletResponse,codeByTypeList);
+		return null;
+	}
+
+	/**
+	 * 保存或更新休假申请
+	 * @Title: saveLeaveApp 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param leaveApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月20日 上午10:11:30
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/saveLeaveApp",method=RequestMethod.POST)
+	public String saveLeaveApp(HttpServletResponse httpServletResponse,@ModelAttribute("leaveApp") LeaveApp leaveApp ){
+		LeaveApp leave = leaveAppService.saveOrUpdLeaveApp(leaveApp);
+		OutputJson(httpServletResponse,leave);
+		return null;
+	}
+	
+	/**
+	 * 代理人
+	 * @Title: findOrgUserList 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param organizeId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月20日 上午10:43:38
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findOrgUserList",method=RequestMethod.POST)
+	public String findOrgUserList(HttpServletResponse httpServletResponse){
+		//当前申请人的部门id
+		List<ComboBoxModel> userList = leaveAppService.findOrgUserList();
+		OutputJson(httpServletResponse, userList);
+		return null;
+	}
+	
+	/**
+	 * 删除申请信息
+	 * @Title: deleteLeaveAppp 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param leaId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月26日 上午11:14:13
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/deleteLeaveAppp",method=RequestMethod.POST)
+	public String deleteLeaveAppp(HttpServletResponse httpServletResponse,Integer leaId){
+		boolean flag = leaveAppService.deleteLeaveApp(leaId);
+		OutputJson(httpServletResponse, getMessage(flag));
+		return null;
+	}
+	
+	
+	/**
+	 * 查看当前流程图
+	 * @Title: showLeaveProcess 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param leaId
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月26日 上午11:23:52
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/showLeaveProcess",method=RequestMethod.GET)
+	public String showLeaveProcess(HttpServletResponse httpServletResponse,Integer leaId){
+		leaveAppService.getDiagramResourceByPaId(httpServletResponse, leaId);
+		return null;
+	}
+	
+	/**
+	 * 校验时间是否是工作日
+	 * @Title: valdateok 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param date
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年10月28日 上午9:35:39
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/valdateok",method=RequestMethod.POST)
+	public String valdateok(HttpServletResponse httpServletResponse,String date){
+		boolean flag = leaveAppService.getValDate(date);
+		OutputJson2(httpServletResponse,getMessage(flag));
+		return null;
+	}
+	
+	/**
+	 * 判断调休是否准确
+	 * @Title: valPlanDays 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param beDate
+	 * @param @param edDate
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年11月6日 下午5:58:44
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/valPlanDays",method=RequestMethod.POST)
+	public String valPlanDays(HttpServletResponse httpServletResponse,String beDate,String edDate){ 
+		double date = leaveAppService.getDatemistiming(beDate,edDate);
+		OutputJson(httpServletResponse, date);
+		return null;
+	}
+	
+	/**
+	 * 校验年假，满一年者可以修年假，年假最多一次性修3天
+	 * @Title: valYearsLeave 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param beDate
+	 * @param @param edDate
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年11月9日 上午11:35:21
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/valYearsLeave",method=RequestMethod.POST)
+	public String valYearsLeave(HttpServletResponse httpServletResponse,String beDate,String edDate){ 
+		double day=leaveAppService.getAnnualLeaDays(beDate, edDate);
+		OutputJson(httpServletResponse, day);
+		return null;
+	}
+	
+	
+}
+
+

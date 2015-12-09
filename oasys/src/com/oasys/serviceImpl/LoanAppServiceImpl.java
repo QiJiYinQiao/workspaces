@@ -1,0 +1,600 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.LoanApp;
+import com.oasys.model.Role;
+import com.oasys.model.Users;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.LoanAppService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.ComboBoxModel;
+
+@Service("loanAppService")
+@SuppressWarnings("unchecked")
+public class LoanAppServiceImpl extends WorkFlowBaseServiceImpl implements
+		LoanAppService {
+
+
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private StatusNameRefService statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private RoleService roleService;
+	/**
+	 * 系统字典
+	 */
+	@Autowired
+	private SystemCodeService systemCodeService;
+	/**
+	 * 借款申请
+	 */
+	@Autowired
+	private PublicDao<LoanApp> loanDao;
+
+	/**
+	 * 查询借款申请列表
+	 */
+	@Override
+	public List<LoanApp> findLoanAppList(LoanApp loanApp, PageUtil pageUtil) {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String users="";
+			Integer userId = Constants.getCurrendUser().getUserId();// 登录人id
+			Role role = userService.findRoleListByUserId(userId).get(0);// 获得角色
+			String deptLeave = organizationService
+					.findOrgDeptLevelByUserID(userId);// 获取总部，分部
+
+			StringBuffer sql = this.getLoanListSQL();
+
+			if (userId != 1) {
+				// 如果是分部的对接主管，能查询对接主管所管辖的申请
+				if (role.getRoleCode().equals("DuiJieZhuGuan")	&& deptLeave.equals("1")) {
+					Integer organizeId = userService.findUserById(userId).getOrganizeId();
+					List<ComboBoxModel> userList = userService.findOrgUserList(String.valueOf(organizeId));
+					
+					for(int i=0;i<userList.size();i++){
+						if(i!=userList.size()-1){
+							users+=userList.get(i).getCode()+",";
+						}else{
+							users+=userList.get(i).getCode();
+						}
+						
+					}
+					sql.append(" AND l.APPLICANT_NO IN ("+users+") ");	
+					
+				} else {
+					sql.append(" AND l.APPLICANT_NO=" + userId);
+				}
+			}
+			if (StringUtils.isNotBlank(loanApp.getAppNo())) {
+				sql.append(" AND l.APP_NO='" + loanApp.getAppNo() + "' ");
+			} else {
+				if (StringUtils.isNotBlank(loanApp.getAppDateS())) {
+					sql.append(" AND l.APP_DATE >='" + loanApp.getAppDateS()
+							+ "' "); // 申请开始日期
+				}
+				if (StringUtils.isNotBlank(loanApp.getAppDateE())) {
+					sql.append(" AND l.APP_DATE <='" + loanApp.getAppDateE()
+							+ "' "); // 申请结束日期
+				}
+				if (StringUtils.isNotBlank(loanApp.getProcStatus())) {
+					sql.append(" AND l.PROC_STATUS='" + loanApp.getProcStatus()
+							+ "' ");
+				}
+			}
+			// 排序
+			sql.append(" ORDER BY l.BTA_ID DESC ");
+			List<Object> list = loanDao.findBySql(sql.toString(), pageUtil);
+			List<LoanApp> loanList = new ArrayList<LoanApp>();
+			if (Collections.listIsNotEmpty(list)) {
+				LoanApp app = new LoanApp();
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[]) list.get(i);
+					LoanApp loan = (LoanApp) app.clone();
+					loan.setBtaId(obj[0] == null ? 0 : (Integer) obj[0]);// 申请id
+					loan.setAppNo(obj[1] == null ? "" : String.valueOf(obj[1]));// 申请编号
+					loan.setApplicantNo(obj[2] == null ? 0 : (Integer) obj[2]);// 申请人id
+					loan.setApplicantName(obj[3] == null ? "" : String
+							.valueOf(obj[3]));// 申请人姓名
+					loan.setAppDate(obj[4] == null ? null : sdf.parse(String
+							.valueOf(obj[4])));// 申请日期
+					loan.setPayerNo(obj[5] == null ? 0 : (Integer) obj[5]);// 付款人id
+					loan.setPayerName(obj[6] == null ? "" : String
+							.valueOf(obj[6]));// 付款人姓名
+					loan.setPayDate(obj[7] == null ? null : sdf.parse(String
+							.valueOf(obj[7])));// 付款日期
+					loan.setPayMode(obj[8] == null ? "" : String
+							.valueOf(obj[8]));// 付款方式
+					loan.setCapitalNature(obj[9] == null ? "1" : String
+							.valueOf(obj[9]));// 资金性质，默认就一个：银行转账
+					loan.setCapitalNatureName(obj[10] == null ? "" : String
+							.valueOf(obj[10]));// 资金性质名字
+					loan.setLoanAmt(obj[11] == null ? BigDecimal.valueOf(0)
+							: BigDecimal.valueOf(Double.valueOf(String
+									.valueOf(obj[11]))));// 借款金额
+					loan.setLoanReson(obj[12] == null ? "" : String
+							.valueOf(obj[12]));// 借款理由
+					loan.setIsBalance(obj[13] == null ? "1" : String
+							.valueOf(obj[13]));// 是否销账，0：是，1：否
+					loan.setAppStatus(obj[14] == null ? "" : String
+							.valueOf(obj[14]));// 申请状态
+					loan.setProcStatus(obj[15] == null ? "" : String
+							.valueOf(obj[15]));// 流程状态
+					loan.setRemark(obj[16] == null ? "" : String
+							.valueOf(obj[16]));// 备注
+					loan.setLoanPurpose(obj[17] == null ? "2" : String
+							.valueOf(obj[17]));// 资金用途
+					loan.setRoleCode(role.getRoleCode());// 角色编码,当前登录人角色
+					loan.setDeptLeave(deptLeave);// 判断总部分部，当前登录人
+					loanList.add(loan);
+				}
+			}
+			return loanList;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 借款申请列表SQL语句
+	 */
+	@Override
+	public StringBuffer getLoanListSQL() {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT ");
+		sql.append("l.BTA_ID '申请id', ");
+		sql.append("l.APP_NO '申请编号', ");
+		sql.append("l.APPLICANT_NO '申请人id', ");
+		sql.append("u.USER_NAME '申请人姓名', ");
+		sql.append("l.APP_DATE '申请日期', ");
+		sql.append("l.PAYER_NO '付款人id', ");
+		sql.append("t.USER_NAME '付款人姓名', ");
+		sql.append("l.PAY_DATE '付款日期', ");
+		sql.append("l.PAY_MODE '付款方式', ");
+		sql.append("l.CAPITAL_NATURE '资金性质id', ");
+		sql.append("s.DICT_NAME '资金性质名字', ");
+		sql.append("l.LOAN_AMT '借款金额', ");
+		sql.append("l.LOAN_RESON '借款理由', ");
+		sql.append("l.IS_BALANCE '是否销账', ");
+		sql.append("l.APP_STATUS '申请状态', ");
+		sql.append("l.PROC_STATUS '流程状态',");
+		sql.append("l.REMARK '备注信息', ");
+		sql.append(" l.LOAN_PURPOSE '资金用途' ");
+		sql.append("FROM t_oa_fd_loan_app l ");
+		sql.append("LEFT JOIN qqms.t_users u ON l.APPLICANT_NO = u.USER_ID ");
+		sql.append("LEFT JOIN qqms.t_users t ON t.USER_ID=l.PAYER_NO ");
+		sql.append("LEFT JOIN (	SELECT	DICT_CODE,	DICT_NAME	FROM qqms.t_sys_dict WHERE	PARENT_ID = (	SELECT	CODE_ID	FROM	qqms.t_sys_dict	WHERE	DICT_CODE = 'capital_nature')) s ON s.DICT_CODE = l.CAPITAL_NATURE ");
+		sql.append("WHERE 1=1 ");
+
+		return sql;
+	}
+
+	/**
+	 * 查询借款申请数量
+	 */
+	@Override
+	public Long findLoanCount(LoanApp loanApp) {
+		try {
+			Integer userId = Constants.getCurrendUser().getUserId();// 登录人id
+			Role role = userService.findRoleListByUserId(userId).get(0);// 获得角色
+			String deptLeave = organizationService
+					.findOrgDeptLevelByUserID(userId);// 获取总部，分部
+			String users="";
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append("SELECT COUNT(*) FROM t_oa_fd_loan_app l WHERE 1=1");
+			if (userId != 1) {
+				// 如果是分部的对接主管，能查询对接主管所管辖的申请
+				if (role.getRoleCode().equals("DuiJieZhuGuan")
+						&& deptLeave.equals("1")) {
+
+					Integer organizationId = userService.findOrgByuserId(userId).getOrganizationId();
+					List<ComboBoxModel> userList = userService.findOrgUserList(String.valueOf(organizationId));
+					for(int i=0;i<userList.size();i++){
+						if(i!=userList.size()-1){
+							users+=userList.get(i).getCode()+",";
+						}else{
+							users+=userList.get(i).getCode();
+						}
+						
+					}
+					sql.append(" AND l.APPLICANT_NO IN ("+users+") ");
+				} else {
+					sql.append(" AND l.APPLICANT_NO=" + userId);
+				}
+			}
+			if (StringUtils.isNotBlank(loanApp.getAppNo())) {
+				sql.append(" AND l.APP_NO='" + loanApp.getAppNo() + "' ");
+			} else {
+				if (StringUtils.isNotBlank(loanApp.getAppDateS())) {
+					sql.append(" AND l.APP_DATE >='" + loanApp.getAppDateS()
+							+ "' "); // 申请开始日期
+				}
+				if (StringUtils.isNotBlank(loanApp.getAppDateE())) {
+					sql.append(" AND l.APP_DATE <='" + loanApp.getAppDateE()
+							+ "' "); // 申请结束日期
+				}
+				if (StringUtils.isNotBlank(loanApp.getProcStatus())) {
+					sql.append(" AND l.PROC_STATUS='" + loanApp.getProcStatus()
+							+ "' ");
+				}
+			}
+
+			Long count = loanDao.findTotalCount(sql.toString());
+			return count;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+
+	/**
+	 * 查询申请人所在部门下的所有人
+	 */
+	@Override
+	public List<ComboBoxModel> findUserListByOrgId() {
+		try {
+			Integer userId = Constants.getCurrendUser().getUserId();
+			Users users = userService.findUserById(userId);
+			List<ComboBoxModel> userList = userService.findOrgUserList(String
+					.valueOf(users.getOrganizeId()));
+			return userList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return new ArrayList<ComboBoxModel>();
+	}
+
+	/**
+	 * 查询同一个付款人申请同一种借款用途最多2个
+	 * 
+	 * @Title: getLoanPurposeCount
+	 * @Description: TODO
+	 * @param @param loanApp
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return boolean
+	 * @date 2015年11月26日 下午8:22:50
+	 * @throws
+	 */
+	@Override
+	public boolean getLoanPurposeCount(LoanApp loanApp) {
+		String hql = "from LoanApp where 1=1 and isBalance='1' and procStatus in('1','2','3') ";
+
+		// 付款人
+		if (loanApp.getPayerNo() == null || loanApp.getPayerNo() == 0) {
+			hql += " and payerNo=" + Constants.getCurrendUser().getUserId();
+		} else {
+			hql += " and payerNo=" + loanApp.getPayerNo();
+		}
+		// 借款用途
+		if (StringUtils.isNotBlank(loanApp.getLoanPurpose())) {
+			hql += " and loanPurpose='" + loanApp.getLoanPurpose() + "' ";
+		}
+
+		List<LoanApp> list = loanDao.find(hql);
+		if (list != null && list.size() > 1) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * 保存或者更新借款申请
+	 */
+	@Override
+	public LoanApp saveOrUpdLoanApp(LoanApp loanApp) {
+		try {
+
+			if (StringUtils.isBlank(loanApp.getAppNo())) {
+				// 保存
+				String appNo = UniqueIdUtil.generate("JK");
+				loanApp.setAppNo(appNo);// 申请编号
+				// 申请人id
+				loanApp.setApplicantNo(Constants.getCurrendUser().getUserId());
+				// 是否销账
+				loanApp.setIsBalance("1");
+				// 资金性质
+				loanApp.setCapitalNature("1");
+				// 借款金额
+				if (loanApp.getLoanAmt() == null) {
+					loanApp.setLoanAmt(BigDecimal.valueOf(0));
+				}
+				// 流程状态
+				loanApp.setProcStatus("1");
+				// 付款人,当为选是，默认是当前登录人
+				if (loanApp.getPayerNo() == null || loanApp.getPayerNo() == 0) {
+					loanApp.setPayerNo(Constants.getCurrendUser().getUserId());
+				}
+
+				loanDao.save(loanApp);
+				return loanApp;
+			} else {
+				LoanApp app = this.findLoanByAppNo(loanApp.getAppNo());
+				app.setLoanReson(loanApp.getLoanReson());// 借款理由
+				// 借款金额
+				if (loanApp.getLoanAmt() == null) {
+					app.setLoanAmt(BigDecimal.valueOf(0));
+				} else {
+					app.setLoanAmt(loanApp.getLoanAmt());
+				}
+				// 付款人编号
+				if (loanApp.getPayerNo() == null || loanApp.getPayerNo() == 0) {
+					app.setPayerNo(loanApp.getApplicantNo());
+				}
+				// 付款方式
+				app.setPayMode(loanApp.getPayMode());
+				// 借款用途
+				app.setLoanPurpose(loanApp.getLoanPurpose());
+				// 备注
+				app.setRemark(loanApp.getRemark());
+
+				loanDao.saveOrUpdate(app);
+				return app;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * 根据申请编号删除借款申请
+	 * 
+	 * @Title: deleteLoanApp
+	 * @Description: TODO
+	 * @param @param appNo
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return boolean
+	 * @date 2015年11月27日 上午9:50:28
+	 * @throws
+	 */
+	@Override
+	public boolean deleteLoanApp(String appNo) {
+		try {
+			String sql = "DELETE FROM t_oa_fd_loan_app WHERE APP_NO='" + appNo
+					+ "' ";
+			loanDao.executeBySql(sql);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	/**
+	 * 查询流程图
+	 */
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,
+			Integer btaId) {
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			String proDefKey = Constants.LOANAPP;
+			String imgName = Constants.LOANAPPIMAGE;
+
+			String businessKey = proDefKey + "." + btaId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService
+					.createProcessInstanceQuery()
+					.processInstanceBusinessKey(businessKey).singleResult();
+			// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+			ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService
+					.getProcessDefinition(pi.getProcessDefinitionId());
+			// 获取当前执行任务流程
+			List<Task> tasks = this.taskService.createTaskQuery()
+					.processInstanceBusinessKey(businessKey).list();
+			// 获取图片的流程图片名称
+			String resourceName = imgName + ".png";
+			// 获取图片的文件的流
+			in = this.repositoryService.getResourceAsStream(
+					pd.getDeploymentId(), resourceName);
+			// 获取图片对象
+			BufferedImage bimg;
+			bimg = ImageIO.read(in);
+			// 得到Graphics2D 对象
+			Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+			// 设置颜色和画笔粗细
+			g2d.setColor(Color.RED);
+			g2d.setStroke(new BasicStroke(3));
+			// 遍历执行的任务,画图
+			for (Task task : tasks) {
+				// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+				Execution execution = runtimeService.createExecutionQuery()
+						.executionId(task.getExecutionId()).singleResult();
+				// 根据当前的执行对象的id获取正在执行的活动信息
+				ActivityImpl activityImpl = pd.findActivity(execution
+						.getActivityId());
+				// 绘制矩形
+				Rectangle2D rectangle = new Rectangle2D.Float(
+						activityImpl.getX(), activityImpl.getY(),
+						activityImpl.getWidth(), activityImpl.getHeight());
+				g2d.draw(rectangle);
+			}
+			// 写入response输出流中
+			ImageIO.write(bimg, "png", response.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+	}
+
+	/**
+	 * 根据申请编号查询借款申请
+	 */
+	@Override
+	public com.oasys.model.LoanApp findLoanByAppNo(String appNo) {
+		String hql = "from LoanApp where appNo='" + appNo + "'";
+		List<LoanApp> list = loanDao.find(hql);
+		if (Collections.listIsNotEmpty(list)) {
+			return list.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * 更改申请状态
+	 */
+	@Override
+	public void updateAppStatus(Integer btaId, String appStatus) {
+		LoanApp loanApp= loanDao.get(LoanApp.class, btaId);
+		loanApp.setAppStatus(appStatus);
+		loanDao.saveOrUpdate(loanApp);
+	}
+
+	/**
+	 * 更改流程状态
+	 */
+	@Override
+	public void updateProcStatus(Integer btaId, String procStatus) {
+		LoanApp loanApp = loanDao.get(LoanApp.class, btaId);
+		loanApp.setProcStatus(procStatus);
+		//当流程状态3是，正常完成，更新付款状态
+		if(procStatus.equals(Constants.PROC_COMPLETED)){
+			loanApp.setPayDate(new Date());
+		}
+		loanDao.saveOrUpdate(loanApp);
+	}
+
+	/**
+	 * 根据申请人id和借款用途查询该申请人所申请的借款
+	 */
+	@Override
+	public List<ComboBoxModel> findLoanApp(Integer userId, String loanPurpose,
+			String appNos) {
+		try {
+			List<ComboBoxModel> comList = new ArrayList<ComboBoxModel>();
+			String sql = "SELECT APP_NO '借款编号',LOAN_AMT '借款金额' FROM t_oa_fd_loan_app WHERE 1=1  ";
+			if (StringUtils.isNotBlank(appNos)) {
+				sql += " AND APP_NO NOT IN ('" + appNos + "')";
+			}
+			sql += " AND PAYER_NO="
+					+ userId
+					+ " AND IS_BALANCE='1' AND PROC_STATUS='3' AND LOAN_PURPOSE='"
+					+ loanPurpose + "' ";
+			List list = loanDao.findBySQL(sql);
+			if (Collections.listIsNotEmpty(list)) {
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[]) list.get(i);
+					String code = String.valueOf(obj[0]);// 借款id
+					String text = String.valueOf(obj[1]);// 借款金额
+					ComboBoxModel model = new ComboBoxModel(code, text);
+					comList.add(model);
+				}
+			}
+			return comList;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return new ArrayList<ComboBoxModel>();
+	}
+
+	/**
+	 * 判断付款人最多借款金额书否超出
+	 */
+	@Override
+	public BigDecimal getUserLoanAMT(LoanApp loanApp) {
+		Integer userId=null;
+		if(loanApp.getPayerNo()==null){
+			userId=Constants.getCurrendUser().getUserId();
+		}else{
+			userId=loanApp.getPayerNo();
+		}
+		List<Role> list = userService.findRoleListByUserId(userId);
+		List<Role> roleList = roleService.findRoleListsByRoleCode(roleService.findRoleByCode(Constants.HR_ROLE_CODE_DIVISION).getRoleId());
+		
+		for (Role role : roleList) {
+			if(role.getRoleCode().equals(list.get(0).getRoleCode())){
+				//部门主管一下级别最多申请3000
+				if(loanApp.getLoanAmt().doubleValue()>3000){
+					return new BigDecimal(3000);
+				}
+			}
+		}
+		//部门主管以上级别，最多申请5000
+		if(loanApp.getLoanAmt().doubleValue()>5000){
+			return new BigDecimal(5000);
+		}
+		return null;
+	}
+
+	/**
+	 * 更新报销状态
+	 */
+	@Override
+	public void updateLoanBalance(String appNo) {
+		String hql="from LoanApp where appNo='"+appNo+"'";
+		List<LoanApp> list = loanDao.find(hql);
+		if(list!=null && list.size()>0){
+			LoanApp loanApp = list.get(0);
+			loanApp.setIsBalance("0");
+			loanDao.saveOrUpdate(loanApp);
+		}
+		
+	}
+
+}

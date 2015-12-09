@@ -1,0 +1,143 @@
+$(function(){
+	//上传附件
+	$("#upploadAttachment").click(function(){
+		fileUploadsDlg($selRow.ppeApp.appNo);
+	});
+	//查看附件
+	$("#checkAttachment").click(function(){
+		checkAttachementDetail($selRow.ppeApp.appNo);
+	});
+	
+});
+
+//查看审批意见 
+function showInvestProductDetails(index){
+	$$row = getRowData(index);
+	$dialog=$("<div></div>").dialog({
+	/* 动态显示Dialog的标题	*/
+	width : 800,
+	height : 450,					
+	title : "查看审批意见",
+	href : "jsp/ad/optionsList.jsp",
+	onClose:function(){
+		$$row=null;
+    	$(this).dialog('destroy');
+	},
+	modal:true,
+	resizable:false,
+	iconCls:'icon-add',
+	closed: false
+});
+}
+
+function savePPEScrapApp(){
+	$.ajax({
+		   url: "ppeScrapAppController/addOrUpdatePPEScrapApp.do",
+		   type: "POST",
+		   data:$('#ppeScrapAppForm').serialize(),
+          dataType:'JSON',
+		   success: function(msg){
+			   if(msg.status){
+				   $("#ppeScrapAppForm input[name='psaId'][type='hidden']").val(msg.data[0]);
+				   $("#ppeScrapAppForm input[name='appNo'][type='hidden']").val(msg.data[1]);
+				   disableForm('ppeScrapAppForm');
+			   }
+			   $.messager.alert(msg.title,msg.message,'info');
+		   }
+		});
+}
+
+
+//禁用form表单
+function disableForm(formId){
+	$("#"+formId+" a[iconCls = 'icon-edit']").show();
+	$("#"+formId+" a[iconCls = 'icon-ok']").hide();
+	$("#"+formId+" [class^='easyui-']").each(function(i){
+		if($(this).hasClass("easyui-textbox")){
+			$(this).attr("disabled",true);
+		}else if($(this).hasClass("easyui-datebox")){
+			$(this).datebox("disable");
+		}else if($(this).hasClass("easyui-combobox")){
+			$(this).combobox('disable');
+		}else if($(this).hasClass("easyui-numberbox")){
+			$(this).numberbox('disable');
+		}else if($(this).hasClass("easyui-combogrid")){
+			$(this).combogrid("disable");
+		}else if($(this).hasClass("easyui-textarea")){
+			$(this).attr("disabled",true);
+		}
+	});
+}
+//解禁form
+function editForm(obj){
+	var formId = $(obj).parents("form").attr("id");
+	$("#"+formId+" a[iconCls^='icon-edit']").css('display','none');
+	$("#"+formId+" a[iconCls^='icon-ok']").css('display','inline-block');
+	$("#"+formId+" [class^='easyui-']").each(function(i){
+		if($(this).hasClass("easyui-textbox")){
+			//$(this).attr("disabled",false);
+		}else if($(this).hasClass("easyui-datebox")){
+			$(this).datebox("enable");
+		}else if($(this).hasClass("easyui-combobox")){
+			$(this).combobox("enable");
+		}else if($(this).hasClass("easyui-numberbox")){
+			$(this).numberbox("enable");
+		}else if($(this).hasClass("easyui-combogrid")){
+			$(this).combogrid("enable");
+		}else if($(this).hasClass("easyui-textarea")){
+			$(this).attr("disabled",false);
+		}
+	})
+}
+
+/** 增加或者修改理财产品的数据**/
+function saveTaskFunc(isSuccess){
+	//校验理财产品输入的信息
+	var remark = $("#taskComment").val();
+	$("#result").val(isSuccess);
+	$("#isSuccess").val(isSuccess);
+	var data1 = $('#taskForm').serialize();
+	if(data1.indexOf("&appNo")==-1){
+		data1+=("&appNo="+$selRow.ppeApp.appNo);
+	}
+	if((isSuccess == 0 || isSuccess == 2)  && remark == ""){
+		$.messager.alert("提示","请填写备注信息!","info");
+		return false;
+	}
+ 	 $.ajax({
+		type: "POST",
+		url:"ppeScrapAppController/saveTaskPPEScrapApp.do",
+		data:data1,
+	    success: function(iJson) {
+ 	    	if(iJson.status){
+ 	    		$dialog.dialog("close");//关闭弹窗
+	    	}
+ 	    	$.messager.alert(iJson.title,iJson.message,'info');
+	    }
+	}); 
+}
+
+function toSaveOrUpdateInvestProductOpenDlg(){
+	var psaId = $('#businessID').val();
+	$dialog=$("<div></div>").dialog({
+		width : 900,
+		height : 650,					
+		title : '调整固定资产报废项',
+		href : "ppeScrapAppController/toAddPPEScrapApp.do?psaId="+ psaId,
+		modal:false,
+		resizable:true,
+		iconCls:'icon-add',
+		onClose:function(){
+			$$row=null;
+	    	$(this).dialog('destroy');
+		},
+		buttons : [{
+			text : '关闭',
+			iconCls : 'icon-cancel',
+			handler : function() {
+				$dialog.dialog('close');
+			}
+		}],
+		closed: false
+	}); 
+}

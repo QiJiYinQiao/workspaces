@@ -1,0 +1,203 @@
+package com.oasys.service;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.oasys.model.AuditProcHis;
+import com.oasys.model.EmpForgetPluginApp;
+import com.oasys.model.EmpFullmemberApp;
+import com.oasys.model.VO.EmpForgetPluginAppModel;
+import com.oasys.model.VO.OutAppModel;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+/**
+ * 忘打卡申请service
+ * @ClassName: EmpForgetPluginAppServiceImpl 
+ * @Description: TODO
+ * @author PANCHUANHE
+ * @date 2015年11月6日 下午2:10:52
+ */
+public interface EmpForgetPluginAppService {
+	/**
+	 * 新增保存EmpForgetPluginApp
+	 * @Title: saveEmpForgetPluginApp 
+	 * @Description: TODO
+	 * @param @param axpensesApp
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return boolean
+	 * @date 2015年10月12日 上午11:57:48
+	 * @throws
+	 */
+	boolean saveEmpForgetPluginApp(EmpForgetPluginApp empForgetPluginApp);
+	/**
+	 * 查询list列表
+	 * @Title: findEmpForgetPluginAppList 
+	 * @Description: TODO
+	 * @param @param pageUtil
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return List<EmpForgetPluginApp>
+	 * @date 2015年10月12日 下午2:49:17
+	 * @throws
+	 */
+	List<EmpForgetPluginAppModel> findEmpForgetPluginAppList(PageUtil pageUtil,EmpForgetPluginAppModel empForgetPluginAppModel);
+	/**
+	 * 查询总条数
+	 * @Title: countFindEmpForgetPluginAppList 
+	 * @Description: TODO
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return Long
+	 * @date 2015年10月12日 下午3:21:26
+	 * @throws
+	 */
+	Long countFindEmpForgetPluginAppList(EmpForgetPluginAppModel empForgetPluginAppModel);
+	/**
+	 * 根据id删除
+	 * @Title: delEmpForgetPluginAppbyBtaId 
+	 * @Description: TODO
+	 * @param @param btaId
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return boolean
+	 * @date 2015年10月12日 下午4:41:00
+	 * @throws
+	 */
+    boolean delEmpForgetPluginAppbyFpaId(Integer fpaId);
+    /**
+     * 提交申请，开启流程
+     * @Title: sumitApply 
+     * @Description: TODO
+     * @param @param empForgetPluginApp
+     * @param @return
+     * @author PANCHUANHE
+     * @return boolean
+     * @date 2015年10月13日 上午10:54:21
+     * @throws
+     */
+    String sumitApply(EmpForgetPluginApp empForgetPluginApp);
+    /**
+     * 更新流程状态
+     * @Title: updateEmpForgetPluginAppProcessStatus 
+     * @Description: TODO
+     * @param @param btaId
+     * @param @param status
+     * @author PANCHUANHE
+     * @return void
+     * @date 2015年10月13日 上午11:16:56
+     * @throws
+     */
+    void updateEmpForgetPluginAppProcessStatus(Integer btaId, String status);
+    /**
+     * 查询所有任务
+     * @Title: findAllEmpForgetPluginAppTaskList 
+     * @Description: TODO
+     * @param @return
+     * @author PANCHUANHE
+     * @return List<EmpForgetPluginAppModel>
+     * @date 2015年10月13日 下午1:22:21
+     * @throws
+     */
+    List<EmpForgetPluginAppModel> findAllEmpForgetPluginAppTaskList(PageUtil pageUtil,WorkFlowTasksModel workFlowTasksModel);
+    /**
+     * 根据ids查询实体对象list
+     * @Title: findEmpForgetPluginAppByIds 
+     * @Description: TODO
+     * @param @param ids
+     * @param @param pageUtil
+     * @param @return
+     * @author PANCHUANHE
+     * @return List<EmpForgetPluginAppModel>
+     * @date 2015年10月13日 下午1:32:58
+     * @throws
+     */
+	List<EmpForgetPluginAppModel> findEmpForgetPluginAppByIds(String ids, PageUtil pageUtil);
+	/**
+	 * 查询所有任务的总数
+	 * @Title: countFindAllEmpForgetPluginAppTaskList 
+	 * @Description: TODO
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return Long
+	 * @date 2015年10月13日 下午1:42:01
+	 * @throws
+	 */
+	Long countFindAllEmpForgetPluginAppTaskList(WorkFlowTasksModel workFlowTasksModel);
+	/**
+	 * 签收任务
+	 * @Title: saveHoldWorkTask 
+	 * @Description: TODO
+	 * @param @param taskId
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return boolean
+	 * @date 2015年10月13日 下午1:55:18
+	 * @throws
+	 */
+	boolean saveHoldWorkTask(String taskId);
+	/**
+	 * 更新订单状态
+	 * @Title: updateEmpForgetPluginAppStatus 
+	 * @Description: TODO
+	 * @param @param btaId
+	 * @param @param state
+	 * @author PANCHUANHE
+	 * @return void
+	 * @date 2015年10月13日 下午2:37:32
+	 * @throws
+	 */
+	void updateEmpForgetPluginAppStatus(Integer btaId, String state);
+	/**
+	 * 办理任务(分部)
+	 * @Title: saveSubmitTaskBo 
+	 * @Description: TODO
+	 * @param @param empForgetPluginAppModel
+	 * @param @param result
+	 * @param @param auditProcHis
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return boolean
+	 * @date 2015年10月13日 下午2:40:52
+	 * @throws
+	 */
+	String saveSubmitTask(WorkFlowTasksModel taskModel);
+	/**
+	 * 查看流程图
+	 * @Title: getDiagramResourceByPaId 
+	 * @Description: TODO
+	 * @param @param response
+	 * @param @param btaId
+	 * @author PANCHUANHE
+	 * @return void
+	 * @date 2015年10月13日 下午4:40:56
+	 * @throws
+	 */
+	void getDiagramResourceByPaId(HttpServletResponse response, Integer btaId);
+	/**
+	 * 获取流程图id
+	 * @Title: getProcessImgName 
+	 * @Description: TODO
+	 * @param @param empFullmemberApp
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return String
+	 * @date 2015年11月23日 上午11:08:36
+	 * @throws
+	 */
+	String getProcessImgName(EmpForgetPluginApp empForgetPluginApp);
+	/**
+	 * 获取sql
+	 * @Title: getListSql 
+	 * @Description: TODO
+	 * @param @param outAppModel
+	 * @param @return
+	 * @author PANCHUANHE
+	 * @return String
+	 * @date 2015年11月23日 下午2:20:24
+	 * @throws
+	 */
+	public String getListSql(EmpForgetPluginAppModel empForgetPluginAppModel) ;
+}

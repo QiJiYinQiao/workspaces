@@ -1,0 +1,430 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.AuditProcHis;
+import com.oasys.model.EmpForgetPluginApp;
+import com.oasys.model.EmpForgetPluginApp;
+import com.oasys.model.EmpForgetPluginApp;
+import com.oasys.model.Organization;
+import com.oasys.model.Role;
+import com.oasys.model.Users;
+import com.oasys.model.VO.EmpForgetPluginAppModel;
+import com.oasys.model.VO.OutAppModel;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.EmpForgetPluginAppService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.UserService;
+import com.oasys.service.WorkFlowTaskService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.WorkFlowTasksModel;
+/**
+ * 忘打卡申请serviceImpl
+ * @ClassName: EmpForgetPluginAppServiceImpl 
+ * @Description: TODO
+ * @author PANCHUANHE
+ * @date 2015年11月6日 下午2:10:52
+ */
+@Service(value="empForgetPluginAppService")
+public class EmpForgetPluginAppServiceImpl extends WorkFlowBaseServiceImpl implements EmpForgetPluginAppService {
+
+	@Autowired
+	private PublicDao<EmpForgetPluginApp> publicDao;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private StatusNameRefService statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	//流程图片名称
+    private String imgName;
+	@Override
+	public boolean saveEmpForgetPluginApp(EmpForgetPluginApp empForgetPluginApp) {
+		try {
+			if(empForgetPluginApp.getFpaId() == null){
+				String appNum = UniqueIdUtil.generate("WD");//忘打卡
+				Users user = userService.findUserById(Constants.getCurrendUser().getUserId());
+				//申请单位
+				empForgetPluginApp.setDeptNo(user.getOrganizeId());
+				//申请人
+				empForgetPluginApp.setApplicantNo(Constants.getCurrendUser().getUserId());
+				//申请编号
+				empForgetPluginApp.setAppNo(appNum);
+				//所在部门id
+				empForgetPluginApp.setDeptNo(user.getOrganizeId());
+				
+				empForgetPluginApp.setProcStatus("1");
+				publicDao.save(empForgetPluginApp);
+			}else{
+				//更新
+				publicDao.update(empForgetPluginApp);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public List<EmpForgetPluginAppModel> findEmpForgetPluginAppList(PageUtil pageUtil,EmpForgetPluginAppModel empForgetPluginAppModel) {
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sql = getListSql(empForgetPluginAppModel);
+			List<Object> list = publicDao.findBySql(sql.toString(), pageUtil);
+			List<EmpForgetPluginAppModel> empForgetPluginAppList = new ArrayList<EmpForgetPluginAppModel>();
+			if (Collections.listIsNotEmpty(list)) {
+				EmpForgetPluginAppModel model = new EmpForgetPluginAppModel();
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[])list.get(i);
+					EmpForgetPluginAppModel cmodel = (EmpForgetPluginAppModel)model.clone();
+					cmodel.setFpaId(obj[0]==null?null:(Integer)obj[0]);
+					cmodel.setAppNo(obj[1]==null?"":String.valueOf(obj[1]));
+					cmodel.setApplicantNo(obj[2]==null?null:(Integer)obj[2]);
+					cmodel.setDeptNo(obj[3]==null?null:(Integer)obj[3]);
+					cmodel.setAppDtime(obj[4]==null?null:sdf.parse(String.valueOf(obj[4])));
+					cmodel.setAppStatus(obj[5]==null?"":String.valueOf(obj[5]));
+					cmodel.setForgetPluginReason(obj[6]==null?"":String.valueOf(obj[6]));
+					cmodel.setProcStatus(obj[7]==null?"":String.valueOf(obj[7]));
+					cmodel.setRemark(obj[8]==null?"":String.valueOf(obj[8]));
+					cmodel.setAppStatusName(obj[9]==null?"":String.valueOf(obj[9]));
+					cmodel.setUserName(obj[10]==null?"":String.valueOf(obj[10]));
+					cmodel.setDeptName(obj[11]==null?"":String.valueOf(obj[11]));
+					empForgetPluginAppList.add(cmodel);
+				}
+			}
+			return empForgetPluginAppList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Long countFindEmpForgetPluginAppList(EmpForgetPluginAppModel empForgetPluginAppModel) {
+		return publicDao.findTotalCount1(getListSql(empForgetPluginAppModel).toString());
+	}
+
+	@Override
+	public String getListSql(EmpForgetPluginAppModel empForgetPluginAppModel) {
+		Integer userId = Constants.getCurrendUser().getUserId();
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT ");
+		sql.append("t.FPA_ID AS '主键',");
+		sql.append("t.APP_NO AS '申请编号',");
+		sql.append("t.APPLICANT_NO AS '申请人id',");
+		sql.append("t.DEPT_NO AS '部门id',");
+		sql.append("t.APP_DTIME AS '申请时间',");
+		sql.append("t.APP_STATUS AS '申请状态',");
+		sql.append("t.FORGET_PLUGIN_REASON AS '忘打卡原因',");
+		sql.append("IFNULL(t.PROC_STATUS,'') AS '流程状态',");
+		sql.append("t.REMARK AS '备注',");
+		sql.append("r.APP_STATUS_NAME AS '申请状态名称',");
+		sql.append("u.USER_NAME AS '用户名',");
+		sql.append("o.FULL_NAME AS '部门名称' ");
+		sql.append("FROM T_OA_PD_EMP_FORGET_PLUGIN_APP t ");
+		sql.append("LEFT JOIN T_OA_APP_STATUS_NAME_REF r ON r.REF_ID = t.APP_STATUS ");
+		sql.append("LEFT JOIN qqms.t_users u ON t.APPLICANT_NO = u.USER_ID ");
+		sql.append("LEFT JOIN qqms.t_organization o ON t.DEPT_NO = o.ORGANIZATION_ID ");
+		sql.append("WHERE 1=1 ");
+		if(StringUtils.isNotBlank(empForgetPluginAppModel.getAppDateMini())){
+			sql.append("AND t.APP_DTIME >= '"+empForgetPluginAppModel.getAppDateMini()+"' ");
+		}
+		if(StringUtils.isNotBlank(empForgetPluginAppModel.getAppDateMax())){
+			sql.append("AND t.APP_DTIME <= '"+empForgetPluginAppModel.getAppDateMax()+"' ");
+		}
+		if (StringUtils.isNotBlank(empForgetPluginAppModel.getAppNo())) {
+			sql.append("AND t.APP_NO LIKE '%"+empForgetPluginAppModel.getAppNo()+"%' ");
+		}
+		if (StringUtils.isNotBlank(empForgetPluginAppModel.getIds())) {
+			sql.append("AND t.FPA_ID IN ("+empForgetPluginAppModel.getIds()+") ");
+		}else{
+			sql.append("AND t.APPLICANT_NO = '"+userId+"' ");
+		}
+		sql.append("ORDER BY t.FPA_ID DESC");
+		return sql.toString();
+	}
+	
+	@Override
+	public boolean delEmpForgetPluginAppbyFpaId(Integer fpaId) {
+		try {
+			EmpForgetPluginApp empForgetPluginApp = new EmpForgetPluginApp();
+			empForgetPluginApp.setFpaId(fpaId);
+			publicDao.delete(empForgetPluginApp);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public String sumitApply(EmpForgetPluginApp empForgetPluginApp) {
+		try {
+			WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+			taskModel.setBusinessID(empForgetPluginApp.getFpaId().toString());//业务ID
+			taskModel.setBusinessDefineKey(getProcessImgName(empForgetPluginApp));// 获取启动实例的key
+			taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+			taskModel.setAppNo(empForgetPluginApp.getAppNo());//申请编号
+			Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	@Override
+	public String getProcessImgName(EmpForgetPluginApp empForgetPluginApp) {
+		try {
+			EmpForgetPluginApp empForgetPluginApp2 = publicDao.get(EmpForgetPluginApp.class,empForgetPluginApp.getFpaId());
+			if (empForgetPluginApp2!=null) {
+				Integer appDeptId = empForgetPluginApp2.getDeptNo();//部门id
+				Organization organization = organizationService.findOrganizationByOrganizationId(appDeptId);
+				if(organization!=null){
+					Integer userId = empForgetPluginApp2.getApplicantNo();//申请人id
+					List<Role> roleList = userService.findRoleListByUserId(userId);
+					if (Collections.listIsNotEmpty(roleList)) {
+						//目前只考虑一个用户只有一个角色
+						Role role = roleList.get(0);
+						//1－业务，2－职能，3－其他
+						if ("1".equals(role.getRoleType())) {
+							imgName = "OA_PD_EmpForgetPluginApp_BU";
+							return Constants.EMPFORGETPLUGINAPPBU; 
+						}else if("2".equals(role.getRoleType())){
+							imgName = "OA_PD_EmpForgetPluginApp_FU";
+							return Constants.EMPFORGETPLUGINAPPFU; 
+						}else{
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	@Override
+	public void updateEmpForgetPluginAppProcessStatus(Integer btaId, String status) {
+		EmpForgetPluginApp empForgetPluginApp = publicDao.get(EmpForgetPluginApp.class, btaId);
+		if (empForgetPluginApp!=null) {
+			empForgetPluginApp.setProcStatus(status);
+			//如果是开启流程，就更新申请时间
+			if ("2".equals(status)) {
+				empForgetPluginApp.setAppDtime(new Date());
+			}
+		}
+		//跟新订单状态
+		publicDao.saveOrUpdate(empForgetPluginApp);
+	}
+
+	@Override
+	public List<EmpForgetPluginAppModel> findAllEmpForgetPluginAppTaskList(PageUtil pageUtil,WorkFlowTasksModel wf) {
+		try {
+			//登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(wf);
+			//返回的结果集
+			List<EmpForgetPluginAppModel> empForgetPluginAppModelList = new ArrayList<EmpForgetPluginAppModel>();
+			String ids = "";
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				for (WorkFlowTasksModel workFlowTasksModel : taskModelList) {
+					ids += workFlowTasksModel.getBusinessKey()+",";
+				}
+				//id字符串
+				ids = ids.substring(0, ids.length()-1);
+				//根据id字符串查出的集合
+				List<EmpForgetPluginAppModel> pamList = findEmpForgetPluginAppByIds(ids,pageUtil);
+				for (WorkFlowTasksModel wl : taskModelList) {
+					for (EmpForgetPluginAppModel empForgetPluginAppModel : pamList) {
+						if(Integer.valueOf(wl.getBusinessKey()) == empForgetPluginAppModel.getFpaId()){
+							empForgetPluginAppModel.setTaskModel(wl);
+							empForgetPluginAppModel.setTaskId(wl.getTaskID());
+							empForgetPluginAppModelList.add(empForgetPluginAppModel);
+						}
+					}
+				}
+			}
+			return empForgetPluginAppModelList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public List<EmpForgetPluginAppModel> findEmpForgetPluginAppByIds(String ids,PageUtil pageUtil){
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sql = getListSql(new EmpForgetPluginAppModel(ids));
+			List<Object> list = publicDao.findBySql(sql.toString(), pageUtil);
+			List<EmpForgetPluginAppModel> empForgetPluginAppList = new ArrayList<EmpForgetPluginAppModel>();
+			if (Collections.listIsNotEmpty(list)) {
+				EmpForgetPluginAppModel model = new EmpForgetPluginAppModel();
+				for (int i = 0; i < list.size(); i++) {
+					Object[] obj = (Object[])list.get(i);
+					EmpForgetPluginAppModel cmodel = (EmpForgetPluginAppModel)model.clone();
+					cmodel.setFpaId(obj[0]==null?null:(Integer)obj[0]);
+					cmodel.setAppNo(obj[1]==null?"":String.valueOf(obj[1]));
+					cmodel.setApplicantNo(obj[2]==null?null:(Integer)obj[2]);
+					cmodel.setDeptNo(obj[3]==null?null:(Integer)obj[3]);
+					cmodel.setAppDtime(obj[4]==null?null:sdf.parse(String.valueOf(obj[4])));
+					cmodel.setAppStatus(obj[5]==null?"":String.valueOf(obj[5]));
+					cmodel.setForgetPluginReason(obj[6]==null?"":String.valueOf(obj[6]));
+					cmodel.setProcStatus(obj[7]==null?"":String.valueOf(obj[7]));
+					cmodel.setRemark(obj[8]==null?"":String.valueOf(obj[8]));
+					cmodel.setAppStatusName(obj[9]==null?"":String.valueOf(obj[9]));
+					cmodel.setUserName(obj[10]==null?"":String.valueOf(obj[10]));
+					cmodel.setDeptName(obj[11]==null?"":String.valueOf(obj[11]));
+					empForgetPluginAppList.add(cmodel);
+				}
+			}
+			return empForgetPluginAppList;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public Long countFindAllEmpForgetPluginAppTaskList(WorkFlowTasksModel wf) {
+		try {
+			//登录角色所要办理的的任务集合
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(wf);
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				return Long.valueOf(taskModelList.size());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+	
+	@Override
+	public boolean saveHoldWorkTask(String taskId) {
+		try {
+			//获取用户的id
+			Integer userId = Constants.getCurrendUser().getUserId();
+			//签收任务
+			this.taskService.claim(taskId, String.valueOf(userId));
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public String saveSubmitTask(WorkFlowTasksModel taskModel) {
+		try {
+			Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+			if(resultMap.get(Constants.STATUS_REF_ID)!=null){
+				updateEmpForgetPluginAppStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+			}
+			return resultMap.get(Constants.RESULT_STR).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	@Override
+	public void updateEmpForgetPluginAppStatus(Integer btaId, String state) {
+		//跟新订单状态
+		EmpForgetPluginApp empForgetPluginApp = publicDao.get(EmpForgetPluginApp.class,btaId);
+		empForgetPluginApp.setAppStatus(state);
+		publicDao.saveOrUpdate(empForgetPluginApp);
+	}
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,Integer fpaId){
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			EmpForgetPluginApp empForgetPluginApp = new EmpForgetPluginApp();
+			empForgetPluginApp.setFpaId(fpaId);
+			String proDefKey = getProcessImgName(empForgetPluginApp);
+			String businessKey = proDefKey + "." + fpaId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			if(pi!=null){
+				// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+				ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+				// 获取当前执行任务流程
+				List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+				// 获取图片的流程图片名称
+				String resourceName = imgName + ".png";
+				// 获取图片的文件的流
+				in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+				// 获取图片对象
+				BufferedImage bimg;
+				bimg = ImageIO.read(in);
+				// 得到Graphics2D 对象
+				Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+				// 设置颜色和画笔粗细
+				g2d.setColor(Color.RED);
+				g2d.setStroke(new BasicStroke(3));
+				// 遍历执行的任务,画图
+				for (Task task : tasks) {
+					// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+					Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+					// 根据当前的执行对象的id获取正在执行的活动信息
+					ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+					// 绘制矩形
+					Rectangle2D rectangle = new Rectangle2D.Float(
+							activityImpl.getX(), activityImpl.getY(),
+							activityImpl.getWidth(), activityImpl.getHeight());
+					g2d.draw(rectangle);
+				}
+				// 写入response输出流中
+				ImageIO.write(bimg, "png", response.getOutputStream());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+
+	public String getImgName() {
+		return imgName;
+	}
+
+	public void setImgName(String imgName) {
+		this.imgName = imgName;
+	}
+}

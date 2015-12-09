@@ -1,0 +1,116 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<script type="text/javascript" src="js/validate.js"></script>
+
+<script type="text/javascript">		
+	$(function(){
+		var isGivebackHi = $("#isGivebackHi").val();
+		$("#StampTurnoverAttachAppForm #appNo").val($("#StampTurnoverAppForm #appNo").val());
+		$('#isGiveback').combobox({
+			data:[{ 
+				"id":0, 
+				"text":"是"
+				},{ 
+				"id":1, 
+				"text":"否" 
+				}],
+			valueField:'id',
+			textField:'text',
+			value:isGivebackHi
+		});
+		
+		//修改时 隐藏保存并新增按钮
+		if($("#StampTurnoverAttachAppForm #taaId").val() != ""){
+			$("#StampTurnoverAttachAppForm #save").remove();
+		}
+		
+	});
+	/** 清空新添加的理财产品的的数据**/
+	function clearForm(){
+		$("#StampTurnoverAttachAppForm").form("clear");		
+	}	
+	/** 增加或者修改理财产品的数据**/
+	function saveStampTurnoverAttach(type){
+		//校验理财产品输入的信息
+   		var isValid = $("#StampTurnoverAttachAppForm").form('validate');
+		var objData = $('#StampTurnoverAttachAppForm').serialize();
+		var ig = $('#StampTurnoverAttachAppForm #isGiveback').combobox('getValue')
+		ig = ig==""?0:ig;
+		objData = objData.replace("&appNo=&","&appNo="+$('#appNo').val()+"&");
+		objData = objData.replace("&isGiveback=&","&isGiveback="+ ig +"&");
+    	if(!isValid){
+    		return false;
+    	}  	
+    	$.ajax({
+    		type: "POST",
+    		url:"StampTurnoverAppAttachController/addStampTurnoverAppAttach.do",
+    		data:objData,
+    		async: false,//默认true设置下，所有请求均为异步请求
+    		cache: true,
+    	    success: function(iJson) {    	    	
+     	    	if(iJson.status){
+    	    		$("#stampTurnoverAttachGrid").datagrid("load",{"appNo":$('#appNo').val()});//刷新表格   
+    	    	}
+     	    	$.messager.alert(iJson.title,iJson.message,'info');
+    	    }
+    	});		
+    	//为1时 保存并关闭当前窗口
+    	if(type==1){
+    		closeWindow();
+    	}
+	}
+	
+	function closeWindow(){
+		alert
+		$('#formWindow').dialog("close"); 
+	}
+</script>
+
+	
+	<div style="margin-left: 5px;margin-top: 5px;">
+	   <form id="StampTurnoverAttachAppForm" method="post">
+	   <input type="hidden" id="taaId" name="taaId" value="${stampTurnoverAttach.taaId}"/>
+	   <input type="hidden" id="appNo" name="appNo" value=""/>
+	   <input type="hidden" id="isGivebackHi" name="isGivebackHi" value="${stampTurnoverAttach.isGiveback}"/>
+	   
+	   
+			<table class="table"  width="95%">
+				<tr>
+					<th align="right">印章名称:</th>
+					<td>
+						<input id="stampName" name="stampName" value="${stampTurnoverAttach.stampName}"  type="text" class="easyui-textbox easyui-validatebox"   data-options="validType:'length[0,50]' , required:true"/>
+					</td>
+					<th align="right">是否归还:</th>						
+					<td >
+						<select id="isGiveback" class="easyui-combobox" name="isGiveback"  style="width: 170px;" data-options="required:true"  value="${stampTurnoverAttach.isGiveback }"></select>
+					</td>
+					<th align="right">归还时间:</th>
+					<td>
+						<input name="givebackDatetime" id="givebackDatetime" value="${stampTurnoverAttach.givebackDatetime}" class="easyui-datetimebox"  editable="false" style="width:174px;" data-options="validType:'Date',required:true"/>
+					</td>
+				</tr>
+				<tr>
+				<td colspan="6" height="10"></td>
+				</tr>
+				<tr>
+					<th colspan="1" align="right">印章移交原因:</th>
+					<td colspan="5">
+					<textarea name="turnoverReson"  id="turnoverReson"  class="easyui-textarea easyui-validatebox" style="width: 600px; height: 90px;" data-options="validType:'length[0,100]',required:true">${stampTurnoverAttach.turnoverReson }</textarea>
+					</td>
+				</tr>
+				<tr>
+					<th colspan="1" align="right">备注:</th>
+				   <td colspan="5" align="left">
+				   <textarea name="remark"  id="remark"  class="easyui-textarea easyui-validatebox" style="width: 600px; height: 90px;" data-options="validType:'length[0,200]'">${stampTurnoverAttach.remark }</textarea>
+				   </td>
+				</tr>	
+				<tr>
+					<td colspan="3"></td>
+				   <td colspan="3" align="right">
+				       <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="saveStampTurnoverAttach(0);">保存并继续添加</a>
+				      <a href="javascript:void(0)" id="saveAndClose" class="easyui-linkbutton" iconCls="icon-save" onclick="saveStampTurnoverAttach(1);">保存并关闭</a>
+				      <a href="javascript:void(0)" id="close" class="easyui-linkbutton"  onclick="closeWindow();">关闭页面</a>
+				   </td>
+				</tr>					
+			</table>
+		</form>
+	</div>				

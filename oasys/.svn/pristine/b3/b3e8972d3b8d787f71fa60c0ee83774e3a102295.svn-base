@@ -1,0 +1,194 @@
+<%@page import="com.fasterxml.jackson.annotation.JsonInclude.Include"%>
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<script type="text/javascript" src="js/validate.js"></script>
+
+<script type="text/javascript">	
+	var selectRow;
+	/** 保存增加或者修改名片申请的数据**/
+	function saveInvestProductInfo(){
+		$('#investProductInputOrSaveForm').submit(); 
+	};
+	//表单验证及返回操作
+	$(function(){
+		var id=<%=request.getParameter("id")%>
+		if(id==1){
+			$("#investProductInputOrSaveForm #deptNo").attr("disabled","disabled");
+			$("#investProductInputOrSaveForm #applicantNo").attr("disabled","disabled");
+			$("#investProductInputOrSaveForm #position").attr("disabled","disabled");
+			$("#investProductInputOrSaveForm #appDate").attr("disabled","disabled");
+		}else{
+			$(".table tr:eq(0)").remove();
+			$(".table tr:eq(0)").remove();
+		}
+		// 渲染form
+		$('#investProductInputOrSaveForm').form({    
+			url:"overtime/addOvertime.do",
+		    onSubmit: function(param){   
+		    	//校验输入的信息
+				var isValid = $("#investProductInputOrSaveForm").form('validate');
+				if(!isValid){
+					return false;
+				} 
+				     	    	
+				var lowLendEdu = $("#lowLendEdu").val();
+				if(lowLendEdu == "" ){
+					$("#lowLendEdu").val(null);
+				}
+			
+				var higLendEdu = $("#higLendEdu").val();
+				if(higLendEdu == "" ){
+					$("#higLendEdu").val(null);
+				} 
+		    },    
+		    success:function(data){
+				$.messager.alert("提示","操作成功","warning");
+				$("#saveOrUpdateEmpSalDialog").dialog('close');//关闭申请调整弹框
+				$("#dg").datagrid("reload"); //刷新主列表
+				$("#waitTaskGrid").datagrid("reload");//刷新待办任务列表
+				$("#addWindow").dialog("close");//关闭添加修改弹框
+		    }    
+		});    
+		// 渲染下拉列表框
+		createSelect();
+	});
+	
+	// 根据索引获取每一行的基本信息
+	function getRowData2 (index) {
+        if (!$.isNumeric(index) || index < 0) { return undefined; }
+        var rows = $grid.datagrid("getRows");
+        return rows[index];
+    }
+
+// 	/** 点击按钮，新增或者修改,加载编辑的值**/			
+// 	function toSaveOrUpdateInvestProductOpenDlg2(index){		
+// 	    var selectedRow = getRowData2(index);
+// 	    createSelect();
+//     	$("#investProductInputOrSaveForm").form("load",selectedRow);
+//         $("#deptNo").combotree('setValue',selectedRow.organizationId);
+//      	$("#applicantNo").combogrid('setValue',selectedRow.userId);
+    	
+// 	}
+
+	/** 清空新添加的的的数据**/
+	function clearForm(){
+		$("#investProductInputOrSaveForm").form("clear");		
+	}	
+	
+	function createSelect(){
+		//初始化组织机构
+		$("#deptNo").combotree({
+			width:171,
+			url:"Organization/organizationList.do",
+			idFiled:'id',
+		 	textFiled:'name',
+		 	valueFiled:'id',
+		 	parentField:'pid',
+		 	onLoadSuccess:function(data){
+		 	},
+		 	onChange:function(){
+		 		$("#applicantNo").combogrid('setValue',null);
+		 		$("#deptNo").val($(this).combotree('getValue'));
+		 	   $("#applicantNo").combogrid({    
+				    panelWidth:250,  
+				    mode: 'remote',   
+				    idField:'code',    
+				    textField:'text',    
+				    url:'callingCard/getUserInfo.do?q='+$("#deptNo").val(),
+				    columns:[[    
+				        {field:'text',title:'用户名',width:120}
+				    ]],
+				    onChange:function(n,o){
+				    	$.ajax({
+				    		type: "POST",
+				    		url:"callingCard/loadUserInfo.do?q="+n,
+				    		async: false,//默认true设置下，所有请求均为异步请求
+				    		cache: true,
+				    	    success: function(iJson) {
+				     	    	$("#deptNo").val(iJson.fullName);
+				     	    	$("#position").val(iJson.name);
+				     	    	$("#personalTel").val(iJson.mobile);
+				     	    	$("#officeTel").val(iJson.tel);
+				     	    	$("#email").val(iJson.email);
+				    	    }
+				    	});		
+				    }
+				}); 
+		 	}
+		});
+	}
+	
+	$(function(){
+//  		 $("#investProductInputOrSaveForm").form('load',$selRow);	//编辑时load
+		//上传附件
+		$("#upploadAttachment").click(function(){
+			fileUploadsDlg($row.appNo);
+		});
+		//查看附件
+		$("#checkAttachment").click(function(){
+			checkAttachementDetail($row.appNo,'');
+		});
+	});
+</script>
+	<div style="margin-left: 5px;margin-top: 5px;" data-options="iconCls:'icon-cstbase'">
+	   <form id="investProductInputOrSaveForm"  method="post">
+ 	   		<input id="oveId" name="oveId" type="hidden"/><!-- 加班申请ID -->
+			<table class="table" width="100%">
+				<tr>
+					<th>部门:</th>
+					<td>
+						<input name="deptNo" id="deptNo" class="easyui-textbox" data-options="validType:'length[0,100]', required:true"/>
+					</td>
+					<th>姓名:</th>
+					<td id="name">
+						<input name="applicantNo" id="applicantNo" class="easyui-textbox" data-options="validType:'length[0,100]', required:true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>职务:</th>
+					<td>
+						<input name="position" id="position" class="easyui-textbox" readonly="true"/>
+					</td>
+					<th>申请日期:</th>
+					<td>
+						<input name="appDate" id="appDate" class="easyui-textbox"  data-options="validType:'length[0,100]',required:true" readonly="true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>计划开始时间:</th>
+					<td>
+						<input name="planBgDtime" id="planBgDtime" class="easyui-textbox easyui-datetimebox" readonly="true"  data-options="validType:'length[0,100]',required:true"/>
+					</td>
+					<th>计划结束日期时间:</th>
+					<td>
+						<input name="planEdDtime" id="planEdDtime" class="easyui-textbox easyui-datetimebox" readonly="true"  data-options="validType:'length[0,100]',required:true"/>
+					</td>
+				</tr>
+				<tr>
+					<th>实际开始日期时间:</th>
+					<td>
+						<input id="realBgDtime" name="realBgDtime" class="easyui-textbox easyui-datetimebox" data-options="validType:'length[0,100]', required:true"/>
+					</td>
+					<th>实际结束日期时间:</th>
+					<td>
+						<input id="realEdDtime" name="realEdDtime" type="text" class="easyui-textbox easyui-datetimebox" data-options="validType:'length[0,100]',required:true" maxlength="5"/>
+					</td>
+				</tr>
+				<tr>
+					<th>备注:</th>
+					<td colspan="3">
+						<textarea id="remark" name="remark" class="easyui-textbox" style="width:600px;height:50px;" maxlength="100"></textarea>
+					</td>
+				</tr>
+				<tr align="right">
+				   <td colspan="4">
+				      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearForm();">重置</a>
+				      <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="saveInvestProductInfo();">保存</a>
+				   </td>
+				</tr>					
+			</table>
+		</form>
+	</div>	
+		<!--添加名片列表 -->
+		<table id="lookLoanOrderdgAdd" title="添加名片" style="margin-top: 60px;"></table>
+		<!--查看附件-->
+		<div id="saveOrUpdateInvestProductDialog"></div>		

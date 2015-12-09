@@ -1,0 +1,33 @@
+package com.oasys.listener.ad.PpeTurnoverApp;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+
+import com.oasys.listener.BaseTaskListener;
+import com.oasys.util.Constants;
+
+
+/**
+ * @Creater lida
+ * @File_Name PPEScrapAppTaskListener.java
+ * @Version v1.0
+ * @Creation_Date 2015年9月18日 
+ * @Modifier
+ * @Modified_Date
+ * @Description 流程运行时的监听器
+ */
+public class PpeTurnoverAppTaskListener extends BaseTaskListener implements TaskListener{
+	
+	private static final long serialVersionUID = -344720324571393495L;
+
+	@Override
+	public void notify(DelegateTask task) {
+		//申请调整时 将任务指定回提交申请人
+		if(task.getTaskDefinitionKey().startsWith(Constants.APPLY_FOR_ADJUSTMENT)){
+			if(null != task.getVariable(Constants.CURRENT_USER_KEY))
+				task.setAssignee(task.getVariable(Constants.CURRENT_USER_KEY).toString());//申请调整时 将任务指定回提交申请人
+		}else{
+			setTaskRoleCodeByTask(task);
+		}
+	}
+}

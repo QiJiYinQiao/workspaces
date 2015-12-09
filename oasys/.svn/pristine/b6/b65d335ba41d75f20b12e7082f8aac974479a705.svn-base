@@ -1,0 +1,698 @@
+package com.oasys.util;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+
+import com.oasys.shiro.ShiroUser;
+
+/**
+ * 
+ * 系统常用的常量
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+public class Constants {
+
+	/** session中的用户的信息. */
+	public static final String LOGIN_SESSION_DATANAME = "users";
+
+	/** 登录用户的地址. */
+	public static final String LOGIN_URL = "login";
+
+	/** 成功页面. */
+	public static final String LOGIN_SUCCESS_URL = "index";
+
+	/** 退出登录的地址. */
+	public static final String LOGIN_LOGIN_OUT_URL = "loginout";
+
+	/** 登录信息提示的消息的key. */
+	public static final String LOGIN_MSG = "loginMsg";
+
+	/** 登录时用户名为空的时候,提示信息. */
+	public static final String USERNAME_IS_NULL = "用户名为空!";
+
+	/** 用户已经登录的提示信息. */
+	public static final String LOGIN_IS_EXIST = "该用户已登录!";
+
+	/** 异常回话的提示消息. */
+	public static final String UNKNOWN_SESSION_EXCEPTION = "异常会话!";
+
+	/** 账号错的提示消息. */
+	public static final String UNKNOWN_ACCOUNT_EXCEPTION = "账号错误!";
+
+	/** 登录时候,密码错误. */
+	public static final String INCORRECT_CREDENTIALS_EXCEPTION = "密码错误!";
+
+	/** 登录时候,账号被锁定. */
+	public static final String LOCKED_ACCOUNT_EXCEPTION = "账号已被锁定，请与系统管理员联系!";
+
+	/** 登录的时候,验证码输入错误的提示信息. */
+	public static final String INCORRECT_CAPTCHA_EXCEPTION = "验证码错误!";
+
+	/** 　没有授权的提示信息． */
+	public static final String AUTHENTICATION_EXCEPTION = "您没有授权!";
+
+	/** 出现未知情况的时候,提示的信息. */
+	public static final String UNKNOWN_EXCEPTION = "出现未知异常,请与系统管理员联系!";
+
+	/** 增加树节点的状态标示. */
+	public static final String TREE_GRID_ADD_STATUS = "add";
+
+	/** 更新数据成功的标示. */
+	public static final String POST_DATA_SUCCESS = "数据更新成功!";
+
+	/** 提交数据失败的标示. */
+	public static final String POST_DATA_FAIL = "提交失败了!";
+
+	/** 模糊查询的拼接符. */
+	public static final String GET_SQL_LIKE = "%";
+
+	/** 是不是菜单类型的权限 */
+	public static final String IS_FUNCTION = "F";
+
+	/** 显示数据的标示. */
+	public static final String PERSISTENCE_STATUS = "A";
+
+	/** 逻辑删除的标示. */
+	public static final String PERSISTENCE_DELETE_STATUS = "I";
+
+	/** 系统admin. */
+	public static final String SYSTEM_ADMINISTRATOR = "admin";
+
+	/** 返回response的头部的信息文本. */
+	public static final String TEXT_TYPE_PLAIN = "text/plain";
+
+	/** 返回response的头部的信息页面. */
+	public static final String TEXT_TYPE_HTML = "text/html";
+
+	/** 是不是操作类型的权限(增删改). */
+	public static final String FUNCTION_TYPE_O = "O";
+
+	/** 展开状态. */
+	public static final String TREE_STATUS_OPEN = "open";
+
+	/** 折叠状态. */
+	public static final String TREE_STATUS_CLOSED = "closed";
+
+	/** 是否含有子菜单的提示信息. */
+	public static final String IS_EXT_SUBMENU = " 或可能包含菜单!";
+
+	/** 当用户的key. */
+	public static final String SHIRO_USER = "shiroUser";
+
+	/** sql文件的后缀名称. */
+	public static final String FILE_SUFFIX_SQL = ".sql";
+
+	/** 压缩包的后缀. */
+	public static final String FILE_SUFFIX_ZIP = ".zip";
+
+	/** 异动事由 */
+	public static final String CHG_TYPE = "chg_type";
+	/** 薪资调整形式 */
+	public static final String SAL_CHG_TYPE = "sal_chg_type";
+	/** 变动理由 */
+	public static final String CHG_RESON = "chg_reson";
+	
+	/** 流程启动者流程变量key */
+	public static final String CURRENT_USER_KEY = "curUserId";
+	/** 角色下没有配置对应人的标识 */
+	public static final String RCN_RESULT="rcnResult";
+	/** 流程启动时记录的businessID */
+	public static final String CURRENT_BUSINESS_ID = "businessId";
+	
+	/** 接收人流程变量key */
+	public static final String CURRENT_RECIPIENT_KEY="Recipient";
+	
+	/** 数据源切换常量 */
+	public static final String DATASOURCE_OA="dataSourceOA";
+	public static final String DATASOURCE_QQMS="dataSourceQQms";
+	
+	/** 分部工牌申请常量 */
+	public static final String BADGEAPP_BO="BadgeAppBO";
+	/**分部工牌流程图*/
+	public static final String BADGEAPP_BO_IMG="OA_AD_BadgeApp_BO";
+	/**总部工牌申请key*/
+	public static final String BADGEAPP_HO="BadgeAppHo";
+	/**总部工牌申请流程图*/
+	public static final String BADGEAPP_HO_IMG="OA_AD_BadgeApp_HO";
+	
+	/**用章申请*/
+	public static  final String USESTAMPAPP="UseStampApp";
+	/**用章申请撤销提示*/
+	public static final String USESTAMPAPP_RE_KEY="ShenQingCheXiao";
+	public static final String USESTAMPAPP_RE_KEY2="ShenQingCheXiao2";
+	
+	/**
+	 * 调整申请 节点标识符
+	 * */
+	public static final String APPLY_FOR_ADJUSTMENT="ApplyForAdjustment";
+	
+	/**
+	 * statusRefID status_name_ref表中的 refID 对应流程图中线的ID
+	 * */
+	public static final String STATUS_REF_ID = "statusRefID";
+	
+	/**
+	 * resultStr消息提醒字符串标识
+	 * */
+	public static final String RESULT_STR = "resultStr";
+	
+	/** 流程图中默认通过标识 {result==1} */
+	public static final String TASK_COMMIT_RESULT = "1";//通过
+	
+	public static final String TASK_REJECT_RESULT = "0";//驳回
+	
+	public static final String TASK_REFUSE_RESULT = "2";//拒绝
+	
+	/** 1－初始状态，2－审批中，3－已完成，4－已失效，5－已撤销，6－已拒绝*/
+	
+	public static final String PROC_INIT = "1";
+	public static final String PROC_APPROVAL = "2";
+	public static final String PROC_COMPLETED = "3";
+	public static final String PROC_INVALID = "4";
+	public static final String PROC_REVOKE="5";
+	public static final String PROC_REFUSE="6";
+	
+	
+	/** 物料采购申请-分部  常量 */ 
+	public static final String PURCHASEAPP_BO="purchaseAppBO";
+	
+	/** 物料采购申请-分部  常量 */ 
+	public static final String PURCHASEAPP_HO="purchaseAppHO";
+	
+	/** 名片申请-总部-常量*/
+	public static final String CALLINGCARD_HO="CallingCard";
+	/** 名片申请-分部-常量*/
+	public static final String CALLINGCARD_BO="CallingCardBO";
+	
+	/** 固定资产移交申请-总部-常量*/
+	public static final String PPETURNOVERAPP_HO="PpeTurnoverAppHO";
+	
+	/** 固定资产移交申请-分部-常量*/
+	public static final String PPETURNOVERAPP_BO="PpeTurnoverAppBO";
+	
+	/** 低值易耗品申请-分部-常量*/
+	public static final String ConsumablesApp_BO="ConsumablesAppBO";
+	public static final String ConsumablesApp_BO_RES="OA_AD_ConsumablesApp_BO";
+	
+	/** 低值易耗品申请-总部-常量*/
+	public static final String ConsumablesApp_HO="ConsumablesAppHO";
+	public static final String ConsumablesApp_HO_RES="OA_AD_ConsumablesApp_HO";
+	
+	/***费用申请-分部***/
+	public static final String EXPENSESAPP_BO = "expensesAppBO";
+	/***费用申请-总部***/
+	public static final String EXPENSESAPP_HO = "expensesAppHO";
+	
+	/*****员工转正申请 start*****/
+	public static final String EMPFULLMEMBERAPPBOFU = "empFullmemberAppBOFU";//分部职能端
+	public static final String EMPFULLMEMBERAPPBOBU = "empFullmemberAppBOBU";//分部业务端
+	public static final String EMPFULLMEMBERAPPHO = "empFullmemberAppHO";//总部
+	/*****员工转正申请 end*****/
+	
+	/**加班申请-常量*/
+	public static final String OVERTIMEAPP="OvertimeApp";//总部/分部职能端加班
+	public static final String OVERTIMEAPPBOBU="OvertimeAppBOBU";//分部业务端加班
+	
+	/**离职申请-总部-常量**/
+	public static final String EMPDIMISSIONAPP_HO="EmpDimissionAppHO";
+	public static final String EMPDIMISSIONAPP_HO_RES="OA_HR_EmpDimissionApp_HO";
+	/**离职申请-分部-常量**/
+	public static final String EMPDIMISSIONAPP_BO_BU_YX="EmpDimissionAppBOBUYX";
+	public static final String EMPDIMISSIONAPP_BO_BU_YX_RES="OA_HR_EmpDimissionApp_BO_BU_YX";
+	public static final String EMPDIMISSIONAPP_BO_BU_YS="EmpDimissionApp_BO_BU_YS";
+	public static final String EMPDIMISSIONAPP_BO_BU_YS_RES="OA_HR_EmpDimissionApp_BO_BU_YS";
+	public static final String EMPDIMISSIONAPP_BO_FU="EmpDimissionAppBOFU";
+	public static final String EMPDIMISSIONAPP_BO_FU_RES="OA_HR_EmpDimissionApp_BO_FU";
+	
+	/**出差申请-总部-常量**/
+	public static final String BUSINESSTRIPAPP_HO="BusinessTripAppHO";
+	public static final String BUSINESSTRIPAPP_HO_RES="OA_PD_BusinessTripApp_HO";
+	/**出差申请-分部-常量**/
+	public static final String BUSINESSTRIPAPP_BO_FU="BusinessTripAppBOFU";
+	public static final String BUSINESSTRIPAPP_BO_FU_RES="OA_PD_BusinessTripApp_BO_FU";
+	public static final String BUSINESSTRIPAPP_BO_BU="BusinessTripAppBOBU";
+	public static final String BUSINESSTRIPAPP_BO_BU_RES="OA_PD_BusinessTripApp_BO_BU";
+	/****/
+	public static final String SPECIALRATIFYAPP="SpecialRatifyApp";
+	public static final String SPECIALRATIFYAPP_RES="OA_FD_SpecialRatifyApp";
+	/** 固定资产报废申请单-总部 常量 */
+	public static final String PPESCRAPAPP_HO="PPEScrapAppHo";
+	public static final String PPESCRAPAPP_HO_RES="OA_AD_PPEScrapAPP_HO";
+	/** 固定资产报废申请单 撤销申请标识KEY */
+	public static final String PPESCRAPAPP_APPLY_KEY="ApplyForAdjustmentSubmit";
+	/** 固定资产报废申请单-分部 常量 */
+	public static final String PPESCRAPAPP_BO="PPEScrapAppBo";
+	public static final String PPESCRAPAPP_BO_RES="OA_AD_PPEScrapAPP_BO";
+	
+	
+	/** 员工调岗调薪 常量  */
+	//员工薪资岗位变动 分公司业务端部门内员工异动审批
+	public static final String EMPSAL_POSITION_CHG_APP_DI_BO_BU="EmpSalPositionChgAppDI_BO_BU";
+	public static final String EMPSAL_POSITION_CHG_APP_DI_BO_BU_RES="OA_PD_EmpSalPositionChgAppDI_BO_BU";
+	//员工薪资岗位变动 分公司职能端部门内员工异动审批
+	public static final String EMPSAL_POSITION_CHG_APP_DI_BO_FU="EmpSalPositionChgAppDI_BO_FU";
+	public static final String EMPSAL_POSITION_CHG_APP_DI_BO_FU_RES="OA_PD_EmpSalPositionChgAppDI_BO_FU";
+	//员工薪资岗位变动 总部部门内调岗/调薪
+	public static final String EMPSAL_POSITION_CHG_APP_DI_HO="EmpSalPositionChgAppDI_HO";
+	public static final String EMPSAL_POSITION_CHG_APP_DI_HO_RES="OA_PD_EmpSalPositionChgAppDI_HO";
+	//员工薪资岗位变动 总部部门间调岗
+	public static final String EMPSAL_POSITION_CHG_APP_DO_HO="EmpSalPositionChgAppDO_HO";
+	public static final String EMPSAL_POSITION_CHG_APP_DO_HO_RES="OA_PD_EmpSalPositionChgAppDO_HO";
+	//员工薪资岗位变动 分公司业务端部门间员工异动
+	public static final String EMPSAL_POSITION_CHG_APP_DO_BO_BU="EmpSalPositionChgAppDO_BO_BU";
+	public static final String EMPSAL_POSITION_CHG_APP_DO_BO_BU_RES="OA_PD_EmpSalPositionChgAppDO_BO_BU";
+	//分公司职能端员工异动-部门间-不涉及职能端和业务端异动
+	public static final String EMPSAL_POSITION_CHG_APP_DO_BSJ_BO_BU="EmpSalPositionChgAppDO_BSJ_BO_FU";
+	public static final String EMPSAL_POSITION_CHG_APP_DO_BSJ_BO_BU_RES="OA_PD_EmpSalPositionChgAppDO_BSJ_BO_FU";
+	//分公司职能端员工异动-部门间-涉及职能端和业务端异动
+	public static final String EMPSAL_POSITION_CHG_APP_DO_SJ_BO_BU="EmpSalPositionChgAppDO_SJ_BO_FU";
+	public static final String EMPSAL_POSITION_CHG_APP_DO_SJ_BO_BU_RES="OA_PD_EmpSalPositionChgAppDO_SJ_BO_FU";
+	/*****员工忘打卡申请 start*****/
+	public static final String EMPFORGETPLUGINAPPFU = "empForgetPluginAppFU";//总部/分部职能端忘打卡申请
+	public static final String EMPFORGETPLUGINAPPBU = "empForgetPluginAppBU";//分部业务端员工忘打卡申请
+	/*****员工忘打卡申请 end*****/
+	
+	/** 印章移交申请单 常量 */
+	public static final String STAMPTURNOVERAPP="StampTurnoverApp";
+	public static final String STAMPTURNOVERAPP_RES="OA_AD_StampTurnoverApp";
+	/** 印章移交废申请单 撤销申请标识KEY */
+	public static final String STAMPTURNOVERAPP_APPLY_KEY="ApplyForAdjustmentSubmit";
+	
+	/** 财务端 组织机构标识 */
+	public static final String ORG_MYID_CF = "CF";
+	/** 借款端 组织机构标识 */
+	public static final String ORG_MYID_JK = "JK";
+	
+	/**休假申请种类类型*/
+	public static final String LEAVEAPP_TYPE="leave_type";
+	/**休假申请客户经理、休假申请团队经理*/
+	public static final String LEAVEAPP_Cli_TEAM="BusCliTeamLeave";
+	/**休假申请营业部经理*/
+	public static final String LEAVEAPP_Sales="BusSalesLeave";
+	/**休假申请城市经理、区域经理*/
+	public static final String LEAVEAPP_City_Area="BusCityAreaLeave";
+	/**休假申请职员*/
+	public static final String LEAVEAPP_Staff="BusStaffLeave";
+	/**休假申请部门主管*/
+	public static final String LEAVEAPP_Dep="BusDepLeave";
+	/**休假申请部门经理及以上职级婚假和产假*/
+	public static final String LEAVEAPP_Woman="BusWomanLeave";
+	
+	/**差旅报销费用项目类型*/
+	public static final String TRAVELEXPENSES_TYPE="exes_item";
+	/**交通工具类型*/
+	public static final String BUSINESSTRIPATTACHE="vehicle_type";
+	/**差率报销申请key值*/
+	public static final String TRAVELEXPENSESAPP="travelExpensesApp";
+	/**差旅报销申请流程图*/
+	public static final String TRAVELEXPENSESIMAGE="OA_FD_TravelExpensesApp";
+	/**一天的出差补助*/
+	public static final Double TRAVELSUBSIDYAMTDAY=120.00;
+	/**支出凭单key值*/
+	public static final String EXPENDVOUCHERAPP="expendVoucherApp";
+	/**支出凭单流程图*/
+	public static final String EXPENDVOUCHERIMAGE="OA_FD_ExpendVoucherApp";
+	
+	/** 当组织机构的treeLevel满足Map中配置的条件时执行向上查找该组织机构的父级节点
+	 * @param type = 0 总部查找范围 = 1 分部查找范围
+	 *  */
+	public static final Map<String,String> getTreeLevelMap(Integer type){
+		Map<String,String> treeLevelMap = new HashMap<String, String>();
+		switch (type) {
+			case 0:
+				treeLevelMap.put(ORG_TREELEVEL_ZX, "true");//中心
+				treeLevelMap.put(ORG_TREELEVEL_QY, "true");//部门
+				treeLevelMap.put(ORG_TREELEVEL_SF, "true");//省份
+				break;
+			case 1:
+				treeLevelMap.put(ORG_TREELEVEL_SF, "true");//省份
+				treeLevelMap.put(ORG_TREELEVEL_FGS, "true");//分部分公司
+				treeLevelMap.put(ORG_TREELEVEL_FB, "true");//分部
+				treeLevelMap.put(ORG_TREELEVEL_CS, "true");//城市
+				break;
+			default:
+				break;
+		}
+		return treeLevelMap;
+	}
+	
+
+	
+	/** 配置角色跳转哪个方法 
+	 * type = 0 为需要不定级查找角色 
+	 * type = 1 为定级查找(区域) 
+	 * type = 2 为定级查找(中心) 
+	 * type = 3 为总部角色 不需定位组织机构 
+	 * type = 4 总部 在部门下的角色
+	 * type = 5 总部分部都存在的角色 分部采用不定级查找方式 总部直接定位到所在的部门去进行查找 */
+	public static final Map<String,String> getRoleCodeJumpFuction(Integer type){
+		Map<String,String> treeLevelMap = new HashMap<String, String>();
+		switch (type) {
+		case 0:
+			treeLevelMap.put(AD_ROLE_CODE_CITYMANAGER, "true");//城市经理
+			treeLevelMap.put(AD_ROLE_CODE_BUSINESSMGR, "true");//营业部经理
+			treeLevelMap.put(AD_ROLE_CODE_RECEPTIONIST, "true");//行政前台
+			treeLevelMap.put(PD_ROLE_CODE_PERSONNELCOMMISSIONER, "true");//人事专员
+			treeLevelMap.put(PD_ROLE_CODE_TEAMMANAGERBIG, "true");//大团经理
+			treeLevelMap.put(PD_ROLE_CODE_TEAMMANAGER, "true");//团队经理
+			treeLevelMap.put(AD_ROLE_CODE_SPECIALIST, "true");//行政专员
+			break;
+		case 1:
+			treeLevelMap.put(PD_ROLE_CODE_AREAMANGER, "true");//区域经理
+			treeLevelMap.put(HR_ROLE_CODE_DEPTDIRECTOR, "true");//区域总监
+			break;
+		case 2:
+			treeLevelMap.put(PD_ROLE_CODE_CENTRECHIEFIN_DIRECTOR, "true");//中心负责人
+			treeLevelMap.put(PD_ROLE_CODE_CENTRECHIEFINSPECTOR, "true");//中心总监
+			treeLevelMap.put(PD_ROLE_CODE_CENTREMANAGER, "true");//中心经理
+			break;
+		case 3:
+			treeLevelMap.put(PD_ROLE_CODE_HRMANAGER, "true");//人力资源经理
+			treeLevelMap.put(PD_ROLE_CODE_HRCHIEFINSPECTOR, "true");//人力资源总监
+			treeLevelMap.put(AD_ROLE_CODE_CHIEF, "true");//行政总监
+			treeLevelMap.put(AD_ROLE_CODE_MGR, "true");//行政经理
+			treeLevelMap.put( AD_ROLE_CODE_HEADFINANCIAL, "true");//财务主管
+			treeLevelMap.put(AD_ROLE_CODE_FINANCIALMGR, "true");//财务经理
+			treeLevelMap.put(AD_ROLE_CODE_FINANCIALDIRECTOR, "true");//财务总监
+			treeLevelMap.put(OA_ROLE_CODE_CEO,"true");//总经理
+			treeLevelMap.put(HR_ROLE_CODE_SPECIALIST,"true");//员工关系专员
+			treeLevelMap.put(AD_ROLE_CODE_ASSISTANTDOCKING, "true");//行政对接助理，未确定位置
+			treeLevelMap.put(AD_ROLE_CODE_ASSISTANTCHARGE, "true");//行政对接主管，未确定位置
+			treeLevelMap.put(AD_ROLE_CODE_SPECIALIST, "true");//行政专员，未确定位置
+			treeLevelMap.put(AD_ROLE_CODE_CASHIER, "true");//出纳人员，未确定位置
+			treeLevelMap.put(AD_ROLE_CODE_BUTTCOMMISSIONER,"true");//对接专员 未确定位置
+			treeLevelMap.put(PD_ROLE_CODE_BUTTJOINTCHARGE,"true");//对接主管 未确定位置
+			treeLevelMap.put(PD_ROLE_CODE_RECRUIT_MGR,"true");//招聘经理			
+			break;
+		case 4:
+			treeLevelMap.put(HR_ROLE_CODE_DIVISION, "true");//部门主管
+			treeLevelMap.put(OA_ROLE_CODE_DEPARTMENTHEADS,"true");//部门经理
+			treeLevelMap.put(HR_ROLE_CODE_DEPTDIRECTOR,"true");//部门总监
+			break;
+		case 5:	
+			treeLevelMap.put(PD_ROLE_CODE_PERSONNELCOMMISSIONER, "HR Manage Center");//人事专员
+		default:
+			break;
+		}
+		return treeLevelMap;
+	}
+	
+	/** 跳转办理任务的Map存储常量 */
+	public static final Map<String, String> getTaskLocationMap() {
+		Map<String,String> TASK_LOCATION_MAP = new HashMap<String, String>();
+		TASK_LOCATION_MAP.put(PPESCRAPAPP_HO, "jsp/ad/ppeScrap/ppeScrapTaskList.jsp?sid=1");//总部固定资产报废申请
+		TASK_LOCATION_MAP.put(PPESCRAPAPP_BO, "jsp/ad/ppeScrap/ppeScrapTaskList.jsp?sid=2");//分部固定资产报废申请
+		TASK_LOCATION_MAP.put(STAMPTURNOVERAPP, "jsp/ad/stampTurnover/stampTurnoverTask.jsp");//分部固定资产报废申请
+		TASK_LOCATION_MAP.put(PURCHASEAPP_BO, "jsp/ad/purchaseApp/purchaseAppBoTaskMain.jsp");//分部物料采购
+		TASK_LOCATION_MAP.put(PURCHASEAPP_HO, "jsp/ad/purchaseApp/purchaseAppHoTaskMain.jsp");//总部物料采购
+		TASK_LOCATION_MAP.put(PPETURNOVERAPP_HO, "jsp/ad/ppeTurnover/taskUnClaimMain.jsp");//总部固定资产移交申请
+		TASK_LOCATION_MAP.put(PPETURNOVERAPP_BO, "jsp/ad/ppeTurnover/taskUnClaimMain.jsp");//分部固定资产移交申请
+		TASK_LOCATION_MAP.put(BADGEAPP_BO, "jsp/ad/badgeApply/badgeTaskClaimMain.jsp?sid=1");//分部工牌申请
+		TASK_LOCATION_MAP.put(BADGEAPP_HO, "jsp/ad/badgeApply/badgeTaskClaimMain.jsp?sid=2");//总部工牌申请
+		TASK_LOCATION_MAP.put(CALLINGCARD_HO, "jsp/ad/callingCard/callingCardTaskMain.jsp");//总部名片申请
+		TASK_LOCATION_MAP.put(CALLINGCARD_BO, "jsp/ad/callingCard/callingCardTaskMainBO.jsp");//分部名片申请
+		TASK_LOCATION_MAP.put(EXPENSESAPP_BO, "jsp/ad/expensesApp/expensesAppTaskMain.jsp?sid=1");//分部费用申请
+		TASK_LOCATION_MAP.put(EXPENSESAPP_HO, "jsp/ad/expensesApp/expensesAppTaskMain.jsp?sid=2");//总部费用申请
+		TASK_LOCATION_MAP.put(USESTAMPAPP,"jsp/pd/UseStampApp/useStampTaskClaimMain.jsp");//用章申请
+		TASK_LOCATION_MAP.put(ConsumablesApp_BO, "jsp/ad/consumablesApp/task/consumablesAppTask.jsp");//分部低值易耗品申请
+		TASK_LOCATION_MAP.put(ConsumablesApp_HO, "jsp/ad/consumablesApp/task/consumablesAppTask.jsp");//总部低值易耗品申请
+		TASK_LOCATION_MAP.put(LEAVEAPP_Cli_TEAM,"jsp/pd/leaveApp/leaveAppTaskMain.jsp?sid=1");//休假申请客户经理、团队经理
+		TASK_LOCATION_MAP.put(LEAVEAPP_Sales,"jsp/pd/leaveApp/leaveAppTaskMain.jsp?sid=2");//营业部经理休假申请
+		TASK_LOCATION_MAP.put(LEAVEAPP_City_Area,"jsp/pd/leaveApp/leaveAppTaskMain.jsp?sid=3");//城市经理、区域经理休假申请
+		TASK_LOCATION_MAP.put(LEAVEAPP_Staff,"jsp/pd/leaveApp/leaveAppTaskMain.jsp?sid=4");//职员休假申请
+		TASK_LOCATION_MAP.put(LEAVEAPP_Dep,"jsp/pd/leaveApp/leaveAppTaskMain.jsp?sid=5");//部门主管休假申请
+		TASK_LOCATION_MAP.put(LEAVEAPP_Woman,"jsp/pd/leaveApp/leaveAppTaskMain.jsp?sid=6");//部门经理及以上角色/婚产休假申请
+		TASK_LOCATION_MAP.put(EMPFULLMEMBERAPPBOFU, "jsp/pd/empFullmemberApp/empFullmemberAppTaskMain.jsp?sid=1");//分部职能端员工转正申请
+		TASK_LOCATION_MAP.put(EMPFULLMEMBERAPPBOBU, "jsp/pd/empFullmemberApp/empFullmemberAppTaskMain.jsp?sid=2");//分部业务端员工转正申请
+		TASK_LOCATION_MAP.put(EMPFULLMEMBERAPPHO, "jsp/pd/empFullmemberApp/empFullmemberAppTaskMain.jsp?sid=3");//总部员工转正申请
+		TASK_LOCATION_MAP.put(OVERTIMEAPP, "jsp/pd/overtime/overtimeTaskMain.jsp");//总部/分部职能端加班申请
+		TASK_LOCATION_MAP.put(OVERTIMEAPPBOBU, "jsp/pd/overtime/overtimeTaskMainBOBU.jsp");//分部业务端加班申请
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DI_BO_BU, "jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=1");//员工薪资岗位变动 分公司业务端部门内员工异动审批
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DI_BO_FU, "jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=2");//员工薪资岗位变动 分公司职能端部门内员工异动审批
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DI_HO, "jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=3");//员工薪资岗位变动 总部部门内调岗/调薪
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DO_BO_BU,"jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=4");//员工薪资岗位变动 分公司业务端部门间员工异动
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DO_HO,"jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=5");//员工薪资岗位变动 总部部门间调岗
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DO_BSJ_BO_BU,"jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=6");//分公司职能端员工异动-部门间-不涉及职能端和业务端异动
+		TASK_LOCATION_MAP.put(EMPSAL_POSITION_CHG_APP_DO_SJ_BO_BU,"jsp/pd/empSalPositionChgApp/empSalAppTaskList.jsp?sid=7");//分公司职能端员工异动-部门间-涉及职能端和业务端异动
+		TASK_LOCATION_MAP.put(EMPDIMISSIONAPP_HO, "jsp/hr/empDimissionApp/empDimissionAppTask.jsp?sid=0");//离职申请总部
+		TASK_LOCATION_MAP.put(EMPDIMISSIONAPP_BO_FU, "jsp/hr/empDimissionApp/empDimissionAppTask.jsp?sid=5");//离职申请分部职能端
+		TASK_LOCATION_MAP.put(EMPDIMISSIONAPP_BO_BU_YS, "jsp/hr/empDimissionApp/empDimissionAppTask.jsp?sid=11");//离职申请分部业务端团队经理以上职级
+		TASK_LOCATION_MAP.put(EMPDIMISSIONAPP_BO_BU_YX, "jsp/hr/empDimissionApp/empDimissionAppTask.jsp?sid=10");//离职申请分部业务端团队经理及以下职级
+		TASK_LOCATION_MAP.put(BUSINESSTRIPAPP_HO, "jsp/pd/BusinessTripApp/businessTripAppTask.jsp?sid=0");//出差申请总部
+		TASK_LOCATION_MAP.put(BUSINESSTRIPAPP_BO_BU, "jsp/pd/BusinessTripApp/businessTripAppTask.jsp?sid=1");//出差申请分部业务端
+		TASK_LOCATION_MAP.put(BUSINESSTRIPAPP_BO_FU, "jsp/pd/BusinessTripApp/businessTripAppTask.jsp?sid=2");//出差申请分部职能端
+		TASK_LOCATION_MAP.put(TRAVELEXPENSESAPP, "jsp/fd/travelExpensesApp/travelAppTaskMain.jsp");//差旅报销申请
+		TASK_LOCATION_MAP.put(EXPENDVOUCHERAPP,"jsp/fd/expendVoucherApp/expendAppTaskMain.jsp");//支出凭单
+		TASK_LOCATION_MAP.put(STAFFRECRUITAPP_HO, "jsp/pd/staffRecruitApp/staffRecruitAppTaskMain.jsp?sid=1");//总部用人需求
+		TASK_LOCATION_MAP.put(STAFFRECRUITAPP_BO, "jsp/pd/staffRecruitApp/staffRecruitAppTaskMain.jsp?sid=2");//分部用人需求
+		TASK_LOCATION_MAP.put(EMPFORGETPLUGINAPPFU, "jsp/pd/empForgetPluginApp/empForgetPluginAppTaskMain.jsp?sid=1");//总部分部职能端未打卡申请
+		TASK_LOCATION_MAP.put(EMPFORGETPLUGINAPPBU, "jsp/pd/empForgetPluginApp/empForgetPluginAppTaskMain.jsp?sid=2");//分部业务端未打卡申请
+		return TASK_LOCATION_MAP;
+	}
+
+	/** 配置流程图 是否开启流程时就判断财富端或借款端 
+	 * Map的Key为流程图标识
+	 * Map的Value为 如申请人角色不属于财富端或借款端 默认指定角色跳转
+	 * @return */
+/*	public static final Map<String,String> getProcCfOrJkMap(){
+		Map<String,String> map = new HashMap<String, String>();
+		map.put(EMPSAL_POSITION_CHG_APP_DI_BO_FU,AD_ROLE_CODE_CITYMANAGER);//员工薪资岗位变动 分公司职能端部门内员工异动审批 默认为城市经理受理
+		map.put(EMPFULLMEMBERAPPBOFU,AD_ROLE_CODE_CITYMANAGER);//分部职能端  默认走城市经理能端) 
+		map.put(EMPDIMISSIONAPP_BO_FU, AD_ROLE_CODE_CITYMANAGER);//员工离职(分部职默认走城市经理
+		map.put(PPESCRAPAPP_BO, AD_ROLE_CODE_CITYMANAGER);//分部固定资产报废申请 默认走城市经理
+		map.put(BADGEAPP_BO, AD_ROLE_CODE_CITYMANAGER);//分公司工牌申请默认走城市经理
+		return map;
+	}*/
+	
+	/** 配置流程图中所有节点 通过时 直接结束任务 
+	 * Map的Key为流程图标识
+	 * Map的Value为结束任务表达式的值
+	 * @return */
+	public static final Map<String,String> getTaskResultMap(){
+		Map<String,String> map = new HashMap<String, String>();
+		map.put(EMPFORGETPLUGINAPPFU,"tongguo");
+		map.put(EMPFORGETPLUGINAPPBU,"tongguo");
+		return map;
+	}
+	
+	/** 行政部门调用Map */
+	public static final Map<String, String> getTaskRoleCodeMap() {
+		Map<String,String> TSAK_ROLE_CODE_MAP = new HashMap<String, String>();
+		/** <<<<<<<<<<<<<<<<总部、分部固定资产报废申请TASK对应角色存储常量 */
+		TSAK_ROLE_CODE_MAP.put("DepartmentHeads", OA_ROLE_CODE_DEPARTMENTHEADS);//部门经理
+		TSAK_ROLE_CODE_MAP.put("CityManager", AD_ROLE_CODE_CITYMANAGER);//城市经理
+		TSAK_ROLE_CODE_MAP.put("SalesManager", AD_ROLE_CODE_BUSINESSMGR);//营业部经理
+		TSAK_ROLE_CODE_MAP.put("ChiefCommissioner", AD_ROLE_CODE_SPECIALIST);//行政专员
+		TSAK_ROLE_CODE_MAP.put("ChiefCommissioner1", AD_ROLE_CODE_SPECIALIST);//行政专员1
+		TSAK_ROLE_CODE_MAP.put("ChiefCommissioner2", AD_ROLE_CODE_SPECIALIST);//行政专员2
+		TSAK_ROLE_CODE_MAP.put("CorporateFinance", AD_ROLE_CODE_HEADFINANCIAL);//财务主管
+		TSAK_ROLE_CODE_MAP.put("ExecutiveManager", AD_ROLE_CODE_MGR);//行政经理
+		TSAK_ROLE_CODE_MAP.put("ChiefExecutiveOfficer", AD_ROLE_CODE_CHIEF);//行政总监
+		TSAK_ROLE_CODE_MAP.put("GeneralManager", OA_ROLE_CODE_CEO);//总经理
+		TSAK_ROLE_CODE_MAP.put("FinanceManager", AD_ROLE_CODE_FINANCIALMGR);//财务经理
+		TSAK_ROLE_CODE_MAP.put("BusinessManager", AD_ROLE_CODE_YWJINGLI);//业务部经理
+		TSAK_ROLE_CODE_MAP.put("ChiefAssistantButt", AD_ROLE_CODE_ASSISTANTDOCKING);//行政对接助理
+		TSAK_ROLE_CODE_MAP.put("PresidentAssistant", AD_ROLE_CODE_ASSISTANT_PRESIDENT);//总裁助理
+		TSAK_ROLE_CODE_MAP.put("ChiefDirector", AD_ROLE_CODE_CHIEF);//行政总监
+		TSAK_ROLE_CODE_MAP.put("FinancialDirector", AD_ROLE_CODE_FINANCIALDIRECTOR);//财务总监
+		/** 总部、分部固定资产报废申请TASK对应角色存储常量 <<<<<<<<<<<<<<<< */
+		/** <<<<<<印章移交申请 TASK对应角色存储变量 */
+		TSAK_ROLE_CODE_MAP.put("Recipient", AD_ROLE_CODE_RECIPIENT);//接收人
+		TSAK_ROLE_CODE_MAP.put("ButtCommissioner", AD_ROLE_CODE_BUTTCOMMISSIONER);//对接专员
+		TSAK_ROLE_CODE_MAP.put("ButtDirector", PD_ROLE_CODE_BUTTJOINTCHARGE);//对接主管
+		/** >>>>>>印章移交申请 TASK对应角色存储变量 */
+		TSAK_ROLE_CODE_MAP.put("YingYeBuJingLi",AD_ROLE_CODE_BUSINESSMGR);//营业部经理
+		TSAK_ROLE_CODE_MAP.put("XingZhengDuiJieZhuLi",AD_ROLE_CODE_ASSISTANTDOCKING);//行政对接助理
+		TSAK_ROLE_CODE_MAP.put("ZongCaiZhuLi",AD_ROLE_CODE_ASSISTANT_PRESIDENT);//总裁助理
+		TSAK_ROLE_CODE_MAP.put("XingZhengJingLi",AD_ROLE_CODE_MGR);//行政经理
+		TSAK_ROLE_CODE_MAP.put("XingZhengZongJian",AD_ROLE_CODE_CHIEF);//行政总监
+		TSAK_ROLE_CODE_MAP.put("ZongJingLi",OA_ROLE_CODE_CEO);//总经理
+		TSAK_ROLE_CODE_MAP.put("CaiWuJingLi",AD_ROLE_CODE_FINANCIALMGR);//财务经理
+		TSAK_ROLE_CODE_MAP.put("JieKuanZongJian",AD_ROLE_CODE_BORROWDIRECTOR);//借款总监
+		TSAK_ROLE_CODE_MAP.put("XingZhengQianTai",AD_ROLE_CODE_RECEPTIONIST);//行政前台
+		TSAK_ROLE_CODE_MAP.put("JIESHOUREN", AD_ROLE_CODE_RECIPIENT);//接收人
+		TSAK_ROLE_CODE_MAP.put("CaiWuZongJian", AD_ROLE_CODE_FINANCIALDIRECTOR);//财务总监
+		TSAK_ROLE_CODE_MAP.put("XingZhengZhuanYuan", AD_ROLE_CODE_SPECIALIST);//行政专员
+		TSAK_ROLE_CODE_MAP.put("BuMenFuZeRen", AD_ROLE_CODE_DIVISIONDIRECTOR);//部门负责人
+		TSAK_ROLE_CODE_MAP.put("QiXuanZhuanYuan", AD_ROLE_CODE_QXCOMMISSIONER);//企宣专员
+		TSAK_ROLE_CODE_MAP.put("HuiJi", AD_ROLE_CODE_ACCOUNTANT);//会计
+		TSAK_ROLE_CODE_MAP.put("ChuNa", AD_ROLE_CODE_CASHIER);//出纳
+		TSAK_ROLE_CODE_MAP.put("XingZhengPiaoJuHeShi", AD_ROLE_CODE_ADINSTRUVERIFY);//行政票据审核
+		TSAK_ROLE_CODE_MAP.put("ChengShiJingLi", AD_ROLE_CODE_CITYMANAGER);//城市经理
+		TSAK_ROLE_CODE_MAP.put("BuMenZhuGuan", OA_ROLE_CODE_DEPARTMENTHEADS);//部门主管
+		TSAK_ROLE_CODE_MAP.put("BuMenJingLi", OA_ROLE_CODE_DEPARTMENTHEADS);//部门经理
+		TSAK_ROLE_CODE_MAP.put("Division", HR_ROLE_CODE_DIVISION);//部门主管(离职申请)
+		TSAK_ROLE_CODE_MAP.put("DuiJieZhuGuan", PD_ROLE_CODE_BUTTJOINTCHARGE);//对接主管
+		TSAK_ROLE_CODE_MAP.put("DuiJieZhuanYuan", AD_ROLE_CODE_BUTTCOMMISSIONER);//对接专员
+		TSAK_ROLE_CODE_MAP.put("ZhongXinZongJian", PD_ROLE_CODE_CENTRECHIEFINSPECTOR);//中心总监
+		TSAK_ROLE_CODE_MAP.put("ZhongXinJingLi", PD_ROLE_CODE_CENTREMANAGER);//中心经理
+		TSAK_ROLE_CODE_MAP.put("RenLiZiYuanJingLi", PD_ROLE_CODE_HRMANAGER);//人力资源经理
+		TSAK_ROLE_CODE_MAP.put("RenLiZiYuanZongJian", PD_ROLE_CODE_HRCHIEFINSPECTOR);//人力资源总监
+		TSAK_ROLE_CODE_MAP.put("RenShiZhuanYuan", PD_ROLE_CODE_PERSONNELCOMMISSIONER);//人事专员
+		TSAK_ROLE_CODE_MAP.put("BuMenZongJian", HR_ROLE_CODE_DEPTDIRECTOR);
+		TSAK_ROLE_CODE_MAP.put("CaiWuZhuGuan", AD_ROLE_CODE_HEADFINANCIAL);
+		TSAK_ROLE_CODE_MAP.put("CaiWuJingLi", AD_ROLE_CODE_FINANCIALMGR);
+		TSAK_ROLE_CODE_MAP.put("YuanGongGuanXiZhuanYuan", HR_ROLE_CODE_SPECIALIST);//员工关系专员
+		TSAK_ROLE_CODE_MAP.put("TuanDuiJingLi", PD_ROLE_CODE_TEAMMANAGER);//团队经理
+		TSAK_ROLE_CODE_MAP.put("QuYuJingLi",PD_ROLE_CODE_AREAMANGER);//區域經理
+		TSAK_ROLE_CODE_MAP.put("KeHuJingLi",PD_ROLE_CODE_CLIMANGER);//客戶經理
+		TSAK_ROLE_CODE_MAP.put("ZongJingLi",OA_ROLE_CODE_CEO);//总经理
+		return TSAK_ROLE_CODE_MAP;
+	}
+	
+	
+	/** 组织机构treeLevel层级常量 */
+	public static final String ORG_TREELEVEL_ZX="01";//中心
+	public static final String ORG_TREELEVEL_QY="02";//区域/部门
+	public static final String ORG_TREELEVEL_SF="03";//省份/直辖市
+	public static final String ORG_TREELEVEL_CS="04";//城市
+	public static final String ORG_TREELEVEL_FGS="05";//分公司
+	public static final String ORG_TREELEVEL_FB="06";//分公司分部
+	
+	/**=====OA有关角色-行政======*/
+	//调入中心负责人
+	public static final String PD_ROLE_CODE_CALLBACK_CENTRECHIEFIN_DIRECTOR="DiaoRuZhongXinFuZeRen";	
+	//调出中心负责人
+	public static final String PD_ROLE_CODE_CALLUP_CENTRECHIEFIN_DIRECTOR="DiaoChuZhongXinFuZeRen";
+	//调入部门对接主管
+	public static final String PD_ROLE_CODE_CALLBACK_BUTTJOINTCHARGE = "DiaoRuBuMenDuiJieZhuGuan";
+	//调出部门对接主管
+	public static final String PD_ROLE_CODE_CALLUP_BUTTJOINTCHARGE = "DiaoChuBuMenDuiJieZhuGuan";
+	//调入部门主管
+	public static final String PD_ROLE_CODE_CALLBACK_DIVISION = "DiaoRuBuMenZhuGuan";
+	//调出部门主管
+	public static final String PD_ROLE_CODE_CALLUP_DIVISION = "DiaoChuBuMenZhuGuan";
+	//调入部门经理
+	public static final String PD_ROLE_CODE_CALLBACK_DIVISION_JL = "DiaoRuBuMenJingLi";
+	//调出部门经理
+	public static final String PD_ROLE_CODE_CALLUP_DIVISION_JL = "DiaoChuBuMenJingLi";
+	
+	//总经理
+	public static final String OA_ROLE_CODE_CEO = "ZongJingLi";
+	//部门经理
+	public static final String OA_ROLE_CODE_DEPARTMENTHEADS = "BuMenJingLi";
+	//行政前台
+	public static final String AD_ROLE_CODE_RECEPTIONIST = "XingZhengQianTai";
+	//营业部经理
+	public static final String AD_ROLE_CODE_BUSINESSMGR = "YingYeBuJingLi";
+	//城市经理
+	public static final String AD_ROLE_CODE_CITYMANAGER = "ChengShiJingLi";
+	//行政对接助理
+	public static final String AD_ROLE_CODE_ASSISTANTDOCKING = "XingZhengDuiJieZhuLi";
+	//行政对接主管
+	public static final String AD_ROLE_CODE_ASSISTANTCHARGE="XingZhengDuiJieZhuGuan";
+	//行政经理
+	public static final String AD_ROLE_CODE_MGR = "XingZhengJingLi";
+	//行政专员
+	public static final String AD_ROLE_CODE_SPECIALIST = "XingZhengZhuanYuan";
+	//总裁助理
+	public static final String AD_ROLE_CODE_ASSISTANT_PRESIDENT = "ZongCaiZhuLi";
+	//行政总监
+	public static final String AD_ROLE_CODE_CHIEF = "XingZhengZongJian";
+	//借款总监
+	public static final String AD_ROLE_CODE_BORROWDIRECTOR = "JieKuanZongJian";
+	//部门负责人
+	public static final String AD_ROLE_CODE_DIVISIONDIRECTOR = "BuMenFuZeRen";
+	//企宣专员
+	public static final String AD_ROLE_CODE_QXCOMMISSIONER = "QiXuanZhuanYuan";
+	//财务经理
+	public static final String AD_ROLE_CODE_FINANCIALMGR = "CaiWuJingLi";
+	//财务主管
+	public static final String AD_ROLE_CODE_HEADFINANCIAL = "CaiWuZhuGuan";
+	//接收人
+	public static final String AD_ROLE_CODE_RECIPIENT="JIESHOUREN";
+	//对接专员
+	public static final String AD_ROLE_CODE_BUTTCOMMISSIONER="DuiJieZhuanYuan";
+	//业务部经理
+	public static final String AD_ROLE_CODE_YWJINGLI="YeWuBuJingLi";
+	//出纳
+	public static final String AD_ROLE_CODE_CASHIER="ChuNa";
+	//行政票据核实
+	public static final String AD_ROLE_CODE_ADINSTRUVERIFY="XingZhengPiaoJuHeShi";
+	//财务总监
+	public static final String AD_ROLE_CODE_FINANCIALDIRECTOR="CaiWuZongJian";
+	//会计
+	public static final String AD_ROLE_CODE_ACCOUNTANT="HuiJi";
+	//对接主管
+	public static final String PD_ROLE_CODE_BUTTJOINTCHARGE ="DuiJieZhuGuan";
+	//中心经理
+	public static final String PD_ROLE_CODE_CENTREMANAGER ="ZhongXinJingLi";
+	//中心总监
+	public static final String PD_ROLE_CODE_CENTRECHIEFINSPECTOR = "ZhongXinZongJian";
+	//中心负责人
+	public static final String PD_ROLE_CODE_CENTRECHIEFIN_DIRECTOR = "ZhongXinFuZeRen";
+	
+	//人力资源经理
+	public static final String PD_ROLE_CODE_HRMANAGER = "RenLiZiYuanJingLi";
+	//人力资源总监
+	public static final String PD_ROLE_CODE_HRCHIEFINSPECTOR = "RenLiZiYuanZongJian";
+	//人事专员
+	public static final String PD_ROLE_CODE_PERSONNELCOMMISSIONER = "RenShiZhuanYuan";
+	//部门主管
+	public static final String HR_ROLE_CODE_DIVISION="BuMenZhuGuan";
+	//部门总监
+	public static final String HR_ROLE_CODE_DEPTDIRECTOR="BuMenZongJian";
+	//员工关系专员
+	public static final String HR_ROLE_CODE_SPECIALIST="YuanGongGuanXiZhuanYuan";
+	//团队经理
+	public static final String PD_ROLE_CODE_TEAMMANAGER="TuanDuiJingLi";
+	//大团经理
+	public static final String PD_ROLE_CODE_TEAMMANAGERBIG="DaTuanJingLi";
+	//區域經理
+	public static final String PD_ROLE_CODE_AREAMANGER="QuYuJingLi";
+	//客戶經理
+	public static final String PD_ROLE_CODE_CLIMANGER="KeHuJingLi";
+	
+	//调出直属上级
+	public static final String PD_ROLE_CODE_CALLUP_DIRECT_SUPERIOR="DiaoChuZhiShuShangJi";
+	//调入直属上级
+	public static final String PD_ROLE_CODE_CALLBACK_DIRECT_SUPERIOR="DiaoRuZhiShuShangJi";
+	//结算专员
+	public static final String FD_ROLE_CODE_CLEARING="JieSuanZhuanYuan";
+	
+	/** 用人申请(员工招聘) Start  **/
+	/** 总部--用人申请--常量   **/
+	public static final String STAFFRECRUITAPP_HO = "StaffRecruitAppHO";  //总部的流程定义ID
+	/** 分部--用人申请--常量   **/
+	public static final String STAFFRECRUITAPP_BO = "StaffRecruitAppBO";  //分部的流程定义ID		
+	/** 用人申请(员工招聘) End  **/
+		
+	//招聘经理
+	public static final String PD_ROLE_CODE_RECRUIT_MGR = "ZhaoPinJingLi";
+	
+	
+	/**
+	 * 生成UUID主键
+	 * 
+	 * @return 主键
+	 */
+	public static String getPrimaryKeyByUUID() {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * 获取当前登录的用户的信息
+	 * 
+	 * @return 当前登录的用户的信息
+	 */
+	public static ShiroUser getCurrendUser() {
+		Subject subject = SecurityUtils.getSubject();
+		return (ShiroUser) subject.getSession().getAttribute(SHIRO_USER);
+	}
+
+	/**
+	 * 私有的构造方法,工具类不支持实例化操作
+	 */
+	private Constants() {
+
+	}
+}

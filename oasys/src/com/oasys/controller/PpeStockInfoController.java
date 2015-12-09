@@ -1,0 +1,115 @@
+package com.oasys.controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.druid.sql.PagerUtils;
+import com.oasys.model.PpeStockInfo;
+import com.oasys.service.PpeStockInfoService;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.GridModel;
+import com.oasys.viewModel.Json;
+
+/**
+ *
+ * @ClassName: PpeStockInfoController
+ * @Description: TODO
+ * @Author xujianwei
+ * @Version 1.0
+ * @Date 2015年12月1日 上午9:57:35
+ *
+ */
+@Controller
+@RequestMapping("/ppeStockInfoController")
+public class PpeStockInfoController extends BaseController {
+
+	@Autowired
+	private PpeStockInfoService ppeStockInfoService;
+	/**
+	 * 
+	 * @author:xujianwei
+	 * @time:2015年12月1日 上午10:13:32
+	 * @Title:importDataToDB
+	 * @Description:TODO（这里描述这个方法的作用）通过导入excel向数据库库存表里写入数据
+	 * @return
+	 * @throws:
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/importDataToDB", method = RequestMethod.POST)
+	public String importDataToDB(
+			@RequestParam(value = "file", required = false) MultipartFile file,
+			HttpServletResponse httpServletResponse, HttpServletRequest request) {
+		// 解析上传的excel文件
+		try {
+			String originalFilename = file.getOriginalFilename();
+			String extension = FilenameUtils.getExtension(originalFilename);//扩展名
+			String realPath = request.getSession().getServletContext()
+					.getRealPath("/attachment");
+			File dest = new File(realPath + File.separator + originalFilename);
+			file.transferTo(dest);
+			if("xls".equals(extension)||"xlsx".equals(extension)){
+				//解析excel每一列保存到数据库中*	
+				List<String> list = ppeStockInfoService.startImportExcelToDB(dest);
+				String dup =""; 
+				if(list.size()>0){
+					//有重复的固定资产编码
+					if(list.size()<=5){
+						for(String str:list){
+							dup+=str+"、\t";
+						}
+						dup = dup.substring(0, dup.length()-2);
+					}else{
+						for(int i =0;i<5;i++){
+							dup+=list.get(i)+"、\t";
+						}
+						dup = dup.substring(0, dup.length()-2)+"...等";
+					}
+					OutputJson(httpServletResponse,new Json("提示","固定资产编码："+dup+"有重复，请检查！",false));
+				}else{
+					OutputJson(httpServletResponse,new Json("提示","导入成功！",true));
+				}
+				// 解析完毕删除该文件
+				if (dest.exists()) {
+					dest.delete();
+				}
+			}else{
+				OutputJson(httpServletResponse,new Json("提示","您上传的不是excel文件！",false));
+			}
+			
+
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			OutputJson(httpServletResponse,new Json("提示","导入失败！",false));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			OutputJson(httpServletResponse,new Json("提示","导入失败！",false));
+		}
+		return null;
+	}
+
+	@ResponseBody
+	@RequestMapping(value="/findPpeStockInfoList",method=RequestMethod.POST)
+	public String findPpeStockInfoList(HttpServletResponse httpServletResponse,PpeStockInfo ppeStockInfo,Integer page,Integer rows){
+    	PageUtil pageUtil = new PageUtil(page,rows);
+    	GridModel gridModel = new GridModel();
+    	gridModel.setRows(ppeStockInfoService.findPpeStockInfoList(ppeStockInfo,pageUtil));
+    	gridModel.setTotal(ppeStockInfoService.getCount(ppeStockInfo));
+		OutputJson2(httpServletResponse,gridModel);
+		return null;
+	}
+}
