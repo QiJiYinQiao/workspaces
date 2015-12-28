@@ -1,0 +1,22 @@
+package com.oasys.listener.ad.vehicleExpenses;
+
+import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.ExecutionListener;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.oasys.service.VehicleUsesRegService;
+import com.oasys.util.Constants;
+
+public class VehicleExpensesStartListener implements ExecutionListener{
+
+	@Override
+	public void notify(DelegateExecution execution) throws Exception {
+		if(execution.getVariable(Constants.CURRENT_BUSINESS_ID) != null){
+			WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+			VehicleUsesRegService vehicleUsesRegService =  (VehicleUsesRegService) ctx.getBean("vehicleUsesRegService");
+			Integer id = Integer.valueOf(execution.getVariable(Constants.CURRENT_BUSINESS_ID).toString());
+			vehicleUsesRegService.updateProcStatus(id,'2');
+		}
+	}
+}

@@ -1,0 +1,417 @@
+<%@page import="com.oasys.util.Constants"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<base href="<%=basePath%>">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<jsp:include page="../../../layout/script.jsp"></jsp:include>
+<title>待办任务主页面</title>
+</head>
+<script type="text/javascript">
+$(function(){
+	createWaitTaskGrid();
+	$("#type").combobox({
+		valueField: 'value',   
+        textField: 'label',   
+        data: [{
+			label: '加油费',
+			value: '1'
+		},{
+			label: '停车费',
+			value: '2'
+		},{
+			label: '高速费',
+			value: '3'
+		},{
+			label: '维修费',
+			value: '4'
+		},{
+			label: '保养费',
+			value: '5'
+		},{
+			label: '保险费',
+			value: '6'
+		},{
+			label: '其他',
+			value: '7'
+		}],
+		editable:false ,
+		onLoadSuccess : function(){
+		userData = $(this).combobox("getData");
+		for (var item in userData[0]) {
+                if (item == "value") {
+                    $(this).combobox("select", userData[0][item]);
+                }
+            }
+		}
+	});	
+});
+
+//上传附件,明细存储taskId
+$("#upploadAttachment").click(function(){
+	fileUploadsDlg($row.appNo);
+});
+//查看附件
+$("#checkAttachment").click(function(){
+	checkAttachementDetail($row.appNo,$row.taskModel.assistant,'');
+});
+
+function lookAttachment(index){
+	var row=getRowData(index)
+	checkAttachementDetail($row.appNo,row.handler,'');
+}
+
+//渲染grid
+function createWaitTaskGrid(){
+	$grid=$("#waitTaskGrid").datagrid({
+		url : 'VehicleExpenses/QueryCardTask.do?processKey=<%=Constants.VEHICLEEXPENSES_JK%>',
+		height : $(this).height()-80,
+		pagination:true,
+		rownumbers:true,
+		border:true,
+		singleSelect:false,
+		nowrap:true,//如果为true，则在同一行中显示数据。设置为true可以提高加载性能。
+		multiSort:false,
+		pageSize:10,
+		pageList:[10,20,30,40],
+		remoteSort:false,//定义是否从服务器对数据进行排序。
+		striped:true,//是否显示斑马线
+		columns : [ [
+				{field : 'ck',        title : 'ck',    width : $(this).width * 0.1, align:'center',checkbox:true},
+				{field : 'veaId',        title : '编号',    width : $(this).width * 0.1, align:'center',
+		        	 formatter: function(value,row,index){
+		        		 return row.veaId;
+		        	 }},
+				{field : 'taskId',        title : 'TASK_ID',    width : $(this).width * 0.1, align:'center',
+				      	 formatter: function(value,row,index){
+				      		 return row.taskId;
+								}},
+				{field : 'formKey',        title : 'FORM_KEY',    width : 60, align:'center' ,
+					        	 formatter: function(value,row,index){
+					        		 return row.formKey;
+				    			}},
+				    			 {field : 'appNo',title : '申请编号',width:parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'userName',title : '申请人姓名',width:parseInt($(this).width()*0.08),align : 'center'},
+				 		        {field : 'deptName',title : '所属部门',width:parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'appDate',title : '申请日期',width:parseInt($(this).width()*0.08),align : 'center'},   
+				 				{field : 'carNo',title : '车牌号',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'bankName',title : '银行名称',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'intoAct',title : '转入账号',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'actName',title : '账户名称',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'feeType',title : '费用类型',width : parseInt($(this).width()*0.08),align : 'center',formatter : function(value,row,index){
+				 					if(row.feeType==1){
+				 						return "加油费";
+				 					}else if(row.feeType==2){
+				 						return "停车费";
+				 					}else if(row.feeType==3){
+				 						return "高速费";
+				 					}else if(row.feeType==4){
+				 						return "维修费";
+				 					}else if(row.feeType==5){
+				 						return "保养费";
+				 					}else if(row.feeType==6){
+				 						return "保险费";
+				 					}else if(row.feeType==7){
+				 						return "其他";
+				 					}
+				 				}},
+				 				{field : 'feeTypeOther',title : '其他费用类型',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'procStatus',title : '流程状态',width : parseInt($(this).width()*0.08),align : 'center',formatter : function(value,row,index){
+				 					if(row.procStatus==1){
+				 						return "初始状态";
+				 					}else if(row.procStatus==2){
+				 						return "审批中";
+				 					}else if(row.procStatus==3){
+				 						return "已完成";
+				 					}else if(row.procStatus==4){
+				 						return "已失效";
+				 					}else if(row.procStatus==5){
+				 						return "已撤销";
+				 					}else if(row.procStatus==6){
+				 						return "已拒绝";
+				 					}
+				 				}},
+				 				{field : 'appAmtGaoSu',title : '申请金额(高速)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'paymentDate',title : '缴费日期(高速)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'tollgateName',title : '收费站名称(高速)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'appAmtJiaYou',title : '申请金额(加油)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'bgMileageJiaYou',title : '启程公里数(加油)',width : parseInt($(this).width()*0.1),align : 'center'},
+				 				{field : 'edMileageJiaYou',title : '结束公里数(加油)',width : parseInt($(this).width()*0.1),align : 'center'},
+				 				{field : 'prevAppDate',title : '上次申请费用时间(加油)',width : parseInt($(this).width()*0.15),align : 'center'},
+				 				{field : 'cardBalance',title : '卡内余额(加油)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'appAmtBaoYang',title : '申请金额(保养)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'bgMileageBaoYang',title : '启程公里数(保养)',width : parseInt($(this).width()*0.1),align : 'center'},
+				 				{field : 'edMileageBaoYang',title : '结束公里数(保养)',width : parseInt($(this).width()*0.1),align : 'center'},
+				 				{field : 'prevAppDateBaoYang',title : '上次申请费用时间(保养)',width : parseInt($(this).width()*0.12),align : 'center'},
+				 				{field : 'appAmtTingChe',title : '申请金额(停车)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'parkingDtime',title : '停车时间(停车)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'parkingPlace',title : '停车地点(停车)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'appAmtWeiXiu',title : '申请金额(维修)',width : parseInt($(this).width()*0.08),align : 'center',},
+				 				{field : 'repairItem',title : '维修项目(维修)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'repairReson',title : '维修原因(维修)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'appAmtBaoXian',title : '申请金额(保险)',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'bgMileageBaoXian',title : '启程公里数(保险)',width : parseInt($(this).width()*0.12),align : 'center'},
+				 				{field : 'edMileageBaoXian',title : '结束公里数(保险)',width : parseInt($(this).width()*0.12),align : 'center'},
+				 				{field : 'insuranceBgDtime',title : '保险结束时间(保险)',width : parseInt($(this).width()*0.12),align : 'center'},
+				 				{field : 'insuranceEdDtime',title : '保险开始时间(保险)',width : parseInt($(this).width()*0.12),align : 'center'},
+				 				{field : 'icName',title : '保险公司名称(保险)',width : parseInt($(this).width()*0.12),align : 'center'},
+				 				{field : 'remark',title : '备注',width : parseInt($(this).width()*0.08),align : 'center'},
+				 				{field : 'caozuo',    title : '操作',    width : parseInt($(this).width * 0.2), align:'center',
+				 					formatter: function(value,row,index){
+				 						var result = "";
+				 					    if (row.taskModel.assistant == null || row.taskModel.assistant == "") {
+				 							result += "<a href='javascript:void(0);' onclick='holdWorkTask("+index+");'>签收任务</a>　　";
+				 						}else{
+				 							result += "<a href='javascript:void(0);' onclick='handleTaskDialog("+index+");'>办理任务</a>　　";
+				 						}
+				 					    result += "<a href='javascript:void(0);' onclick='showImage("+index+");'>查看流程图</a>　　";
+				 					    result += "<a href='javascript:void(0);' onclick='checkHistoryOpinions("+ index +");'>查看审批意见</a>　　";
+				 					    result += "<a href='javascript:void(0);' onclick='lookAttachment("+ index +");'>查看附件</a>　　";
+				 						return result;        		             		  					           		  
+				 					}
+				 				}
+				 				] ],
+				 toolbar:'#tb',
+				 onLoadSuccess:function(data){
+	                  //根据选中的费用显示隐藏对应字段
+	                  if($("#type").combobox("getValue")!=1){
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'appAmtJiaYou');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'bgMileageJiaYou');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'edMileageJiaYou');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'prevAppDate');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'cardBalance');
+	                  }else{
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'appAmtJiaYou');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'bgMileageJiaYou');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'edMileageJiaYou');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'prevAppDate');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'cardBalance');
+	                  }
+	                  if($("#type").combobox("getValue")!=3){
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'appAmtGaoSu');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'paymentDate');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'tollgateName');
+	                  }else{
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'appAmtGaoSu');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'paymentDate');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'tollgateName');
+	                  }
+	                  if($("#type").combobox("getValue")!=5){
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'appAmtBaoYang');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'bgMileageBaoYang');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'edMileageBaoYang');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'prevAppDateBaoYang');
+	                  }else{
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'appAmtBaoYang');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'bgMileageBaoYang');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'edMileageBaoYang');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'prevAppDateBaoYang');
+	                  }
+	                  if($("#type").combobox("getValue")!=2){
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'appAmtTingChe');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'parkingDtime');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'parkingPlace');
+	                  }else{
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'appAmtTingChe');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'parkingDtime');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'parkingPlace');
+	                  }
+	                  if($("#type").combobox("getValue")!=4){
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'appAmtWeiXiu');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'repairItem');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'repairReson');
+	                  }else{
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'appAmtWeiXiu');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'repairItem');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'repairReson');
+	                  }
+	                   if($("#type").combobox("getValue")!=6){
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'appAmtBaoXian');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'bgMileageBaoXian');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'edMileageBaoXian');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'insuranceBgDtime');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'insuranceEdDtime');
+	                	  $('#waitTaskGrid').datagrid('hideColumn', 'icName');
+	                  }else{
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'appAmtBaoXian');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'bgMileageBaoXian');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'edMileageBaoXian');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'insuranceBgDtime');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'insuranceEdDtime');
+	                	  $('#waitTaskGrid').datagrid('showColumn', 'icName');
+	                  }
+//						 	//当鼠标放上该字段时，提示功能
+			            $("#waitTaskGrid").datagrid("doCellTip",{'max-width':'100px'});
+			        	$('#waitTaskGrid').datagrid('hideColumn', 'veaId');
+			        	$('#waitTaskGrid').datagrid('hideColumn','taskId');
+			        	$('#waitTaskGrid').datagrid('hideColumn','formKey');
+			           
+				  }, 
+		toolbar : '#tb'
+	});
+}
+
+//根据index获取该行
+function getRowData(index){
+	if (!$.isNumeric(index) || index < 0) {
+		return undefined;
+	}
+	var rows = $("#waitTaskGrid").datagrid("getRows");
+	return rows[index];
+}
+//签收任务
+function holdWorkTask(index){
+	var row = getRowData(index);
+	$.ajax({
+		type:"POST",
+		url:"VehicleExpenses/SignTask.do",
+		data:{"taskId" : row.taskId},
+		dataType:"JSON",
+		success:function(rsp){
+			if(rsp.status){
+				$.messager.alert("提示","签收成功","warning");
+			}else{
+				parent.$.messager.alert(rsp.title,rsp.message,'warning');
+			}
+			$("#waitTaskGrid").datagrid('reload');
+		}
+	});
+}
+
+function doSearch(){
+	$("#waitTaskGrid").datagrid("load",{
+		type:$('#type').combobox('getValue')
+	});  
+}
+//办理任务
+function handleTaskDialog(index){
+	var selectedRow = getRowData(index);
+	$selRow = selectedRow;
+	$$row = $selRow;
+	$("#handleTask").dialog({
+		width : 920,
+		height : $(this).height()*0.7,					
+		title : '受理任务',
+		href :$selRow.formKey,
+	    onLoad:function(){
+	    	var taskForm = $("#taskForm");
+	    	taskForm.form("load",selectedRow);
+	    	$("#taskForm #businessID").val(selectedRow.veaId);
+	    	$("#taskForm #taskID").val(selectedRow.taskId);
+	    },
+		modal:true,
+		resizable:false,
+		iconCls:'icon-add',
+		closed: false,
+	    buttons : [ {
+			text : '关闭',
+			iconCls : 'icon-cancel',
+			handler : function() {
+				$('#handleTask').dialog('close');
+				$("#dg").datagrid("reload");
+			}
+		}]
+	}); 
+}
+//批量处理任务
+function signTask(){
+	var rows = $grid.datagrid("getSelections");
+	var businessID = new Array();
+	var formKey = "";
+	var taskID = new Array();
+	var appNo = new Array;
+	if(rows==null || rows.length<=0){
+		$.messager.alert("提示","请选择至少一条记录!","warning");
+		return false;
+	}
+	for(var i=0;i<rows.length;i++){
+		if($.inArray(rows[i].veaId,businessID)==-1){
+			businessID.push(rows[i].veaId);
+			formKey=rows[i].formKey;
+			taskID.push(rows[i].taskId);
+			appNo.push(rows[i].appNo);
+		}
+	}
+	var data1 = "appNo="+appNo.join(",")+"&businessID="+businessID.join(",")+"&taskID="+taskID.join(",")+"&formKey="+formKey;
+	ajaxLoading("正在处理 请稍后...");
+ 	  $.ajax({
+		type: "POST",
+		url:"VehicleExpenses/saveTaskVehicleExpensesAppBatch.do",
+		data:data1,
+	    success: function(iJson) {
+			$("#dg").datagrid("reload");
+	    	$("#waitTaskGrid").datagrid("load",{});
+	    	ajaxLoadEnd();
+ 	    	$.messager.alert(iJson.title,iJson.message,'info');
+	    }
+	});  
+}
+//查看流程图
+function showImage(index){
+	var row = getRowData(index);
+	var src="workflowAction/showProcessImgByBusinessKey.do?processKey="+row.definitionKey+"&resName="+row.resourcesName+"&busID="+row.veaId;
+	$('#imageDialog').dialog("open");
+	$("#image").attr("src", src);
+}
+var $$row = "";
+var $row1=null;
+//查看历史审批意见
+function checkHistoryOpinions(index){
+	/* var rows = $("#waitTaskGrid").datagrid("getRows");
+	$$row = rows[index];//获取本条数据
+	$("#optionsDialog").dialog('open').dialog('refresh'); */
+	$$row = getRowData(index);
+	$dialog=$("<div></div>").dialog({
+	/* 动态显示Dialog的标题	*/
+	width : 800,
+	height : 450,					
+	title : "查看审批意见",
+	href : "jsp/ad/optionsList.jsp",
+	onClose:function(){
+		$$row=null;
+    	$(this).dialog('destroy');
+	},
+	modal:true,
+	resizable:false,
+	iconCls:'icon-add',
+	closed: false
+	});
+}
+</script>
+<body>
+<div class="position" style="margin-top: 5px;">您当前所在位置： 任务管理  &gt; 待办任务</div>
+<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
+	<form id="searchForm" action="VehicleExpenses/index.do" method="post">
+		<table cellpadding="0" cellspacing="1" border="0">
+			<tr>
+				<td>申请类别：&nbsp;&nbsp;</td>
+				<td><input name="type" id="type" type="text" class="easyui-textbox easyui-validatebox" style="width: 170px" readonly="readonly"/>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td align="right" style="float:right;text-align: right;">
+				    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search" plain="false" onclick="doSearch();">执行查询</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				</td>
+				<td align="right">  
+					<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="clearAdvancedQueryConditions()">条件重置</a>
+				</td>
+			</tr>
+		</table>
+	</form>			  			
+</div>
+<div id="tb" style="padding:2px 0">
+	<a id="id4ExportReports" class="easyui-linkbutton" data-options="iconCls:'icon-add'" plain="true" onclick="signTask();">批量受理任务</a>
+</div>
+<table id="waitTaskGrid"></table>
+<!-- 新增弹框 -->
+<div id="addWindow"></div>
+<div id="handleTask"></div>
+<div id="imageDialog"  class="easyui-dialog" title="流程图片" data-options="border:false,closed:true,fit:true">
+	<img id="image" src="" >
+</div>
+<div id="optionsDialog" class="easyui-dialog" title="历史审批意见" style="width:900px;height:400px;" closed="true" data-options="href:'jsp/ad/optionsList.jsp',resizable:true,modal:true"></div>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="FinancialApprovalSubProcess" name="行政模块 财务审批子流程" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="CaiWuZhuGuan.4" name="财务主管" activiti:formKey="${subProcessFormKey}?{&quot;btType&quot;:&quot;0&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="CaiWuZhuGuan.4"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="CaiWuZhuGuan.4" targetRef="exclusivegateway1"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="CaiWuZhuGuan.42" name="财务主管拒绝" sourceRef="exclusivegateway1" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='2'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ApplyForAdjustment6" name="调整申请" activiti:formKey="${subProcessFormKey}?{&quot;type&quot;:&quot;2&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="CaiWuJingLi.4" name="财务经理" activiti:formKey="${subProcessFormKey}?{&quot;btType&quot;:&quot;0&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="CaiWuZhuGuan.41" name="财务主管通过" sourceRef="exclusivegateway1" targetRef="CaiWuJingLi.4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow7" sourceRef="CaiWuJingLi.4" targetRef="exclusivegateway2"></sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="CaiWuJingLi.42" name="财务经理拒绝" sourceRef="exclusivegateway2" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='2'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="CaiWuJingLi.40" name="财务经理驳回" sourceRef="exclusivegateway2" targetRef="CaiWuZhuGuan.4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='0'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="CaiWuZongJian.4" name="财务总监" activiti:formKey="${subProcessFormKey}?{&quot;btType&quot;:&quot;0&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="CaiWuJingLi.41" name="财务经理通过" sourceRef="exclusivegateway2" targetRef="CaiWuZongJian.4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow11" sourceRef="CaiWuZongJian.4" targetRef="exclusivegateway3"></sequenceFlow>
+    <userTask id="ChuNa.4" name="出纳付款" activiti:formKey="${subProcessFormKey}?{&quot;btType&quot;:&quot;1&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="CaiWuZongJian.41" name="财务总监通过" sourceRef="exclusivegateway3" targetRef="ChuNa.4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="ApplyForAdjustment7" name="申请人票据提交" activiti:formKey="${subProcessFormKey}?{&quot;btType&quot;:&quot;1&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="ChuNa.41" name="出纳通过" sourceRef="ChuNa.4" targetRef="ApplyForAdjustment7">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="CaiWuZhuGuan.5" name="财务主管票据核查" activiti:formKey="${subProcessFormKey}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.FinancialApprovalSubProcess.FinancialApprovalSubProcessTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="ApplyForAdjustment71" name="申请人票据提交" sourceRef="ApplyForAdjustment7" targetRef="CaiWuZhuGuan.5">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow16" sourceRef="CaiWuZhuGuan.5" targetRef="exclusivegateway4"></sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="CaiWuZhuGuan.51" name="票据核查通过" sourceRef="exclusivegateway4" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="CaiWuZongJian.40" name="财务经理驳回" sourceRef="exclusivegateway3" targetRef="CaiWuJingLi.4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='0'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="CaiWuZongJian.42" name="财务总监拒绝" sourceRef="exclusivegateway3" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='2'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="CaiWuZhuGuan.50" name="票据核查不通过" sourceRef="exclusivegateway4" targetRef="ApplyForAdjustment7">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='0'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="CaiWuZhuGuan.40" name="财务主管驳回" sourceRef="exclusivegateway1" targetRef="ApplyForAdjustment6"></sequenceFlow>
+    <endEvent id="endevent4" name="End"></endEvent>
+    <sequenceFlow id="flow17" sourceRef="ApplyForAdjustment6" targetRef="endevent4"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_FinancialApprovalSubProcess">
+    <bpmndi:BPMNPlane bpmnElement="FinancialApprovalSubProcess" id="BPMNPlane_FinancialApprovalSubProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="480.0" y="20.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CaiWuZhuGuan.4" id="BPMNShape_CaiWuZhuGuan.4">
+        <omgdc:Bounds height="55.0" width="105.0" x="445.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="477.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="411.0" y="143.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApplyForAdjustment6" id="BPMNShape_ApplyForAdjustment6">
+        <omgdc:Bounds height="55.0" width="105.0" x="570.0" y="133.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CaiWuJingLi.4" id="BPMNShape_CaiWuJingLi.4">
+        <omgdc:Bounds height="55.0" width="105.0" x="445.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="477.0" y="285.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="559.0" y="288.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CaiWuZongJian.4" id="BPMNShape_CaiWuZongJian.4">
+        <omgdc:Bounds height="55.0" width="105.0" x="445.0" y="340.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="477.0" y="410.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ChuNa.4" id="BPMNShape_ChuNa.4">
+        <omgdc:Bounds height="55.0" width="105.0" x="445.0" y="470.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApplyForAdjustment7" id="BPMNShape_ApplyForAdjustment7">
+        <omgdc:Bounds height="55.0" width="105.0" x="445.0" y="550.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CaiWuZhuGuan.5" id="BPMNShape_CaiWuZhuGuan.5">
+        <omgdc:Bounds height="55.0" width="105.0" x="445.0" y="630.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="477.0" y="700.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="480.0" y="760.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
+        <omgdc:Bounds height="35.0" width="35.0" x="720.0" y="143.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="497.0" y="55.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="497.0" y="125.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZhuGuan.42" id="BPMNEdge_CaiWuZhuGuan.42">
+        <omgdi:waypoint x="477.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="446.0" y="160.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="412.0" y="173.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZhuGuan.41" id="BPMNEdge_CaiWuZhuGuan.41">
+        <omgdi:waypoint x="497.0" y="180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="220.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="460.0" y="186.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="550.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="285.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuJingLi.42" id="BPMNEdge_CaiWuJingLi.42">
+        <omgdi:waypoint x="517.0" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="559.0" y="305.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="499.0" y="285.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuJingLi.40" id="BPMNEdge_CaiWuJingLi.40">
+        <omgdi:waypoint x="477.0" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="378.0" y="304.0"></omgdi:waypoint>
+        <omgdi:waypoint x="378.0" y="97.0"></omgdi:waypoint>
+        <omgdi:waypoint x="445.0" y="97.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="382.0" y="286.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuJingLi.41" id="BPMNEdge_CaiWuJingLi.41">
+        <omgdi:waypoint x="497.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="340.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="510.0" y="324.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="497.0" y="395.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="410.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZongJian.41" id="BPMNEdge_CaiWuZongJian.41">
+        <omgdi:waypoint x="497.0" y="450.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="470.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="497.0" y="450.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ChuNa.41" id="BPMNEdge_ChuNa.41">
+        <omgdi:waypoint x="497.0" y="525.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="550.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="510.0" y="523.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApplyForAdjustment71" id="BPMNEdge_ApplyForAdjustment71">
+        <omgdi:waypoint x="497.0" y="605.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="630.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="497.0" y="605.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="497.0" y="685.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="700.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZhuGuan.51" id="BPMNEdge_CaiWuZhuGuan.51">
+        <omgdi:waypoint x="497.0" y="740.0"></omgdi:waypoint>
+        <omgdi:waypoint x="497.0" y="760.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="510.0" y="739.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZongJian.40" id="BPMNEdge_CaiWuZongJian.40">
+        <omgdi:waypoint x="517.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="653.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="652.0" y="248.0"></omgdi:waypoint>
+        <omgdi:waypoint x="550.0" y="247.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="608.0" y="350.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZongJian.42" id="BPMNEdge_CaiWuZongJian.42">
+        <omgdi:waypoint x="477.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="306.0" y="429.0"></omgdi:waypoint>
+        <omgdi:waypoint x="306.0" y="777.0"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="777.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="347.0" y="425.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZhuGuan.50" id="BPMNEdge_CaiWuZhuGuan.50">
+        <omgdi:waypoint x="517.0" y="720.0"></omgdi:waypoint>
+        <omgdi:waypoint x="620.0" y="720.0"></omgdi:waypoint>
+        <omgdi:waypoint x="620.0" y="579.0"></omgdi:waypoint>
+        <omgdi:waypoint x="550.0" y="577.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="572.0" y="660.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="CaiWuZhuGuan.40" id="BPMNEdge_CaiWuZhuGuan.40">
+        <omgdi:waypoint x="517.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="160.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="509.0" y="164.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="675.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="720.0" y="160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,92 @@
+package com.oasys.webService.wsCollection;
+
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.client.Options;
+import org.apache.axis2.rpc.client.RPCServiceClient;
+
+import com.oasys.webService.model.Department;
+import com.oasys.webService.model.User;
+import com.oasys.webService.util.WebServiceUtil;
+
+public class WebServiceCollection {
+
+	private RPCServiceClient serviceClient;
+	private Options options;
+	private EndpointReference targetEPR;
+
+	public WebServiceCollection() throws AxisFault {
+		serviceClient = new RPCServiceClient();
+		options = serviceClient.getOptions();
+		targetEPR = new EndpointReference(WebServiceUtil.WS_PATH);
+		options.setTo(targetEPR);
+	}
+
+	/**
+	 *	调用webService方法
+	 * @param targetNamespace
+	 * @param opName
+	 * @param opArgs
+	 * @param opReturnType
+	 * @return
+	 * @throws AxisFault
+	 * @throws ClassNotFoundException
+	 */
+	private Object[] invokeOp(String targetNamespace, String opName,
+			Object[] opArgs, Class<?>[] opReturnType) throws AxisFault,
+			ClassNotFoundException {
+		// 设定操作的名称
+		QName opQName = new QName(targetNamespace, opName);
+		return serviceClient.invokeBlocking(opQName, opArgs, opReturnType);
+	}
+
+	/**
+	 * 获取部门列表接口
+	 * 
+	 * @param args
+	 * @throws AxisFault
+	 * @throws ClassNotFoundException
+	 */
+	public  List<Department> getDepartmentList() throws AxisFault,
+			ClassNotFoundException {
+		String sign = WebServiceUtil.encryption(WebServiceUtil.WS_USERID
+				.concat(WebServiceUtil.WS_DOMAIN)
+				.concat(WebServiceUtil.WS_ACCOUNT)
+				.concat(WebServiceUtil.WS_PASSWORD));
+		Object[] opArgs = new Object[] { WebServiceUtil.WS_USERID,
+				WebServiceUtil.WS_DOMAIN, WebServiceUtil.WS_ACCOUNT, sign };
+		Class<?>[] opReturnType = new Class[] { String[].class };
+		Object[] response = invokeOp(WebServiceUtil.WS_SERVICE,
+				WebServiceUtil.WS_GETDEPARTMENT, opArgs, opReturnType);
+		String protocolXML = ((String[]) response[0])[0];
+		return Department.parse(protocolXML);
+	}
+
+	/**
+	 * 获取用户列表接口
+	 * 
+	 * @param args
+	 * @throws AxisFault
+	 * @throws ClassNotFoundException
+	 */
+	public List<User> getUserList() throws AxisFault,
+			ClassNotFoundException {
+		String sign = WebServiceUtil.encryption(WebServiceUtil.WS_DOMAIN
+				.concat(WebServiceUtil.WS_ACCOUNT).concat(
+						WebServiceUtil.WS_PASSWORD));
+		Object[] opArgs = new Object[] { WebServiceUtil.WS_DOMAIN, 1, 1,
+				WebServiceUtil.WS_ACCOUNT, sign };
+		Class<?>[] opReturnType = new Class[] { String[].class };
+		Object[] response = invokeOp(WebServiceUtil.WS_SERVICE,
+				WebServiceUtil.WS_GET_DOMAINUSERLIST_BY_STATUS, opArgs,
+				opReturnType);
+		String protocolXML = ((String[]) response[0])[0];
+		return User.parse(protocolXML);
+	}
+	
+//	public List<String> 
+}

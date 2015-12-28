@@ -1,0 +1,237 @@
+package com.oasys.serviceImpl;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.NoticeInfo;
+import com.oasys.model.NoticeInfoAttach;
+import com.oasys.model.Users;
+import com.oasys.model.VO.NoticeReceiveModel;
+import com.oasys.service.AttachmentService;
+import com.oasys.service.NoticeInfoService;
+import com.oasys.service.UserService;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.SendMessageUtil;
+import com.oasys.util.UniqueIdUtil;
+
+
+@Service("noticeInfoService")
+public class NoticeInfoServiceImpl  implements NoticeInfoService
+{
+
+	@Autowired
+	private PublicDao<NoticeInfo> publicDao;
+	@Autowired
+	private PublicDao<NoticeInfoAttach> publicDaoAttach;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private AttachmentService attachmentService;
+	
+	@Override
+	public List<NoticeInfo> findNoticeInfoSendList(NoticeInfo noticeInfo,
+			PageUtil pageUtil) {
+		// TODO Auto-generated method stub
+		String hql="from NoticeInfo t where 1=1 and t.sender = '"+Constants.getCurrendUser().getUserId()+"' order by t.sendDtime desc";
+		return publicDao.find(hql, pageUtil);
+	}
+
+	@Override
+	public List<NoticeReceiveModel> findNoticeInfoReceiveList(Integer userId,
+			PageUtil pageUtil) {
+		// TODO Auto-generated method stub
+		String hql = "from NoticeInfoAttach t where 1=1 and t.isDel ='1' and t.receiver = '"+userId+"' order by t.niaId desc";
+		List<NoticeInfoAttach> attList = publicDaoAttach.find(hql,pageUtil);
+		List<NoticeReceiveModel> infoList = new ArrayList<NoticeReceiveModel>();
+		
+		for(NoticeInfoAttach att:attList){
+			String noticeNo = att.getNoticeNo();
+			String infohql="from NoticeInfo t where 1=1 and t.noticeNo='"+noticeNo+"'";
+			NoticeInfo info = publicDao.find(infohql).get(0);
+			try {
+				NoticeReceiveModel model=new NoticeReceiveModel();
+				PropertyUtils.copyProperties(model, info);
+				PropertyUtils.copyProperties(model, att);
+				model.setSendName(userService.findUserById(info.getSender()).getName());
+				infoList.add(model);
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return infoList;
+	}
+
+	@Override
+	public boolean persistenceNoticeInfo(NoticeInfo noticeInfo,String userIds) {
+		// TODO Auto-generated method stub
+		//**查询附件表看是否有该条通知的附件*/
+		if(attachmentService.isExistsTZAttachment(noticeInfo.getNoticeNo())){
+			noticeInfo.setIsHaveAtt("0");
+		}else{
+			noticeInfo.setIsHaveAtt("1");
+		}
+		if(noticeInfo.getNoiId()==null ||"".equals(noticeInfo.getNoiId())){
+			//新增
+			noticeInfo.setSender(Constants.getCurrendUser().getUserId());
+			noticeInfo.setSendDtime(new Date());
+			//保存通知信息表
+			publicDao.save(noticeInfo);
+			//保存通知信息附加表
+			String[] arr = userIds.split(",");
+			for(int i =0;i<arr.length;i++){
+				NoticeInfoAttach att = new NoticeInfoAttach();
+				att.setNoticeNo(noticeInfo.getNoticeNo());
+				att.setReceiver(Integer.parseInt(arr[i].toString()));
+				att.setIsDel("1");
+				publicDaoAttach.save(att);
+				List<NoticeReceiveModel> infoList = findNoticeInfoReceiveList(att.getReceiver(),new PageUtil(1, 10));
+				SendMessageUtil.sendMessageByUserId(SendMessageUtil.getNoticeData(SendMessageUtil.DATATYPE_NOTICEOA, infoList),String.valueOf(att.getReceiver()));
+			}
+			
+		}else{
+			//修改
+			publicDao.update(noticeInfo);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean delNoticeInfo(String ids) {
+		// TODO Auto-generated method stub
+		if (StringUtils.isNotBlank(ids)) {
+			String[] idsArray = ids.split(",");
+			for (int i = 0; i < idsArray.length; i++) {
+				int id = Integer.parseInt(idsArray[i]);
+				NoticeInfo noticeInfo = publicDao.get(NoticeInfo.class, id);
+				//删除附加表数据
+				String hql = "from NoticeInfoAttach t where 1=1 and t.noticeNo = '"+noticeInfo.getNoticeNo()+"'";
+				List<NoticeInfoAttach> attList = publicDaoAttach.find(hql);
+				for(NoticeInfoAttach att: attList){
+					publicDaoAttach.delete(att);
+					List<NoticeReceiveModel> infoList = findNoticeInfoReceiveList(att.getReceiver(),new PageUtil(1, 10));
+					SendMessageUtil.sendMessageByUserId(SendMessageUtil.getNoticeData(SendMessageUtil.DATATYPE_NOTICEOA, infoList),String.valueOf(att.getReceiver()));
+				}
+				publicDao.delete(noticeInfo);
+	
+				
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Long getCountNoticeInfoSendList(NoticeInfo noticeInfo) {
+		// TODO Auto-generated method stub
+		String hql="from NoticeInfo t where 1=1 and t.sender = '"+Constants.getCurrendUser().getUserId()+"'";
+		return publicDao.count("Select count(*) "+hql);
+	}
+
+	@Override
+	public Long getCountNoticeInfoReceiveList(Integer userId) {
+		// TODO Auto-generated method stub
+		String hql = "from NoticeInfoAttach t where 1=1 and t.receiver = '"+userId+"'";
+		return publicDao.count("Select count(*) "+hql);
+	}
+
+	@Override
+	public boolean delNoticeInfoAttach(String ids) {
+		// TODO Auto-generated method stub
+		if (StringUtils.isNotBlank(ids)) {
+			String[] idsArray = ids.split(",");
+			for (int i = 0; i < idsArray.length; i++) {
+				int id = Integer.parseInt(idsArray[i]);
+				NoticeInfoAttach attach = publicDaoAttach.get(NoticeInfoAttach.class, id);
+				attach.setIsDel("0");
+				publicDaoAttach.update(attach);
+				
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public List<NoticeInfoAttach> findNoticeInfoAttachByNoticeNo(String noticeNo) {
+		// TODO Auto-generated method stub
+		String hql="from NoticeInfoAttach t where 1=1 and t.receiver='"+Constants.getCurrendUser().getUserId()+"' ";
+		if(StringUtils.isNotBlank(noticeNo)){
+			hql+=" and t.noticeNo ='"+noticeNo+"'";
+		}
+		return publicDaoAttach.find(hql);
+	}
+
+	@Override
+	public boolean receiptByNoticeNo(String noticeNo) {
+		// TODO Auto-generated method stub
+		List<NoticeInfoAttach> attList = findNoticeInfoAttachByNoticeNo(noticeNo);
+		if(attList.size()>0){
+			NoticeInfoAttach att = attList.get(0);
+			att.setIsReceipted("0");//更改为已回执状态
+			publicDaoAttach.update(att);
+			//查询是否已全部回执
+			String hql ="from NoticeInfoAttach t where 1=1 and t.noticeNo = '"+noticeNo+"' and t.isReceipted = '1'";
+			if(publicDaoAttach.find(hql).size()==0){
+				//
+				String hql1="from NoticeInfo t where 1=1 and t.noticeNo = '"+noticeNo+"'";
+				NoticeInfo noticeInfo = publicDao.find(hql1).get(0);
+				noticeInfo.setIsAllReceipted("0");
+				publicDao.update(noticeInfo);
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public NoticeReceiveModel getModelByNoticeNo(String noticeNo) {
+		// TODO Auto-generated method stub
+		String hql = "from NoticeInfoAttach t where 1=1 and t.isDel ='1' and t.receiver = '"+Constants.getCurrendUser().getUserId()+"' and t.noticeNo='"+noticeNo+"'";
+		List<NoticeInfoAttach> attList = publicDaoAttach.find(hql);
+		NoticeInfoAttach att=null;
+		if(attList.size()>0){
+			 att= attList.get(0);
+		}
+		String infohql="from NoticeInfo t where 1=1 and t.noticeNo='"+noticeNo+"'";
+		NoticeInfo info = publicDao.find(infohql).get(0);
+		NoticeReceiveModel model=new NoticeReceiveModel();
+		try {
+			PropertyUtils.copyProperties(model, info);
+			PropertyUtils.copyProperties(model, att);
+			model.setSendName(userService.findUserById(info.getSender()).getName());
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return model;
+	}
+
+	@Override
+	public List<NoticeInfoAttach> findReceiversByNoticeNo(String noticeNo) {
+		// TODO Auto-generated method stub
+		String hql ="from NoticeInfoAttach t where 1=1 and t.noticeNo='"+noticeNo+"'";
+		List<NoticeInfoAttach> receiverList = publicDaoAttach.find(hql);
+		return receiverList;
+	}
+}

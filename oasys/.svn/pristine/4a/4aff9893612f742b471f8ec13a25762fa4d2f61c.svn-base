@@ -1,0 +1,143 @@
+package com.oasys.service.workFlow;
+
+import java.util.List;
+import java.util.Map;
+
+import org.activiti.engine.task.Task;
+
+import com.oasys.model.StatusNameRef;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.ProcessNameModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+/**
+ * @Title WorkFlowTaskService
+ * @Package com.oasys.service 
+ * @author lida
+ * @Date 2015/9/23
+ * @remark 任务管理Service
+ * 
+ * */
+public interface WorkFlowTaskService {
+	
+	/**
+	 * 查询任务列表
+	 * */
+	public List<WorkFlowTasksModel> findAcceptTaskByGroup(WorkFlowTasksModel taskModel);
+	
+	/**
+	 * 根据TaskID受理申请任务 指派当前登陆用户(签收任务用户)
+	 * */
+	public void signForTask(String taskID);
+	
+	/**
+	 * 待办任务类型下拉框数据查询
+	 * */
+	public List<ProcessNameModel> processNameList(String userID);
+	
+	
+	/**
+	 * 根据业务ID返回taskID方法
+	 * */
+	public String getTaskIDByBusinessKey(String businessKey,String definitionKey);
+	
+	/**
+	 * 根据业务ID返回task实体方法
+	 * */
+	public Task getTaskByBusinessKey(String businessKey, String definitionKey); 
+
+	/** 根据UserID判断返回角色类型(通用处理部门负责人转角色处理方法) */
+	//public String getRoleCodeByUserID(String userID);
+	
+	/**
+	 * 根据UserID获取当前配置的角色Code 
+	 * @param 用户ID
+	 * @return 角色编码
+	 * */
+	public String getUserRoleCodeByID(String userID);
+
+	/**
+	 * 从当前task节点跳转到下一task节点 跳转条件为 
+	 * 根据task中 formKey的type选择判断不同的通过Task条件(如果不设置type 默认将result设置为1[通过]) 例:type=0为财富端Or借款端判断 type=1为角色以上或角色以下判断)
+	 * @param taskModel task参数实体对象
+	 * @param curUserID 申请人ID
+	 * */
+	public void JumpTaskByByFormKeyType(WorkFlowTasksModel taskModel,String curUserID);
+	
+	/**
+	 * 根据formKey 判断类型 type=0为财富端Or借款端判断 type=1为角色以上或角色以下判断
+	 * @param formKey 流程图中节点配置的formKey
+	 * @param curUserID 申请人ID
+	 * @param 默认通过的表达式值
+	 * @return 计算出的result表达式值
+	 * */
+	public String getResultByFormKey(WorkFlowTasksModel taskModel,String curUserID);
+	
+	/**
+	 * 根据业务表ID与流程示例ID 构造消息提醒字符串
+	 * @param task 流程节点对象
+	 * @param businessID 业务ID
+	 * @param applyForAdjustment 申请调整标识
+	 * @return 根据流程节点构造的消息提醒字符
+	 * */
+	public String getTaskResultStr(Task task,String businessID,String applyForAdjustment);
+	
+	
+	/**
+	 * 受理任务 通用方法 需构造taskModel对象 详细字段见model中备注的注释
+	 * @param taskModel 必须填充的字段见实体对象描述
+	 * @return resultMap 
+	 * */
+	public Map<String,Object> saveSubmitTask(WorkFlowTasksModel taskModel);
+	
+
+	/**
+	 * 
+	 * 开启流程 通用方法 需构造taskModel对象 需填充BusinessID与BusinessDefineKey属性
+	 * @param taskModel 工作流需要用到的model实体
+	 * @return 消息构造字符及流程图中通过的流程线的数据库记录ID StatusNameRef表中的ref_id
+	 */
+	public Map<String,Object> startProcessInstance(WorkFlowTasksModel taskModel);
+	
+	/**
+	 * 
+	 * @author:xujianwei
+	 * @time:2015年11月2日 下午2:37:33
+	 * @Title:getHisList
+	 * @Description:TODO（这里描述这个方法的作用）根据申请前缀查询已办理任务
+	 * @param preAppNo
+	 * @param pageUtil
+	 * @return
+	 * @throws:
+	 */
+	public Object[] getHisList(String preAppNo,PageUtil pageUtil);
+	
+	/**根据userID取出 对应的财富端或借款端对应的角色 如果为空则调用默认角色
+	 * 	@time:2015年11月5日
+	 * @Title:getStartProcRoleCode
+	 * @param userID 申请人ID
+	 * @param defaultCode 默认的角色编码
+	 * @return roleCode 角色编码
+	 * */
+	public String getStartProcRoleCode(String userID,String defaultCode);
+	
+	/**根据taskModel中设置的属性 对task参数进行记录历史操作
+	 * 	@time:2015年11月5日
+	 * @Title:getStartProcRoleCode
+	 * @param taskModel taskModel对象
+	 * @param taskDefKey task节点ID
+	 * @return 历史审批意见对象
+	 * */
+	public StatusNameRef saveProHis(WorkFlowTasksModel taskModel,String taskDefKey);
+	
+	/***
+	 * @title saveSubmitTaskBatch
+	 * @time 2015年12月3日 09:55:39
+	 * @author lid
+	 * @param taskModel
+	 * @return List<Map<String,Object>> 消息提示字符与流程图中流程状态的refID 
+	 */
+	public List<Map<String,Object>> saveSubmitTaskBatch(WorkFlowTasksModel taskModel);
+	
+	//根据taskID返回业务ID方法
+//	public String getBusinessKeyByTaskID(String taskID);
+}
