@@ -1,0 +1,287 @@
+package com.oasys.controller;
+
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.oasys.model.SystemCode;
+import com.oasys.model.UseStampApp;
+import com.oasys.model.UseStampAppAttach;
+import com.oasys.service.StampStatisticsService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.UseStampAppService;
+import com.oasys.service.UserService;
+import com.oasys.service.workFlow.WorkFlowService;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.ComboBoxModel;
+import com.oasys.viewModel.GridModel;
+import com.oasys.viewModel.Json;
+/**
+ * 用章申请
+ * @Title: UseStampAppController.java 
+ * @Package com.oasys.controller 
+ * @Description: TODO
+ * @author WANGXINCHENG  
+ * @date 2015年12月14日 下午1:28:25 
+ * @version V1.0
+ */
+@Controller
+@RequestMapping("/UseStampApp")
+public class UseStampAppController extends BaseController{
+	
+	@Autowired
+	private UseStampAppService useStampAppService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private WorkFlowService workFlowService;
+	@Autowired
+	private SystemCodeService SystemCodeService;
+	@Autowired
+	private StampStatisticsService stampStatisticsService;
+	
+	
+	/**
+	 * 查询用章生列表
+	 * @Title: findUseStampAppAttList 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param page
+	 * @param @param rows
+	 * @param @param useStampApp
+	 * @param @param bindingResult
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月11日 下午5:15:55
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findUseStampAppAttList",method=RequestMethod.POST)
+	public String findUseStampAppAttList(HttpServletResponse httpServletResponse,Integer page,Integer rows,@ModelAttribute("useStampApp") UseStampApp useStampApp,  BindingResult bindingResult){
+		PageUtil pageUtil = new PageUtil(page,rows);
+		List<UseStampApp> stampList = useStampAppService.findUseStampList(useStampApp, pageUtil);
+		Long count = useStampAppService.findUseStampCount(useStampApp);
+		OutputJson(httpServletResponse, new GridModel(stampList, count));
+		return null;
+	}
+	
+	/**
+	 * 保存或更新用章申请
+	 * @Title: saveUseStampApp 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param page
+	 * @param @param rows
+	 * @param @param useStampApp
+	 * @param @param bindingResult
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月14日 上午10:32:23
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/saveUseStampApp",method=RequestMethod.POST)
+	public String saveUseStampApp(HttpServletResponse httpServletResponse,@ModelAttribute("useStampApp") UseStampApp useStampApp,  BindingResult bindingResult){
+		UseStampApp stampApp = useStampAppService.saveOrUpdStampApp(useStampApp);
+		OutputJson2(httpServletResponse, stampApp);
+		return null;
+	}
+	
+	/**
+	 * 删除申请
+	 * @Title: deleteUseStampApp 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param appNo 申请编号
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月14日 上午11:19:21
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/deleteUseStampApp",method=RequestMethod.POST)
+	public String deleteUseStampApp(HttpServletResponse httpServletResponse,String appNo){
+		boolean flag = useStampAppService.deleteuseStampApp(appNo);
+		if(flag){
+			OutputJson(httpServletResponse,new Json("提示", "用章申请删除成功！", true));
+		}else{
+			OutputJson(httpServletResponse,new Json("提示", "用章申请删除失败！", false));
+		}
+		return null;
+	}
+	
+	/**
+	 * 查看流程图
+	 * @Title: showStampProcess 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param usaId 业务id
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月15日 上午11:21:27
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/showStampProcess",method=RequestMethod.GET)
+	public String showStampProcess(HttpServletResponse httpServletResponse,Integer usaId){
+		useStampAppService.getDiagramResourceByPaId(httpServletResponse, usaId);
+		return null;
+	}
+	
+	
+	//-----------------------------------------用章附加表--------------------------------------------------
+	/**
+	 * 查询请假类型
+	 * @Title: findDictNameList 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ModelAndView
+	 * @date 2015年12月14日 上午11:57:45
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findDictNameList",method=RequestMethod.POST)
+	public ModelAndView findDictNameList(HttpServletResponse httpServletResponse){
+		List<SystemCode> codeByTypeList = SystemCodeService.findSystemCodeByType(Constants.USESTAMPTYPT);
+		OutputJson(httpServletResponse,codeByTypeList);
+		return null;
+	}
+	
+	/**
+	 * 根据部门id和印章类型分类
+	 * @Title: findStampLIst 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param organizeId
+	 * @param @param stampType
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return ModelAndView
+	 * @date 2015年12月14日 下午2:09:39
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findStampLIst",method=RequestMethod.POST)
+	public ModelAndView findStampLIst(HttpServletResponse httpServletResponse,String organizeId,String stampType,String appNo){
+		List<ComboBoxModel> statisticsList = useStampAppService.findStampList(organizeId, stampType, appNo);
+		OutputJson(httpServletResponse,statisticsList);
+		return null;
+	}
+	
+	/**
+	 * 保存用章附加表信息
+	 * @Title: saveUseStamp 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param useStampAppAttach
+	 * @param @param bindingResult
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月14日 下午3:37:52
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/saveUseStamp",method=RequestMethod.POST)
+	public String saveUseStamp(HttpServletResponse httpServletResponse,@ModelAttribute("useStampAppAttach") UseStampAppAttach useStampAppAttach,  BindingResult bindingResult){
+		String appNo = useStampAppService.saveOrUpdUseStamp(useStampAppAttach);
+		if(StringUtils.isNotBlank(appNo)){
+			OutputJson(httpServletResponse, new Json("提示", "印章信息保存成功！", true, appNo));
+		}else{
+			OutputJson(httpServletResponse, new Json("提示", "印章信息保存失败！", false, appNo));
+		}
+		return null;
+	}
+	
+	/**
+	 * 查询申请的印章信息
+	 * @Title: findUseStampLIst 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param page
+	 * @param @param rows
+	 * @param @param appNo
+	 * @param @param bindingResult
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月14日 下午4:08:01
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/findUseStampLIst",method=RequestMethod.POST)
+	public String findUseStampLIst(HttpServletResponse httpServletResponse,Integer page,Integer rows,String appNo){
+		PageUtil pageUtil = new PageUtil(page,rows);
+		List<UseStampAppAttach> stampAttList = useStampAppService.findUseStampAttList(appNo,pageUtil);
+		Long count = useStampAppService.findUseStampCount(appNo);
+		OutputJson(httpServletResponse, new GridModel(stampAttList, count));
+		return null;
+	}
+	
+	/**
+	 * 删除申请的印章信息
+	 * @Title: deleteStampList 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param ids
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月14日 下午4:17:39
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/deleteStampList",method=RequestMethod.POST)
+	public String deleteStampList(HttpServletResponse httpServletResponse,String ids,String procStatus){
+		boolean flag = useStampAppService.deleteStampList(ids,procStatus);
+		if(flag){
+			OutputJson(httpServletResponse, new Json("提示", "印章信息删除成功！", true));
+		}else{
+			OutputJson(httpServletResponse, new Json("提示", "印章信息删除失败！", false));
+		}
+		return null;
+	}
+	
+	/**
+	 * 判断其他印章是否归还
+	 * @Title: valStampOther 
+	 * @Description: TODO
+	 * @param @param httpServletResponse
+	 * @param @param appNo
+	 * @param @param stampTypeOther
+	 * @param @return
+	 * @author WANGXINCHENG
+	 * @return String
+	 * @date 2015年12月15日 下午8:20:13
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping(value="/validateStampOther",method=RequestMethod.POST)
+	public String validateStampOther(HttpServletResponse httpServletResponse,String appNo,String stampTypeOther){
+		boolean flag = useStampAppService.getStampByName(stampTypeOther, appNo);
+		if(!flag){
+			OutputJson(httpServletResponse, new Json("提示", "该印章未归还！", flag));
+		}
+		return null;
+	}
+}
+
+

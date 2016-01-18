@@ -1,0 +1,290 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<script type="text/javascript" src="js/validate.js"></script>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<script type="text/javascript">
+	
+	$(function(){
+		
+		$("#useBgDate").datebox({required:true});
+		$("#useEdDate").datebox({required:true});
+		
+		//渲染申请人列表
+		useStampGrid($("#appPeoNo").val());
+		
+	});
+
+	
+	
+	
+ 	
+
+	//申请人信息保存
+	function toSaveBaseInfo(typt){
+		//关闭
+    	if(typt==1){
+	    	$("#editView").dialog('close');
+	    	return false;
+    	}
+		//保存
+		var isValid = $("#useStampForm").form('validate');
+    	if(!isValid){
+    		return false;
+    	}
+		$.ajax({
+			cache:true,
+			type:'POST',
+			url:"UseStampApp/saveUseStampApp.do",
+			data:$('#useStampForm').serialize(),
+			async:false,
+			dataType:'JSON',
+			success:function(res){
+				 if(res!=null){
+					$("#useStampForm").form("load",res);
+					$.messager.alert("提示", '用章申请信息保存成功!',"info")
+				}else{
+					$.messager.alert("提示", '出错了，保存失败!',"error")
+				} 
+			}
+		});
+		
+		
+	} 
+	
+
+ 	 //申请人列表
+    function useStampGrid(appNo){
+ 		
+    	$("#useStampAtt").datagrid({
+    		url : "UseStampApp/findUseStampLIst.do",
+    		queryParams:{
+    			"appNo":appNo,
+    		},		
+    		width : 917,
+    		height : 400,
+    		pagination:true,
+    		rownumbers:true,
+    		border:true,
+    		singleSelect:false,
+    		nowrap:true,
+    		columns : [ [
+						{field : 'stampTypeName',title : '印章类型',width:80,align : 'center'},
+    		            {field : 'stampText',title : '印章名称',width:100,align : 'center',formatter : function(value, row, index) {
+							if(row.stampType=='F'){
+								//其他印章
+								return row.stampTypeOther;
+							}else{
+								return value;
+							}
+						}},
+						{field : 'useReason',title : '用章事由',width:100,align : 'center'},
+						{field : 'receiverDtime',title : '接收时间',width:100,align : 'center'},
+						{field : 'givebackDtime',title : '归还时间',width:100,align : 'center'},
+						{field : 'emsNo',title : '快递单号',width:100,align : 'center'},
+						{field : 'contactWay',title : '联系方式',width:100,align : 'center'},
+						{field : 'postAddr',title : '邮寄地址',width:100,align : 'center'},
+						{field : 'remark',title : '备注信息',width:100,align : 'center'}
+    		]],
+    		onLoadSuccess:function(data){
+    			
+    			//合并单元格
+				  var rows = data.rows;
+	        	  //合并部门
+	           	  $(this).datagrid("autoMergeCells",['stampType']);
+				  
+				  $(this).datagrid("doCellTip",{'max-width':'100px'});
+				  
+				  //禁用使用性质
+				  if(data.total>0){
+					  $("#useStampForm :radio").attr("disabled","disabled");
+				  }else{
+					  $("#useStampForm :radio").removeAttr("disabled");
+				  }
+		          
+			  }, 
+			  toolbar: [{
+	    			iconCls: 'icon-add',
+	    			text:'添加',
+	    			handler:addStampDetails
+	    		},
+	    		{
+	    			iconCls: 'icon-cancel',
+	    			text:'删除',
+	    			handler:toDelete
+	    		},/* {
+	    			iconCls: 'icon-edit',
+	    			text:'编辑',
+	    			handler:editStampDetails
+	    		} */]  
+    	});
+    	
+    }
+ 	 
+	 //判断添加报销申请
+	 function changeMyTitle(row){
+		 if(row==null){
+			 return "添加印章信息";
+		 }else{
+			 return  "编辑印章信息"
+		 }
+	 }
+	 function changeMyicon(row){
+		 if(row==null){
+			 return "icon-add";
+		 }else{
+			 return "icon-edit";
+		 }
+	 }
+	 
+	 function addStampDetails(){
+		 addOrEditStampDetails();
+		 
+	 }
+	 function editStampDetails(){
+		var rows = $("#useStampAtt").datagrid("getSelections");
+		if(rows[0]==null || rows.length>1){
+			$.messager.alert("提示","您只能选择一条记录进行修改!","warning");
+			return false;
+		}else{
+			addOrEditStampDetails(rows[0])
+		}
+	 }
+ 	 
+ 	 //添加印章信息
+ 	 function addOrEditStampDetails(rowse){
+ 		if($("#useStampForm input[name='appNo'][type='hidden']").val() == ""){
+ 			$.messager.alert("提示","请先保存基本信息!","warning");
+ 			return false;
+ 		}else{
+ 			
+	 		$addOrEditDialog = $("<div></div>").dialog({
+				title:changeMyTitle(rowse),
+				iconCls: changeMyicon(rowse),
+				width:680,
+				height:328,
+				modal:true,
+				href:"jsp/ad/UseStampApp/useStampAttAddForm.jsp",
+				onLoad:function(){
+					if(rowse!=null){
+						var f = $("#useStampAttForm");
+						f.form("load", rowse); 
+						//判断其他印章是否显示
+						addLeTypeOther();
+						if(rowse.stampType!='F'){
+							$("#stampName").combobox("setValue",rowse.stampName);
+						}else{
+							$("#useDept").combotree("disable"); 		  
+							$("#stampName").combobox("disable");
+						}
+					}else{
+						//编码
+						$("#appAttNo").val($("#appPeoNo").val());
+					}
+				},
+				onClose:function(){
+					$(this).dialog('destroy');
+					useStampGrid($("#appPeoNo").val());
+				}
+		 	});
+ 		}
+ 	 }
+ 	 
+ 	 
+ 	 
+ 	
+     //申请人删除
+    function toDelete(){
+    	var selected = $('#useStampAtt').datagrid('getSelections');
+    	if (selected.length <= 0) {
+    		$.messager.alert("提示", "请至少选择一条记录执行删除!", "warning");
+    		return;
+    	}
+    	var ids = new Array();
+    	for(var i=0,len=selected.length; i<len; i++){
+    		ids.push(selected[i].saaId);
+    	}
+    	ids = ids.join(",");
+    	$.messager.confirm('删除', '执行删除后，数据将不可恢复,是否执行?', function(d) {
+    		if (d) {
+    			$.ajax( {
+    				type : "POST",
+    				url : 'UseStampApp/deleteStampList.do',
+    				data : {
+    					"ids":ids,
+    					"procStatus":$("#procStatusApp").val()
+    				},
+    				dataType:'JSON',
+    				success : function(iJson) {
+    					if(iJson.status){
+    						//刷新列表
+    						useStampGrid(selected[0].appNo);
+    						$.messager.alert(iJson.title, iJson.message,"info");
+    					}else{
+    						$.messager.alert(iJson.title, iJson.message,"error");
+    					}
+    				}
+    			});
+    		}
+    	});
+    } 
+     
+     
+     
+     
+     
+     
+</script>
+<div id="tt" style="height: auto">
+	<div title="申请人信息" >
+	  <div class="well well-small" style="margin:5px;width:917px">
+	     
+	     	<form id="useStampForm" >
+	     	 <input id="usaId" name="usaId" type="hidden"/><!-- 申请id -->
+	         <input id="appPeoNo" name="appNo" type="hidden"/><!-- 申请编号 -->
+	         <input id="procStatusApp" name="procStatus" type="hidden"><!-- 流程状态 -->
+	         
+	         <table class="table">
+				<tr id="user">
+						<th>使用性质:</th>
+						<td>
+							<input name="useNature" id="useNature1" type="radio" value="1" checked="checked" >本地使用</input>
+							<input name="useNature" id="useNature2" type="radio" value="2" >外借</input>
+						</td>
+				</tr>
+				
+				<tr>
+					<th style="width: 170px;">用章开始时间:</th>
+					<td >
+						<input id="useBgDate" name="useBgDate" placeholder="请选择开始日期" class="easyui-textbox easyui-datebox  easyui-validatebox" data-options="editable:false"/>
+					</td>
+					<th style="width: 89px;">用章结束时间:</th>
+					<td >
+						<input id="useEdDate" name="useEdDate" placeholder="请选择结束日期" class="easyui-datebox easyui-validatebox" data-options="editable:false"/>
+					</td>
+				</tr>
+				
+				 <tr>
+					<th>备注信息:</th>
+					<td colspan="3">
+					  <textarea id="remark" name="remark" class="easyui-textbox easyui-validatebox" style="width: 810px; height: 80px;resize:none;" data-options="validType:'length[0,100]'"></textarea>
+					</td>
+				</tr>
+				<tr>
+				   <td colspan="6" style="text-align: right;">		
+				   	  <a href="javascript:void(0)" id="save" class="easyui-linkbutton" iconCls="icon-save" onclick="toSaveBaseInfo('0');">保存</a>
+				      <a href="javascript:void(0)" id="rset" class="easyui-linkbutton" iconCls="icon-no" onclick="toSaveBaseInfo('1');">关闭</a>
+				      
+				   </td>
+				</tr>
+	         </table>
+	       </form>
+	  </div>
+	  
+	   <div class="well well-small" style="margin: 5px;width:917px">
+	        <table id="useStampAtt"></table>
+	   </div>
+
+	 	</div>
+</div>

@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="CallingCard" name="名片申请(总部)" isExecutable="true">
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.oasys.listener.CallingCard.CallingCardHoApplyStartListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="BuMenJingLi" name="部门经理" activiti:formKey="jsp/ad/callingCard/saveTask/default.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="StartApply" name="提交申请" sourceRef="startevent1" targetRef="BuMenJingLi"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow4" sourceRef="BuMenJingLi" targetRef="exclusivegateway2"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <userTask id="ApplyForAdjustment1" name="申请调整" activiti:assignee="${curUserId}" activiti:formKey="jsp/ad/callingCard/saveTask/default.jsp?{&quot;type&quot;:2}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="BuMenJingLi0" name="部门负责人审批驳回" sourceRef="exclusivegateway2" targetRef="ApplyForAdjustment1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XingZhengJingLi0" name="行政经理申请驳回" sourceRef="exclusivegateway3" targetRef="ApplyForAdjustment1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="XingZhengZhuanYuan" name="行政专员" activiti:formKey="jsp/ad/callingCard/saveTask/default.jsp?{&quot;type&quot;:5,&quot;result1&quot;:&quot;YX1&quot;,&quot;result2&quot;:&quot;YS1&quot;,&quot;result3&quot;:&quot;money&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="QiXuanZhuanYuan" name="企业宣传管理中心" activiti:formKey="jsp/ad/callingCard/saveTask/default.jsp?{&quot;btType&quot;:&quot;1&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="XingZhengJingLi1" name="行政经理申请通过" sourceRef="exclusivegateway3" targetRef="QiXuanZhuanYuan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="QiXuanZhuanYuan1" name="企业宣传管理中心通过" sourceRef="QiXuanZhuanYuan" targetRef="XingZhengZhuanYuan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow20" sourceRef="ApplyForAdjustment1" targetRef="exclusivegateway5"></sequenceFlow>
+    <sequenceFlow id="ApplyForAdjustment10" name="重新申请" sourceRef="exclusivegateway5" targetRef="BuMenJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="AdministrationManager" name="行政经理" activiti:formKey="jsp/ad/callingCard/saveTask/default.jsp">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow21" sourceRef="AdministrationManager" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="BuMenJingLi1" name="部门负责人审批通过" sourceRef="exclusivegateway2" targetRef="AdministrationManager">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway7" name="Exclusive Gateway"></exclusiveGateway>
+    <endEvent id="endevent2" name="End">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.oasys.listener.CallingCard.CallingCardHoApplyStopListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="ZongJingLi2" name="总经理拒绝" sourceRef="exclusivegateway7" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="2"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ZongJingLi0" name="总经理驳回" sourceRef="exclusivegateway7" targetRef="ApplyForAdjustment1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="0"}]]></conditionExpression>
+    </sequenceFlow>
+    <callActivity id="ApplyForAdjustment23" name="财务审批子流程" calledElement="FinancialApprovalSubProcess">
+      <extensionElements>
+        <activiti:in source="curUserId" target="curUserId"></activiti:in>
+        <activiti:in source="subProcessFormKey" target="subProcessFormKey"></activiti:in>
+        <activiti:in source="businessProcKey" target="subBusinessProcKey"></activiti:in>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="ZongJingLi1" name="总经理通过" sourceRef="exclusivegateway7" targetRef="ApplyForAdjustment23">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway11" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow25" sourceRef="ApplyForAdjustment23" targetRef="exclusivegateway11"></sequenceFlow>
+    <sequenceFlow id="XingZhengZongJianYX1" name="金额&lt;=500" sourceRef="exclusivegateway12" targetRef="ApplyForAdjustment23">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="YX1"}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent3" name="End">
+      <extensionElements>
+        <activiti:executionListener event="end" class="com.oasys.listener.CallingCard.CallingCardHoApplyStopListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="ApplyForAdjustment231" name="申请通过" sourceRef="exclusivegateway11" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='1'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ApplyForAdjustment11" name="申请撤销" sourceRef="exclusivegateway5" targetRef="endevent3">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.oasys.listener.CallingCard.CallingCardHoApplyStopListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="1"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ApplyForAdjustment230" name="重新申请" sourceRef="exclusivegateway11" targetRef="BuMenJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='0'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway12" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow26" sourceRef="XingZhengZhuanYuan" targetRef="exclusivegateway12"></sequenceFlow>
+    <userTask id="ZongJingLi" name="总经理" activiti:formKey="jsp/ad/callingCard/saveTask/default.jsp?{&quot;btType&quot;:&quot;0&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.CallingCard.CallingCardHoApprovelListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="XingZhengZongJianYS1" name="金额&gt;500" sourceRef="exclusivegateway12" targetRef="ZongJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="YS1"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow28" sourceRef="ZongJingLi" targetRef="exclusivegateway7"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_CallingCard">
+    <bpmndi:BPMNPlane bpmnElement="CallingCard" id="BPMNPlane_CallingCard">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="330.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BuMenJingLi" id="BPMNShape_BuMenJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="400.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApplyForAdjustment1" id="BPMNShape_ApplyForAdjustment1">
+        <omgdc:Bounds height="55.0" width="105.0" x="148.0" y="243.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="XingZhengZhuanYuan" id="BPMNShape_XingZhengZhuanYuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="600.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="QiXuanZhuanYuan" id="BPMNShape_QiXuanZhuanYuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="500.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="60.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AdministrationManager" id="BPMNShape_AdministrationManager">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="320.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway7" id="BPMNShape_exclusivegateway7">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="870.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="451.0" y="873.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ApplyForAdjustment23" id="BPMNShape_ApplyForAdjustment23">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="971.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway11" id="BPMNShape_exclusivegateway11">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="1050.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="330.0" y="1130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway12" id="BPMNShape_exclusivegateway12">
+        <omgdc:Bounds height="40.0" width="40.0" x="327.0" y="690.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ZongJingLi" id="BPMNShape_ZongJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="770.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="StartApply" id="BPMNEdge_StartApply">
+        <omgdi:waypoint x="347.0" y="115.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="160.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="350.0" y="129.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="347.0" y="215.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BuMenJingLi0" id="BPMNEdge_BuMenJingLi0">
+        <omgdi:waypoint x="327.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="253.0" y="270.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="253.0" y="279.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XingZhengJingLi0" id="BPMNEdge_XingZhengJingLi0">
+        <omgdi:waypoint x="327.0" y="420.0"></omgdi:waypoint>
+        <omgdi:waypoint x="202.0" y="419.0"></omgdi:waypoint>
+        <omgdi:waypoint x="200.0" y="298.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="96.0" x="221.0" y="431.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XingZhengJingLi1" id="BPMNEdge_XingZhengJingLi1">
+        <omgdi:waypoint x="347.0" y="440.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="500.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="96.0" x="352.0" y="454.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="QiXuanZhuanYuan1" id="BPMNEdge_QiXuanZhuanYuan1">
+        <omgdi:waypoint x="347.0" y="555.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="600.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="352.0" y="558.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="148.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="100.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApplyForAdjustment10" id="BPMNEdge_ApplyForAdjustment10">
+        <omgdi:waypoint x="80.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="295.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="110.0" y="191.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="347.0" y="375.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="400.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BuMenJingLi1" id="BPMNEdge_BuMenJingLi1">
+        <omgdi:waypoint x="347.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="320.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="352.0" y="289.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ZongJingLi2" id="BPMNEdge_ZongJingLi2">
+        <omgdi:waypoint x="367.0" y="890.0"></omgdi:waypoint>
+        <omgdi:waypoint x="451.0" y="890.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="379.0" y="873.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ZongJingLi0" id="BPMNEdge_ZongJingLi0">
+        <omgdi:waypoint x="327.0" y="890.0"></omgdi:waypoint>
+        <omgdi:waypoint x="200.0" y="889.0"></omgdi:waypoint>
+        <omgdi:waypoint x="200.0" y="298.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="248.0" y="871.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ZongJingLi1" id="BPMNEdge_ZongJingLi1">
+        <omgdi:waypoint x="347.0" y="910.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="971.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="352.0" y="929.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="347.0" y="1026.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1050.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XingZhengZongJianYX1" id="BPMNEdge_XingZhengZongJianYX1">
+        <omgdi:waypoint x="367.0" y="710.0"></omgdi:waypoint>
+        <omgdi:waypoint x="602.0" y="710.0"></omgdi:waypoint>
+        <omgdi:waypoint x="602.0" y="998.0"></omgdi:waypoint>
+        <omgdi:waypoint x="400.0" y="998.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="54.0" x="487.0" y="823.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApplyForAdjustment231" id="BPMNEdge_ApplyForAdjustment231">
+        <omgdi:waypoint x="347.0" y="1090.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1130.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="347.0" y="1090.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApplyForAdjustment11" id="BPMNEdge_ApplyForAdjustment11">
+        <omgdi:waypoint x="80.0" y="290.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="1147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="1147.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="90.0" y="399.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ApplyForAdjustment230" id="BPMNEdge_ApplyForAdjustment230">
+        <omgdi:waypoint x="367.0" y="1070.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.0" y="1070.0"></omgdi:waypoint>
+        <omgdi:waypoint x="824.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="400.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="609.0" y="1050.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="347.0" y="655.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="690.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XingZhengZongJianYS1" id="BPMNEdge_XingZhengZongJianYS1">
+        <omgdi:waypoint x="347.0" y="730.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="770.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="352.0" y="739.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="347.0" y="825.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="870.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

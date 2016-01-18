@@ -1,0 +1,281 @@
+<%@page import="com.oasys.util.Constants"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<base href="<%=basePath%>">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<jsp:include page="../../../layout/script.jsp"></jsp:include>
+<title>待办任务主页面</title>
+</head>
+<script type="text/javascript">
+var $$row;
+var $row1=null;
+$(function(){
+	createWaitTaskGrid();
+});
+
+//上传附件,明细存储taskId
+$("#upploadAttachment").click(function(){
+	fileUploadsDlg($row.appNo);
+});
+//查看附件
+$("#checkAttachment").click(function(){
+	checkAttachementDetail($row.appNo,$row.taskModel.assistant,'');
+});
+
+function lookAttachment(index){
+	var row=getRowData(index);
+	checkAttachementDetail(row.appNo,row.registrantNo,"1");
+}
+
+var $grid;
+//渲染grid
+function createWaitTaskGrid(){
+	$(window).resize(function(){  
+        $("#waitTaskGrid").datagrid({  
+        	height: $(window).height()-80,
+        	width : 'auto'
+        });                
+    });
+	<%String definitionKey=request.getParameter("key");%>//流程变量
+	$grid=$("#waitTaskGrid").datagrid({
+		url:'callingCard/QueryCardTask.do?processKey=<%=definitionKey%>',
+		width: 'auto',
+		height : $(this).height()-80,
+		pagination:true,
+		rownumbers:true,
+		border:true,
+		singleSelect:false,
+		nowrap:true,
+		multiSort:false,
+		border:false,
+		fitColumns:true,
+		pageSize:30,
+		pageList:[10,20,30,40],
+		remoteSort:false,//定义是否从服务器对数据进行排序。
+		striped:true,//是否显示斑马线
+		columns:[[
+			{field : 'ck',        title : 'ck',    width : $(this).width * 0.1, align:'center',checkbox:true},					             
+			{field : 'caId',        title : '编号',    width : $(this).width * 0.1, align:'center',
+				        	 formatter: function(value,row,index){
+				        		 return row.caID;
+				        	 }},
+			{field : 'taskId',        title : 'TASK_ID',    width : $(this).width * 0.1, align:'center',
+			      	 formatter: function(value,row,index){
+			      		 return row.taskId;
+							}},
+			{field : 'formKey',        title : 'FORM_KEY',    width : 60, align:'center' ,
+				        	 formatter: function(value,row,index){
+				        		 return row.formKey;
+			    				}},
+			{field : 'deptName',    title : '部门',   width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'appNo',        title : '申请编号',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'userName',        title : '姓名',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'personalTel',    title : '个人电话',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'officeTel',    title : '办公电话',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'email',    title : '邮箱',    width : parseInt($(this).width * 0.2), align:'center' },
+			{field : 'branchAddr',    title : '地址',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'appQty',    title : '数量',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'heji',    title : '总和(数量)',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'price',    title : '单价',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'subTotalAMT',    title : '合计金额',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'heji1',    title : '合计金额总额',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'appDate',    title : '申请日期',    width : parseInt($(this).width * 0.1), align:'center' },
+			{field : 'remark',     title : '备注',    width : parseInt($(this).width * 0.1), align:'center' },
+		    {field : 'caozuo',    title : '操作',    width : parseInt($(this).width * 0.1), align:'center',
+				formatter: function(value,row,index){
+					var result = "";
+				    if (row.taskModel.assistant == null || row.taskModel.assistant == "") {
+						result += "<a href='javascript:void(0);' onclick='holdWorkTask("+index+");'>签收任务</a>　　";
+					}else{
+						result += "<a href='javascript:void(0);' onclick='handleTaskDialog("+index+");'>办理任务</a>　　";
+					}
+				    result += "<a href='javascript:void(0);' onclick='checkHistoryOpinions("+ index +");'>查看审批意见</a>　　";
+					result += "<a href='javascript:void(0);' onclick='showImage("+index+");'>查看流程图</a>　　";
+				    result += "<a href='javascript:void(0);' onclick='lookAttachment("+ index +");'>查看附件</a>　　";
+					return result;        		             		  					           		  
+				}
+			}
+	   ]],
+	   toolbar:'#tb',
+	   onLoadSuccess:function(data){
+			var mergeMap = getMergeMap($(this).datagrid("getRows"),"deptName","subTotalAMT");
+			var mergeMap1 = getMergeMap($(this).datagrid("getRows"),"deptName","appQty");
+			for(var i in mergeMap){
+					var iCount = 0;
+					try {
+						while(iCount <= mergeMap[i].rowspan){
+							$(this).datagrid('updateRow', { index: mergeMap[i].index+iCount,row: {heji1:mergeMap[i].heji}});
+							$(this).datagrid('updateRow', { index: mergeMap[i].index+iCount,row: {heji:mergeMap1[i].heji}});
+			 				iCount++;
+						}
+					} catch (e) {
+						// TODO: handle exception
+					}
+			}
+     	  var paramObj = {rowStr:'deptName,appNo',//按照哪列进行分组
+					rowGroup:'deptName,heji,heji1:appNo,caozuo'};//对应rowStr的需要合并单元格的字段  
+			dataGirdSumMergeFunc($(this),paramObj); 
+		}
+	});
+	$('#waitTaskGrid').datagrid("doCellTip",{'max-width':'100px'});
+	$('#waitTaskGrid').datagrid('hideColumn', 'caId');
+	$('#waitTaskGrid').datagrid('hideColumn','taskId');
+	$('#waitTaskGrid').datagrid('hideColumn','formKey');
+}
+//查看流程图
+function showImage(index){
+	var row = getRowData(index);
+	var src="workflowAction/showProcessImgByBusinessKey.do?processKey="+row.definitionKey+"&resName="+row.resourcesName+"&busID="+row.caID;
+	$('#imageDialog').dialog("open");
+	$("#image").attr("src", src);
+}
+//根据index获取该行
+function getRowData(index){
+	if (!$.isNumeric(index) || index < 0) {
+		return undefined;
+	}
+	var rows = $("#waitTaskGrid").datagrid("getRows");
+	return rows[index];
+}
+//签收任务
+function holdWorkTask(index){
+	var row = getRowData(index);
+	$.ajax({
+		type:"POST",
+		url:"callingCard/SignTask.do",
+		data:{"taskId" : row.taskId},
+		dataType:"JSON",
+		success:function(rsp){
+			if(rsp.status){
+				$.messager.alert("提示","签收成功","warning");
+			}else{
+				parent.$.messager.alert(rsp.title,rsp.message,'warning');
+			}
+			$("#waitTaskGrid").datagrid('reload');
+		}
+	});
+}
+//办理任务
+function handleTaskDialog(index){
+	var selectedRow = getRowData(index);
+// 	$selRow = selectedRow;
+	$$row = selectedRow;
+	$("#handleTask").dialog({
+		width : 920,
+		height : $(this).height()*0.7,					
+		title : '受理任务',
+		href :$$row.formKey,
+	    onLoad:function(){
+	    	var taskForm = $("#taskForm");
+	    	taskForm.form("load",selectedRow);
+	    	$("#taskForm #businessID").val(selectedRow.caID);
+	    	$("#taskForm #taskID").val(selectedRow.taskId);
+	    },
+		modal:true,
+		resizable:false,
+		iconCls:'icon-add',
+		closed: false,
+	    buttons : [ {
+			text : '关闭',
+			iconCls : 'icon-cancel',
+			handler : function() {
+				$('#handleTask').dialog('close');
+				$("#dg").datagrid("reload");
+			}
+		}]
+	}); 
+}
+//执行高级查询
+function doSearch(){			
+	$("#waitTaskGrid").datagrid("load",{
+		appApplyDateBefore:$('#queryApplyDateBeginId').datebox('getValue'),
+		appApplyDateAfter:$('#queryApplyDateEndId').datebox('getValue')
+		});
+}
+//重置条件
+function clearAdvancedQueryConditions(){
+	//1、清空高级查询各组件内容
+	$("#searchForm").form("clear");
+	//2、datagrid重新加载
+	$("#waitTaskGrid").datagrid("load",{});
+}
+//批量处理任务
+function signTask(){
+	var rows = $grid.datagrid("getSelections");
+	var businessID = new Array();
+	var formKey = "";
+	var taskID = new Array();
+	var appNo = new Array;
+	if(rows==null || rows.length<=0){
+		$.messager.alert("提示","请选择至少一条记录!","warning");
+		return false;
+	}
+	for(var i=0;i<rows.length;i++){
+		if($.inArray(rows[i].caID,businessID)==-1){
+			businessID.push(rows[i].caID);
+			formKey=rows[i].formKey;
+			taskID.push(rows[i].taskId);
+			appNo.push(rows[i].appNo);
+		}
+	}
+	var data1 = "appNo="+appNo.join(",")+"&businessID="+businessID.join(",")+"&taskID="+taskID.join(",")+"&formKey="+formKey;
+	ajaxLoading("正在处理 请稍后...");
+ 	  $.ajax({
+		type: "POST",
+		url:"callingCard/saveTaskCardAppBatch.do",
+		data:data1,
+	    success: function(iJson) {
+			$("#dg").datagrid("reload");
+	    	$("#waitTaskGrid").datagrid("load",{});
+	    	ajaxLoadEnd();
+ 	    	$.messager.alert(iJson.title,iJson.message,'info');
+	    }
+	});  
+}
+//查看历史审批意见
+function checkHistoryOpinions(index){
+	var rows = $("#waitTaskGrid").datagrid("getRows");
+	$$row = rows[index];//获取本条数据
+	$("#optionsDialog").dialog('open').dialog('refresh');
+}
+</script>
+<body>
+<div class="position" style="margin-top: 5px;">您当前所在位置： 任务管理  &gt; 待办任务</div>
+<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
+			<form id="searchForm" action="callingCard/index.do" method="post">
+				<table cellpadding="0" cellspacing="1" border="0">
+					<tr>
+						<td>申请时间：&nbsp;&nbsp;</td>
+						<td><input name="queryApplyDateBegin" id="queryApplyDateBeginId" class="easyui-datebox" editable="true" style="width:174px;"/></td>
+						<td>到：&nbsp;&nbsp;</td>
+						<td><input name="queryApplyDateEnd" id="queryApplyDateEndId" class="easyui-datebox" editable="true" style="width:174px;"/></td>
+						<td align="right" style="float:right;text-align: right;">
+						    <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search" plain="false" onclick="doSearch();">执行查询</a>&nbsp;&nbsp;&nbsp;&nbsp;
+						</td>
+						<td>  
+							<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-reload" plain="false" onclick="clearAdvancedQueryConditions()">条件重置</a>
+						</td>
+					</tr>
+				</table>
+			</form>			  			
+		</div>
+<div id="tb" style="padding:2px 0">
+	<a id="id4ExportReports" class="easyui-linkbutton" data-options="iconCls:'icon-add'" plain="true" onclick="signTask();">批量受理任务</a>
+</div>
+<table id="waitTaskGrid"></table>
+<!-- 新增弹框 -->
+<div id="addWindow"></div>
+<div id="handleTask"></div>
+<div id="imageDialog"  class="easyui-dialog" title="流程图片" data-options="border:false,closed:true,fit:true">
+	<img id="image" src="" >
+</div>
+<div id="optionsDialog" class="easyui-dialog" title="历史审批意见" style="width:900px;height:400px;" closed="true" data-options="href:'jsp/ad/optionsList.jsp',resizable:true,modal:true"></div>
+</body>
+</html>

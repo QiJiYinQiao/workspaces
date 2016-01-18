@@ -1,0 +1,263 @@
+package com.oasys.serviceImpl.workFlow;
+
+import java.util.List;
+import java.util.Set;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.model.Organization;
+import com.oasys.model.OrganizationRole;
+import com.oasys.model.UserRole;
+import com.oasys.model.Users;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.UserService;
+import com.oasys.service.workFlow.TaskRoleService;
+import com.oasys.service.workFlow.WorkFlowTaskService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+/****
+ * 
+ * @author lida
+ * @Title TaskRoleServiceImpl
+ * @date 2015年11月2日 15:33:08
+ * @descpration 流程节点与角色Service实现类
+ * 
+ */
+@Service("taskRoleService")
+public class TaskRoleServiceImpl implements TaskRoleService {
+
+	@Autowired
+	private OrganizationService orgService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private  WorkFlowTaskService taskFlowService;
+	
+	private Users curUsers;
+	
+	
+	/***
+	 * @description 根据task节点信息 动态赋值角色code 如当前task节点无用户受理 则计算出跳转到该节点的下一级节点的表达式
+	 * 将表达式存储在 工作流的流程变量中 Key为：Constants.RCN_RESULT
+	 * @author lida
+	 * @title setTaskRoleCodeByTask
+	 * @param task 流程节点对象
+	 * @return void
+	 */
+	@Override
+	public void setTaskRoleCodeByTask(DelegateTask task){
+		String curUserID = task.getVariable(Constants.CURRENT_USER_KEY).toString();
+		curUsers = userService.getUserByID(Integer.valueOf(curUserID));
+		String orgIDRoleCode = getOrgIdRoleByDefKeyByUser(curUserID, task.getTaskDefinitionKey());
+		//如果提交受理的角色找不到 则进行跳转流程操作
+		if(orgIDRoleCode.isEmpty()){
+			String result=Constants.TASK_COMMIT_RESULT;
+			//获取task节点的formKeyJson获取通过表达式的值
+			if(StringUtils.isNotBlank(task.getFormKey()) && task.getFormKey().indexOf("?") > 0){
+				WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+				taskModel.setTaskID(task.getId());
+				taskModel.setFormKey(task.getFormKey());
+				result = taskFlowService.getResultByFormKey(taskModel,curUserID);
+			}
+			task.setVariable(Constants.RCN_RESULT, result);//设置跳转流程变量
+		}else{
+			task.removeVariable(Constants.RCN_RESULT);//移除跳转流程变量
+			task.addCandidateGroup(orgIDRoleCode);
+			task.setVariable(Constants.TASK_GROUP_CODE,orgIDRoleCode);
+		}
+	}
+	
+	/***
+	 * 
+	 * @description 根据task节点信息 动态赋值候选人ID 如当前节点无受理人则计算出跳转到该节点的下一级节点的表达式
+	 * 将表达式存储在 工作流的流程变量中 Key为：Constants.RCN_RESULT
+	 * 该方法只有满足定制区域角色时会调用
+	 * @author lida
+	 * @title setTaskRoleCodeByTask
+	 * @param task 流程节点对象
+	 * @return void
+	 */
+	@Override
+	public void setTaskAssisantByTask(DelegateTask task){
+		String curUserID = task.getVariable(Constants.CURRENT_USER_KEY).toString();
+		Organization org = orgService.findOrganizationByUserId(Integer.valueOf(curUserID));
+		List<String> userIdList = userService.getUserIdsByOrgAndRoleOrg(org.getOrganizationId().toString(), task.getTaskDefinitionKey());
+		//如果定制区域候选用户找不到 则进行跳转流程操作
+		if(Collections.listIsEmpty(userIdList)){
+			String result = Constants.TASK_COMMIT_RESULT;
+			//获取task节点的formKeyJson获取通过表达式的值
+			if(StringUtils.isNotBlank(task.getFormKey()) && task.getFormKey().indexOf("?") > 0){
+				WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+				taskModel.setTaskID(task.getId());
+				taskModel.setFormKey(task.getFormKey());
+				result = taskFlowService.getResultByFormKey(taskModel,curUserID);
+			}
+			task.setVariable(Constants.RCN_RESULT, result);//设置跳转流程变量
+		}else{
+			task.removeVariable(Constants.RCN_RESULT);//移除跳转流程变量
+			task.addCandidateUsers(userIdList);//添加候选人
+		}
+	}
+
+	/***
+	 * 根据申请人调用getOrgCodeFunc方法
+	 * @param curUserID 申请人ID
+	 * @param taskDefinitionKey 流程节点/角色标识
+	 * @return 动态角色code
+	 */
+	@Override
+	public String getOrgIdRoleByDefKeyByUser(String curUserID,String taskDefinitionKey){
+		Organization org = orgService.findOrganizationByUserId(Integer.valueOf(curUserID));
+		return getOrgCodeFunc(org, taskDefinitionKey);
+	}
+	
+	/***
+	 * 根据申请人调用getOrgCodeFunc方法
+	 * @param orgID 组织机构ID
+	 * @param taskDefinitionKey 流程节点/角色标识
+	 * @return 动态角色code
+	 */
+	@Override
+	public String getOrgIdRoleByDefKeyByOrg(String orgID,String taskDefinitionKey){
+		Organization org = orgService.findOrganizationByUserId(Integer.valueOf(orgID));
+		return getOrgCodeFunc(org, taskDefinitionKey);
+	}
+	
+	/**------------------ 类内部方法 不对外开放 ------------------*/
+	/***
+	 * 根据传递的角色/流程标识 动态在配置的区域范围内进行查找是否存在配置的用户 
+	 * 如果存在配置的用户 则返回 传递到该方法的角色code 并 拼接该区域的组织机构ID
+	 * 例如: TuanDuiJingLi.26
+	 * @param org 组织机构对象
+	 * @param taskDefinitionKey 角色/流程标识
+	 * @return 动态角色code编码
+	 */
+	protected String getOrgCodeFunc(Organization org,String taskDefinitionKey){
+		String orgId = "";
+		//存在多个相同节点时 用"."拼接数字分割
+		taskDefinitionKey = taskDefinitionKey.indexOf(".") != -1 ? taskDefinitionKey.substring(0,taskDefinitionKey.indexOf(".")) : taskDefinitionKey;
+		if(org != null){
+			//分部 职能端 查找总部角色时进入判断
+			if("1".equals(org.getDeptLevel()) && StringUtils.isNotBlank(getOrgIDByQyOrZxFunc(getOrgIdByBoRoleType(),taskDefinitionKey))){
+				orgId = getOrgIDByQyOrZxFunc(getOrgIdByBoRoleType(),taskDefinitionKey);
+			}else if("0".equals(org.getDeptLevel()) && StringUtils.isNotBlank(Constants.getRoleCodeJumpFuction(5).get(taskDefinitionKey))){
+				orgId = getHoRoleByOrgEnameFunc(Constants.getRoleCodeJumpFuction(5).get(taskDefinitionKey),taskDefinitionKey);//总部 并且为总部分部同时存在角色 则根据角色的类型 去对应的部门查找
+			}else if(StringUtils.isNotBlank(Constants.getRoleCodeJumpFuction(0).get(taskDefinitionKey))){
+				orgId = getOrgIDByUserOrgAndRoleCode(org,taskDefinitionKey,1);//不定级查找 分部 在分公司 分工下分部 直辖市 内查找
+			}else if(StringUtils.isNotBlank(Constants.getRoleCodeJumpFuction(1).get(taskDefinitionKey))){
+				orgId = getOrgIDByQyOrZxFunc(getOrgIdFunc(
+						orgService.findOrgParentListByRegionType(org.getOrganizationId().toString(),Constants.ORG_TREELEVEL_QY)),
+						taskDefinitionKey);//在区域范围内查找
+			}else if(StringUtils.isNotBlank(Constants.getRoleCodeJumpFuction(2).get(taskDefinitionKey))){
+				orgId = getOrgIDByQyOrZxFunc(getOrgIdFunc(
+						orgService.findOrgParentListByRegionType(org.getOrganizationId().toString(),Constants.ORG_TREELEVEL_ZX)),
+						taskDefinitionKey);//在中心范围内查找
+			}else if(StringUtils.isNotBlank(Constants.getRoleCodeJumpFuction(3).get(taskDefinitionKey))){//总部角色 直接定位到角色 不需查找部门
+				if(StringUtils.isBlank(getUserByRoleCode(org.getOrganizationId().toString(),taskDefinitionKey))){
+					orgId="";
+				}else{
+					return taskDefinitionKey;
+				}
+			}else if(StringUtils.isNotBlank(Constants.getRoleCodeJumpFuction(4).get(taskDefinitionKey))){
+				orgId = getOrgIDByUserOrgAndRoleCode(org,taskDefinitionKey,0);//不定级查找 总部 在总部所属部门下查找
+			}
+		}
+		if(StringUtils.isBlank(orgId)){
+			return orgId;
+		}else{
+			return taskDefinitionKey+"."+orgId;
+		}
+	}
+	
+	//获取分部职能端角色对应的组织机构
+	protected String getOrgIdByBoRoleType(){
+		if(null != curUsers){
+			Set<UserRole> ur = curUsers.getUserRoles();
+			for (UserRole userRole : ur) {
+				if(userRole.getRole().getRoleType().equals("2")){
+					Set<OrganizationRole> orgSet = userRole.getRole().getOrganizationRoles();
+					for (OrganizationRole organizationRole : orgSet) {
+						return organizationRole.getOrganization().getOrganizationId().toString();
+					}
+				}
+			}
+		}
+		return "";
+	}
+	
+	//获取组织机构List中第一个元素的orgID返回
+	protected String getOrgIdFunc(List<Organization> orgList) {
+		if(null != orgList && orgList.size() > 0){
+			return orgList.get(0).getOrganizationId().toString();
+		}else{
+			return "";
+		}
+	}
+	
+	/** 根据组织机构ENAME英文简称查找 对应的角色是否有人员配置 */
+	protected String getHoRoleByOrgEnameFunc(String ename,String roleCode){
+		Organization org = new Organization();
+		org.setEname(ename);
+		org = orgService.getOrgByParam(org);//根据Ename获取组织机构
+		if(org == null){
+			return "";
+		}else{
+			return getOrgIDByQyOrZxFunc(org.getOrganizationId().toString(), roleCode);
+		}
+	}
+	
+	//在申请人所在区域和中心查找特定角色 找到返回区域或中心ID否则返回空
+	protected String getOrgIDByQyOrZxFunc(String orgID,String roleCode){
+		Long userCount = userService.getUserByOrgAndRole(orgID, roleCode);//获取该部门下的角色是否有存在用户
+		if(userCount > 0){
+			return orgID;
+		}else{
+			return "";
+		}
+	}
+	
+	//获取角色是否有用户配置
+	protected String getUserByRoleCode(String orgId,String groupCode){
+		if(userService.getUserIdsByGroupOrOrgID(groupCode, "").size()==0){
+			return "";
+		}else{
+			return orgId;
+		}
+	}
+	
+	/**
+	 * 根据组织机构和角色信息查找是否存在用户 分部
+	 * @param org 申请人的组织机构对象
+	 * @param userID 申请人ID
+	 * @param type 是否递归向上查找 0 总部查找范围 1为分部查找范围
+	 * @return orgID 返回符合条件的组织机构ID
+	 * */
+	protected String getOrgIDByUserOrgAndRoleCode(Organization org,String roleCode,Integer type){
+		Long userCount = userService.getUserByOrgAndRole(org.getOrganizationId().toString(), roleCode);//获取该部门下的角色是否有存在用户
+		String orgID = "";
+		//如果当前部门下找到用户 则直接返回组织机构
+		if(userCount > 0){
+			return orgID = org.getOrganizationId().toString();
+		}
+		//当前部门下的角色 没有用户配置 则向该部门上级继续查找
+		while (userCount <= 0) {
+			//判断 查找级别 见getTreeLevelMap中配置的查找范围
+			if (Constants.getTreeLevelMap(type).get(org.getTreeLevel()) != null ) {
+				userCount = userService.getUserByOrgAndRole(org.getPid().toString(), roleCode);
+				org = orgService.findOrganizationByOrganizationId(org.getPid());
+				orgID = org == null ? "" : org.getOrganizationId().toString();
+				if(Constants.getTreeLevelMap(type).get(org.getTreeLevel()) == null ){
+					return "";
+				}
+			}else{
+				return "";
+			}
+		}
+		return orgID;
+	}
+}

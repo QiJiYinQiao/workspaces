@@ -1,0 +1,512 @@
+package com.oasys.serviceImpl;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.CredentialsApp;
+import com.oasys.model.CredentialsAppAttach;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.CredentialsAppService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.UserService;
+import com.oasys.service.workFlow.WorkFlowTaskService;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.DateUtils;
+import com.oasys.util.PageUtil;
+import com.oasys.viewModel.CredentialsAppModel;
+import com.oasys.viewModel.WorkFlowTasksModel;
+
+@Service("credentialsAppService")
+public class CredentialsAppServiceImpl implements CredentialsAppService {
+	@Autowired
+	private PublicDao<CredentialsAppModel> publicDaoVO;
+	@Autowired
+	private PublicDao<CredentialsApp> publicDao;
+	@Autowired
+	private PublicDao<CredentialsAppAttach> publicDaoAtta;
+	@Autowired
+	private RuntimeService runtimeService;
+	@Autowired
+	private RepositoryService repositoryService;
+	@Autowired
+	private TaskService taskService;
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	@Autowired
+	private StatusNameRefService statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RoleService roleService;
+	
+	@Override
+	public List<CredentialsAppModel> getList(Map<String, Object> map,
+			PageUtil pageUtil,Integer id,Integer id1,String sql) {
+		StringBuffer stringBuffer = new StringBuffer("SELECT c.APP_NO '申请编号',c.APPLICANT_NO '申请人编号',u.user_name '申请人',c.DEPT_NO '所属部门编号',o.FULL_NAME as '部门名称',c.APP_DATE '申请日期',c.PROC_STATUS '流程状态',a.CS_TYPE '证件类型' ,");
+		stringBuffer.append("a.CS_DESC '证章描述',a.IS_ORIGINAL '是否原件',a.PLAN_USE_DATE '计划使用日期',a.REAL_USE_DATE '实际使用日期',a.CS_PURPOSE '证章用途',");
+		stringBuffer.append("a.IS_LETOUT '是否外借',a.IS_RESTORED '是否已归还',a.PLAN_REST_DATE '计划归还日期',a.REAL_REST_DATE '实际归还日期',c.remark '备注',c.UQA_ID '主表Id',a.UQA_ID '附表Id'");
+		stringBuffer.append("FROM t_oa_fd_credentials_stamp_app c LEFT JOIN t_oa_fd_credentials_stamp_app_attach a ON c.APP_NO = a.APP_NO ");
+		stringBuffer.append(" LEFT JOIN qqms.t_users u ON u.USER_ID = c.APPLICANT_NO");
+		stringBuffer.append(" LEFT JOIN qqms.t_organization o ON o.ORGANIZATION_ID = c.DEPT_NO");
+		stringBuffer.append(" WHERE o.STATUS = 'A' AND 1=1");
+		if(sql!=null && !"".equals(sql)){
+			stringBuffer.append(" AND c.UQA_ID in ("+sql+")");
+		}
+		if(StringUtils.isNotBlank(map.get("procStatus")+"") && map.get("procStatus")!=null){
+			stringBuffer.append(" AND c.PROC_STATUS = "+map.get("procStatus"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateBefore")+"") && map.get("appDateBefore")!=null){
+			stringBuffer.append(" AND c.APP_DATE >= '"+map.get("appDateBefore")+"'");
+		}
+		if(StringUtils.isNotBlank(map.get("appDateAffter")+"") && map.get("appDateAffter")!=null){
+			stringBuffer.append(" AND c.APP_DATE <= '"+map.get("appDateAffter")+"'");
+		} 
+		if(StringUtils.isNotBlank(map.get("useDateBefore")+"") && map.get("useDateBefore")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE >= '"+map.get("useDateBefore")+"'");
+		}
+		if(StringUtils.isNotBlank(map.get("useDateAffter")+"") && map.get("useDateAffter")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE <= '"+map.get("useDateAffter")+"'");
+		}
+		if(id==2){//显示未归还的证章,在申请人归还节点使用
+			stringBuffer.append(" AND a.IS_RESTORED = 2");
+		}
+		if(id1==1){//查询申请人的申请
+			stringBuffer.append(" AND c.APPLICANT_NO = "+Constants.getCurrendUser().getUserId());
+		}
+		stringBuffer.append(" ORDER BY c.APP_DATE DESC,c.APP_NO DESC");
+		List<Object> list=publicDaoVO.findBySql(stringBuffer.toString(),pageUtil);
+		List<CredentialsAppModel> list2 = new ArrayList<CredentialsAppModel>();
+		for (int i = 0; i < list.size(); i++) {
+			Object[] item=(Object[]) list.get(i);
+			CredentialsAppModel credentialsAppModel = new CredentialsAppModel();
+			credentialsAppModel.setAppNo(item[0]+"");
+			credentialsAppModel.setApplicantNo(Integer.parseInt(item[1]+""));
+			credentialsAppModel.setApplicantName(item[2]+"");
+			credentialsAppModel.setDeptNo(Integer.parseInt(item[3]+""));
+			credentialsAppModel.setDeptName(item[4]+"");
+			credentialsAppModel.setAppDate(DateUtils.parse(item[5]+"",DateUtils.DATE_SMALL_STR));
+			Integer procStatus=Integer.parseInt(item[6]+"");
+			credentialsAppModel.setProcStatus(procStatus==1?"初始状态":procStatus==2?"审批中":procStatus==3?"已完成":procStatus==4?"已失效":"已撤销");
+			credentialsAppModel.setCsType(Integer.parseInt(item[7]+""));
+			Integer csType=Integer.parseInt(item[7]+"");
+			credentialsAppModel.setCsTypeName(csType==1?"财务章":csType==2?"法人章":csType==3?"法人身份证":csType==4?"资质":csType==5?"合同":"其他");
+			credentialsAppModel.setCsDesc(item[8]==null?"":item[8]+"");
+			credentialsAppModel.setIsOriginal(Integer.parseInt(item[9]+""));
+			Integer isOriginal = Integer.parseInt(item[9]+"");
+			credentialsAppModel.setIsOriginalName(isOriginal==1?"否":"是");
+			credentialsAppModel.setPlanUseDate(DateUtils.parse(item[10]+"",DateUtils.DATE_SMALL_STR));
+			credentialsAppModel.setRealUseDateStr(item[11]==null?"":item[11]+"");
+			credentialsAppModel.setCsPurpose(item[12]+"");
+			credentialsAppModel.setIsLetOut(Integer.parseInt(item[13]+""));
+			Integer isLetOut=Integer.parseInt(item[13]+"");
+			credentialsAppModel.setIsLetOutName(isLetOut==0?"是":"否");
+			credentialsAppModel.setIsRestored(Integer.parseInt(item[14]+""));
+			credentialsAppModel.setPlanRestDate(DateUtils.parse(item[15]+"",DateUtils.DATE_SMALL_STR));
+			credentialsAppModel.setRealRestDateStr(item[16]==null?"":item[16]+"");
+			credentialsAppModel.setRemark(item[17]==null?"":item[17]+"");
+			credentialsAppModel.setUqaId(Integer.parseInt(item[18]+""));
+			credentialsAppModel.setAuqaId(Integer.parseInt(item[19]+""));
+			credentialsAppModel.setResourcesName("OA_FD_CredentialsApp");
+			credentialsAppModel.setDefinitionKey(Constants.CREDENTIALSAPP);
+			list2.add(credentialsAppModel);
+		}
+		return list2;
+	}
+	
+	@Override
+	public Long getCount(Map<String, Object> map) {
+		StringBuffer stringBuffer = new StringBuffer("SELECT COUNT(1)");
+		stringBuffer.append("FROM t_oa_fd_credentials_stamp_app c LEFT JOIN t_oa_fd_credentials_stamp_app_attach a ON c.APP_NO = a.APP_NO ");
+		stringBuffer.append(" LEFT JOIN qqms.t_users u ON u.USER_ID = c.APPLICANT_NO");
+		stringBuffer.append(" LEFT JOIN qqms.t_organization o ON o.ORGANIZATION_ID = c.DEPT_NO");
+		stringBuffer.append(" WHERE o.STATUS = 'A' AND 1=1 ");
+		if(StringUtils.isNotBlank(map.get("procStatus")+"") && map.get("procStatus")!=null){
+			stringBuffer.append(" AND c.PROC_STATUS = "+map.get("procStatus"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateBefore")+"") && map.get("appDateBefore")!=null){
+			stringBuffer.append(" AND c.APP_DATE >= "+map.get("appDateBefore"));
+		}
+		if(StringUtils.isNotBlank(map.get("appDateAffter")+"") && map.get("appDateAffter")!=null){
+			stringBuffer.append(" AND c.APP_DATE <= "+map.get("appDateAffter"));
+		} 
+		if(StringUtils.isNotBlank(map.get("useDateBefore")+"") && map.get("useDateBefore")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE >= "+map.get("useDateBefore"));
+		}
+		if(StringUtils.isNotBlank(map.get("useDateAffter")+"") && map.get("useDateAffter")!=null){
+			stringBuffer.append(" AND a.REAL_USE_DATE <= "+map.get("useDateAffter"));
+		}
+		return publicDaoVO.findTotalCount(stringBuffer.toString());
+	}
+
+	@Override
+	public boolean saveCredentialsApp(CredentialsApp credentialsApp) {
+		boolean flag = false;
+		try {
+			publicDao.saveOrUpdate(credentialsApp);
+			flag=true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}
+
+	@Override
+	public boolean delCredentialsApp(Integer id) {
+		Integer count=publicDao.executeHql("delete CredentialsApp where uqaId = "+id);
+		if(count>0){
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean updateProcStatus(Integer id, String status) {
+		boolean flag = false;
+		try {
+			publicDao.executeHql("update CredentialsApp set procStatus = "+status+" where uqaId = "+id);
+			flag=true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return flag;
+	}
+
+	@Override
+	public void getDiagramResourceByCaId(HttpServletResponse response,
+			Integer uqaId) {
+		// 图片的文件的流
+		InputStream in = null;
+		try {
+			String proDefKey = "CredentialsApp";
+			String imgName = "";
+			imgName="OA_FD_CredentialsApp";
+			String businessKey = proDefKey + "." + uqaId;
+			// 获取当前执行的流程实例
+			ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+			if(pi!=null){
+				// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+				ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+				// 获取当前执行任务流程
+				List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+				// 获取图片的流程图片名称
+				String resourceName = imgName + ".png";
+				// 获取图片的文件的流
+				in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+				// 获取图片对象
+				BufferedImage bimg;
+				bimg = ImageIO.read(in);
+				// 得到Graphics2D 对象
+				Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+				// 设置颜色和画笔粗细
+				g2d.setColor(Color.RED);
+				g2d.setStroke(new BasicStroke(3));
+				// 遍历执行的任务,画图
+				for (Task task : tasks) {
+					// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+					Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+					// 根据当前的执行对象的id获取正在执行的活动信息
+					ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+					// 绘制矩形
+					Rectangle2D rectangle = new Rectangle2D.Float(
+							activityImpl.getX(), activityImpl.getY(),
+							activityImpl.getWidth(), activityImpl.getHeight());
+						g2d.draw(rectangle);
+					}
+					// 写入response输出流中
+					ImageIO.write(bimg, "png", response.getOutputStream());
+				}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (in != null)
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+
+	@Override
+	public String submitCredentialsApply(Integer id) {
+		CredentialsApp credentialsApp = publicDao.get(CredentialsApp.class, id);
+		boolean isLetOut = false;//不外借
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<CredentialsAppAttach> list = publicDaoAtta.find("from CredentialsAppAttach a where a.appNo = '"+credentialsApp.getAppNo()+"'");
+		for (CredentialsAppAttach item : list) {
+			if("0".equals(item.getIsLetOut())){//如果附件表中的是否外借有一个为外借则进部门总监
+				isLetOut = true;//外借
+			}
+		}
+		if(isLetOut){
+			map.put(Constants.CONDITIONS_KEY, "WJ");
+		}else {
+			map.put(Constants.CONDITIONS_KEY, "BD");
+		}
+		boolean flag = false;//无需归还  非原件
+		List<Object[]> list1 = publicDaoAtta.findBySQL("select IS_RESTORED from t_oa_fd_credentials_stamp_app_attach where APP_NO = '"+credentialsApp.getAppNo()+"'");
+		for (Object item : list1) {
+			if("1".equals(item+"") || "2".equals(item+"")){
+				flag = true;//需要归还  原件
+			}
+		}
+		if(flag){//有一个原件的证章,进申请人归还,有一个不是原件，到申请人归还不显示
+			map.put("isOriginal", "YJ");
+		}else {
+			map.put("isOriginal", "FYJ");
+		}
+		List<String> assigneeList = new ArrayList<String>();
+		List<Integer> list2 = publicDaoAtta.findBySQL("SELECT uqa_id FROM t_oa_fd_credentials_stamp_app_attach WHERE APP_NO = '"+credentialsApp.getAppNo()+"'");//查询申请人需要归还的证章，加是否归还为2
+		for (Integer item : list2) {
+			assigneeList.add(item.toString());
+		}
+		map.put("assigneeList", assigneeList);
+		map.put("count", assigneeList.size());
+		// 获取启动实例的key
+		String proDefKey = "CredentialsApp";
+		WorkFlowTasksModel taskModel = new WorkFlowTasksModel();
+		taskModel.setBusinessID(id.toString());//业务ID
+		taskModel.setBusinessDefineKey(proDefKey);// 获取启动实例的key
+		taskModel.setApplyStr(Constants.APPLY_FOR_ADJUSTMENT);//调整申请节点的标识
+		taskModel.setAppNo(credentialsApp.getAppNo());
+		taskModel.setVariables(map);
+		Map<String,Object> resultMap = workFlowTaskService.startProcessInstance(taskModel);
+		if(null != resultMap.get(Constants.STATUS_REF_ID) && StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+			this.updateApplyStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+
+	@Override
+	public void updateAppStatus(Integer id, String result) {
+		CredentialsApp credentialsApp = publicDao.get(CredentialsApp.class, id);
+		credentialsApp.setAppStatus(result);
+		publicDao.saveOrUpdate(credentialsApp);
+	}
+
+	@Override
+	public boolean isBorrow(Integer id) {
+		boolean flag = false;
+		CredentialsApp credentialsApp = publicDao.get(CredentialsApp.class, id);
+		List<CredentialsAppAttach> list = publicDaoAtta.find("from CredentialsAppAttach where appNo="+credentialsApp.getAppNo());
+		for (CredentialsAppAttach item : list) {
+			if("0".equals(item.getIsLetOut())){
+				flag = true;
+			}
+		}
+		return flag;
+	}
+
+	@Override
+	public List<CredentialsAppModel> getTaskByGroup(Integer firstResult,
+			Integer maxResults, WorkFlowTasksModel workFlowTasksModel1,Map<String, Object> map) {
+			List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(workFlowTasksModel1);
+			List<CredentialsAppModel> purchaseAppModelList = new ArrayList<CredentialsAppModel>();//返回的结果集
+//			String ids = "";
+			if (Collections.listIsNotEmpty(taskModelList)) {
+				List<CredentialsAppModel> pamList=null;
+				//根据id字符串查出的集合
+				pamList = getList(map, new PageUtil(firstResult, maxResults),0,0,getTaskEMPids(taskModelList));//查询所有申请
+				for (WorkFlowTasksModel wl : taskModelList) {
+					Object obj = taskService.getVariable(wl.getTaskID().toString(),"${assignee}");
+					String submitUserID = this.taskService.getVariable(wl.getTaskID(), Constants.CURRENT_USER_KEY) == null ? 
+							"" : this.taskService.getVariable(wl.getTaskID(), Constants.CURRENT_USER_KEY).toString();//获取当前任务申请人ID
+					Task newTask = this.taskService.createTaskQuery().taskId(wl.getTaskID()).singleResult();//获取task对象
+					System.out.println(newTask.getId());
+					String auqaId = (obj == null ? "" : obj.toString());
+					String buID = "";
+					String uqaId = "";
+						for (CredentialsAppModel purchaseAppModel : pamList) {//非申请调整增加非原件判断，如果非原件无需归还
+ 							buID = StringUtils.isNotBlank(auqaId) ? auqaId : wl.getBusinessID();
+							uqaId = StringUtils.isNotBlank(auqaId) ? purchaseAppModel.getAuqaId().toString() : purchaseAppModel.getUqaId().toString(); 
+							if(buID.equals(uqaId)){
+								//如果当前节点的办理人为申请人，判断formKey   申请人归还jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{"btType":1}   判断是否原件为原件的
+								//								           申请调整jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{"type":2}    查询所有的包括原件非原件
+								//当前节点的办理人为出纳，进行判断是否原件为原件的，其余节点查询非原件和原件
+								if(submitUserID.equals(Constants.getCurrendUser().getUserId()+"")){//当前节点为申请人
+									if("jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{\"btType\":1}".equals(wl.getFormKey())){//申请人归还
+										//是原件
+										if(0==purchaseAppModel.getIsOriginal()){
+											purchaseAppModel.setTaskModel(wl);
+											purchaseAppModel.setTaskId(wl.getTaskID());
+											purchaseAppModel.setAssistant(wl.getAssistant());
+											purchaseAppModel.setFormKey(wl.getFormKey());
+											purchaseAppModel.setUserName(wl.getUserName());
+											purchaseAppModelList.add(purchaseAppModel);
+										}else {//非原件由于在申请人归还节点不显示,但是是并行任务,所以在一条为原件,一条为非原件时,在申请人归还不显示,只显示原件,办理完原件后，非非原件进入这里办理
+//											taskService.deleteTask(wl.getTaskID(),true);
+											Map<String, Object> map2 = new HashMap<String, Object>();
+											map2.put("result", "1");
+											taskService.complete(wl.getTaskID(),map2);
+										}
+									}
+									if("jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{\"type\":2}".equals(wl.getFormKey())){
+										purchaseAppModel.setTaskModel(wl);
+										purchaseAppModel.setTaskId(wl.getTaskID());
+										purchaseAppModel.setAssistant(wl.getAssistant());
+										purchaseAppModel.setFormKey(wl.getFormKey());
+										purchaseAppModel.setUserName(wl.getUserName());
+										purchaseAppModelList.add(purchaseAppModel);
+									}
+								}else {//非申请人
+									if("ChuNa.1".equals(newTask.getTaskDefinitionKey())){//出纳确认时,如果需要归还显示，无需归还不显示
+										if(0==purchaseAppModel.getIsOriginal()){
+											purchaseAppModel.setTaskModel(wl);
+											purchaseAppModel.setTaskId(wl.getTaskID());
+											purchaseAppModel.setAssistant(wl.getAssistant());
+											purchaseAppModel.setFormKey(wl.getFormKey());
+											purchaseAppModel.setUserName(wl.getUserName());
+											purchaseAppModelList.add(purchaseAppModel);
+										}
+									}else {
+										purchaseAppModel.setTaskModel(wl);
+										purchaseAppModel.setTaskId(wl.getTaskID());
+										purchaseAppModel.setAssistant(wl.getAssistant());
+										purchaseAppModel.setFormKey(wl.getFormKey());
+										purchaseAppModel.setUserName(wl.getUserName());
+										purchaseAppModelList.add(purchaseAppModel);
+									}
+								}
+							}
+						}
+				}
+			}
+			return purchaseAppModelList;
+	}
+	
+	private String getTaskEMPids(List<WorkFlowTasksModel> workList){
+		String ids = "";
+		for (WorkFlowTasksModel workFlowTasksModel : workList) {
+			ids+=workFlowTasksModel.getBusinessID()+",";
+		}
+		if(ids.length()>0){
+			ids = ids.substring(0, ids.length()-1);
+		}
+		return ids;
+	}
+	
+	@Override
+	public String saveSubmitTask(WorkFlowTasksModel taskModel,String csTypeName,String csType) {
+		Map<String,Object> resultMap = workFlowTaskService.saveSubmitTask(taskModel);
+		if(null != resultMap.get(Constants.STATUS_REF_ID) && StringUtils.isNotBlank(resultMap.get(Constants.STATUS_REF_ID).toString())){
+			this.updateApplyStatus(Integer.valueOf(taskModel.getBusinessID()),resultMap.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+		}
+		if(Constants.getCurrendUser().getUserId() == Integer.parseInt(this.getCredentialsAppByAppNo(taskModel.getAppNo()).get(0)+"")){//当办理任务的人为申请触发
+			updateCredentials(taskModel.getAppNo(),csType);
+		}
+		return resultMap.get(Constants.RESULT_STR).toString();
+	}
+	
+	@Override
+	public void updateApplyStatus(Integer id,String result){
+		CredentialsApp credentialsApp = publicDao.get(CredentialsApp.class, id);
+		credentialsApp.setAppStatus(result);
+		publicDao.saveOrUpdate(credentialsApp);
+	}
+	
+	//根据申请编号获取申请人
+	public List<Integer> getCredentialsAppByAppNo(String appNo){
+		return publicDao.findBySQL("select applicant_no from t_oa_fd_credentials_stamp_app where APP_NO = '"+appNo+"'");
+	}
+	
+	public void updateCredentials(String appNo,String csType){
+		publicDaoAtta.executeBySql("update t_oa_fd_credentials_stamp_app_attach set IS_RESTORED = 1,REAL_REST_DATE = '"+DateUtils.getNowTime()+"' where APP_NO = '"+appNo+"' AND CS_TYPE = "+csType);
+	}
+
+	@Override
+	public String saveSubmitTaskBatch(WorkFlowTasksModel taskModel) {
+		List<Map<String,Object>> resultMapList = workFlowTaskService.saveSubmitTaskBatch(taskModel);//调用通用受理任务方法
+		String resultStr = "";
+		if(Collections.listIsNotEmpty(resultMapList)){
+			for (Map<String, Object> map : resultMapList) {
+				if(map.containsKey(Constants.STATUS_REF_ID) && map.containsKey(Constants.BUSINESS_ID)){
+					updateApplyStatus(Integer.valueOf(map.get(Constants.BUSINESS_ID).toString()),map.get(Constants.STATUS_REF_ID).toString());// 更新流程状态
+					resultStr = map.get(Constants.RESULT_STR).toString();
+				}
+			}
+		}
+		return resultStr;
+	}
+
+	@Override
+	public Long getTaskCountByGroup(WorkFlowTasksModel workFlowTasksModel1,Map<String, Object> map) {
+		Integer count = 0;
+		List<WorkFlowTasksModel> taskModelList = workFlowTaskService.findAcceptTaskByGroup(workFlowTasksModel1);
+		if (Collections.listIsNotEmpty(taskModelList)) {
+			List<CredentialsAppModel> pamList=null;
+			//根据id字符串查出的集合
+			pamList = getList(map, new PageUtil(1, 1000000),0,0,getTaskEMPids(taskModelList));//查询所有申请
+			for (WorkFlowTasksModel wl : taskModelList) {
+				Object obj = taskService.getVariable(wl.getTaskID().toString(),"${assignee}");
+				String submitUserID = this.taskService.getVariable(wl.getTaskID(), Constants.CURRENT_USER_KEY) == null ? 
+						"" : this.taskService.getVariable(wl.getTaskID(), Constants.CURRENT_USER_KEY).toString();//获取当前任务申请人ID
+				Task newTask = this.taskService.createTaskQuery().taskId(wl.getTaskID()).singleResult();//获取task对象
+				System.out.println(newTask.getId());
+				String auqaId = (obj == null ? "" : obj.toString());
+				String buID = "";
+				String uqaId = "";
+					for (CredentialsAppModel purchaseAppModel : pamList) {//非申请调整增加非原件判断，如果非原件无需归还
+							buID = StringUtils.isNotBlank(auqaId) ? auqaId : wl.getBusinessID();
+						uqaId = StringUtils.isNotBlank(auqaId) ? purchaseAppModel.getAuqaId().toString() : purchaseAppModel.getUqaId().toString(); 
+						if(buID.equals(uqaId)){
+							//如果当前节点的办理人为申请人，判断formKey   申请人归还jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{"btType":1}   判断是否原件为原件的
+							//								           申请调整jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{"type":2}    查询所有的包括原件非原件
+							//当前节点的办理人为出纳，进行判断是否原件为原件的，其余节点查询非原件和原件
+							if(submitUserID.equals(Constants.getCurrendUser().getUserId()+"")){//当前节点为申请人
+								if("jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{\"btType\":1}".equals(wl.getFormKey())){//申请人归还
+									//是原件
+									if(0==purchaseAppModel.getIsOriginal()){
+										count++;
+									}else {
+										count++;
+									}
+								}
+								if("jsp/fd/credentialsApp/saveTask/defaultTask.jsp?{\"type\":2}".equals(wl.getFormKey())){
+									count++;
+								}
+							}else {//非申请人
+								if("ChuNa.1".equals(newTask.getTaskDefinitionKey())){//出纳确认时,如果需要归还显示，无需归还不显示
+									if(0==purchaseAppModel.getIsOriginal()){
+										count++;
+									}
+								}else {
+									count++;
+								}
+							}
+						}
+					}
+			}
+		}
+		return Long.valueOf(count.toString());
+	}
+}

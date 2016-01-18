@@ -1,0 +1,33 @@
+package com.oasys.listener.fd.LoanApp;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+
+import com.oasys.listener.BaseTaskListener;
+import com.oasys.util.Constants;
+
+/**
+ * 借款申请节点分配监听器
+ * 
+ * @author Administrator
+ *
+ */
+@SuppressWarnings("serial")
+public class LoanAppAssistantTaskListener extends BaseTaskListener implements
+		TaskListener {
+
+	@Override
+	public void notify(DelegateTask task) {
+
+		if (task.getTaskDefinitionKey().startsWith(
+				Constants.APPLY_FOR_ADJUSTMENT)) {
+			if (null != task.getVariable(Constants.CURRENT_USER_KEY)) {
+				task.setAssignee(task.getVariable(Constants.CURRENT_USER_KEY)
+						.toString());// 申请调整时 将任务指定回提交申请人
+				task.removeVariable(Constants.RCN_RESULT);
+			}
+		} else {
+			setTaskRoleCodeByTask(task);
+		}
+	}
+}

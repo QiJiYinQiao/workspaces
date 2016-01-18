@@ -1,0 +1,579 @@
+package com.oasys.serviceImpl;
+
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.pvm.process.ActivityImpl;
+import org.activiti.engine.runtime.Execution;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.oasys.dao.PublicDao;
+import com.oasys.model.UseStampApp;
+import com.oasys.model.UseStampAppAttach;
+import com.oasys.service.AuditProcHisService;
+import com.oasys.service.OrganizationService;
+import com.oasys.service.RoleService;
+import com.oasys.service.StampStatisticsService;
+import com.oasys.service.StatusNameRefService;
+import com.oasys.service.SystemCodeService;
+import com.oasys.service.UseStampAppService;
+import com.oasys.service.UserService;
+import com.oasys.service.workFlow.WorkFlowTaskService;
+import com.oasys.serviceImpl.workFlow.WorkFlowBaseServiceImpl;
+import com.oasys.util.Collections;
+import com.oasys.util.Constants;
+import com.oasys.util.PageUtil;
+import com.oasys.util.UniqueIdUtil;
+import com.oasys.viewModel.ComboBoxModel;
+
+@Service("useStampAppService")
+@SuppressWarnings("unchecked")
+public class UseStampAppServiceImpl  extends WorkFlowBaseServiceImpl  implements UseStampAppService
+{
+
+	
+	@Autowired
+	private WorkFlowTaskService workFlowTaskService;
+	
+	@Autowired
+	private PublicDao<UseStampApp> useStampAppDao;
+	
+	@Autowired
+	private OrganizationService organizationService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private  StatusNameRefService  statusNameRefService;
+	@Autowired
+	private AuditProcHisService auditProcHisService;
+	@Autowired
+	private RoleService roleService;
+	@Autowired
+	private PublicDao<UseStampAppAttach> useStampAttDao;
+	@Autowired
+	private StampStatisticsService stampStatisticsService;
+	@Autowired
+	private SystemCodeService systemCodeService;
+	
+
+	/**
+	 * 查询用章申请列表
+	 */
+	@Override
+	public List<UseStampApp> findUseStampList(UseStampApp useStampApp,
+			PageUtil pageUtil) {
+		try {
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat sim=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Integer userId=Constants.getCurrendUser().getUserId();
+			
+			StringBuffer sql = this.getUseStampListSQL();
+			
+			if(userId!=1){
+				sql.append(" AND sta.APPLICANT_NO = "+Constants.getCurrendUser().getUserId());
+			}
+			
+			if(StringUtils.isNotBlank(useStampApp.getAppNo())){
+				sql.append(" AND sta.APP_NO='"+useStampApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(useStampApp.getMyId())){
+					sql.append(" AND r.MYID='"+useStampApp.getMyId()+"' ");
+				}
+				if(StringUtils.isNotBlank(useStampApp.getAppDateS())){
+					sql.append( " AND sta.APP_DATE >='" + useStampApp.getAppDateS()+"' ");  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(useStampApp.getAppDateE())){
+					sql.append( " AND sta.APP_DATE <='" + useStampApp.getAppDateE()+"' ");  //申请结束日期
+				}
+				if(StringUtils.isNotBlank(useStampApp.getProcStatus())){
+					sql.append(" AND sta.PROC_STATUS='"+useStampApp.getProcStatus()+"' ");
+				}
+				
+			}
+			sql.append(" ORDER BY sta.USA_ID DESC ");
+			
+			List<Object> list = useStampAppDao.findBySql(sql.toString(), pageUtil);
+			List<UseStampApp> stampList=new ArrayList<UseStampApp>();
+			
+			if(Collections.listIsNotEmpty(list)){
+				UseStampApp stampApp=new UseStampApp();
+				for (int i = 0; i < list.size(); i++) {
+					UseStampApp app=(UseStampApp) stampApp.clone();
+					Object[] obj=(Object[]) list.get(i);
+					app.setUsaId(obj[0]==null?0:(Integer)obj[0]);//主表的id
+					app.setAppNo(obj[1]==null?"":String.valueOf(obj[1]));//申请编号
+					app.setApplicantNo(obj[2]==null?0:(Integer)obj[2]);//申请人id
+					app.setApplicantName(obj[3]==null?"":String.valueOf(obj[3]));//申请人姓名
+					app.setAppDept(obj[4]==null?0:(Integer)obj[4]);//申请人部门id
+					app.setFullName(obj[5]==null?"":String.valueOf(obj[5]));//申请人部门名字
+					app.setMyId(obj[6]==null?"":String.valueOf(obj[6]));//判断财富端借款端
+					app.setUseNature(obj[7]==null?"":String.valueOf(obj[7]));//使用性质
+					app.setAppDate(obj[8]==null?null:sdf.parse(String.valueOf(obj[8])));//申请日期
+					app.setAppStatus(obj[9]==null?"":String.valueOf(obj[9]));//申请状态
+					app.setTurnoverDtime(obj[10]==null?null:sim.parse(String.valueOf(obj[10])));//移交时间
+					app.setUseBgDate(obj[11]==null?null:sdf.parse(String.valueOf(obj[11])));//开始用章时间
+					app.setUseEdDate(obj[12]==null?null:sdf.parse(String.valueOf(obj[12])));//结束用章时间
+					app.setProcStatus(obj[13]==null?"":String.valueOf(obj[13]));//流程状态
+					app.setRemark(obj[14]==null?"":String.valueOf(obj[14]));//主编备注信息
+					app.setSaaId(obj[15]==null?0:(Integer)obj[15]);//附加表id
+					if(obj[16]!=null && String.valueOf(obj[16]).equals("F")){
+						//其他张
+						app.setStampName(obj[18]==null?"":String.valueOf(obj[18]));//其他张名字
+					}else{
+						app.setStampName(obj[17]==null?"":String.valueOf(obj[17]));//印章名字
+					}
+					app.setStampType(obj[19]==null?"":String.valueOf(obj[19]));//张类型
+					stampList.add(app);
+				}
+				
+			}
+			return stampList;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new ArrayList<UseStampApp>();
+	} 
+	
+	
+	/**
+	 * 用章申请列表sql语句
+	 */
+	@Override
+	public StringBuffer getUseStampListSQL() {
+		StringBuffer sql=new StringBuffer();
+		
+		sql.append("SELECT ");
+		sql.append("sta.USA_ID '申请主表id', ");
+		sql.append("sta.APP_NO '申请编号', ");
+		sql.append("sta.APPLICANT_NO '申请人id', ");
+		sql.append("u.USER_NAME '申请人姓名', ");
+		sql.append("sta.APP_DEPT '申请人部门', ");
+		sql.append("r.FULL_NAME '申请人部门名字', ");
+		sql.append("r.MYID '借款端财富端', ");
+		sql.append("sta.USE_NATURE '使用性质', ");
+		sql.append("sta.APP_DATE '申请日期', ");
+		sql.append("sta.APP_STATUS '申请状态', ");
+		sql.append("sta.TURNOVER_DTIME '移交时间', ");
+		sql.append("sta.USE_BG_DATE '用章开始时间',	 ");
+		sql.append("sta.USE_ED_DATE '用章结束时间', ");
+		sql.append("sta.PROC_STATUS '流程状态', ");
+		sql.append("sta.REMARK '主表备注信息', ");
+		sql.append("saa.SAA_ID '附加表id', ");
+		sql.append("saa.STAMP_TYPE '印章类型', ");
+		sql.append("ssr.STAMP_NAME '印章名称', ");
+		sql.append("saa.STAMP_TYPE_OTHER '其他印章名字', ");
+		sql.append("s.DICT_NAME '印章类型名称', ");
+		sql.append(" saa.STAMP_NAME '印章id' ");
+		sql.append("FROM 	t_oa_ad_use_stamp_app sta ");
+		sql.append("LEFT JOIN t_oa_ad_use_stamp_app_attach saa ON sta.APP_NO = saa.APP_NO ");
+		sql.append("LEFT JOIN qqms.t_users u ON sta.APPLICANT_NO = u.USER_ID ");
+		sql.append("LEFT JOIN qqms.t_organization r ON sta.APP_DEPT = r.ORGANIZATION_ID ");
+		sql.append("LEFT JOIN (SELECT DICT_CODE,DICT_NAME FROM qqms.t_sys_dict WHERE PARENT_ID = ( SELECT CODE_ID FROM qqms.t_sys_dict WHERE DICT_CODE = 'stamp_type')) s ON s.DICT_CODE = saa.STAMP_TYPE ");
+		sql.append("LEFT JOIN t_oa_ad_stamp_statistics_reg ssr ON saa.STAMP_NAME=ssr.SSR_ID ");	
+		sql.append("WHERE 1=1 ");
+	
+		return sql;
+	}
+
+	/**
+	 * 查询用章申请总条数
+	 */
+	@Override
+	public Long findUseStampCount(UseStampApp useStampApp) {
+		try {
+			Integer userId=Constants.getCurrendUser().getUserId();
+			StringBuffer sql=new StringBuffer();
+			sql.append("SELECT COUNT(*) FROM t_oa_ad_use_stamp_app sta ");
+			sql.append("LEFT JOIN t_oa_ad_use_stamp_app_attach saa ON sta.APP_NO = saa.APP_NO ");
+			sql.append("LEFT JOIN qqms.t_organization r ON sta.APP_DEPT = r.ORGANIZATION_ID ");
+			sql.append("WHERE 1=1  ");
+			if(userId!=1){
+				sql.append(" AND sta.APPLICANT_NO = "+Constants.getCurrendUser().getUserId());
+			}
+			
+			if(StringUtils.isNotBlank(useStampApp.getAppNo())){
+				sql.append(" AND sta.APP_NO='"+useStampApp.getAppNo()+"' ");
+			}else{
+				if(StringUtils.isNotBlank(useStampApp.getMyId())){
+					sql.append(" AND r.MYID='"+useStampApp.getMyId()+"' ");
+				}
+				if(StringUtils.isNotBlank(useStampApp.getAppDateS())){
+					sql.append( " AND sta.APP_DATE >='" + useStampApp.getAppDateS()+"' ");  //申请开始日期
+				}
+				if(StringUtils.isNotBlank(useStampApp.getAppDateE())){
+					sql.append( " AND sta.APP_DATE <='" + useStampApp.getAppDateE()+"' ");  //申请结束日期
+				}
+				if(StringUtils.isNotBlank(useStampApp.getProcStatus())){
+					sql.append(" AND sta.PROC_STATUS='"+useStampApp.getProcStatus()+"' ");
+				}
+				
+			}
+			sql.append(" ORDER BY sta.USA_ID DESC ");
+			Long count = useStampAppDao.findTotalCount(sql.toString());
+			return count;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0L;
+	}
+
+	/**
+	 * 保存或者更新用章申请
+	 */
+	@Override
+	public UseStampApp saveOrUpdStampApp(UseStampApp useStampApp) {
+		try {
+			if(StringUtils.isBlank(useStampApp.getAppNo())){
+				String appNo=UniqueIdUtil.generate("YZ");//申请编号
+				Integer userId=Constants.getCurrendUser().getUserId();//申请人id
+				Integer deptNo=userService.getUserByID(userId).getOrganizeId();//申请人部门id
+				useStampApp.setAppNo(appNo);
+				useStampApp.setApplicantNo(userId);
+				useStampApp.setAppDept(deptNo);
+				useStampApp.setProcStatus("1");//流程状态
+				useStampAppDao.save(useStampApp);
+				return useStampApp;
+			}else{
+				UseStampApp stampApp = useStampAppDao.get(UseStampApp.class, useStampApp.getUsaId());
+				stampApp.setUseNature(useStampApp.getUseNature());//使用性质
+				stampApp.setUseBgDate(useStampApp.getUseBgDate());//用章开始时间
+				stampApp.setUseEdDate(useStampApp.getUseEdDate());//用章结束时间
+				stampApp.setRemark(useStampApp.getRemark());//备注信息
+				useStampAppDao.saveOrUpdate(stampApp);
+				return stampApp;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 根据申请编号删除申请
+	 */
+	@Override
+	public boolean deleteuseStampApp(String appNo) {
+		try {
+			//删除附加表信息
+			String hql1="delete from UseStampAppAttach where appNo='"+appNo+"'";
+			useStampAttDao.executeHql(hql1);
+			//删除主表信息
+			String hql="delete from UseStampApp where appNo='"+appNo+"'";
+			useStampAppDao.executeHql(hql);
+			return true;
+					 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 更改申请状态
+	 */
+	@Override
+	public void updateAppStatus(Integer usaId, String appStatus) {
+		UseStampApp useStampApp = useStampAppDao.get(UseStampApp.class, usaId);
+		useStampApp.setAppStatus(appStatus);
+		useStampAppDao.saveOrUpdate(useStampApp);
+	}
+
+	/**
+	 * 更改流程状态
+	 */
+	@Override
+	public void updateProcStatus(Integer usaId, String procStatus) {
+		UseStampApp useStampApp = useStampAppDao.get(UseStampApp.class, usaId);
+		useStampApp.setProcStatus(procStatus);
+		useStampAppDao.saveOrUpdate(useStampApp);
+	}
+
+	/**
+	 * 判断申请总部分部
+	 */
+	@Override
+	public String getUserDeptLoeave(Integer usaId) {
+		UseStampApp useStampApp = useStampAppDao.get(UseStampApp.class, usaId);
+		Integer userId=useStampApp.getApplicantNo();
+		String deptLevel = userService.findOrgByuserId(userId).getDeptLevel();
+		return deptLevel;
+	}
+
+	/**
+	 * 查看流程图
+	 */
+	@Override
+	public void getDiagramResourceByPaId(HttpServletResponse response,
+			Integer usaId) {
+		// 图片的文件的流
+				InputStream in = null;
+				String proDefKey="";
+				String imgName="";
+				try {
+					String deptLoeave = this.getUserDeptLoeave(usaId);
+					if(deptLoeave.equals("0")){
+						//总部
+						proDefKey = Constants.USESTAMPAPP_HO;
+						imgName =Constants.USESTAMPIMAGE_HO;
+					}else{
+						//分部
+						proDefKey = Constants.USESTAMPAPP_BO;
+						imgName =Constants.USESTAMPIMAGE_BO;
+					}
+					
+					String businessKey = proDefKey + "." + usaId;
+					// 获取当前执行的流程实例
+					ProcessInstance pi = this.runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey).singleResult();
+					// 获取流程定义的实体对象（对应.bpmn文件中的数据）
+					ProcessDefinitionEntity pd = (ProcessDefinitionEntity) repositoryService.getProcessDefinition(pi.getProcessDefinitionId());
+					// 获取当前执行任务流程
+					List<Task> tasks = this.taskService.createTaskQuery().processInstanceBusinessKey(businessKey).list();
+					// 获取图片的流程图片名称
+					String resourceName = imgName + ".png";
+					// 获取图片的文件的流
+					in = this.repositoryService.getResourceAsStream(pd.getDeploymentId(),resourceName);
+					// 获取图片对象
+					BufferedImage bimg;
+					bimg = ImageIO.read(in);
+					// 得到Graphics2D 对象
+					Graphics2D g2d = (Graphics2D) bimg.getGraphics();
+					// 设置颜色和画笔粗细
+					g2d.setColor(Color.RED);
+					g2d.setStroke(new BasicStroke(3));
+					// 遍历执行的任务,画图
+					for (Task task : tasks) {
+						// 根据任务的获取当前执行对象的id,根据执行对象的id获取执行对象的信息
+						Execution execution = runtimeService.createExecutionQuery().executionId(task.getExecutionId()).singleResult();
+						// 根据当前的执行对象的id获取正在执行的活动信息
+						ActivityImpl activityImpl = pd.findActivity(execution.getActivityId());
+						// 绘制矩形
+						Rectangle2D rectangle = new Rectangle2D.Float(
+								activityImpl.getX(), activityImpl.getY(),
+								activityImpl.getWidth(), activityImpl.getHeight());
+						g2d.draw(rectangle);
+					}
+					// 写入response输出流中
+					ImageIO.write(bimg, "png", response.getOutputStream());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (in != null)
+						try {
+							in.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+	
+	}
+	
+	/**
+	 * 任务完成之后更新印章汇总表中的数据及印章是否归还
+	 */
+	@Override
+	public void updateStampStatiscsReg(Integer usaId) {
+		UseStampApp useStampApp = useStampAppDao.get(UseStampApp.class, usaId);
+		String appNo=useStampApp.getAppNo();
+		List<UseStampAppAttach> list = this.findStampNamesByAppNo(appNo);
+		for (UseStampAppAttach useStampAppAttach : list) {
+			if(!useStampAppAttach.getStampType().equals("F")){
+				//更新已归还
+				useStampAppAttach.setIsGiveback("0");
+				useStampAttDao.saveOrUpdate(useStampAppAttach);
+				//更新印章，剩余印张数，及最后更新人
+				stampStatisticsService.updateStampQTYANDBorrow(Integer.valueOf(useStampAppAttach.getStampName()), useStampApp.getApplicantNo());
+			}else{
+				//更新已归还
+				useStampAppAttach.setIsGiveback("0");
+				useStampAttDao.saveOrUpdate(useStampAppAttach);
+			}
+		}
+	}
+
+	
+	//---------------------------------------------------用章附加表----------------------------------------------------------------
+	
+	/**
+	 * 保存用章附加表
+	 */
+	@Override
+	public String saveOrUpdUseStamp(UseStampAppAttach useStampAppAttach) {
+		try {
+			if(useStampAppAttach.getSaaId()==null){
+				useStampAppAttach.setIsGiveback("1");
+				useStampAttDao.save(useStampAppAttach);
+			}else{
+				if(!useStampAppAttach.getStampType().equals("F")){
+					//印章类型不是其他
+					useStampAppAttach.setStampTypeOther("");
+				}else{
+					useStampAppAttach.setStampName("");
+				}
+				useStampAttDao.saveOrUpdate(useStampAppAttach);
+			}
+			return useStampAppAttach.getAppNo();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	/**
+	 * 查询申请的印章集合
+	 */
+	@Override
+	public List<UseStampAppAttach> findUseStampAttList(String appNo,PageUtil pageUtil) {
+		String hql="from UseStampAppAttach where appNo='"+appNo+"' order by stampType ";
+		List<UseStampAppAttach> list = useStampAttDao.find(hql, pageUtil);
+		for (UseStampAppAttach useStampAppAttach : list) {
+			if(StringUtils.isNotBlank(useStampAppAttach.getStampName())){
+				useStampAppAttach.setStampText(stampStatisticsService.findStampNameById(Integer.valueOf(useStampAppAttach.getStampName())));
+			}
+			useStampAppAttach.setStampTypeName(systemCodeService.findSystemName(Constants.USESTAMPTYPT, useStampAppAttach.getStampType()));
+		}
+		return list;
+	}
+
+	/**
+	 * 查询申请的印章数量
+	 */
+	@Override
+	public Long findUseStampCount(String appNo) {
+		String hql="select count(*) from UseStampAppAttach where appNo='"+appNo+"' ";
+		Long count = useStampAttDao.count(hql);
+		return count;
+	}
+
+	/**
+	 *删除申请的印章信息 
+	 */
+	@Override
+	public boolean deleteStampList(String ids,String procStatus) {
+		try {
+			if(procStatus.equals(Constants.PROC_APPROVAL)){
+				//申请调整中时,删除印章需要修改印章的剩余数量
+				String[] saaIds = ids.split(",");
+				
+				//申请人id
+				Integer applicantion=0;
+				
+				for (String id : saaIds) {
+					Integer saaId=Integer.valueOf(id);
+					UseStampAppAttach useStampAppAttach = useStampAttDao.get(UseStampAppAttach.class, saaId);
+					
+					if(applicantion==0 || applicantion==null){
+						String sql="SELECT APPLICANT_NO FROM t_oa_ad_use_stamp_app WHERE APP_NO='"+useStampAppAttach.getAppNo()+"'";
+						applicantion=Integer.valueOf(String.valueOf(useStampAppDao.findBySQL(sql).get(0)));
+					}
+					
+					if(!useStampAppAttach.getStampType().equals("F")){
+						//更新印章，剩余印张数，及最后更新人
+						stampStatisticsService.updateStampQTYANDBorrow(Integer.valueOf(useStampAppAttach.getStampName()), applicantion);
+					}
+				}
+			}
+			String hql="delete from UseStampAppAttach where saaId in ("+ids+")";
+			useStampAttDao.executeHql(hql);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	/**
+	 * 根据角色编码查询申请的印章
+	 */
+	@Override
+	public List<UseStampAppAttach> findStampNamesByAppNo(String appNo) {
+		String hql="from UseStampAppAttach where 1=1 and appNo='"+appNo+"' ";
+		List<UseStampAppAttach> list = useStampAttDao.find(hql);
+		return list;
+	}
+
+	/**
+	 * 判断其他类型的印章是否有人借用
+	 */
+	@Override
+	public boolean getStampByName(String stampName,String appNo) {
+		StringBuffer sql=new StringBuffer();
+		sql.append("SELECT  SAA_ID FROM t_oa_ad_use_stamp_app usa LEFT JOIN t_oa_ad_use_stamp_app_attach saa ON usa.APP_NO=saa.APP_NO WHERE 1=1 ");
+		sql.append(" AND usa.PROC_STATUS='2' ");
+		sql.append(" AND saa.APP_NO NOT IN ('"+appNo+"') ");
+		sql.append(" AND saa.STAMP_TYPE_OTHER='"+stampName+"' ");
+		List list = useStampAttDao.findBySQL(sql.toString());
+		if(Collections.listIsEmpty(list) || list.size()==0){
+			//没有人借用
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 查询能够申请的印章
+	 */
+	@Override
+	public List<ComboBoxModel> findStampList(String organizeId,
+			String stampType, String appNo) {
+		String sql="SELECT STAMP_NAME FROM t_oa_ad_use_stamp_app_attach WHERE APP_NO='"+appNo+"' AND STAMP_TYPE NOT IN ('F')";
+		List list = useStampAppDao.findBySQL(sql.toString());
+		if(Collections.listIsNotEmpty(list)){
+			String ids="";
+			for (int i = 0; i < list.size(); i++) {
+				if(list.get(i)!=null){
+					if(i!=list.size()-1){
+						ids+=String.valueOf(list.get(i))+",";
+					}else{
+						ids+=String.valueOf(list.get(i));
+					}
+				}
+			}
+			return stampStatisticsService.findStampStatisticsList(stampType, organizeId, ids);
+		}else{
+			return stampStatisticsService.findStampStatisticsList(stampType, organizeId, null);
+		}
+		
+	}
+
+
+	
+
+	
+
+	
+
+
+
+	
+	
+	
+	
+}
