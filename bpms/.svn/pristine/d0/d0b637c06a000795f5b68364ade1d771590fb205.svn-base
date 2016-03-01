@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.LoanOrderMapper">
+
+	<!-- 查询的条件 -->
+	<sql id="findLoanOrderList_Where">
+		<where>
+				tblo.CREATOR =#{creator}
+			<if test="name !=null and name !='' ">
+				AND tblo.NAME LIKE '%${name}%'
+			</if>
+			<if test="idNo !=null and idNo !='' ">
+				AND tblo.ID_NO LIKE '%${idNo}%'
+			</if>
+			<if test="mobileTile !=null and mobileTile !='' ">
+				AND tblo.MOBILE_TEL LIKE '%${mobileTile}%'
+			</if>
+			<if test="loanType !=null and loanType !='' ">
+				AND tblo.LOAN_TYPE = #{loanType}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 获取订单信息列表的查询语句SQL -->
+	<select id="findLoanOrderList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT
+			tblo.LOAN_ORDER_ID "loanOrderId",
+			tblo.STATUS_ID "statusId",
+			tblo.LOANER_ID "loanerId",
+			tblo.ORDER_DESC "orderDesc",
+			tblo.SUBJECT_TYPE "subjectType",
+			get_dict_code_func('subject_type',tblo.SUBJECT_TYPE) "subjectTypeName",
+			tblo.LOAN_TYPE "loanType",
+			get_dict_code_func('loan_type',tblo.LOAN_TYPE) "loanTypeName",
+			tblo.LOAN_AMOUNT "loanAmount",
+			tblo.LOAN_MIN "loanMin",
+			tblo.LOAN_PERIOD "loanPeriod",
+			tblo.REPAY_METHOD "repayMethod",
+			get_dict_code_func('repay_method',tblo.REPAY_METHOD) "repayMethodName",
+			tblo.PURPOSE "purpose",
+			tblo.CREATOR "creator",
+			tblo.CREATE_DATE "createDate",
+			tblo.DEP_MENAGER "depMenager",
+			tblo.SIGN_DATE "sinDate",
+			tblo. NAME "name",
+			tblo.GENDER_TYPE "genderType",
+			get_dict_code_func('genderType',tblo.GENDER_TYPE) "genderTypeName",
+			tblo.ID_NO "idNo",
+			tblo.AGE "age",
+			tblo.HUKOU_ADDR "hukouAddr",
+			tblo.CUR_ADDR "curAddr",
+			tblo.MOBILE_TEL "mobileTel",
+			tblo.FIXED_TEL "fixedTel",
+			tblo.MARRIAGE_TYPE "marriageType",
+			get_dict_code_func('marriage_type',tblo.MARRIAGE_TYPE) "marriageTypeName",
+			tblo.HAS_CHILD "hasChild",
+			get_dict_code_func('hasChild',tblo.HAS_CHILD) "hasChildName",
+			tblo.EMAIL "email",
+			tblo.QQ_NO "qqNo",
+			tblo.ANNUAL_SALARY "annualSalary",
+			tblo.INCOME_SRC "incomeSrc",
+			tblo.MORTGAGE_STATUS "mortgageStatus",
+			get_dict_code_func('mortgage_status',tblo.MORTGAGE_STATUS) "mortgageStatusName",
+			tblo.HOUSE_INSTALL_PAY "houseInstallPay",
+			tblo.RENT "rent",
+			tblo.APPLY_DATE "applyDate",
+			tblo.FINISH_DATE "finishDate",
+			tblo.PROCESS_STATUS "processStatus",
+			tblo.SALESMAN "salesman",
+			tblo.ORGANIZATION_ID "organizationId",
+			tblo.TASK_ALLOT_CNT  "taskAllotCnt",
+			tblo.BELONG_TO "belongTo",
+			tblo.LOAN_INFO "loanInfo",
+			tbos.STATUS_NAME "statusName"
+		FROM
+			t_bp_loan_order tblo
+		LEFT JOIN t_bp_order_status tbos ON tbos.STATUS_ID = tblo.STATUS_ID
+		<include refid="findLoanOrderList_Where"/>
+		ORDER BY tblo.CREATE_DATE DESC , tblo.PROCESS_STATUS ASC
+		LIMIT #{start},#{end}
+	</select>
+
+    <!-- 根据条件查询获取订单信息列表的个数查询语句SQL -->
+	<select id="findLoanOrderListCount" resultType="java.lang.Long">
+		SELECT
+		 COUNT(*)
+		FROM
+			t_bp_loan_order tblo
+		LEFT JOIN t_bp_order_status tbos ON tbos.STATUS_ID = tblo.STATUS_ID
+		<include refid="findLoanOrderList_Where"/>
+	</select>
+	
+	<!-- 导出IPC统计报表 -->
+	<select id="exportIPCCountExcel" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+			torder.LOAN_ORDER_ID,
+			torg.FULL_NAME "areaName",
+			torder.NAME "loanerName",
+			torder.ID_NO "loanerIdNo",
+			torder.INCOME_SRC "incomeSrc",
+			DATE_FORMAT(torder.CREATE_DATE,'%Y-%d-%m %H:%i') "createDate",
+			get_user_name_func(tbpfar.FIRS_PERSONNEL) "firsPersonnel",
+			DATE_FORMAT(tbpfar.FIRS_DATE,'%Y-%d-%m %H:%i') "firsDate",
+			get_user_name_func(tbfsr.SURVEYORS) "surveyors",
+			CONCAT(get_user_name_func(tbmo.OPERATOR_A),',',get_user_name_func(tbmo.OPERATOR_B)) "operatorAB",
+			DATE_FORMAT(tbfsr.SURVEY_DATE,'%Y-%d-%m %H:%i') "surveyDate",
+			tbfsr.DISTANCE "distance",
+			DATE_FORMAT(IF(ISNULL(tbmo.MCBR_ID),tbfinal.FINA_DATE,tbmo.SURVEY_DATE),'%Y-%d-%m %H:%i') "operateDate",
+			get_user_name_func(tbfinal.FINA_PERSONNEL) "finaPersonnel",
+			get_user_name_func(get_daishenwei_username_func(torder.LOAN_ORDER_ID)) "assigees",
+			DATE_FORMAT(tbcontract.CONTRACT_SIGN_DATE,'%Y-%d-%m %H:%i') "completeDate",
+			TIMESTAMPDIFF(HOUR,torder.CREATE_DATE,tbcontract.CONTRACT_SIGN_DATE) "finishHours",
+			tbcontract.LOAN_EDU "loanEdu",
+			tbcontract.LOAN_PERIODS "loanPeriods",
+			IF(ISNULL(tbmo.MCBR_ID),get_dict_code_func('audit_way',tbfinal.AUDIT_WAY),get_dict_code_func('audit_way',tbmo.AUDIT_WAY)) "auditWay",
+			IF(ISNULL(tbmo.MCBR_ID),tbfinal.FINA_PERS_SUGG,tbmo.REJECT_CAUSE) "suggest",
+			get_dict_code_func('contract_status',tbcontract.CONTRACT_STATUS) "contractStatus",
+			IF(ISNULL(tbmo.MCBR_ID),'终审','上会') "way"
+		FROM
+			t_bp_loan_order torder
+		LEFT JOIN t_organization torg ON torg.ORGANIZATION_ID = get_org_by_region (torder.ORGANIZATION_ID, '0')
+		LEFT JOIN t_bp_first_audit_report tbpfar ON tbpfar.LOAN_ORDER_ID = torder.LOAN_ORDER_ID
+		LEFT JOIN t_bp_field_survey_report tbfsr ON tbfsr.LOAN_ORDER_ID = torder.LOAN_ORDER_ID
+		LEFT JOIN t_bp_microcredit_opinion tbmo ON tbmo.LOAN_ORDER_ID = torder.LOAN_ORDER_ID 
+		LEFT JOIN t_bp_final_audit_report tbfinal ON tbfinal.LOAN_ORDER_ID = torder.LOAN_ORDER_ID
+		LEFT JOIN t_bp_loan_contract tbcontract ON tbcontract.LOAN_ORDER_ID  = torder.LOAN_ORDER_ID 
+		<where>
+			torder.LOAN_ORDER_ID = #{loanOrderId}
+		</where>
+	</select>
+	
+	<!-- 根据订单的ID查询组织机构 -->
+	<select id="getOrganizationByLoanOrderId" parameterType="java.lang.String" resultType="java.util.Map">
+		SELECT
+			torg.FULL_NAME "companyName",
+			torg1.FULL_NAME "areaName"
+		FROM
+			t_bp_loan_order tblo
+		LEFT JOIN t_organization torg ON torg.ORGANIZATION_ID = tblo.ORGANIZATION_ID
+		LEFT JOIN t_organization torg1 ON torg1.ORGANIZATION_ID = get_org_by_region (tblo.ORGANIZATION_ID, '0')
+		<where>
+			tblo.LOAN_ORDER_ID = #{loanOrderId}
+		</where>
+	</select>
+</mapper>

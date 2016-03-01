@@ -154,6 +154,7 @@ $(function(){
 							$("#contactWayInfoC-form input[name='auditItem']").val("audit_workplace_phone");
 							$("#contactWayInfoZP-form input[name='auditItem']").val("audit_cell_phone");
 							$("#contactWayInfoZT-form input[name='auditItem']").val("audit_fix_phone");
+							$("#contactWayInfo114-form input[name='auditItem']").val("audit_114");
 							
 							//渲染联系方式信息 - 用户住宅电话
 							$("#contactWayInfoH-form input[name='contactMethod']").val($row.fixedTel);
@@ -173,6 +174,8 @@ $(function(){
 										$("#contactWayInfoZP-form").form('load',item);
 									}else if("audit_fix_phone"==item.auditItem){
 										$("#contactWayInfoZT-form").form('load',item);
+									}else if("audit_114"==item.auditItem){
+										$("#contactWayInfo114-form").form('load',item);
 									}
 								});
 							}
@@ -267,6 +270,19 @@ $(function(){
 	});
 	
 	$("#contactWayInfoC-formattType").combobox({
+		valueField : 'code',
+		textField : 'text',
+		data : attempData,
+		editable:false ,
+		onLoadSuccess : function(){
+			var val = $(this).combobox("getData");
+			if(!$.isEmptyObject(val)){
+                $(this).combobox("select", val[0]["code"]);
+			}
+		},
+	});
+	
+	$("#contactWayInfo114-formattType").combobox({
 		valueField : 'code',
 		textField : 'text',
 		data : attempData,
@@ -633,12 +649,11 @@ $(function(){
 				
 				<form id="contactWayInfo114-form" method="post">
 					<input name="auditId" type="hidden"/>
-					<input name="auditItem" value="" type="hidden" />
+					<input name="auditItem" value="audit_114" type="hidden" />
 					<input type="hidden" name="name" value="114查询记录"/>
 					<table class="table">
 						<tr>
 							<th>114查询记录:</th>
-							<td><input style="border: none;background-color:#EBEBE4;" readonly="readonly" data-options="required:true" name="contactMethod" type="text" class="easyui-textbox easyui-validatebox" /></td>
 						</tr>
 						<tr>
 							<th>电核内容记录:</th>
@@ -654,9 +669,9 @@ $(function(){
 					</div>
 					<div>
 						<span style="font-weight: bold;margin-left: 30px;">附件类型:</span>
-						<input  id="contactWayInfoC-formattType" class="easyui-textbox easyui-combobox" />
-						<a onclick="auditInfoFileCheck('contactWayInfoC-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
-						<a onclick="auditInfoFileUpload('contactWayInfoC-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
+						<input  id="contactWayInfo114-formattType" class="easyui-textbox easyui-combobox" />
+						<a onclick="auditInfoFileCheck('contactWayInfo114-form');" href="javascript:void(0);" class="easyui-linkbutton">查看附件</a>	
+						<a onclick="auditInfoFileUpload('contactWayInfo114-form');" href="javascript:void(0);" class="easyui-linkbutton" >上传附件</a>	
 					</div>
 				</form>
 				<hr>

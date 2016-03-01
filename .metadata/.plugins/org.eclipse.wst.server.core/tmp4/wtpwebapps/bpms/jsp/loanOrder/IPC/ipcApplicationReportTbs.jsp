@@ -45,7 +45,10 @@
 			{"loanOrderId":$row.loanOrderId},
 			function(data){
 				$creditAuditReport = data;
+				// 渲染财务情况
+				loadAccountsJournals($creditAuditReport.accountsJournals);
 		});
+		
 		
 		//点击TAB页签后加载当前TAB数据 
 		$("#applicationReportTabs").tabs({
@@ -71,7 +74,11 @@
 					loadCreditInvestigations($creditAuditReport.creditInvestigations);
 				 }else if(2==index){
 					// 渲染财务情况
-					loadAccountsJournals($creditAuditReport.accountsJournals);
+					// loadAccountsJournals($creditAuditReport.accountsJournals);
+				 }else if(3==index){
+					 loadAssets($creditAuditReport.assets);
+				 }else if(4==index){
+					 loadFirstAuditReport($creditAuditReport.firstAuditReport);
 				 }
 			 }
 		});
@@ -115,6 +122,20 @@
 			}
 	   });
 		
+	   
+		// 渲染进件情况
+	   $("input[name='loanInfo']").combobox({
+			url : "common/commonAction!findTextArr.action?codeMyid=loan_info",
+			valueField : 'code',
+			textField : 'text',
+			onLoadSuccess : function(){
+            	var val = $(this).combobox("getData");
+ 				if(!$.isEmptyObject(val)){
+                  	$(this).combobox("select", val[0]["code"]);
+                }
+			}
+	   });
+	
 	   // 渲染月份的下拉框
 		$("input[name^='monName0']").combobox({
 			valueField : 'id',
@@ -193,20 +214,6 @@
 	   $("input[name='phoneCheckStatus']").combobox({
 			width:171,
 			url:"common/commonAction!findTextArr.action?codeMyid=phone_check_status",
-			valueField: 'code',
-			textField: 'text',
-			onLoadSuccess : function(){
-            	var val = $(this).combobox("getData");
- 				if(!$.isEmptyObject(val)){
-                  	$(this).combobox("select", val[0]["code"]);
-                }
-			}
-		});
-	   
-	   // 渲染信访情况的下拉框
-	   $("input[name='visitStatus']").combobox({
-			width:171,
-			url:"common/commonAction!findTextArr.action?codeMyid=visit_status",
 			valueField: 'code',
 			textField: 'text',
 			onLoadSuccess : function(){
@@ -362,38 +369,38 @@
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>账号:</th>"
-		  	+"			<td><input name='bankaccountNo' style='width: 100px;' class='easyui-validatebox easyui-textbox' data-options='required:true'/></td>"
+		  	+"			<td><input name='bankaccountNo' style='width: 100px;' class='easyui-validatebox easyui-textbox' data-options='required:true,validType:\"length[0,30]\"'/></td>"
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>[入账月份:月]</th>"
-		  	+"			<td><input name='monName01' style='width: 100px;'  class='easyui-validatebox' value='"+month[5]+"'/></td>"
-		  	+"			<td><input name='monName02' style='width: 100px;'  class='easyui-validatebox' value='"+month[4]+"'/></td>"
-		  	+"			<td><input name='monName03' style='width: 100px;'  class='easyui-validatebox' value='"+month[3]+"'/></td>"
-		  	+"			<td><input name='monName04' style='width: 100px;'  class='easyui-validatebox' value='"+month[2]+"'/></td>"
-		  	+"			<td><input name='monName05' style='width: 100px;'  class='easyui-validatebox' value='"+month[1]+"'/></td>"
-		  	+"			<td><input name='monName06' style='width: 100px;'  class='easyui-validatebox' value='"+month[0]+"'/></td>"
+		  	+"			<td><input name='monName01' style='width: 100px;'  class='easyui-validatebox' value='"+month[5]+"' data-options='required:true,validType:\"length[0,2]\"'/></td>"
+		  	+"			<td><input name='monName02' style='width: 100px;'  class='easyui-validatebox' value='"+month[4]+"' data-options='required:true,validType:\"length[0,2]\"'/></td>"
+		  	+"			<td><input name='monName03' style='width: 100px;'  class='easyui-validatebox' value='"+month[3]+"' data-options='required:true,validType:\"length[0,2]\"'/></td>"
+		  	+"			<td><input name='monName04' style='width: 100px;'  class='easyui-validatebox' value='"+month[2]+"' data-options='required:true,validType:\"length[0,2]\"'/></td>"
+		  	+"			<td><input name='monName05' style='width: 100px;'  class='easyui-validatebox' value='"+month[1]+"' data-options='required:true,validType:\"length[0,2]\"'/></td>"
+		  	+"			<td><input name='monName06' style='width: 100px;'  class='easyui-validatebox' value='"+month[0]+"' data-options='required:true,validType:\"length[0,2]\"'/></td>"
 		  	+"		</tr>"
 		  	+"			<tr>"
 		  	+"			<th>[入账金额:元]</th>"
-		  	+"			<td><input name='income01' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income02' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income03' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income04' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income05' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income06' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
+		  	+"			<td><input name='income01' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income02' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income03' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income04' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income05' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income06' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
 		  	+"		</tr>"
 		  	+"			<tr>"
 		  	+"			<th>[出账金额:元]</th>"
-		  	+"			<td><input name='outcome01' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='outcome02' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='outcome03' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='outcome04' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='outcome05' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='outcome06' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
+		  	+"			<td><input name='outgo01' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo02' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo03' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo04' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo05' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo06' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,groupSeparator:','\"/></td>"
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>月均:</th>"
-		  	+"			<td><input name='averageIncome' style='width: 100px;' class='easyui-validtebox easyui-numberbox' data-options='min:0,precision:2,required:true'/>元</td>"
+		  	+"			<td><input name='averageIncome' style='width: 100px;' class='easyui-validtebox easyui-numberbox' data-options=\"min:0,max:999999999999999,precision:2,required:true,groupSeparator:','\"/>元</td>"
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>流水分析:</th>"
@@ -569,13 +576,69 @@
 		});
 	}
 	
+	// 保存资产情况的信息
+	function saveAssets(obj) {
+		$(obj).parents("form:first").form('submit',{
+			url : "assets/assetsAction!saveAssets.action",
+			onSubmit : function(param) {
+				var isValid = $(this).form('validate');
+				if (isValid){
+					param.carId = $creditAuditReport.carId;
+				}
+				return isValid; // 返回false终止表单提交
+			},
+			success : function(data) {
+				data = $.parseJSON(data);
+				loadAssets(data.data);
+				alertMsg(data);
+				$.messager.progress('close'); // 如果提交成功则隐藏进度条
+			}
+		});
+	}
+	
+	// 渲染资产信息
+	function loadAssets(data){
+		if(!$.isEmptyObject(data)){
+ 			$("#assets-form").form("load",data);
+		}
+	}
+	
+	//保存资质分析
+	function saveFirstAuditReport(obj) {
+		$(obj).parents("form:first").form('submit',{
+			url : "firstAuditReport/firstAuditReportAction!saveFirstAuditReport.action",
+			onSubmit : function(param) {
+				var isValid = $(this).form('validate');
+				if (isValid){
+					param.carId = $creditAuditReport.carId;
+					param.loanOrderId = $row.loanOrderId;
+				}
+				return isValid; // 返回false终止表单提交
+			},
+			success : function(data) {
+				data = $.parseJSON(data);
+				loadFirstAuditReport(data.data);
+				alertMsg(data);
+				$.messager.progress('close'); // 如果提交成功则隐藏进度条
+				
+			}
+		});
+	}
+	
+	// 渲染资质分析
+	function loadFirstAuditReport(data){
+		if(!$.isEmptyObject(data)){
+				$("#firstAuditReport-form").form("load",data);
+		}
+	}
+	
 </script>
 
 <!-- 申请报告 S -->
 <div id="applicationReportTabs" class="easyui-tabs" style="fit:true;">
 	<!-- 客户的基本信息 -->
 	<div title="客户基本信息">
-		<form id="loanerCARInfo-form" style="height:580px;">
+		<form id="loanerCARInfo-form" style="height:570px;">
 			<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
 				<tr>
 					<td colspan="2"><span style="font-weight: bold;font-size: 14px;">[客户基本信息详情]</span></td>
@@ -594,7 +657,7 @@
 				</tr> -->
 				<tr>
 					<th>申贷金额:</th>
-					<td><input  name="loanAmount" class="easyui-numberbox easyui-validatebox" data-options="min:0,precision:2" disabled="disabled"/>元</td>
+					<td><input  name="loanAmount" class="easyui-numberbox" data-options="groupSeparator:','" disabled="disabled"/>元</td>
 					<th>贷款用途:</th>
 					<td><input  name="purpose" class="easyui-textbox easyui-validatebox" disabled="disabled"/></td>
 				</tr>
@@ -621,8 +684,18 @@
 					<th>工商网:</th>
 					<td><input name="comCreditStatus"  class="easyui-textbox easyui-validatebox easyui-combobox"/></td>
 					<th>进件城市:</th>
-					<td><input  name="loanCity" class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
-					<td  style="text-align: right;">
+					<td><input  name="loanCity" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,50]'"/></td>
+				</tr>
+				<tr>
+					<th>实际需求金额:</th>
+					<td><input  name="actualNeedAmount" class="easyui-numberbox easyui-validatebox" data-options="min:0,max:999999999999,precision:2,groupSeparator:',',required:true"/>元</td>
+					<th>进件情况:</th>
+					<td><input  name="loanInfo" class="easyui-textbox easyui-validatebox easyui-combobox"/></td>
+					<th>进件情况说明:</th>
+					<td><input  name="loanInfoDesc" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,512]'"/></td>
+				</tr>
+				<tr>
+					<td colspan="6" style="text-align: right;" colspan="2">
 						<div style="width: 100%; height: 30px; text-align: right;">
 							<a href="javascript:void(0);" onclick="saveCreditAuditReport(this)" class="easyui-linkbutton" iconCls="icon-save">保存</a>
 						</div>
@@ -642,25 +715,25 @@
 				</tr>
 				<tr>
 					<th>贷款总笔数:</th>
-					<td><input name="totalLoanCount" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="totalLoanCount" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>年内逾期:</th>
-					<td><input name="yearOverdue" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="yearOverdue" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>未结清贷款总额:</th>
-					<td><input name="outstandingSum" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/>元</td>
+					<td><input name="outstandingSum" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,groupSeparator:',',required:true"/>元</td>
 				</tr>
 				<tr>
 					<th>未结清笔数:</th>
-					<td><input name="outstandingCount" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="outstandingCount" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>累计逾期:</th>
-					<td><input name="cumulativeOverdue" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="cumulativeOverdue" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>未结清贷款余额:</th>
-					<td><input name="outstandingBalance" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/>元	</td>
+					<td><input name="outstandingBalance" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,groupSeparator:',',required:true"/>元	</td>
 				</tr>
 				<tr>
 					<th>逾期率:</th>
-					<td><input name="overdueRate"  class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true"/></td>
+					<td><input name="overdueRate"  class="easyui-validatebox easyui-textbox" data-options="validType:'length[0,5]',required:true"/></td>
 					<th>月还额度:</th>
-					<td><input name="monthRepay"  class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/></td>
+					<td><input name="monthRepay"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,required:true,groupSeparator:','"/></td>
 				</tr>
 				<tr>
 					<th>最近一笔贷款详情:</th>
@@ -687,39 +760,39 @@
 				</tr>
 				<tr>
 					<th>总卡数:</th>
-					<td ><input name="cardCount" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td ><input name="cardCount" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>在用卡数:</th>
-					<td><input name="cardInUse" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="cardInUse" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>逾期卡数:</th>
-					<td><input name="overdueCardCount" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="overdueCardCount" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th >逾期比例:</th>
-					<td ><input name="overdueRatio" style="width: 100px;" class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true"/>%</td>
+					<td ><input name="overdueRatio" style="width: 100px;" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,5]'"/>%</td>
 				</tr>
 				<tr>
 					<th>授信总额:</th>
-					<td><input name="creditTotalAmount" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/>元</td>
+					<td><input name="creditTotalAmount" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,required:true,groupSeparator:','"/>元</td>
 					<th>使用额度:</th>
-					<td><input name="creditLimit" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/>元</td>
+					<td><input name="creditLimit" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,required:true,groupSeparator:','"/>元</td>
 					<th>最高额度:</th>
-					<td><input name="maxLimit" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/>元</td>
+					<td><input name="maxLimit" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,required:true,groupSeparator:','"/>元</td>
 					<th>月还额度:</th>
-					<td><input name="monthRepay" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true"/>元</td>
+					<td><input name="monthRepay" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999999,precision:2,required:true,groupSeparator:','"/>元</td>
 				</tr>
 				<tr>
 					<th>年内逾期:</th>
-					<td><input name="yearOverdue" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="yearOverdue" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>累计逾期:</th>
-					<td><input name="cumulativeOverdue" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="cumulativeOverdue" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>使用年限:</th>
-					<td><input name="validateYear" style="width: 100px;"  class="easyui-validatebox easyui-textbox" data-options="required:true"/></td>
+					<td><input name="validateYear" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999,required:true"/></td>
 					<th>最高期数:</th>
-					<td><input name="maxQishu" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="maxQishu" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9,required:true"/></td>
 				</tr>
 				<tr>
 					<th>使用率:</th>
-					<td><input name="useRate" style="width: 100px;"  class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true"/>%</td>
+					<td><input name="useRate" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999,required:true"/>%</td>
 					<th>逾期率:</th>
-					<td><input name="overdueRate" style="width: 100px;"  class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true"/>%</td>
+					<td><input name="overdueRate" style="width: 100px;"  class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999,required:true"/>%</td>
 				</tr>
 				<tr>
 					<th>明细:</th>
@@ -746,13 +819,13 @@
 				<tr>
 					<th>[3个月]</th>
 					<th>本人查询:</th>
-					<td><input name="selfQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="selfQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>贷款审批:</th>
-					<td><input name="loanApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox"/></td>
+					<td><input name="loanApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999"/></td>
 					<th>信用卡审批:</th>
-					<td><input name="creditCardApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox"/></td>
+					<td><input name="creditCardApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999"/></td>
 					<th>互联网查询:</th>
-					<td><input name="internetQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox"/></td>
+					<td><input name="internetQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999"/></td>
 				</tr>
 				<tr>
 					<th>备注:</th>
@@ -779,13 +852,13 @@
 				<tr>
 					<th>[6个月]</th>
 					<th>本人查询:</th>
-					<td><input name="selfQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="required:true"/></td>
+					<td><input name="selfQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999,required:true"/></td>
 					<th>贷款审批:</th>
-					<td><input name="loanApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox" /></td>
+					<td><input name="loanApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox"  data-options="min:0,max:9999"/></td>
 					<th>信用卡审批:</th>
-					<td><input name="creditCardApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox" /></td>
+					<td><input name="creditCardApproval" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999" /></td>
 					<th>互联网查询:</th>
-					<td><input name="internetQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" /></td>
+					<td><input name="internetQuery" style="width: 100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:9999" /></td>
 				</tr>
 				<tr>
 					<th>备注:</th>
@@ -811,6 +884,76 @@
 				<div id="accountsJournal-private-div" style="overflow: auto;"></div>
 			</div>
 		</div>
+	</div>
+	
+	<!-- 资产 -->
+	<div title="资产">
+		<form id="assets-form" method="post" style="height:570px;">
+			<input name="assetId" class="easyui-validatebox" hidden="true">
+			<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
+				<tr>
+					<td colspan="4"><span style="font-weight: bold;font-size: 14px;width:60px;">[资产详情]</span></td>
+				</tr>
+				<tr>
+					<th style="width:60px;">房产:</th>
+					<td><textarea name="realEstate" class="easyui-textbox easyui-validatebox" style="width:99%" data-options="required:true,validType:'length[0,200]'"></textarea></td>
+				</tr>
+				<tr>
+					<th>车产:</th>
+					<td><textarea name="vehicle" class="easyui-textbox easyui-validatebox" style="width:99%" data-options="required:true,validType:'length[0,200]'"></textarea></td>
+				</tr>
+				<tr>
+					<th>同行业:</th>
+					<td><input name="theSameIndustry" class="easyui-textbox easyui-validatebox"  style="width:99%"  data-options="required:true,validType:'length[0,200]'"/></td>
+				</tr>
+				<tr>
+					<td  style="text-align: right;" colspan="4" align="right">
+						<a href="javascript:void(0);" onclick="saveAssets(this)" class="easyui-linkbutton" iconCls="icon-save">保存</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+	<!-- 资质分析 -->
+	<div title="资质分析">
+		<form id="firstAuditReport-form" method="post" style="height:570px;">
+			<input name="firsId" hidden="true" class="easyui-validatebox">
+			<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
+				<tr>
+					<td colspan="6"><span style="font-weight: bold;font-size: 14px;width:60px;">[初审资质分析详情]</span></td>
+				</tr>
+				<tr>
+					<th>行业类型:</th>
+					<td><input name="industryType" style="width:100px;" class="easyui-validatebox" data-options="required:true,validType:'length[0,50]'"/></td>
+					<th>经营年限:</th>
+					<td><input name="comOperDuration" style="width:100px;" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:99999999,required:true"/>年</td>
+				</tr>
+				<tr>
+					<th>婚姻情况:</th>
+					<td><input name="marriageType" style="width: 100px;" class="easyui-validatebox easyui-combobox"/></td>
+					<th>是否本地:</th>
+					<td style="width: 100px;"><input name="isLocalRes" style="width: 100px;" class="easyui-validatebox easyui-combobox"/></td>
+					<th>征信情况:</th>
+					<td><input name="creditStatus" style="width: 100px;" class="easyui-validatebox easyui-combobox" /></td>
+				</tr>
+				<tr>
+					<th>电核情况:</th>
+					<td><input name="phoneCheckStatus" style="width: 100px;" class="easyui-validatebox easyui-combobox"/></td>
+					<th>资质总评:</th>
+					<td><input name="qulificationStatus" style="width: 100px;" class="easyui-validatebox easyui-combobox"/><!-- <a href="#">查看细则</a></td> -->
+				</tr>
+				<tr>
+					<th>备注:</th>
+					<td colspan="6"><textarea name="note" style="width:95%;height:70px;" class="easyui-validatebox easyui-validatebox" data-options="required:true,validType:'length[0,300]'"></textarea></td>
+				</tr>
+				<tr>
+					<td style="text-align: right;" colspan="6" align="right">
+						<a href="javascript:void(0);" onclick="saveFirstAuditReport(this)" class="easyui-linkbutton" iconCls="icon-save">保存</a>
+					</td>
+				</tr>
+			</table>
+		</form>
 	</div>
 </div>
 <!-- 申请报告 E -->

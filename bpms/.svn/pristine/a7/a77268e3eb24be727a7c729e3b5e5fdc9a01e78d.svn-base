@@ -1,0 +1,35 @@
+package com.bpms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.mydao.invest.InvestApplyMapper;
+import com.bpms.service.InvestApplyService;
+
+@Service("investApplyService")
+public class InvestApplyServiceImpl implements InvestApplyService {
+	
+	@Autowired
+	private InvestApplyMapper investApplyMapper;	
+
+	@Override
+	public List<Map<String, Object>> findInvestApplyList(
+			Map<String, Object> param) {
+		return investApplyMapper.findInvestApplyList(param);
+	}
+
+	@Override
+	public Long countInvestApplyList(Map<String, Object> param) {
+		return investApplyMapper.countInvestApplyList(param);
+	}
+
+	@Override
+	public Map<String, Object> findInvestApplyInfo4AdjustArs(
+			Map<String, Object> param) {
+		return investApplyMapper.findInvestApplyInfo4AdjustArs(param);
+	}
+
+}

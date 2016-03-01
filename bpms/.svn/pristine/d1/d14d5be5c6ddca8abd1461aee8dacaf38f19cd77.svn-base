@@ -1,0 +1,623 @@
+package test.service;
+
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import test.TestBase;
+
+import com.bpms.model.Role;
+import com.bpms.model.RoleAndPermission;
+import com.bpms.model.UserAndRole;
+import com.bpms.model.Users;
+import com.bpms.service.RoleAndPermissionService;
+import com.bpms.service.RoleService;
+import com.bpms.service.UserAndRoleService;
+import com.bpms.service.UserService;
+import com.bpms.util.ChineseToPinYinUtil;
+import com.bpms.util.ReadExcel;
+
+public class InitData4Test extends TestBase{
+	
+	@Autowired
+	private RoleService roleService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserAndRoleService userAndRoleService;
+	
+	@Autowired
+	private RoleAndPermissionService roleAndPermissionService;
+	
+	private static Map<String, Users> liCaiJingLiMap = new HashMap<String, Users>();
+	
+	private String excelPath4None263Users = "/OA系统用户数据登记表（263未见用户）-.xls";
+	
+	private String excelPath4AllRoleName4Invest = "/财富端涉及角色.xlsx";
+	
+	
+	
+	/**
+	 * 给每个角色
+	 * @Title: testAddPermissionsToRole 
+	 * @Description: TODO
+	 * @param 
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2016年1月13日 下午8:23:27
+	 * @throws
+	 */
+	@Transactional
+	public void addPermissionsToRole() {
+		// 权限相关SQL语句   
+		// select * from t_permission where name like '%财富业务管理%'     -- permission_id = 104
+		// select * from t_permission where name like '%客户管理%'        -- permission_id = 148, pid = 104		
+		// “业务管理”的菜单权限Id(根菜单)       --->   110
+		// “财富业务管理”的菜单权限Id       --->   104
+		// “理财产品”的菜单权限Id                --->   147
+		// ”客户管理 ”的菜单权限Id               --->   148
+		// “投资申请管理”的菜单权限Id             --->   149
+		// “投资申请任务办理”的菜单权限Id           --->   150
+		// “待办任务”的菜单权限Id                --->   151
+		// “受理任务”的菜单权限Id                --->   152
+		// “投资赎回管理”的菜单权限Id             --->   238
+		// “投资赎回任务办理”的菜单权限Id           --->   235
+		// “待办任务”的菜单权限Id                --->   236
+		// “受理任务”的菜单权限Id                --->   237				
+		// “债权匹配”的菜单权限Id                --->   153				
+//		String permissionIDs[] = {"110", "104","147","148","149","150","151", "152", "238", "235", "236", "237", "153"};
+		
+		try {
+			String permissionIDsCommon[] = {"110","104", "150","151", "152", "235", "236", "237"};
+			String permissionIDs4LiCaiJingLi[] = {"147","148","149", "238"};
+			String permissionID4XiaoKeZhuGuan = "153";
+			String resource = InitData4Test.class.getResource("").getPath() + excelPath4AllRoleName4Invest;
+			Workbook oneWorkbookInst = ReadExcel.createworkbook(resource.substring(1));
+			Sheet sheetAt = oneWorkbookInst.getSheetAt(0);
+			Row row = null;
+			int rowIndex = 1;
+			do { // 循环遍历RodeCode -- 开始 
+				row = sheetAt.getRow(rowIndex);
+				if( null != row ){
+					Cell cell = row.getCell(0);
+					if( StringUtils.isNotBlank(cell.getStringCellValue()) ){
+						
+						// 获取角色的中文名字	
+						String roleNameChinese = cell.getStringCellValue();
+						// 获取角色的汉语拼音，即RoleCode	
+						String roleCode = ChineseToPinYinUtil.getUpEname1(roleNameChinese);					
+						
+						System.out.println("No."+rowIndex+",   ChinseName = "+roleNameChinese + ",   RodeCode = "+roleCode);
+							
+						Role roleInst = roleService.findRoleByCode(roleCode);
+						
+						// 如果角色是“理财经理”，理财经理除了通用权限（“投资申请任务办理、投资赎回任务办理”）外，
+						// 还应当具有“理财产品(147)”，“客户管理(148)”,"投资申请管理(149)", "投资赎回管理(238)"的功能。					
+						if(roleCode.equalsIgnoreCase("LiCaiJingLi")){
+							for(String permissionId : permissionIDs4LiCaiJingLi){							
+								System.out.println("保存  理财经理 特有权限菜单ID： "+permissionId);
+								RoleAndPermission roleAndPermission  = new RoleAndPermission(Integer.parseInt(permissionId), roleInst.getRoleId(), "A", new Date(), new Date(), 1, 1);
+								roleAndPermissionService.saveRoleAndPermissions(roleAndPermission);	
+							}						
+						}
+						
+						//如果角色是“销客主管”，销客经理具有债券匹配的权限，“permissionId”为153
+						if(roleCode.equalsIgnoreCase("XiaoKeZhuGuan")){
+								System.out.println("保存  销客主管 特有权限菜单ID： 153");
+								RoleAndPermission roleAndPermission  = new RoleAndPermission(Integer.parseInt(permissionID4XiaoKeZhuGuan), roleInst.getRoleId(), "A", new Date(), new Date(), 1, 1);
+								roleAndPermissionService.saveRoleAndPermissions(roleAndPermission);	
+						}					
+						
+						//保留其他通用权限
+						for(String permissionId : permissionIDsCommon){													
+							System.out.println("保存通用 权限菜单ID： "+ permissionId);
+							RoleAndPermission roleAndPermission  = new RoleAndPermission(Integer.parseInt(permissionId), roleInst.getRoleId(), "A", new Date(), new Date(), 1, 1);
+							roleAndPermissionService.saveRoleAndPermissions(roleAndPermission);																			
+						}
+						
+						logger.info("++++++++++++++++++++++++++++++++++++++++++");
+						logger.info("   " + roleNameChinese + "  的权限配置成功。");
+						logger.info("++++++++++++++++++++++++++++++++++++++++++");						
+						
+						++rowIndex;				
+					} 			
+				} else {
+					break;
+				}
+				
+			} while( null != row );   // 循环遍历RodeCode -- 结束 		
+			
+			
+		} catch ( Exception  e) {
+			e.printStackTrace();
+		}		
+	}
+
+	
+	/**
+	 * 给每个用户添加角色
+	 * @Title: addRoleToUser 
+	 * @Description: TODO
+	 * @param @throws java.lang.Exception
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2016年1月13日 下午8:26:47
+	 * @throws
+	 */
+	@Transactional
+	public void addRoleToUser() throws java.lang.Exception {
+		String resource = InitData4Test.class.getResource("").getPath() + excelPath4None263Users;
+		Workbook oneWorkbookInst = ReadExcel.createworkbook(resource.substring(1));
+		int counter4LiCaiJingLi = 0;
+		int counter4TuanDuiJingLi = 0;
+		int counter4ChengShiJingLi = 0;
+		int counter4QuYuJingLi = 0;
+		int counter4DaTuanJingLi = 0;
+		int counter4YingYeBuJingLi = 0;
+		int counter4QuYuZongJian = 0;
+		int counter4BuMenZhuLi = 0;
+		
+		
+		Sheet sheet = oneWorkbookInst.getSheetAt(0);
+		int rowIndex = 1;
+		Row oneRow = null;
+		
+		do{
+			oneRow = sheet.getRow(rowIndex);
+			if( oneRow != null ){				
+				
+				Cell cell4Name = oneRow.getCell(0);
+				Cell cell4MobilePhone = oneRow.getCell(3);								
+				Cell cell4RoleName = oneRow.getCell(5);
+				Cell cell4Division = oneRow.getCell(6);							
+								
+				//获取 相关数据的汉语拼音，或者转换后的字符串。
+				// 获取用户名
+				String username = null;
+				String userNameChinese = null;
+				if(StringUtils.isNotBlank(cell4Name.getStringCellValue())){
+					userNameChinese = cell4Name.getStringCellValue();
+					username = ChineseToPinYinUtil.getUpEname1(cell4Name.getStringCellValue());
+				}
+				
+				// 获取电话
+				String mobilePhone = null;
+				if(  null != cell4MobilePhone ){					
+					DecimalFormat df = new DecimalFormat("0");						
+					try {		
+						// 将电话号码，由科学计数法转变为字符串。
+						mobilePhone = df.format(cell4MobilePhone.getNumericCellValue());													
+					} catch (Exception e) {
+						mobilePhone = cell4MobilePhone.getStringCellValue();
+					}					
+				}
+				
+				// 获取角色名
+				String roleName  = null;
+				if(  StringUtils.isNotBlank(cell4RoleName.getStringCellValue()) ){
+					roleName = ChineseToPinYinUtil.getUpEname1(cell4RoleName.getStringCellValue());
+				}
+
+				// 获取部门名称
+				String divisionName = null;								
+				if(  StringUtils.isNotBlank(cell4Division.getStringCellValue()) ){
+					divisionName = ChineseToPinYinUtil.getUpEname1(cell4Division.getStringCellValue());
+				}
+				
+				// 给员工配置“理财经理”角色
+				// “财富管理中心”的“客户经理”、“客户顾问”
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){					
+					// “财富管理中心”的“客户经理”或者“财富管理中心”的“客户顾问”					
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && 
+					  ( roleName.contains("KeHuJingLi") || roleName.contains("KeHuGuWen") )  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("LiCaiJingLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}							
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}																										
+						++counter4LiCaiJingLi;							
+					}
+				}
+				
+//				// 给员工配置“团队经理”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("TuanDuiJingLi")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("TuanDuiJingLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++ counter4TuanDuiJingLi;
+					}
+				}				
+//				
+//				// 给员工配置“大团经理”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("DaTuanJingLi")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("DaTuanJingLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++counter4DaTuanJingLi;
+					}
+				}
+				
+				
+//				// 给员工配置“营业部经理”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("YingYeBuJingLi")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("YingYeBuJingLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++counter4YingYeBuJingLi;
+					}
+				}				
+
+//				// 给员工配置“城市经理”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("ChengShiJingLi")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("ChengShiJingLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+							
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++counter4ChengShiJingLi;
+					}
+				}	
+				
+				
+//				// 给员工配置“区域经理”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("QuYuJingLi")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("QuYuJingLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++ counter4QuYuJingLi;
+					}					
+				}
+//				
+//				
+//				// 给员工配置“区域总监”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("QuYuZongJian")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("QuYuZongJian");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++counter4QuYuZongJian;
+					}					
+				}				
+//				
+//				// 给员工配置“部门助理”的角色
+				if(StringUtils.isNotBlank(username) && StringUtils.isNotBlank(roleName) && StringUtils.isNotBlank(divisionName)){
+					if( divisionName.contains("CaiFuGuanLiZhongXin") && roleName.contains("BuMenZhuLi")  ){						
+						// 如果值不为空，则说明当前用户已经存在了，
+						Users user = userService.findUserByNameAndPoneAndEmail(userNameChinese, mobilePhone, null);
+						if(null != user){
+							Role role = roleService.findRoleByCode("BuMenZhuLi");
+							UserAndRole userAndRole = new  UserAndRole( role.getRoleId(), user.getUserId(), "A", new Date(), new Date(), 1, 1);
+							
+							// 判断用户和角色的关系没有存在过才进行编写
+							if(null == userAndRoleService.isExistUserAndRoles(userAndRole)){
+								userAndRoleService.saveUserAndRoles(userAndRole);
+							}
+						}else{
+							// 如果用户不存在进行记录日志
+							logger.info(("行:"+(rowIndex+1)+"\t姓名:"+userNameChinese+"  电话:"+ mobilePhone+"  没有找到该用户信息!!!!\n"));
+						}
+						++counter4BuMenZhuLi;
+					}
+				}				
+				
+				System.out.println(username+", "+mobilePhone+", "+roleName+", "+divisionName);				
+																
+				// 若数据正确，则获取下一行。
+				++rowIndex;
+			}
+		} while(oneRow != null);
+		
+		System.out.println("=======================================================================");
+		System.out.println(" 共 "+(rowIndex-1)+"行。");
+		System.out.println(" 统计“财富管理中心”的“理财经理”的个数： " + counter4LiCaiJingLi);
+		System.out.println(" 统计“财富管理中心”的“团队经理”的个数： " + counter4TuanDuiJingLi);
+		System.out.println(" 统计“财富管理中心”的“大团经理”的个数： " + counter4DaTuanJingLi);
+		System.out.println(" 统计“财富管理中心”的“营业部经理”的个数： " + counter4YingYeBuJingLi);
+		System.out.println(" 统计“财富管理中心”的“区域总监”的个数： " + counter4QuYuZongJian);
+		System.out.println(" 统计“财富管理中心”的“城市经理”的个数： " + counter4ChengShiJingLi);
+		System.out.println(" 统计“财富管理中心”的“城市经理”的个数： " + counter4BuMenZhuLi);
+		System.out.println(" 统计“财富管理中心”的“区域经理”的个数： " + counter4QuYuJingLi);
+		System.out.println("=======================================================================");
+	}
+
+	/**
+	 * 添加“理财经理”的角色
+	 * @Title: addRoleOfLiCaiJingLi 
+	 * @Description: TODO
+	 * @param 
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2016年1月13日 下午1:28:36
+	 * @throws
+	 */
+	@Transactional
+	public void addRole4LiCaiJingLi(String roleCode){				
+		
+		Role exsitingRole = roleService.findRoleByCode(roleCode);
+		if( null != exsitingRole){
+			logger.info("=======================================");
+			logger.info(roleCode+"的角色创建已经存在了，有待删除。");
+			logger.info("=======================================");	
+			roleService.delRole(exsitingRole);
+		}else{
+			// 创建“理财经理”这个新的角色。
+			Role newRole = new Role(roleCode, "理财经理", "这是理财经理的描述", "A", new Date(), new Date(), Integer.parseInt("1"), Integer.parseInt("1"), Integer.parseInt("1"));
+			this.roleService.saveRole(newRole);
+			logger.info("=======================================");
+			logger.info("   理财经理的角色创建成功。");
+			logger.info("=======================================");			
+		}		
+	}	
+
+
+	/**
+	 * 添加“销客主管”角色和其对应的所有权限
+	 * @Title: testAddRole4XiaoKeZhuGuan 
+	 * @Description: TODO
+	 * @param @param roleCode4XiaoKeZhuGuan
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2016年1月13日 下午8:07:42
+	 * @throws
+	 */
+	@Transactional
+	private void addRole4XiaoKeZhuGuan(String roleCode4XiaoKeZhuGuan) {		
+		Role exsitingRole = roleService.findRoleByCode(roleCode4XiaoKeZhuGuan);
+		if( null != exsitingRole){
+			logger.info("=======================================");
+			logger.info("  销客主管的角色创建已经存在了，有待删除。");
+			logger.info("=======================================");	
+			roleService.delRole(exsitingRole);
+		}else{
+			// 创建“理财经理”这个新的角色。
+			Role newRole = new Role(roleCode4XiaoKeZhuGuan, "销客主管", "这是销客主管的描述", "A", new Date(), new Date(), Integer.parseInt("1"), Integer.parseInt("1"), Integer.parseInt("1"));
+			this.roleService.saveRole(newRole);
+			logger.info("=======================================");
+			logger.info("   销客主管的角色创建成功。");
+			logger.info("=======================================");			
+		}		
+	}
+
+
+	/**
+	 * 添加“销客经理”角色和其对应的所有权限
+	 * @Title: testAddRole4XiaoKeJingLi 
+	 * @Description: TODO
+	 * @param @param roleCode4XiaoKeJingLi
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2016年1月13日 下午8:08:59
+	 * @throws
+	 */
+	@Transactional
+	private void addRole4XiaoKeJingLi(String roleCode4XiaoKeJingLi) {
+		Role exsitingRole = roleService.findRoleByCode(roleCode4XiaoKeJingLi);
+		if( null != exsitingRole){
+			logger.info("=======================================");
+			logger.info("   销客经理的角色创建已经存在了，有待删除。");
+			logger.info("=======================================");	
+			roleService.delRole(exsitingRole);
+		}else{
+			// 创建“理财经理”这个新的角色。
+			Role newRole = new Role(roleCode4XiaoKeJingLi, "销客经理", "这是销客经理的描述", "A", new Date(), new Date(), Integer.parseInt("1"), Integer.parseInt("1"), Integer.parseInt("1"));
+			this.roleService.saveRole(newRole);
+			logger.info("=======================================");
+			logger.info("   销客经理的角色创建成功。");
+			logger.info("=======================================");			
+		}		
+	}	
+	
+	
+	
+	@Transactional
+	public void deleteRoleObjAndEachPermission(String roleCode){		
+		Role role = roleService.findRoleByCode(roleCode);
+		if(null != role){			
+			System.out.println("role.getRoleId() = "+role.getRoleId());
+			//1. 删除角色权限关系表中，与当前角色相关的权限数据。		
+			roleAndPermissionService.delRoleAndPermissionByRoleCode(role);			
+			//2. 删除角色
+			roleService.delRole(role);
+			
+			logger.info("======================================================");
+			logger.info("----------------->  角色" + role.getName() + "和相关权限已经删除成功了。");
+			logger.info("======================================================");
+		}else{
+			logger.info("=======================================================");
+			logger.info("----------------->  角色" + roleCode + "对象为NULL，不能执行删除。");
+			logger.info("=======================================================");
+		}		
+	}	
+	
+	@Transactional
+	public void addAllRolesNeeded4InvestBusiness() {
+		// 1、添加缺少的角色
+		String roleCode4LiCaiJingLi = "LiCaiJingLi";
+		String roleCode4XiaoKeJingLi = "XiaoKeJingLi";
+		String roleCode4XiaoKeZhuGuan = "XiaoKeZhuGuan";
+		
+		// (1).添加“销客经理”角色				
+//		deleteRoleObjAndEachPermission(roleCode4XiaoKeJingLi);
+//		addRole4XiaoKeJingLi(roleCode4XiaoKeJingLi);	
+//
+//		// (2).添加“销客主管”角色
+//		deleteRoleObjAndEachPermission(roleCode4XiaoKeZhuGuan);
+//		addRole4XiaoKeZhuGuan(roleCode4XiaoKeZhuGuan);	
+				
+		// (3).添加“理财经理”角色
+		// 增加之前首先删除————删除"理财经理"角色和权限
+//		deleteRoleObjAndEachPermission(roleCode4LiCaiJingLi);
+//		addRole4LiCaiJingLi(roleCode4LiCaiJingLi);
+	}	
+
+	
+	@Test
+	@Transactional
+	public void testSaveInitData() throws java.lang.Exception{
+		
+//		// 1、添加缺少的角色
+//		addAllRolesNeeded4InvestBusiness();		
+//		
+//		// 2.给系统“所有”角色添加权限		
+//		addPermissionsToRole();
+
+		// 3.将角色付给相关用户
+//		addRoleToUser();
+		
+		// 4. 其他有待赋予投资权限的角色
+		// (1)给“岳霞”配置“销客经理”的角色
+		// (2)给
+		
+	}	
+	
+//	-- -----------------------------------------------------------------
+//	-- 查询角色与权限关系表中，与"投资业务"有关的权限和角色信息
+//	-- -----------------------------------------------------------------
+//	SELECT
+//		t1.*,
+//		t2.name,
+//		t2.role_code, 
+//		t3.name
+//	FROM
+//		t_role_and_permission t1
+//	LEFT JOIN t_role t2 ON t1.role_id = t2.role_id
+//	LEFT JOIN t_permission t3 ON t3.permission_id = t1.permission_id
+//	WHERE
+//		t1.permission_id IN (
+//			'110',
+//			'104',
+//			'147',
+//			'148',
+//			'149',
+//			'150',
+//			'151',
+//			'152',
+//			'238',
+//			'235',
+//			'236',
+//			'237',
+//			'153'
+//		) AND t1.role_id <> 1
+//	AND t2.role_code in (
+//	'LiCaiJingLi', 'TuanDuiJingLi', 'DaTuanJingLi', 'YingYeBuJingLi', 'ChengShiJingLi', 'QuYuZongJian', 'ZongJingLi',
+//	'BuMenZhuLi', 'XiaoKeZhuanYuan', 'ShuJuZhuanYuan', 'JieSuanZhuanYuan', 'XiaoKeJingLi', 'XiaoKeZhuGuan')
+//	order by t2.name
+//
+//	-- -----------------------------------------------------------------
+//	-- 删除角色与权限关系表中，与"投资业务"有关的权限和角色信息
+//	-- -----------------------------------------------------------------
+//	DELETE FROM t_role_and_permission 
+//	WHERE
+//		permission_id IN (
+//			'110',
+//			'104',
+//			'147',
+//			'148',
+//			'149',
+//			'150',
+//			'151',
+//			'152',
+//			'238',
+//			'235',
+//			'236',
+//			'237',
+//			'153'
+//		) AND role_id <> 1
+//	AND role_id IN (
+//		select t2.role_id from t_role t2 where t2.role_code in (
+//		'LiCaiJingLi', 'TuanDuiJingLi', 'DaTuanJingLi', 'YingYeBuJingLi', 'ChengShiJingLi', 'QuYuJingLi','QuYuZongJian', 'ZongJingLi',
+//		'BuMenZhuLi', 'XiaoKeZhuanYuan', 'ShuJuZhuanYuan', 'JieSuanZhuanYuan', 'XiaoKeJingLi', 'XiaoKeZhuGuan')
+//	)	
+
+	
+}

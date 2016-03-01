@@ -70,16 +70,16 @@
 			<table cellpadding="5">
 				<tr>
 					<th>
-						车辆名称
+						品牌型号
 					</th>
 					<td>
-						<input name="carName" class="easyui-textbox easyui-validatebox" data-options="required:true">
+						<input name="carName" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,128]'">
 					</td>
 					<th>
 						车牌号
 					</th>
 					<td>
-						<input name="carLicense" class="easyui-textbox easyui-validatebox" data-options="required:true">
+						<input name="carLicense" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,10]'">
 					</td>
 				</tr>
 				
@@ -88,13 +88,22 @@
 						发动机号
 					</th>
 					<td>
-						<input name="engineNo" class="easyui-textbox easyui-validatebox" data-options="required:true">
+						<input name="engineNo" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,15]'">
 					</td>
 					<th>
 						车架号
 					</th>
 					<td>
-						<input name="carFrameNo" class="easyui-textbox easyui-validatebox" data-options="required:true">
+						<input name="carFrameNo" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,20]'">
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						车抵金额
+					</th>
+					<td>
+						<input name="vehicleMortgageAmt" class="easyui-numberbox easyui-validatebox" data-options="min:0,max:999999999999,required:true,precision:2,groupSeparator:','">元
 					</td>
 				</tr>
 				

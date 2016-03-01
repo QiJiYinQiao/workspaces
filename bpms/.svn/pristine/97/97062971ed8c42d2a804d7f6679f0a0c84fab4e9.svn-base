@@ -1,0 +1,185 @@
+package com.bpms.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.model.InvestRedeem;
+import com.bpms.model.vo.InvestRedeemFinanceDetails4ClientVO;
+
+public interface InvestRedeemService {
+	
+	/**
+	 * 根据InvestOrderId，获取InvestRedeem对象。
+	 * @Title: getInvestRedeemByInvestOrderId 
+	 * @Description: TODO
+	 * @param @param investOrder
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return InvestRedeem
+	 * @date 2015年12月24日 下午5:56:37
+	 * @throws
+	 */
+	public InvestRedeem getInvestRedeemByInvestOrderId(String investOrderId);
+	
+	/**
+	 * 获得所有有待进行投资赎回申请的Invest信息。
+	 * @Title: findApprovedInvestList4Redeem 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 上午11:32:04
+	 */
+	public List<Map<String, Object>> findAlreadyApprovedInvestApplyList(Map<String, Object> param);
+	
+	/**
+	 * 统计所有有待进行投资赎回申请的Invest信息的条数。
+	 * @Title: countApprovedInvestList4Redeem 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 上午11:33:08
+	 */
+	public Long countAlreadyApprovedInvestApplyList(Map<String, Object> param);	
+	
+	/**
+	 * 获得所有的投资赎回申请的数据
+	 * @Title: findInvestRedeemList 
+	 * @param @param param
+	 * @author ZHANGJIAN
+	 * @return List<Map<String,Object>>
+	 * @date 2015年12月17日 上午11:04:50
+	 * @throws
+	 */
+	public List<Map<String, Object>> findInvestRedeemList(Map<String, Object> param);
+	
+	/**
+	 * 统计投资赎回申请的条数。
+	 * @Title: countInvestRedeemList 
+	 * @param @param param
+	 * @author ZHANGJIAN
+	 * @return Long
+	 * @date 2015年12月17日 上午11:05:39
+	 */
+	public Long countInvestRedeemList(Map<String, Object> param);
+
+	/**
+	 * 修改投资赎回的申请日期
+	 * @Title: updateInvestRedeemBeginDate 
+	 * @Description: TODO
+	 * @param @param redeemBeginDate
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2015年12月18日 上午11:39:30
+	 * @throws
+	 */
+	public int updateInvestRedeemBeginDate(Map<String, Object> param);
+
+	/**
+	 * 获取办理投资赎回任务时的数据。
+	 * @Title: findInvestRedeemInfo4HandleTask 
+	 * @Description: TODO
+	 * @param @param param
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return Map<String,Object>
+	 * @date 2015年12月18日 下午2:37:10
+	 * @throws
+	 */
+	public Map<String, Object> findInvestRedeemInfo4HandleTask(
+			Map<String, Object> param);
+	
+	/**
+	 * 修改投资订单的 “流程类型”，将其类型在“投资申请流程”与“投资赎回类型”之间变换。
+	 * @Title: updateInvestOrderProcessType 
+	 * @Description: TODO
+	 * @param @param investOrder
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return boolean
+	 * @date 2015年12月23日 下午7:43:51
+	 * @throws
+	 */
+	public boolean updateInvestOrderProcessType(InvestOrder investOrder); 
+	
+	/**
+	 *  更改投资订单的流程状态，将其由“2(已结束状态)”更改为“0(未开启状态)”
+	 * @Title: updateInvestRedeemProcessStatus 
+	 * @Description: TODO
+	 * @param @param investOrder
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return boolean
+	 * @date 2015年12月23日 下午7:42:52
+	 * @throws
+	 */
+	public boolean updateInvestRedeemProcessStatus(InvestOrder investOrder);
+
+	/**
+	 * 新增一笔投资赎回申请。
+	 * 将投资申请订单修改为投资赎回订单
+	 * (1)修改该投资业务订单表(t_bp_invest_order)表中“INVEST_PROCESS_TYPE”字段，将其由“1(代表：投资申请流程)”修改为“2(代表：投资赎回流程)”
+	 * (2)修改该投资业务订单表(t_bp_invest_order)表中“PROCESS_STATUS”字段，将其修改为“0(代表：流程未开启)”
+	 * @Title: toAddNewInvestRedeem 
+	 * @param @param investOrder
+	 * @author ZHANGJIAN
+	 * @return boolean
+	 * @date 2015年12月23日 下午7:24:55
+	 */
+	public boolean addNewInvestRedeem(InvestOrder investOrder);
+
+	/**
+	 * 删除一笔投资赎回信息。
+	 * 注意：删除投资赎回记录并没有数据库底层t_bp_invest_order表中的数据InvestOrder信息删除，而是修改该表中一些字段。
+	 * @Title: deleteInvestRedeemRecord 
+	 * @param @param investOrder
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return boolean
+	 * @date 2015年12月23日 下午8:32:09
+	 * @throws
+	 */
+	public boolean deleteInvestRedeemRecord(InvestOrder investOrder);
+	
+	public boolean persistenceInvestRedeem(InvestRedeem InvestRedeem);
+	
+	/**
+	 * 处理投资赎回提交的任务
+	 * @Title: saveSubmitTask4InvestRedeem 
+	 * @Description: TODO
+	 * @param @param investRedeem
+	 * @param @param investOrder
+	 * @param @param comment
+	 * @param @param result
+	 * @param @param processingResult
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return boolean
+	 * @date 2015年12月25日 下午2:13:23
+	 * @throws
+	 */
+	public boolean saveSubmitTask4InvestRedeem(InvestRedeem investRedeem, InvestOrder investOrder, String comment, String result, String processingResult);
+//	public boolean submitTask4InvestRedeem(InvestRedeem investRedeem, InvestOrder investOrder, String comment, String result, String processingResult);
+	/**
+	 * 根据投资订单ID，计算投资赎回客户的信息
+	 * @Title: getInvestRedeemFinanceDetailsVOByOrderId 
+	 * @Description: TODO
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return InvestRedeemFinanceDetails4ClientVO
+	 * @date 2015年12月26日 下午6:55:37
+	 * @throws
+	 */
+	public InvestRedeemFinanceDetails4ClientVO getInvestRedeemFinanceDetailsVOByOrderId(String investOrderId);
+	
+	/**
+	 * 计算投资赎回客户的详细信息
+	 * @Title: processRedeemClientFinancialDetail 
+	 * @Description: TODO
+	 * @param @param investRedeem
+	 * @param @param investOrder
+	 * @author ZHANGJIAN
+	 * @return void
+	 * @date 2015年12月26日 下午7:06:59
+	 * @throws
+	 */
+	public InvestRedeemFinanceDetails4ClientVO getRedeemClientFinancialDetail(InvestRedeem investRedeem, InvestOrder investOrder);
+}

@@ -1,0 +1,1035 @@
+package com.bpms.action;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.model.Investor;
+import com.bpms.model.InvestorderAndProducts;
+import com.bpms.model.vo.InvestorAndInvestProductModel;
+import com.bpms.service.AddressService;
+import com.bpms.service.CommonService;
+import com.bpms.service.InvestOrderService;
+import com.bpms.service.InvestProductService;
+import com.bpms.service.InvestReportExportService;
+import com.bpms.service.InvestorService;
+import com.bpms.service.InvestorSupervisionService;
+import com.bpms.service.InvestorderAndProductsService;
+import com.bpms.service.UserService;
+import com.bpms.util.ReadExcel;
+import com.bpms.util.WordGeneratorUtil;
+
+/**
+ * 投资业务先关报表导出Action
+ * 
+ * @author sunyiban 2015/12/14
+ */
+@Namespace("/investorRelativeTabsExport")
+@Action(value = "investorRelativeTabsExportAciton")
+public class InvestorRelativeTabsExportAciton extends BaseAction {
+
+	private static final long serialVersionUID = 1L;
+
+	@Autowired
+	private InvestReportExportService investReportExportService;
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private AddressService addressService;
+	@Autowired
+	private InvestOrderService investOrderService;
+	@Autowired
+	private InvestorService investorService;
+	@Autowired
+	private InvestProductService investProductService;
+	@Autowired
+	private InvestorderAndProductsService investorderAndProductsService;
+	@Autowired
+	private InvestorSupervisionService investorSupervisionService;
+	
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:MM:ss");
+
+	/**
+	 * 查询理财客户汇总表
+	 */
+	public void queryInvestorSummaryStatement() {
+		Map<String, Object> params = packageParams();
+		params.put("start", getFirstResult());
+		params.put("end", getRows());
+		List<Map<String, Object>> list = investReportExportService
+				.queryInvestorSummaryStatement(params);
+		if (null != list) {
+			for (int i = 0; i < list.size(); i++) {
+				Map<String, Object> map = list.get(i);
+				if (null != map.get("address")) {
+					map.put("address", addressService.addressName((String) map
+							.get("address")));
+				}
+				if (null != map.get("transferPlatform")) {
+					if ("1".equals((String) map.get("transferPlatform"))) {
+						map.put("transferPlatform", "富友");
+					} else if ("2".equals((String) map.get("transferPlatform"))) {
+						map.put("transferPlatform", "好易联");
+					}
+				}
+				if (null != map.get("teamManager")) {
+					map.put("teamManager",
+							userService.findUserById(
+									Integer.valueOf((String) map
+											.get("teamManager"))).getName());
+				}
+				if (null != map.get("financialAdvisor")) {
+					map.put("financialAdvisor",
+							userService.findUserById(
+									Integer.valueOf((String) map
+											.get("financialAdvisor")))
+									.getName());
+				}
+				if (null != map.get("groupManager")) {
+					map.put("groupManager",
+							userService.findUserById(
+									Integer.valueOf((String) map
+											.get("groupManager"))).getName());
+				}
+				if (null != map.get("pstatus")) {
+					map.put("pstatus", commonService.findDictName("prod_status",
+							(String) map.get("pstatus")));
+				}
+				if (null != map.get("repaymentMethod")) {
+					map.put("repaymentMethod", commonService.findDictName(
+							"repayment_mode",
+							(String) map.get("repaymentMethod")));
+				}
+
+			}
+		}
+		Integer total = investReportExportService
+				.queryInvestorSummaryStatementCount(params);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("rows", list);
+		map.put("total", total);
+		OutputJson(map);
+	}
+
+	/**
+	 * 导出理财客户汇总表
+	 * 
+	 * @throws Exception
+	 */
+	public void exportInvestorSummaryStatement() throws Exception {
+		Map<String, Object> params = packageParams();
+		List<Map<String, Object>> list = investReportExportService
+				.queryInvestorSummaryStatement(params);
+		createISS(list);
+
+	}
+
+	/**
+	 * 导出理财支出预算表
+	 * 
+	 * @throws Exception
+	 */
+	public void exportInvestExpenditureBudget() throws Exception {
+		Map<String, Object> params = packageParams();
+		List<Map<String, Object>> list = investReportExportService
+				.queryInvestorSummaryStatement(params);
+		createIEB(list, list);
+
+	}
+
+	/**
+	 * 导出临期兑付合同信息
+	 * 
+	 * @throws Exception
+	 */
+	public void exportAdventOfPaymentContract() throws Exception {
+		Map<String, Object> params = packageParams();
+		List<Map<String, Object>> list = investReportExportService
+				.queryInvestorSummaryStatement(params);
+		createAPC(list);
+	}
+
+	/**
+	 * 导出电子账单
+	 */
+	public void downloadElectronicBill() {
+		Map<String,Object> map = new HashMap<String,Object>();
+		InvestOrder investOrder =  investOrderService.findByInvestOrderId(investOrderId);
+		Investor investor = investorService.findInvestorByInvestorId(investOrder.getInvestorId());
+		List<InvestorderAndProducts> iap = investorderAndProductsService.findInvestorderAndProductsList(investOrderId);
+		
+		map.put("zip", investor.getZip());
+		map.put("commAddr", addressService.addressName(investor.getCommAddr()));
+		map.put("investorName", investOrder.getInvestorName());
+		sdf = new SimpleDateFormat("MM");
+		map.put("signDate", sdf.format(investOrder.getCreateDate()));//几月
+		sdf = new SimpleDateFormat("yyyy/MM/dd");
+		if(null!=iap && iap.size()>0) {
+			InvestorderAndProducts investorderAndProduct = iap.get(0);
+			String reportPeriod = sdf.format(investorderAndProduct.getBeginDate()) + "-" + sdf.format(investorderAndProduct.getEndDate());
+			map.put("reportPeriod", reportPeriod);//报告周期
+			map.put("startDate", sdf.format(investorderAndProduct.getBeginDate()));//初始出借日期
+			map.put("startInvestEdu", investorderAndProduct.getInvestEdu());//初始出借金额
+			map.put("productName", investorderAndProduct.getProduct().getProdName());//出借方式
+		}
+		//map.put("loanNumber", "0200203919");//出借编号
+		map.put("reportDay", sdf.format(investOrder.getCreateDate()));//报告日
+		
+		//map.put("totalInterest", 1500);//累计利息
+		//map.put("reportAssetAmt", 3000000);//报告日资产总额
+		
+		
+		try {
+				File file = WordGeneratorUtil.createDoc(map,
+						File.separator + "temp" + File.separator + "loan"
+								+ File.separator + "电子账单模板.ftl");
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode("电子账单"+new Date()
+										+ ".doc", "utf-8"));
+				// 写入流中
+				IOUtils.write(FileUtils.readFileToByteArray(file),
+						ServletActionContext.getResponse().getOutputStream());
+				// 删除文件
+				if (file.exists())
+					file.delete();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 导出收款确认书
+	 */
+	public void downloadPayConfirmation() {
+		Map<String,Object> map = new HashMap<String,Object>();
+		InvestOrder investOrder =  investOrderService.findByInvestOrderId(investOrderId);
+		Investor investor = investorService.findInvestorByInvestorId(investOrder.getInvestorId());
+		List<InvestorderAndProducts> iap = investorderAndProductsService.findInvestorderAndProductsList(investOrderId);
+		map.put("investorName", investOrder.getInvestorName());
+		/*map.put("year", "2015");
+		map.put("month", "6");
+		map.put("day", "7");
+		map.put("investEdu1", new BigDecimal(300000));
+		map.put("investEduChina1", NumberToCN.number2CNMontrayUnit((BigDecimal) map.get("investEdu1")));
+		map.put("investEdu2", new BigDecimal(300000));
+		map.put("investEduChina2", NumberToCN.number2CNMontrayUnit((BigDecimal) map.get("investEdu2")));
+		map.put("loanNumber", "10200391923");
+		map.put("footDateYear", "2015");
+		map.put("footDateMonth", "12");
+		map.put("footDateDay", "15");*/
+		
+		try {
+				File file = WordGeneratorUtil.createDoc(map,
+						File.separator + "temp" + File.separator + "loan"
+								+ File.separator + "收款确认书.ftl");
+				// 设置头文件
+				ServletActionContext.getResponse().setHeader(
+						"Content-disposition",
+						"attachment;filename="
+								+ URLEncoder.encode("收款确认书"+new Date()
+										+ ".doc", "utf-8"));
+				// 写入流中
+				IOUtils.write(FileUtils.readFileToByteArray(file),
+						ServletActionContext.getResponse().getOutputStream());
+				// 删除文件
+				if (file.exists())
+					file.delete();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void createAPC(List<Map<String, Object>> list) throws Exception,
+			UnsupportedEncodingException, IOException {
+		// 获取模板
+		String srcXlsxPath = ServletActionContext.getServletContext()
+				.getRealPath(
+						File.separator + "excel" + File.separator + "invest")
+				+ File.separator + "临期兑付合同信息.xlsx";
+		Workbook workbook = ReadExcel.openExcleFile(srcXlsxPath);
+		// 获取工作簿
+		Sheet sheet = workbook.getSheetAt(0);// 获取页签
+		// 获取第一行设置表头
+		Cell cell = sheet.getRow(0).getCell(0);
+		String title = "钱钱金融财富中心合同到期客户";
+		if(null!=dueDateStart) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dueDateStart);
+			title += "--" + cal.get(Calendar.YEAR) + "年" + cal.get(Calendar.MONTH)+1 + "月" + cal.get(Calendar.DATE) + "日";
+		}
+		cell.setCellValue(title);
+		int size = list.size();
+
+		for (int i = 0; i < size; i++) {
+			if (i > 0) {
+				ReadExcel.copyRows(sheet, 3, 3, 2 + i);
+			}
+			Map<String, Object> map = list.get(i);
+			Row row = sheet.getRow(2 + i);
+			// 合同编号
+			row.getCell(0).setCellValue((String) map.get("contractNo"));
+			// 姓名
+			row.getCell(1).setCellValue((String) map.get("name"));
+			// 联系方式
+			row.getCell(2).setCellValue((String) map.get("mobilePhone"));
+			// 划扣方式
+			if (null == map.get("transferPlatform")) {
+				row.getCell(3).setCellValue("");
+			} else {
+				if ("1".equals((String) map.get("transferPlatform"))) {
+					row.getCell(3).setCellValue("富友");
+				} else if ("2".equals((String) map.get("transferPlatform"))) {
+					row.getCell(3).setCellValue("好易联");
+				}
+			}
+			//row.getCell(3).setCellValue((String) map.get("transferWay"));
+			// 划扣银行
+			row.getCell(4).setCellValue((String) map.get("bankName"));
+			// 卡号
+			row.getCell(5).setCellValue((String) map.get("cardNo"));
+			// 产品名称
+			row.getCell(6).setCellValue((String) map.get("productName"));
+			// 理财金额
+			row.getCell(7).setCellValue(((BigDecimal) map.get("investAmt")).doubleValue());
+			// 本月应付利息
+			row.getCell(8).setCellValue((String) map.get("montyInterest"));
+			// 应付金额
+			row.getCell(9).setCellValue((String) map.get("amountPayable"));
+			// 营业部
+			row.getCell(10)
+					.setCellValue((String) map.get("businessDepartment"));
+		}
+
+		HttpServletResponse response = ServletActionContext.getResponse();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		response.setHeader(
+				"Content-disposition",
+				"attachment;filename="
+						+ URLEncoder.encode(
+								"临期兑付合同信息-" + sdf.format(new Date())
+										+ ".xlsx", "utf-8"));
+		OutputStream ouputStream = response.getOutputStream();
+		workbook.write(ouputStream);
+		ouputStream.flush();
+		ouputStream.close();
+	}
+
+	private void createISS(List<Map<String, Object>> list) throws Exception,
+			UnsupportedEncodingException, IOException {
+		Calendar calendar = Calendar.getInstance();
+		String year = "";
+		String title = "理财客户汇总表";
+		if(null!=transferDateStart) {
+			calendar.setTime(transferDateStart);
+			year = calendar.get(Calendar.YEAR) + "年";
+		}
+		// 获取模板
+		String srcXlsxPath = ServletActionContext.getServletContext()
+				.getRealPath(
+						File.separator + "excel" + File.separator + "invest")
+				+ File.separator + "理财客户汇总表.xlsx";
+		Workbook workbook = ReadExcel.openExcleFile(srcXlsxPath);
+		if (null!=businessDepartmentName) {
+			title = businessDepartmentName + title;
+		}
+		workbook.setSheetName(0, year + title);
+		// 获取工作簿
+		Sheet sheet = workbook.getSheetAt(0);// 获取页签
+		// 获取第一行设置表头
+		Cell cell = sheet.getRow(0).getCell(0);
+
+		title = year + title;
+		cell.setCellValue(title);
+		int size = list.size();
+
+		for (int i = 0; i < size; i++) {
+			if (i > 0) {
+				ReadExcel.copyRows(sheet, 4, 4, 3 + i);
+			}
+			Map<String, Object> map = list.get(i);
+			Row row = sheet.getRow(3 + i);
+			// 合同序号
+			row.getCell(0).setCellValue((String) map.get("contractNo"));
+			// 客户编号
+			row.getCell(1).setCellValue((String) map.get("cusNo"));
+			// 姓名
+			row.getCell(2).setCellValue((String) map.get("name"));
+			// 身份证号
+			row.getCell(3).setCellValue((String) map.get("idNo"));
+			// 联系方式
+			row.getCell(4).setCellValue((String) map.get("mobilePhone"));
+			// 家庭住址
+			if (null == map.get("address")) {
+				row.getCell(5).setCellValue("");
+			} else {
+				row.getCell(5)
+						.setCellValue(
+								addressService.addressName((String) map
+										.get("address")));
+			}
+			// 派送方式
+			row.getCell(6).setCellValue((String) map.get("sendWay"));
+			// 邮编
+			row.getCell(7).setCellValue((String) map.get("zipCode"));
+			// 邮箱
+			row.getCell(8).setCellValue((String) map.get("email"));
+			// 划扣银行
+			row.getCell(9).setCellValue((String) map.get("bankName"));
+			// 卡号
+			row.getCell(10).setCellValue((String) map.get("cardNo"));
+			// 划扣平台
+			if (null == map.get("transferPlatform")) {
+				row.getCell(11).setCellValue("");
+			} else {
+				if ("1".equals((String) map.get("transferPlatform"))) {
+					row.getCell(11).setCellValue("富友");
+				} else if ("2".equals((String) map.get("transferPlatform"))) {
+					row.getCell(11).setCellValue("好易联");
+				}
+			}
+			// 理财金额
+			row.getCell(12).setCellValue(
+					((BigDecimal) map.get("investAmt")).doubleValue());
+			//年化金额＝if(365T) then 理财金额/1 else if(180T) then 理财金额/2 else if(90) then 理财金额/4 else if(45) then 理财金额/5 end
+			Integer days = 0;
+			if(null!=map.get("days")) {
+				days = (Integer) map.get("days");
+			}
+			// 年化金额
+			BigDecimal yearAmt = new BigDecimal("0");
+			BigDecimal investAmt = (BigDecimal) map.get("investAmt");
+			switch (days) {
+			case 365:
+				yearAmt = investAmt.divide(new BigDecimal("1"));
+				break;
+			case 180:
+				yearAmt = investAmt.divide(new BigDecimal("2"));
+				break;
+			case 90:
+				yearAmt = investAmt.divide(new BigDecimal("4"));
+				break;
+			case 45:
+				yearAmt = investAmt.divide(new BigDecimal("5"));
+				break;
+			default:
+				break;
+			}
+			//row.getCell(13).setCellValue((String) map.get("yearAmt"));
+			row.getCell(13).setCellValue(yearAmt.doubleValue());
+			// 产品名称
+			row.getCell(14).setCellValue((String) map.get("productName"));
+			// 收益率(年化)
+			BigDecimal ars = new BigDecimal("0");
+			if(null!=map.get("newArs")) {
+				ars = ((BigDecimal) map.get("newArs")).divide(new BigDecimal(100));
+				row.getCell(15).setCellValue(
+						ars.doubleValue());
+			} else {
+				ars = ((BigDecimal) map.get("ars")).divide(new BigDecimal(100));
+				row.getCell(15).setCellValue(
+						ars.doubleValue());
+			}
+			// 利息总额
+			//利息总额＝年化金额*年化收益率
+			BigDecimal interestAmt = yearAmt.multiply(ars);
+			//row.getCell(16).setCellValue((String) map.get("interestAmt"));
+			row.getCell(16).setCellValue(interestAmt.doubleValue());
+			// 月付利息
+			//月付利息＝理财金额*年化收益率/月份数（12）/每月天数（30）*计息天数（计息日期到当月30号）
+			BigDecimal montyInterest = new BigDecimal("0");
+			InvestorAndInvestProductModel iip = new InvestorAndInvestProductModel();
+			iip.setLendingCycle(days);
+			iip.setTotalInterest(interestAmt);
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			if(null!=map.get("interestDate")) {
+				iip.setInterestDate(simpleDateFormat.parse((String) map.get("interestDate")));
+				montyInterest = getInterestOfMonth(iip);
+			}
+			//row.getCell(17).setCellValue((String) map.get("montyInterest"));
+			row.getCell(17).setCellValue(montyInterest.doubleValue());
+			// 划扣日期
+			if (null == map.get("transferDate")) {
+				row.getCell(18).setCellValue("");
+			} else {
+				row.getCell(18).setCellValue((String) map.get("transferDate"));
+			}
+			// 计息日期
+			if (null == map.get("interestDate")) {
+				row.getCell(19).setCellValue("");
+			} else {
+				row.getCell(19).setCellValue((String) map.get("interestDate"));
+			}
+			// 到期日期
+			if (null == map.get("dueDate")) {
+				row.getCell(20).setCellValue("");
+			} else {
+				row.getCell(20).setCellValue((String) map.get("dueDate"));
+			}
+			// 理财顾问
+			if (null == map.get("financialAdvisor")) {
+				row.getCell(21).setCellValue("");
+			} else {
+				row.getCell(21).setCellValue(
+						userService.findUserById(
+								Integer.valueOf((String) map
+										.get("financialAdvisor"))).getName());
+			}
+			// 团队经理
+			Map<String,Object> teamManager = new HashMap<String,Object>();
+			teamManager = investReportExportService.queryTeamManager((String) map.get("investOrderId"));
+			if(null!=teamManager) {
+				row.getCell(22).setCellValue((String)teamManager.get("name"));
+			}
+			/*if (null == map.get("teamManager")) {
+				row.getCell(22).setCellValue("");
+			} else {
+				row.getCell(22)
+						.setCellValue(
+								userService.findUserById(
+										Integer.valueOf((String) map
+												.get("teamManager"))).getName());
+			}*/
+			// 大团经理
+			Map<String,Object> groupManager = new HashMap<String,Object>();
+			groupManager = investReportExportService.queryGroupManager((String) map.get("investOrderId"));
+			if(null!=groupManager) {
+				row.getCell(23).setCellValue((String)groupManager.get("name"));
+			}
+			/*if (null == map.get("groupManager")) {
+				row.getCell(23).setCellValue("");
+			} else {
+				row.getCell(23).setCellValue(
+						userService.findUserById(
+								Integer.valueOf((String) map
+										.get("groupManager"))).getName());
+			}*/
+			// 状态
+			if (null == map.get("pstatus")) {
+				row.getCell(24).setCellValue("");
+			} else {
+				row.getCell(24).setCellValue(
+						commonService.findDictName("prod_status",
+								(String) map.get("pstatus")));
+			}
+			// 备注
+			row.getCell(25).setCellValue((String) map.get("remark"));
+			// 是否付息
+			row.getCell(26).setCellValue((String) map.get("isPay"));
+		}
+
+		HttpServletResponse response = ServletActionContext.getResponse();
+		response.setHeader(
+				"Content-disposition",
+				"attachment;filename="
+						+ URLEncoder.encode(
+								"理财客户汇总表-" + sdf.format(new Date())
+										+ ".xlsx", "utf-8"));
+		OutputStream ouputStream = response.getOutputStream();
+		workbook.write(ouputStream);
+		ouputStream.flush();
+		ouputStream.close();
+	}
+
+	private void createIEB(List<Map<String, Object>> contractExpire,
+			List<Map<String, Object>> monthReturn) throws Exception,
+			UnsupportedEncodingException, IOException {
+		// 获取模板
+		String srcXlsxPath = ServletActionContext.getServletContext()
+				.getRealPath(
+						File.separator + "excel" + File.separator + "invest")
+				+ File.separator + "理财支出预算.xlsx";
+		Workbook workbook = ReadExcel.openExcleFile(srcXlsxPath);
+		String month = "";
+		if(null!=dueDateStart) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dueDateStart);
+			month = cal.get(Calendar.MONTH)+1 + "月";
+		}
+		
+		// 获取合同到期工作簿
+		Sheet sheet1 = workbook.getSheetAt(0);// 获取页签
+		workbook.setSheetName(0, month + "合同到期");
+		// 获取第一行设置表头
+		Cell cell1 = sheet1.getRow(0).getCell(0);
+		String title1 = month + "合同到期客户明细";
+		cell1.setCellValue(title1);
+		int csize = contractExpire.size();
+
+		BigDecimal investAmtSum = new BigDecimal("0.00");
+		BigDecimal interestPayableSum = new BigDecimal("0.00");
+		BigDecimal amtPayableSum = new BigDecimal("0.00");
+
+		for (int i = 0; i < csize; i++) {
+			if (i > 0) {
+				ReadExcel.copyRows(sheet1, 3, 3, 2 + i);
+			}
+			Map<String, Object> map = contractExpire.get(i);
+			Row row = sheet1.getRow(2 + i);
+			// 序号
+			row.getCell(0).setCellValue(i + 1);
+			// 合同编号
+			row.getCell(1).setCellValue((String) map.get("contractNo"));
+			// 姓名
+			row.getCell(2).setCellValue((String) map.get("name"));
+			// 联系方式
+			row.getCell(3).setCellValue((String) map.get("mobilePhone"));
+			// 划扣银行
+			row.getCell(4).setCellValue((String) map.get("bankName"));
+			// 卡号
+			row.getCell(5).setCellValue((String) map.get("cardNo"));
+			// 理财产品
+			row.getCell(6).setCellValue((String) map.get("productName"));
+			// 理财金额
+			row.getCell(7).setCellValue(
+					((BigDecimal) map.get("investAmt")).doubleValue());
+			// 应付利息
+			if (null != map.get("interestPayable")) {
+				row.getCell(8)
+						.setCellValue(
+								((BigDecimal) map.get("interestPayable"))
+										.doubleValue());
+			}
+			// 应付金额
+			if (null != map.get("amtPayable")) {
+				row.getCell(9).setCellValue(
+						((BigDecimal) map.get("amtPayable")).doubleValue());
+			}
+			// 计息日期
+			row.getCell(10).setCellValue((String) map.get("interestDate"));
+			// 到期日期
+			row.getCell(11).setCellValue((String) map.get("dueDate"));
+			// 营业部
+			row.getCell(12)
+					.setCellValue((String) map.get("businessDepartment"));
+
+			investAmtSum = investAmtSum.add((BigDecimal) map.get("investAmt"));
+			if (null != map.get("interestPayable")) {
+				interestPayableSum = interestPayableSum.add((BigDecimal) map
+						.get("interestPayable"));
+			}
+			if (null != map.get("amtPayable")) {
+				amtPayableSum = amtPayableSum.add((BigDecimal) map
+						.get("amtPayable"));
+			}
+
+		}
+		ReadExcel.copyRows(sheet1, 3, 3, 2 + csize);
+		sheet1.addMergedRegion(new CellRangeAddress(csize + 2, csize + 2, 0, 6));// 合并单元格
+		//sheet1.addMergedRegion(new CellRangeAddress(2, csize + 2, 12, 12));// 合并单元格
+		Row row1 = sheet1.getRow(csize + 2);
+		row1.getCell(0).setCellValue("总计");
+		row1.getCell(7).setCellValue(investAmtSum.doubleValue());
+		row1.getCell(8).setCellValue(interestPayableSum.doubleValue());
+		row1.getCell(9).setCellValue(amtPayableSum.doubleValue());
+		row1.getCell(10).setCellValue("");
+		row1.getCell(11).setCellValue("");
+		row1.getCell(12).setCellValue("");
+
+		// 获取工作簿2
+		Sheet sheet2 = workbook.getSheetAt(1);// 获取页签
+		workbook.setSheetName(1, month + "月反息");
+		// 获取第一行设置表头
+		Cell cell2 = sheet2.getRow(0).getCell(0);
+		String title2 = month + "月返息客户明细";
+		cell2.setCellValue(title2);
+		int msize = monthReturn.size();
+
+		BigDecimal totalinvestAmt = new BigDecimal("0.00");
+		BigDecimal totalinterestAmt = new BigDecimal("0.00");
+		BigDecimal totalmonthRepayInterest = new BigDecimal("0.00");
+
+		for (int i = 0; i < msize; i++) {
+			if (i > 0) {
+				ReadExcel.copyRows(sheet2, 3, 3, 2 + i);
+			}
+			Map<String, Object> map = monthReturn.get(i);
+			Row row = sheet2.getRow(2 + i);
+			// 序号
+			row.getCell(0).setCellValue(i + 1);
+			// 合同编号
+			row.getCell(1).setCellValue((String) map.get("contractNo"));
+			// 姓名
+			row.getCell(2).setCellValue((String) map.get("name"));
+			// 联系方式
+			row.getCell(3).setCellValue((String) map.get("mobilePhone"));
+			// 划扣银行
+			row.getCell(4).setCellValue((String) map.get("bankName"));
+			// 卡号
+			row.getCell(5).setCellValue((String) map.get("cardNo"));
+			// 理财金额
+			row.getCell(6).setCellValue(
+					((BigDecimal) map.get("investAmt")).doubleValue());
+			// 理财产品
+			row.getCell(7).setCellValue((String) map.get("productName"));
+			// 本月计息天数
+			row.getCell(8).setCellValue((String) map.get("interestDays"));
+			// 年化收益率
+			if(null!=map.get("newArs")) {
+				row.getCell(9).setCellValue(
+						((BigDecimal) map.get("newArs")).doubleValue());
+			} else {
+				row.getCell(9).setCellValue(
+						((BigDecimal) map.get("ars")).doubleValue());
+			}
+			// 利息总额
+			if (null != map.get("interestAmt")) {
+				row.getCell(10).setCellValue(
+						((BigDecimal) map.get("interestAmt")).doubleValue());
+			}
+			// 月付利息
+			if (null != map.get("monthRepayInterest")) {
+				row.getCell(11).setCellValue(
+						(String) map.get("monthRepayInterest"));
+			}
+			// 计息日期
+			row.getCell(12).setCellValue((String) map.get("interestDate"));
+			// 到期日期
+			row.getCell(13).setCellValue((String) map.get("dueDate"));
+			// 营业部
+			row.getCell(14)
+					.setCellValue((String) map.get("businessDepartment"));
+
+			totalinvestAmt = totalinvestAmt.add((BigDecimal) map
+					.get("investAmt"));
+			if (null != map.get("interestAmt")) {
+				totalinterestAmt = totalinterestAmt.add(new BigDecimal(
+						(String) map.get("interestAmt")));
+			}
+			if (null != map.get("monthRepayInterest")) {
+				totalmonthRepayInterest = totalmonthRepayInterest
+						.add(new BigDecimal((String) map
+								.get("monthRepayInterest")));
+			}
+		}
+
+		ReadExcel.copyRows(sheet2, 3, 3, 2 + msize);
+		sheet2.addMergedRegion(new CellRangeAddress(msize + 2, msize + 2, 0, 5));// 合并单元格
+		//sheet1.addMergedRegion(new CellRangeAddress(2, msize + 2, 14, 14));// 合并单元格
+		sheet2.addMergedRegion(new CellRangeAddress(msize + 2, msize + 2, 7, 9));// 合并单元格
+		Row row2 = sheet2.getRow(msize + 2);
+		row2.getCell(0).setCellValue("总计");
+		row2.getCell(6).setCellValue(totalinvestAmt.doubleValue());
+		row2.getCell(7).setCellValue("");
+		row2.getCell(10).setCellValue(totalinterestAmt.doubleValue());
+		row2.getCell(11).setCellValue(totalmonthRepayInterest.doubleValue());
+		row2.getCell(12).setCellValue("");
+		row2.getCell(13).setCellValue("");
+		row2.getCell(14).setCellValue("");
+
+		HttpServletResponse response = ServletActionContext.getResponse();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		response.setHeader(
+				"Content-disposition",
+				"attachment;filename="
+						+ URLEncoder.encode(
+								"理财支出预算表-" + sdf.format(new Date())
+										+ ".xlsx", "utf-8"));
+		OutputStream ouputStream = response.getOutputStream();
+		workbook.write(ouputStream);
+		ouputStream.flush();
+		ouputStream.close();
+	}
+
+	/**
+	 * 获取月付利息
+	 */
+	private BigDecimal getInterestOfMonth(InvestorAndInvestProductModel model){
+		//理财天数
+		BigDecimal licaitianshu = new BigDecimal((Integer)model.getLendingCycle());
+		//利息总额
+		BigDecimal lixizonge = model.getTotalInterest();
+		//每天利息，保留2位小数
+		BigDecimal meitianlixi = lixizonge.divide(licaitianshu,2);
+		//返息日期
+		String fanxiriqi = getDateOfInterestPayDay();
+		//获取计息日期
+		String jixiriqi = new SimpleDateFormat("yyyy-MM-dd").format(model.getInterestDate());
+		//计息天数
+		Integer jixitianshu = getDateOfDay(jixiriqi,fanxiriqi);
+		return meitianlixi.multiply(new BigDecimal(jixitianshu));
+	}
+	
+	private String getDateOfInterestPayDay(){
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar rightNow = Calendar.getInstance();
+		
+		//判断是否是闰年
+		int year = rightNow.get(Calendar.YEAR);
+		
+		//如果是闰年
+		if( (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ){
+			//如果当前月份是2月
+			if(2 == (rightNow.get(Calendar.MONTH) + 1)){			
+				rightNow.set(Calendar.DAY_OF_MONTH,29);		
+			}else{
+				rightNow.set(Calendar.DAY_OF_MONTH, 30);
+			}
+			
+		}
+		//如果不是闰年
+		else {
+			//如果当前月份是2月
+			if(2 == (rightNow.get(Calendar.MONTH) + 1)){			
+				rightNow.set(Calendar.DAY_OF_MONTH,28);		
+			}else{
+				rightNow.set(Calendar.DAY_OF_MONTH, 30);
+			}				
+		}	
+		return df.format(rightNow.getTime()).toString();
+	}
+	
+	public Integer getDateOfDay(String jixiriqi,String fanxiriqi){	
+		try {
+			//本月一号日期
+			String benyue1hao = getFirstDayOfCurrentMonth();
+			if(benyue1hao.compareTo(jixiriqi) > 0){
+				//如果计息日期晚于本月一号
+				return 30;
+			}
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");  
+	        Calendar cal = Calendar.getInstance();    
+	        cal.setTime(sdf.parse(jixiriqi));    
+	        long time1 = cal.getTimeInMillis();                 
+	        cal.setTime(sdf.parse(fanxiriqi));    
+	        long time2 = cal.getTimeInMillis();         
+	        long between_days=(time2-time1)/(1000*3600*24);  
+	        return Integer.parseInt(String.valueOf(between_days))+1; 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public String getFirstDayOfCurrentMonth(){
+		 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		 Calendar c = Calendar.getInstance();    
+	     c.add(Calendar.MONTH, 0);
+	     c.set(Calendar.DAY_OF_MONTH,1);
+	     return format.format(c.getTime());
+	}
+	
+	/**
+	 * 封装查询参数
+	 * 
+	 * @return
+	 */
+	private Map<String, Object> packageParams() {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", name);
+		params.put("transferPlatform", transferPlatform);
+		params.put("bankName", bankName);
+		params.put("productName", productName);
+		params.put("transferDateStart", transferDateStart);
+		params.put("transferDateEnd", transferDateEnd);
+		params.put("dueDateStart", dueDateStart);
+		params.put("dueDateEnd", dueDateEnd);
+		params.put("repaymentMethod", repaymentMethod);
+		params.put("email", email);
+		params.put("mobilePhone", mobilePhone);
+		params.put("idNo", idNo);
+		params.put("pstatus", pstatus);
+		params.put("contractNo", contractNo);
+		params.put("cardNo", cardNo);
+		params.put("businessDepartment", businessDepartment);
+		return params;
+	}
+	
+	private String name;
+	private String transferPlatform;
+	private String bankName;
+	private String productName;
+	private Date transferDateStart;
+	private Date transferDateEnd;
+	private Date dueDateStart;
+	private Date dueDateEnd;
+	private String repaymentMethod;
+	private String mobilePhone;
+	private String idNo;
+	private String email;
+	private String pstatus;
+	private String contractNo;
+	private String cardNo;
+	private String businessDepartment;
+	private String businessDepartmentName;//部门名称
+	private String investOrderId;//投资订单ID
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getTransferPlatform() {
+		return transferPlatform;
+	}
+
+	public void setTransferPlatform(String transferPlatform) {
+		this.transferPlatform = transferPlatform;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public Date getTransferDateStart() {
+		return transferDateStart;
+	}
+
+	public void setTransferDateStart(Date transferDateStart) {
+		this.transferDateStart = transferDateStart;
+	}
+
+	public Date getTransferDateEnd() {
+		return transferDateEnd;
+	}
+
+	public void setTransferDateEnd(Date transferDateEnd) {
+		this.transferDateEnd = transferDateEnd;
+	}
+
+	public Date getDueDateStart() {
+		return dueDateStart;
+	}
+
+	public void setDueDateStart(Date dueDateStart) {
+		this.dueDateStart = dueDateStart;
+	}
+
+	public Date getDueDateEnd() {
+		return dueDateEnd;
+	}
+
+	public void setDueDateEnd(Date dueDateEnd) {
+		this.dueDateEnd = dueDateEnd;
+	}
+
+	public String getRepaymentMethod() {
+		return repaymentMethod;
+	}
+
+	public void setRepaymentMethod(String repaymentMethod) {
+		this.repaymentMethod = repaymentMethod;
+	}
+
+	public String getMobilePhone() {
+		return mobilePhone;
+	}
+
+	public void setMobilePhone(String mobilePhone) {
+		this.mobilePhone = mobilePhone;
+	}
+
+	public String getIdNo() {
+		return idNo;
+	}
+
+	public void setIdNo(String idNo) {
+		this.idNo = idNo;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPstatus() {
+		return pstatus;
+	}
+
+	public void setPstatus(String pstatus) {
+		this.pstatus = pstatus;
+	}
+
+	public String getContractNo() {
+		return contractNo;
+	}
+
+	public void setContractNo(String contractNo) {
+		this.contractNo = contractNo;
+	}
+
+	public String getCardNo() {
+		return cardNo;
+	}
+
+	public void setCardNo(String cardNo) {
+		this.cardNo = cardNo;
+	}
+
+	public String getBusinessDepartment() {
+		return businessDepartment;
+	}
+
+	public void setBusinessDepartment(String businessDepartment) {
+		this.businessDepartment = businessDepartment;
+	}
+
+	public String getBusinessDepartmentName() {
+		return businessDepartmentName;
+	}
+
+	public void setBusinessDepartmentName(String businessDepartmentName) {
+		this.businessDepartmentName = businessDepartmentName;
+	}
+
+	public String getInvestOrderId() {
+		return investOrderId;
+	}
+
+	public void setInvestOrderId(String investOrderId) {
+		this.investOrderId = investOrderId;
+	}
+
+
+}

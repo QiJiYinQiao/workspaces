@@ -7,22 +7,20 @@
 		var row = parent.$.modalDialog.openner.datagrid('getSelected');
 		$grid = $("#lookLoanOrderdg").datagrid({
 			url : "loanOrderHis/loanOrderHisAction!findAllLoanOrderHis.action",
-			width : 'auto',
-			height : 610,
-			pagination:true,
 			rownumbers:true,
 			border:true,
 			singleSelect:true,
+			fitColumns:true,
 			nowrap:true,
 			queryParams:{"loanOrderId":row.loanOrderId},
 			multiSort:false,
 			columns : [ [ 
-			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
-			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
-			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'left'},
+			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'center'},
 			              /* {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'left'}, */
-			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.09),align : 'left',
+			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.09),align : 'center',
 			            	formatter:function(value,row,index){
 			            		return "<a href='javascript:void(0);' onclick='lookAttachment("+index+");'>查看附件</a>　　" ;
 			            	}  

@@ -37,15 +37,18 @@ public class SaveUploadFileUtil {
 	/** 加载配置文件. */
 	static {
 		try {
-			pro.load(SaveUploadFileUtil.class.getClassLoader()
-					.getResourceAsStream(PROPERTIES_NAME));
+			pro.load(SaveUploadFileUtil.class.getClassLoader().getResourceAsStream(PROPERTIES_NAME));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	/** 文件系统URL KEY. */
-	private static final String KEY_FILE_SYSTEM_URL = pro
-			.getProperty("file_system_url");
+	/** 文件系统外网访问URL KEY. */
+	private static final String KEY_FILE_SYSTEM_EXTRANET_URL = pro
+			.getProperty("file_system_extranet_url");
+	
+	/** 文件系统内网访问URL KEY. */
+	private static final String KEY_FILE_SYSTEM_INTRANET_URL = pro
+			.getProperty("file_system_intranet_url");
 
 	/** 文件系统端口 KEY. */
 	private static final String KEY_FILE_SYSTEM_PORT = pro
@@ -59,11 +62,25 @@ public class SaveUploadFileUtil {
 	private static final String KEY_FORWARD = "/";
 
 	/**
-	 * 文件服务器的访问地址
+	 * 文件服务器的外网访问地址
 	 */
-	public static String getFileSystemURL() {
+	public static String getFileSystemExtranetURL() {
 		StringBuffer url = new StringBuffer();
-		url.append(KEY_FILE_SYSTEM_URL);
+		url.append(KEY_FILE_SYSTEM_EXTRANET_URL);
+		url.append(":");
+		url.append(KEY_FILE_SYSTEM_PORT);
+		url.append(KEY_FORWARD);
+		url.append(KEY_FILE_SYSTEM_NAME);
+		url.append(KEY_FORWARD);
+		return url.toString();
+	}
+	
+	/**
+	 * 文件服务器的内网地址
+	 */
+	public static String getFileSystemIntranetURL() {
+		StringBuffer url = new StringBuffer();
+		url.append(KEY_FILE_SYSTEM_INTRANET_URL);
 		url.append(":");
 		url.append(KEY_FILE_SYSTEM_PORT);
 		url.append(KEY_FORWARD);
@@ -78,11 +95,10 @@ public class SaveUploadFileUtil {
 	public static String saveFile2FileSystem(String fileName, File file) {
 		String ext = FilenameUtils.getExtension(fileName);
 		String fileNewName = getFileNewName();
-		String path = "resources/images/" + fileNewName + "." + ext;
-		String url = getFileSystemURL() + path;
+		String path = fileNewName + "." + ext;
+		String url = getFileSystemIntranetURL() + path;
 		try {
-			getJerseyClient(url).put(String.class,
-					FileUtils.readFileToByteArray(file));
+			getJerseyClient(url).put(String.class,FileUtils.readFileToByteArray(file));
 		} catch (UniformInterfaceException | IOException e) {
 			e.printStackTrace();
 		}
@@ -93,11 +109,12 @@ public class SaveUploadFileUtil {
 	 * 对于贷款业务：将文件按保存到文件服务器并返回文件相对路径名称(新的保存附件的方法)
 	 */
 	public static String saveFile2FileSystem4LoanOrder(String loanOrderId, String fileName, File file) {
+		//获取文件扩展名
 		String ext = FilenameUtils.getExtension(fileName);
 		String fileNewName = getFileNewName();
 		//定义发起RestFul风格请求的逻辑URL路径。
 		String path = "resources/loanAttachment/" + loanOrderId + "/" + fileNewName + "." + ext;
-		String url = getFileSystemURL() + path;
+		String url = getFileSystemIntranetURL() + path;
 		try {
 			getJerseyClient(url).put(String.class,FileUtils.readFileToByteArray(file));
 			//返回图片实际存储的物理路径（注意区别：图片的逻辑URL路径比图片的实际物理路径多了一个“resources”字符串）。
@@ -118,7 +135,7 @@ public class SaveUploadFileUtil {
 		//定义发起RestFul风格请求的逻辑URL路径。
 		String path = "resources/investAttachment/" + investOrderId + "/" + fileNewName + "." + ext;
 				
-		String url = getFileSystemURL() + path;
+		String url = getFileSystemIntranetURL() + path;
 		try {
 			getJerseyClient(url).put(String.class, FileUtils.readFileToByteArray(file));
 			//返回图片实际存储的物理路径（注意区别：图片的逻辑URL路径比图片的实际物理路径多了一个“resources”字符串）。
@@ -134,15 +151,13 @@ public class SaveUploadFileUtil {
 	 * 将文件按保存到文件服务器并返回文件相对路径名称
 	 */
 	public static String saveSwf2FileSystem(String fileName, File file) {
-		String path = "resources/images/" + fileName;
-		String url = getFileSystemURL() + path;
+		String url = getFileSystemIntranetURL() + fileName;
 		try {
-			getJerseyClient(url).put(String.class,
-					FileUtils.readFileToByteArray(file));
+			getJerseyClient(url).put(String.class,FileUtils.readFileToByteArray(file));
 		} catch (UniformInterfaceException | IOException e) {
 			e.printStackTrace();
 		}
-		return path;
+		return fileName;
 	}
 
 	/**
@@ -152,7 +167,7 @@ public class SaveUploadFileUtil {
 	 *            文件的路径
 	 */
 	public static File getFileFormFileSystemByPath(String path) {
-		return getJerseyClient(getFileSystemURL() + path).get(File.class);
+		return getJerseyClient(getFileSystemIntranetURL() + path).get(File.class);
 	}
 
 	/**
@@ -162,7 +177,7 @@ public class SaveUploadFileUtil {
 	 *            文件的路径
 	 */
 	public static byte[] getBytesFormFileSystemByPath(String path) {
-		return getJerseyClient(getFileSystemURL() + path).get(byte[].class);
+		return getJerseyClient(getFileSystemIntranetURL() + path).get(byte[].class);
 	}
 
 	/**
@@ -176,7 +191,7 @@ public class SaveUploadFileUtil {
 	 * 删除服务器上的图片文件
 	 */
 	public static void deleteFlieSystemFileByPath(String path) {
-		getJerseyClient(getFileSystemURL() + path).delete();
+		getJerseyClient(getFileSystemIntranetURL() + path).delete();
 	}
 
 	/**

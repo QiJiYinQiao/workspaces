@@ -61,9 +61,26 @@ th{
     var provinceArr = jqueryUtil.getAreaTextArr(1);//获取省
     var relationshipArr;//与本人关系
 	$(function(){
-		$('#tt').tabs({    
-		    border:false    
+		$('#div4CompleteInvestContractAndProductInfo').tabs({    
+		    border:false,
+		    onSelect:function(title,index) {
+		    	if(index == 2) {
+		    		var contractNo = $("#contractNo").val();
+		    		if(null==contractNo || ""==contractNo) {
+			    		//获取合同编号
+			    		$.ajax({
+			    			url:'investorderAndProducts/investorderAndProductsAction!createInvestContractNo.action',
+			    			type:'post',
+			    			data:{"orgId":$("#organizationId").val()},
+			    			success: function(data) {
+			    				$("#contractNo").val(data);
+			    			}
+			    		});
+		    		}
+		    	}
+		    }
 		}); 
+		
 		//性别
 		$("input[name='genderType']").combobox({
 			url : "common/commonAction!findTextArr.action?codeMyid=gender_type",
@@ -122,6 +139,15 @@ th{
 			valueField: 'code',
 			textField: 'text'
 		});
+		//渲染划扣平台下拉选择框
+		$("#huaKouPlatform").combobox({
+			panelHeight : 50,
+			url:"common/commonAction!findTextArr.action?codeMyid=huakou_platform",
+			valueField: 'code',
+			textField: 'text'						
+		});
+	    
+	    
 	    //渲染基本信息省市县
 	    renderProvinceSelect("provinceId","cityId","areaId");
 	    //渲染紧急联系人地址
@@ -130,9 +156,28 @@ th{
 	    initLinkPeopleGrid();
 	    //渲染合同理财产品列表
 	    initProductGrid();
-	    //订单id'${orderId}'
-	    
+	    //订单id'${orderId}'	    	        	    
 	    $("input[name='investOrderId']").val('${orderId}');
+	    
+	    //初始化理财产品表单时，将“调整后的理财收益率”这个输入域设置为不可见。
+ 	    $("#thId4NewArs").css('display', 'none');
+	    $("#tdId4NewArs").css('display', 'none');
+ 	    	    
+	  	//初始化理财产品表单中，是否选择“调整理财收益率”这个下拉组件
+	  	$("#ifAdjustArs").combobox({
+	  		panelHeight : 50,
+	  		onSelect : function(){
+	  			var mySelectedVal = $("#ifAdjustArs").combobox("getValue");
+	  			if(mySelectedVal == "Y"){
+ 	  				$("#thId4NewArs").show();
+	  				$("#tdId4NewArs").show();
+ 	  			}else{
+ 	  				$("#thId4NewArs").hide();
+	  				$("#tdId4NewArs").hide();	  				
+	  			}
+	  		}
+	  	});
+	  	
 	})
 	//省
 	function renderProvinceSelect(pid,cid,aid){
@@ -215,9 +260,9 @@ th{
     function initLinkPeopleGrid(investorId){
     	var uri = "";
     	if(investorId != null){
-    		uri = "contacts/contactsAction!findAllList.action?loanerId="+investorId
+    		uri = "contacts/contactsAction!findInvestorContactListByInvestorId.action?investorId="+investorId
     	}else{
-    		uri = "contacts/contactsAction!findAllList.action";
+    		uri = "contacts/contactsAction!findInvestorContactListByInvestorId.action";
     	}
     	$("#linkPeopleGrid").datagrid({
     		url : uri,
@@ -269,14 +314,14 @@ th{
     }
     //保存贷款人客户基本信息
     function saveInvestor(){
-    	var isValid = $("#baseInfoForm").form('validate');
+    	var isValid = $("#basicInvestorClientInfoForm").form('validate');
     	if(!isValid){
     		return false;
     	}
     	$.ajax({
     		type: "POST",
     		url:"investor/investorAction!persistenceInvestorDlg.action",
-    		data:$('#baseInfoForm').serialize(),
+    		data:$('#basicInvestorClientInfoForm').serialize(),
     		async: false,//默认true设置下，所有请求均为异步请求
     		cache: true,
     	    success: function(iJson) {
@@ -298,7 +343,7 @@ th{
     	$("#editId").show();//修改按钮显示出来
     	$("#rsetId").hide();//重置按钮隐藏
     	$("#sign").val("save");//设为为保存状态
-    	$("#baseInfoForm input[class^='easyui-']").each(function(i){
+    	$("#basicInvestorClientInfoForm input[class^='easyui-']").each(function(i){
     		if($(this).hasClass("easyui-textbox easyui-validatebox")){
     			$(this).attr("disabled",true);
     		}else if($(this).hasClass("easyui-datebox")){
@@ -310,7 +355,7 @@ th{
     		}else{
     		}
     	})
-    	$("#baseInfoForm select").combobox("disable");
+    	$("#basicInvestorClientInfoForm select").combobox("disable");
     }
     //解禁form
     function editForm(){
@@ -318,7 +363,7 @@ th{
     	$("#saveId").show();//保存按钮显示出来
     	$("#rsetId").show();//重置按钮显示
     	$("#sign").val("edit");//设为为编辑状态
-    	$("#baseInfoForm input[class^='easyui-']").each(function(i){
+    	$("#basicInvestorClientInfoForm input[class^='easyui-']").each(function(i){
     		if($(this).hasClass("easyui-textbox easyui-validatebox")){
     			$(this).attr("disabled",false);
     		}else if($(this).hasClass("easyui-datebox")){
@@ -330,11 +375,11 @@ th{
     		}else{
     		}
     	})
-    	$("#baseInfoForm select").combobox("enable");
+    	$("#basicInvestorClientInfoForm select").combobox("enable");
     }
     //重置
     function clearForm(){
-    	$("#baseInfoForm").form("clear");//form清空
+    	$("#basicInvestorClientInfoForm").form("clear");//form清空
     	$("#linkPeopleGrid").datagrid('reload',{loanerId:null});//刷新列表
     	$("#sign").val("edit");//设为编辑状态
     }
@@ -552,7 +597,7 @@ th{
         	 $("input[name='investOrderId']").val('${orderId}');
         	$('#prodId').combogrid("setValue",row.prodId);
         	$("#investProductForm").form("load",row);
-        	$("#repaymentMode").val(jqueryUtil.showText(row.repaymentMode, jqueryUtil.getTextArr("repay_method")));
+        	$("#repaymentMode").val(jqueryUtil.showText(row.repaymentMode, jqueryUtil.getTextArr("repayment_mode")));
     	}
     });  
 
@@ -562,6 +607,21 @@ th{
     	if(!isValid){
     		return false;
     	}
+    	
+    	//检测理财经理是是否选择了“划扣平台”
+    	var huaKouPlatform = $("#huaKouPlatform").combobox("getValue");
+    	console.info(huaKouPlatform);
+    	if(huaKouPlatform == "" || huaKouPlatform == null){
+    		$.messager.alert("提示信息","请选择划扣平台！","warning")
+    		return false;    		
+    	}    	
+    	
+    	//判断“是否调整理财”的字段是否选择，若没选择，则将其设置为“N”
+    	var ifAdjustArs = $("#ifAdjustArs").combobox("getValue");
+    	if(ifAdjustArs == "" || ifAdjustArs == null){
+    		$("#ifAdjustArs").combobox('setValue', 'N');
+    	}
+    	
     	//验证申请金额是否在最低出借金额和最高出借金额之间
     	var lowLendEdu=Number($("#lowLendEdu").val());
     	var higLendEdu=Number($("#higLendEdu").val());
@@ -580,8 +640,7 @@ th{
         	}else{
         		checkProd();
         	}
-    	}
-    	
+    	}    	    	
     }
     /**持久化订单与理财产品的关系*/
     function checkProd(){
@@ -622,14 +681,39 @@ th{
     		fitColumns:true,
     		columns : [ [
                          {field : 'ck',checkbox : true},
-    		             {field : 'product',title : '理财产品',width : 150,align : 'center',
+    		             {field : 'product',title : '理财产品',width : 80,align : 'center',
                         	 formatter:function(value,row){
                         		 return row.product.prodName;
                         	 }},
-    		             {field : 'beginDate',title : '划扣日期',width : 150,align : 'center'},
-    		             {field : 'interestDate',title : '计息日',width : 150,align : 'center'},
-    		             {field : 'endDate',title : '到期日',width : 150,align : 'center'},
-    		             {field : 'investEdu',title : '申请金额(元)',width : 150,align : 'center'}
+    		             {field : 'beginDate',title : '划扣日期',width : 80,align : 'center'},
+    		             {field : 'interestDate',title : '计息日',width : 80,align : 'center'},
+    		             {field : 'endDate',title : '到期日',width : 80,align : 'center'},
+    		             {field : 'ars',title : '年化收益率(%)',width : 80,align : 'center',
+    		            	 formatter:function(value, row){
+    		            		 return row.product.ars;
+    		            	 }
+    		             },
+    		             {field : 'newArs',title : '新的年化收益率(%)',width : 90,align : 'center',
+    		            	 formatter:function(value, row){
+    		            		 if(row.newArs != null){    		            			 
+    		            		 	return row.newArs;
+    		            		 }else{
+    		            			return "没有调整年化收益"
+    		            		 }
+    		            	 }
+    		             },
+    		             {field : 'investEdu',title : '申请金额(元)',width : 90,align : 'center'},
+    		             {field : 'huaKouPlatform',title : '划扣平台',width : 90,align : 'center',
+    		            	 formatter:function(value, row){
+    		            		 if(row.huaKouPlatform != null || row.huaKouPlatform != ""){
+    		            			 if(row.huaKouPlatform == '1'){
+    		            				 return "富友";
+    		            			 }else if(row.huaKouPlatform == '2'){
+    		            				 return "好易联";
+    		            			 }
+    		            		 }
+    		            	 }	 
+    		             }
     		]],
     		toolbar: [/* {
     			iconCls: 'icon-edit',
@@ -725,10 +809,15 @@ th{
     	
     }
 </script>
-<div id="tt">
+
+<!-- 完善客户及合同信息对话框 DIV：开始边界-->
+<div id="div4CompleteInvestContractAndProductInfo">	
+  <!------------------------------------------------------------>
+  <!--------------------- 客户基本信息Tab开始 ------------------------->  
+  <!------------------------------------------------------------>	
   <div title="客户基本信息">
 	  <div class="well well-small" style="margin:5px;">
-	    <form id="baseInfoForm">
+	    <form id="basicInvestorClientInfoForm">
 	      <input id="investOrderId" name="investOrderId" type="hidden"/>
 	      <input id="investorId" name="investorId" type="hidden"/><!-- 投资人id -->
 	      <input name="investorStatus" type="hidden"/><!-- 投资人状态 -->
@@ -832,7 +921,11 @@ th{
           </table>
       </form>
 	  </div>
-  </div>
+  </div><!--------------------- 客户基本信息Tab结束 ------------------------->
+  
+  <!------------------------------------------------------------>
+  <!--------------------- 紧急联系人Tab开始 ------------------------->  
+  <!------------------------------------------------------------>
   <div title="紧急联系人">
     <div class="well well-small" style="margin:5px">
        <form id="linkPeopleForm">
@@ -901,143 +994,180 @@ th{
     <div style="margin: 5px;">
         <table id="linkPeopleGrid"></table>
     </div>
-  </div>
+  </div><!--------------------- 紧急联系人Tab结束 ------------------------->
+  
+  
+  <!------------------------------------------------------------>
+  <!--------------------- 合同信息子Tab开始 ------------------------->  
+  <!------------------------------------------------------------>
   <div title="合同信息">
-  <form id = "constractInfoForm" action="" method="post"> 
-  	<input id="investOrderId" name="investOrderId" type="hidden"/>
-  	<input id="investorId" name="investorId" type="hidden"/>
-  	<input id="investorName" name="investorName" type="hidden"/>
-  	<input id="orderStatus" name="orderStatus.statusCode" type="hidden"/>
-  	<input id="mobTel" name="mobTel" type="hidden"/>
-  	<input id="idCrad" name="idCrad" type="hidden"/>
-  	<input id="creator" name="creator" type="hidden"/>
-  	<input id="createDate" name="createDate" type="hidden"/>
-  	<input id="organizationId" name="organizationId" type="hidden"/>
-  	<input id="processStatus" name="processStatus" type="hidden"/>
-  	<input id="signContract" type="hidden" value="edit"/><!-- 修改or保存状态标志 -->
-  <fieldset>
-  	<legend>开户行信息</legend>
-  	<div title="开户行信息" style="padding:10px">
-  	<table class="table">
-  	 <tr>
-       <th>账户介质:</th>
-       <td><select id="actMedium" name="actMedium" class="easyui-textbox easyui-validatebox"></select></td>
-       <th>账户性质:</th>
-       <td><select id="actNature" name="actNature" class="easyui-textbox easyui-validatebox"></select></td>
-       <th>开户行名称:</th>
-       <td><input id="bankName" name="bankName" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
-     </tr>
-     <tr>
-       <th>账户名称:</th>
-       <td><input id="actName" name="actName" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
-       <th>开户行账号:</th>
-       <td><input id="actNo" name="actNo" class="easyui-textbox easyui-numberbox"" required/></td>
-     </tr>
-  	</table>
-  	</div>
-  </fieldset>
-  <fieldset>
-  	<legend>合同信息</legend>
-  	<div title="合同信息" style="padding:10px">
-  	<table class="table">
-  	 <tr>
-       <th>合同编号:</th>
-       <td><input id="contractNo" name="contractNo" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
-       <th>合同签署地:</th>
-       <td><input id="signSite" name="signSite" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,64]'" required/></td>
-       <th>合同签署日期:</th>
-       <td><input id="signDate" name="signDate" class="easyui-textbox easyui-datebox"/></td>
-     </tr>
-     <tr>
-       <th>理财经理:</th> 
-       <td><input id="financingMgr" name="financingMgr" value="${users.name }" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,20]'" readonly/></td>
-       <th>理财经理电话:</th>
-       <td><input id="fmPhone" name="fmPhone" value="${users.tel }" class="easyui-textbox easyui-numberbox" readonly/></td>
-       <th>理财经理签字日期:</th>
-       <td><input id="fmSignDate" name="fmSignDate" class="easyui-textbox easyui-datebox"/></td>
-     </tr>
-     <tr>
-       <th>部门主管:</th>
-       <td><input id="deptMgr" name="deptMgr" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,20]'"/></td>
-       <th>部门主管签字日期:</th>
-       <td><input id="dmSignDate" name="dmSignDate" class="easyui-textbox easyui-datebox"/></td>
-     </tr>
-     </table>
-  	</div>
-  </fieldset>
-  <fieldset>
-  	<legend>备注信息</legend>
-  	<div title="备注信息" style="padding: 10px">
-		<textarea id="orderDesc" name="orderDesc" class="easyui-validatebox easyui-textbox" style="width:550px;height:70px;" data-options="validType:'length[0,100]'"></textarea>
-	</div>
-  </fieldset>
-  <fieldset>
-  <legend></legend>
-  	<div align="right" style="margin-right:45px">
-  		   <a href="javascript:void(0)" id="rsetBtn" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearContractForm();">重置</a>
-	       <a href="javascript:void(0)" id="editBtn" class="easyui-linkbutton" iconCls="icon-edit" style="display: none;" onclick="editContractForm()">编辑</a>
-           <a href="javascript:void(0)" id="saveBtn" class="easyui-linkbutton" iconCls="icon-save" onclick="saveInvestContract()">保存</a>
+  
+	 <!---------------- 合同信息部分开始 ---------------------->  
+	 <form id = "constractInfoForm" action="" method="post"> 
+		<input id="investOrderId" name="investOrderId" type="hidden"/>
+		<input id="investorId" name="investorId" type="hidden"/>
+		<input id="investorName" name="investorName" type="hidden"/>
+		<input id="orderStatus" name="orderStatus.statusCode" type="hidden"/>
+		<input id="mobTel" name="mobTel" type="hidden"/>
+		<input id="idCrad" name="idCrad" type="hidden"/>
+		<input id="creator" name="creator" type="hidden"/>
+		<!-- 保存“createDate”字段的值，否则，页面上的createDate字段会覆盖数据库中原来的createDate字段的值 -->
+		<input id="createDate" name="createDate" class="easyui-datetimebox" type="hidden"/>		
+		<input id="organizationId" name="organizationId" type="hidden"/>
+		<input id="processStatus" name="processStatus" type="hidden"/>
+		<input id="signContract" type="hidden" value="edit"/><!-- 修改or保存状态标志 -->
+		<!-- 在保存合同信息的后台程序中时，用于获取InvestOrder对象的外键对象，即Users对象  -->
+		<input id="licaijingliUserId" name="licaijingliUserId" value="${liCaiJingLiObj.userId}" type="hidden"/>		
+	 	<!-- 投资流程分为：投资申请流程和投资赎回流程。"1",投资申请流程。 "2"代表：投资赎回流程。 --> 	 
+		<input id="investProcessType" name="investProcessType" type="hidden"/> 
 
-  </div>
-  </fieldset>
-  </form>
-   <fieldset style="margin-top:10px">
- 	<legend>选择理财产品</legend>
- 	<div title="投资申请">
- 	<!-- <a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">增加投资产品</a>
-<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">取消投资产品</a>  -->
- 	<form id="investProductForm">
- 	<input name="id" type="hidden"/>
- 	<input name="investOrderId" type="hidden"/>
- 	<input id="interestDate" name="interestDate" type="hidden"/>
- 	<input id="usableEdu" name ="usableEdu" type="hidden"/>
- 	<table class="table">
- 	<tr>
-      <th>理财产品:</th>
-      <td><input id="prodId" name="product.prodId" class="easyui-textbox easyui-validatebox"/></td>
-      <th>年化收益率(%):</th>
-      <td><input id="ars" name="ars" class="easyui-textbox easyui-validatebox" readonly/></td>
-      <th>到期收益率(%):</th>
-      <td><input id="ytm" name="ytm" class="easyui-textbox easyui-validatebox" readonly/></td>
-    </tr>
-    <tr>
-    <th>模式特点:</th>
-      <td>
-      <textarea id="prodDesc" name="prodDesc" class="easyui-textbox easyui-validatebox" style="width:170px;height:60px;" readonly></textarea>
-      </td>
-      <th>最低出借金额(元):</th>
-      <td><input id="lowLendEdu" name="lowLendEdu" class="easyui-textbox easyui-validatebox" readonly/></td>
-      <th>最高出借金额（元）:</th>
-      <td><input id="higLendEdu" name="higLendEdu" class="easyui-textbox easyui-validatebox" readonly/></td>
-    </tr>
-    <tr>
-    	<th>还款方式:</th>
-      <td><input id="repaymentMode" name="repaymentMode" class="easyui-textbox easyui-validatebox" readonly/></td>
-      <th>出借周期（天）:</th>
-      <td><input id="lendingCycle" name="lendingCycle" class="easyui-textbox easyui-validatebox" readonly/></td>
-    </tr>
-    <tr>
-      <th>投资期限:</th>
-      <td colspan="3"><input id=beginDate name=beginDate class="easyui-textbox easyui-datebox" data-options="onChange:function(date){calInterestDate(date)}" required/>
-      至
-      <input id="endDate" name="endDate" class="easyui-textbox easyui-datebox"/></td>
-    </tr>
-    <tr>
-      <th>申请金额:</th>
-      <td><input id="investEdu" name="investEdu" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble1'" required/>元</td>
-    </tr>
- 	<tr>
- 	<td colspan="6" style="text-align: right">
- 		<a href="javascript:void(0)" id="saveinfo" class="easyui-linkbutton" iconCls="icon-save" onclick="saveOrderAndProduct();">确定</a>
- 	</td>
- 	</tr>
- 	</table>
- 	</form>
- 	<!-- 列表暂不显示 -->
- 	<div style="margin-top:5px">
- 		<table id="pg"></table>
- 	</div>
- 	</div>
- </fieldset>
-  </div>
-</div>
+		<fieldset>
+			<legend>开户行信息</legend>
+			<div title="开户行信息" style="padding:10px">
+				<table class="table">
+					<tr>
+						<th>账户介质:</th>
+						<td><select id="actMedium" name="actMedium" class="easyui-textbox easyui-validatebox"></select></td>
+						<th>账户性质:</th>
+						<td><select id="actNature" name="actNature" class="easyui-textbox easyui-validatebox"></select></td>
+						<th>开户行名称:</th>
+						<td><input id="bankName" name="bankName" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
+					</tr>
+					<tr>
+						<th>账户名称:</th>
+						<td><input id="actName" name="actName" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,16]'" required/></td>
+						<th>开户行账号:</th>
+						<td><input id="actNo" name="actNo" class="easyui-textbox easyui-numberbox" required/></td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+
+		<fieldset>
+			<legend>合同信息</legend>
+			<div title="合同信息" style="padding:10px">
+				<table class="table">
+					<tr>
+						<th>合同编号:</th>
+						<td><input id="contractNo" name="contractNo" readonly="readonly" class="easyui-textbox"/></td>
+						<th>合同签署地:</th>
+						<td><input id="signSite" name="signSite" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,64]'" required/></td>
+						<th>合同签署日期:</th>
+						<td><input id="signDate" name="signDate" class="easyui-textbox easyui-datebox"/></td>
+					</tr>
+					<tr>
+						<th>理财经理:</th>                         
+						<td><input id="financingMgr.name" name="financingMgr.name" value="${liCaiJingLiObj.name }" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,20]'" readonly/></td>
+						<th>理财经理电话:</th>    
+						<td><input id="fmPhone" name="fmPhone" class="easyui-textbox easyui-numberbox" readonly/></td>
+						<th>理财经理签字日期:</th>
+						<td><input id="fmSignDate" name="fmSignDate" class="easyui-textbox easyui-datebox"/></td>
+					</tr>
+					<tr>
+						<th>部门主管:</th>
+						<td><input id="deptMgr" name="deptMgr" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,20]'"/></td>
+						<th>部门主管签字日期:</th>
+						<td><input id="dmSignDate" name="dmSignDate" class="easyui-textbox easyui-datebox"/></td>
+					</tr>
+				</table>
+			</div>
+		</fieldset>
+		  
+		  
+		<fieldset>
+			<legend>备注信息</legend>
+			<div title="备注信息" style="padding: 10px">
+				<textarea id="orderDesc" name="orderDesc" class="easyui-validatebox easyui-textbox" style="width:550px;height:70px;" data-options="validType:'length[0,100]'"></textarea>
+			</div>
+		</fieldset>
+	
+		<fieldset>
+			<legend></legend>
+			<div align="right" style="margin-right:45px">
+			<a href="javascript:void(0)" id="rsetBtn" class="easyui-linkbutton" iconCls="icon-reload" onclick="clearContractForm();">重置</a>
+			<a href="javascript:void(0)" id="editBtn" class="easyui-linkbutton" iconCls="icon-edit" style="display: none;" onclick="editContractForm()">编辑</a>
+			<a href="javascript:void(0)" id="saveBtn" class="easyui-linkbutton" iconCls="icon-save" onclick="saveInvestContract()">保存</a>		
+			</div>
+		</fieldset>
+	 </form>  <!---------------- 合同信息部分结束 ---------------------->
+	  
+	    	    
+	    <!-- ------------------- 理财产品信息区域部分开始 --------------------- -->
+		<fieldset style="margin-top:10px">
+			<legend>选择理财产品</legend>
+			<div title="投资申请">
+<!-- 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addACredential(this);">增加投资产品</a>
+				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeACredential(this);">取消投资产品</a> 
+ -->				
+ 				<form id="investProductForm">
+					<input name="id" type="hidden"/>
+					<input name="investOrderId" type="hidden"/>
+					<input id="interestDate" name="interestDate" type="hidden"/>
+					<input id="usableEdu" name ="usableEdu" type="hidden"/>
+					<table class="table">
+						<tr>
+							<th>理财产品:</th>
+							<td><input id="prodId" name="product.prodId" class="easyui-textbox easyui-validatebox"/></td>
+							<th>年化收益率(%):</th>
+							<td><input id="ars" name="ars" class="easyui-textbox easyui-validatebox" readonly/></td>
+							<th>到期收益率(%):</th>
+							<td><input id="ytm" name="ytm" class="easyui-textbox easyui-validatebox" readonly/></td>
+						</tr>
+						<tr>
+							<th>最低出借金额(元):</th>
+							<td><input id="lowLendEdu" name="lowLendEdu" class="easyui-textbox easyui-validatebox" readonly/></td>
+							<th>最高出借金额（元）:</th>
+							<td><input id="higLendEdu" name="higLendEdu" class="easyui-textbox easyui-validatebox" readonly/></td>
+							<th>申请金额:</th>
+							<td><input id="investEdu" name="investEdu" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble1'" required/>元</td>						
+						</tr>
+						<tr>
+							<th>还款方式:</th>
+							<td><input id="repaymentMode" name="repaymentMode" class="easyui-textbox easyui-validatebox" readonly/></td>
+							<th>出借周期（天）:</th>
+							<td><input id="lendingCycle" name="lendingCycle" class="easyui-textbox easyui-validatebox" readonly/></td>
+							<th>是否调整年化收益率:</th>
+							<td>
+								<select id="ifAdjustArs" name="ifAdjustArs" class="easyui-combobox"  style="width:50px;">   
+								    <option value="N" selected="selected">否</option>   
+								    <option value="Y">是</option>   
+								</select> 							
+							</td>													
+						</tr>
+						<tr>
+							<th>投资期限:</th>
+							<td colspan="3"><input id=beginDate name=beginDate class="easyui-textbox easyui-datebox" data-options="onChange:function(date){calInterestDate(date)}" required/>
+							  至
+							<input id="endDate" name="endDate" class="easyui-textbox easyui-datebox"/></td>
+							<th id="thId4NewArs">调整后的年化收益率(%):</th>
+							<td id="tdId4NewArs"><input id="newArs" name="newArs" class="easyui-textbox easyui-validatebox"/></td>																					
+						</tr>
+						<tr>
+							<th>模式特点:</th>
+							<td colspan="5">
+								<textarea id="prodDesc" name="prodDesc" class="easyui-textbox easyui-validatebox" style="width:700px;height:100px;" readonly></textarea>
+							</td>						
+						</tr>
+						
+						<tr>
+							<th>划扣平台:</th>
+							<td><input id="huaKouPlatform" name="huaKouPlatform" class="easyui-textbox"  style="width:80px;"/></td>   
+						</tr>												
+						<tr>
+							<td colspan="6" style="text-align: right">
+								<a href="javascript:void(0)" id="saveinfo" class="easyui-linkbutton" iconCls="icon-save" onclick="saveOrderAndProduct();">确定</a>
+							</td>
+						</tr>
+					</table>
+				</form>
+				
+				列表暂不显示
+				<div style="margin-top:5px">
+					<table id="pg"></table>
+				</div>
+			</div>
+		</fieldset> <!-- ------------------- 理财产品信息区域部分结束 --------------------- -->
+						
+  </div><!--------------------- 合同信息子Tab结束 ------------------------->
+  
+</div><!-- 完善客户及合同信息对话框 DIV：结束边界-->

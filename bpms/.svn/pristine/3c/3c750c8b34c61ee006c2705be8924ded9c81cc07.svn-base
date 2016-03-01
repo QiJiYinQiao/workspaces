@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.invest.InvestRedeemMapper">
+
+	<!-- AND t_order_status.STATUS_CODE = 'InvestOrder_XiaoKeZhuGuanTongGuo' -->   <!-- 投资订单的状态为：销客主管通过InvestOrder_XiaoKeZhuGuanTongGuo（投资申请流程中的最后一个节点，注意不是投资赎回流程的最后一个节点。） -->
+
+
+	<sql id="targetColumns">
+				<!-- 投资业务订单表 --> 
+				t_investOrder.INVEST_ORDER_ID AS "investOrderId", <!-- 投资订单ID。 --> 
+				t_investOrder.INVESTOR_ID AS "investorId",        <!-- 投资者ID。 -->
+				t_investOrder.ORDER_STATUS AS "orderStatus",      <!-- 投资订单状态，比如销客专员通过。 -->
+				t_investOrder.ORDER_DESC AS "orderDesc",          <!-- 投资订单描述。 -->
+				t_investOrder.CONTRACT_NO AS "contractNo",        <!-- 合同编号。 -->
+				t_investOrder.SIGN_SITE AS "signSite",            <!-- 合同签署地方。 -->
+				t_investOrder.SIGN_DATE AS "signDate",            <!-- 合同签署日期。 -->
+				t_investOrder.MOB_TEL AS "mobTel",                <!-- 联系电话 -->
+				t_investOrder.FINANCING_MGR AS "financingMgr",    <!-- 理财经理为当前订单的最初受理人，此处记录企业内部用户ID -->
+				t_investOrder.FM_PHONE AS "fmPhone",              <!-- 理财经理电话 -->
+				t_investOrder.FM_SIGN_DATE AS "fmSignDate",       <!-- 理财经理签字日期 -->
+				t_investOrder.DEPT_MGR AS "deptMgr",              <!-- 部门主管，此处存放的数值为员工的ID -->
+				t_investOrder.DM_SIGN_DATE AS "dmSignDate",       <!-- 部门主管签字日期 -->
+				t_investOrder.CREATOR AS "creator",               <!-- 登记人是当前系统登录用户并且为订单填写的企业内部用户，此处记录用户ID -->
+				t_investOrder.CREATE_DATE AS "createDate",        <!-- 投资申请的创建日期 -->
+				t_investOrder.BANK_NAME AS "bankName",            <!-- 投资开户行名称，第三方支付必需 -->
+				t_investOrder.ACT_NO AS "actNo",                  <!-- 开户行账号，第三方支付必需 -->
+				t_investOrder.ACT_NAME AS "actName",                   <!-- 账户名称 -->
+				IFNULL(t_investOrder.ACT_MEDIUM,'A') AS "actMedium",   <!-- 账户介质 -->
+				IFNULL(t_investOrder.ACT_NATURE,'A') AS "actNature",   <!-- 账户性质 -->
+				t_investOrder.ID_CARD AS "idCard",                     <!-- 身份证号码 -->
+				t_investOrder.PROCESS_STATUS AS "processStatus",       <!-- 流程状态，， -->
+				t_investOrder.ORGANIZATION_ID  AS "organizationId",    <!-- 登记人所属机构 -->
+				t_investOrder.INVEST_PROCESS_TYPE  AS "investProcessType",    <!-- 投资流程类型 -->
+				
+				<!-- 投资人信息表 --> 
+				IFNULL(t_investor.INVESTOR_TYPE,'A') AS "investorType",    <!-- 投资人类型 -->
+				t_investor.INVESTOR_STATUS AS "investorStatus",               <!-- 投资人状态 -->
+				t_investor.CH_NAME AS "chName",                               <!-- 财富客户中文姓名 -->
+				t_investor.EN_NAME AS "enName",                               <!-- 财富客户英文姓名 -->
+				IFNULL(t_investor.GENDER_TYPE,'A') AS "genderType",           <!-- 性别 -->
+				t_investor.BIRTHDAY AS "birthday",                            <!-- 出生日期 -->
+				t_investor.NATIONALITY AS "nationality",                      <!-- 国籍 -->
+				IFNULL(t_investor.MARITAL_STATUS,'Y') AS "maritalStatus",     <!-- 婚姻状况 -->
+				IFNULL(t_investor.FAMILY_STATUS,'Y') AS "familyStatus",       <!-- 家庭情况 -->
+				IFNULL(t_investor.FAM_INC_STA,'Y') AS "famIncSta",            <!-- 家庭收入情况 -->
+				IFNULL(t_investor.ID_TYPE,'Y') AS "idType",                   <!-- 证件类型 -->
+				t_investor.ID_NO AS "idNo",                                   <!-- 证件号码 -->
+				t_investor.ID_ISSUE_DATE AS "idIssueDate",                    <!-- 签发日期 -->
+				t_investor.ID_EXPIRE_DATE AS "idExpireDate",                  <!-- 失效日期 -->
+				t_investor.ID_LOCATION AS "idLocation",                 <!-- 发证机构所在地 -->
+				t_investor.DEGREE_TYPE AS "degreeType",                 <!-- 学历类型 -->
+				IFNULL(t_investor.JOB_TYPE,'Y') AS "jobType",           <!-- 职业类型 -->
+				t_investor.INDUSTRY AS "industry",                      <!-- 所属行业 -->
+				t_investor.COMPANY_NAME AS "companyName",               <!-- 单位名称 -->
+				t_investor.YEARS_OF_WORK AS "yearsOfWork",              <!-- 工作年限 -->
+				IFNULL(t_investor.COMP_SCALE,'Y') AS "compScale",       <!-- 单位规模 -->
+				t_investor.JOB_TITLE AS "jobTitle",                     <!-- 职务 -->
+				t_investor.MOBILE_TEL AS "mobileTel",                   <!-- 投资客户移动电话 -->
+				t_investor.FIXED_TEL AS "fixedTel",                     <!-- 投资客户固定电话 -->
+				t_investor.EMAIL AS "email",                    <!-- 电子邮箱 -->
+				t_investor.COMM_ADDR AS "commAddr",             <!-- 通讯地址 -->
+				t_investor.ZIP AS "zip",                        <!-- 邮政编码 -->
+				
+				<!-- 关系表：投资订单表与理财产品表关系表 --> 
+				t_ivstOrder_prod.INVEST_EDU AS "investEdu",     <!-- 投资额度 -->
+				t_ivstOrder_prod.BEGIN_DATE AS "beginDate",     <!-- 投资开始日期，即划扣日期 -->
+				t_ivstOrder_prod.INTEREST_DATE AS "interestDate",  <!-- 计息日期，划扣日期的下一个工作日（遇节假日顺延） -->
+				
+				<!-- 理财产品信息表  --> 
+				t_products.PROD_ID AS "prodId",                 <!-- 理财产品ID -->
+				t_products.PROD_NAME AS "prodName"              <!-- 理财产品名称 -->		
+	</sql>
+
+
+	<!-- ************************************************* -->
+	<!-- ***************  与审批完的投资申请 相关的SQL语句  *************** -->	
+	<!-- ************************************************* -->
+
+	<!-- SQL语句findAlreadyApprovedInvestApplyList的查询条件 -->
+	<sql id="Where_Clause_4_findAlreadyApprovedInvestApplyList">
+		<where>		
+			<!-- 投资赎回的基本业务条件部分 -->
+			t_investor.INVESTOR_STATUS = 'A'                                      <!-- A表示投资者的状态为"正常" -->
+			AND t_investOrder.INVEST_PROCESS_TYPE = '1'			                  <!-- 投资流程类型："1"代表“投资申请流程”。 -->
+			AND t_investOrder.PROCESS_STATUS = '2'	                              <!-- ‘2’表示投资流程的当前状态为"已结束" -->
+			
+			<if test="investApplySubmitter !=null and investApplySubmitter !='' ">
+				AND t_investOrder.FINANCING_MGR = #{investApplySubmitter}			<!--判断执行投资赎回操作的理财经理 与 执行投资申请的理财经理 是否是同一个人 -->				    	
+			</if>			 
+		</where>
+	</sql>
+	
+	
+	<!-- 根据条件查询，获取已完成审批的投资申请订单List -->
+	<select id="findAlreadyApprovedInvestApplyList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT
+			<include refid="targetColumns"/>	
+		FROM
+				T_BP_INVEST_ORDER t_investOrder 
+		LEFT JOIN 
+			T_BP_INVESTOR t_investor ON t_investOrder.INVESTOR_ID = t_investor.INVESTOR_ID
+		LEFT JOIN 
+			t_bp_investOrder_and_products t_ivstOrder_prod ON t_investOrder.INVEST_ORDER_ID = t_ivstOrder_prod.INVEST_ORDER_ID
+		LEFT JOIN 
+			t_bp_invest_products t_products ON t_ivstOrder_prod.PROD_ID = t_products.PROD_ID 
+		LEFT JOIN 
+			t_bp_order_status t_order_status ON t_order_status.STATUS_ID = t_investOrder.ORDER_STATUS						
+		
+		<include refid="Where_Clause_4_findAlreadyApprovedInvestApplyList"/>
+		
+		ORDER BY 
+			t_investOrder.CREATE_DATE DESC
+		LIMIT 
+			#{start},#{end}
+	</select>
+	
+
+    <!-- 根据条件查询，统计已完成审批的投资申请订单个数 -->
+	<select id="countAlreadyApprovedInvestApplyList" resultType="java.lang.Long" parameterType="java.util.HashMap">
+		select
+			count(*)
+		FROM
+				T_BP_INVEST_ORDER t_investOrder 
+		LEFT JOIN 
+			T_BP_INVESTOR t_investor ON t_investOrder.INVESTOR_ID = t_investor.INVESTOR_ID
+		LEFT JOIN 
+			t_bp_investOrder_and_products t_ivstOrder_prod ON t_investOrder.INVEST_ORDER_ID = t_ivstOrder_prod.INVEST_ORDER_ID
+		LEFT JOIN 
+			t_bp_invest_products t_products ON t_ivstOrder_prod.PROD_ID = t_products.PROD_ID 
+		LEFT JOIN 
+			t_bp_order_status t_order_status ON t_order_status.STATUS_ID = t_investOrder.ORDER_STATUS			
+		<include refid="Where_Clause_4_findAlreadyApprovedInvestApplyList"/>
+		ORDER BY
+				t_investOrder.CREATE_DATE DESC
+		LIMIT #{start},#{end}									
+	</select>						
+	
+	<!-- ************************************************* -->
+	<!-- ***************  与投资赎回相关的SQL语句  *************** -->	
+	<!-- ************************************************* -->
+	
+	<!-- SQL语句findInvestRedeemList的Where查询条件 -->
+	<sql id="Where_Clause_4_findInvestRedeemList">
+		<where>		
+			<!-- 投资赎回的基本业务条件部分 -->
+			t_investor.INVESTOR_STATUS = 'A'                                      <!-- A表示投资者的状态为"正常" -->
+			AND t_investOrder.INVEST_PROCESS_TYPE = '2'			                  <!-- 投资流程类型："2"代表“投资赎回申请”。 -->
+			<!-- AND t_investOrder.PROCESS_STATUS = '0'	 -->                              <!-- ‘0’表示投资流程的当前状态为"未开启" -->
+			
+			<if test="investApplySubmitter !=null and investApplySubmitter !='' ">
+				AND t_investOrder.FINANCING_MGR = #{investApplySubmitter}			<!--判断执行投资赎回操作的理财经理 与 执行投资申请的理财经理 是否是同一个人 -->				    	
+			</if>	
+			
+			<!-- 高级查询条件部分 -->
+			<if test="investorName4AdvancedQuery !=null and investApplySubmitter !='' ">
+				AND t_investor.CH_NAME LIKE '%${investorName4AdvancedQuery}%'                <!-- 高级插叙条件：财富客户姓名 -->
+			</if>
+			
+			<if test="contractNo4AdvancedQuery !=null and contractNo4AdvancedQuery !='' ">
+				AND t_investOrder.CONTRACT_NO LIKE '%${contractNo4AdvancedQuery}%'           <!-- 高级插叙条件：合同编号 -->
+			</if>								 
+		</where>
+	</sql>
+	
+	<!-- 查询投资赎回申请的数据 -->
+	<select id="findInvestRedeemList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		select
+			<include refid="targetColumns"/>
+		FROM
+			T_BP_INVEST_ORDER t_investOrder 
+		LEFT JOIN 
+			T_BP_INVESTOR t_investor ON t_investOrder.INVESTOR_ID = t_investor.INVESTOR_ID
+		LEFT JOIN 
+			t_bp_investOrder_and_products t_ivstOrder_prod ON t_investOrder.INVEST_ORDER_ID = t_ivstOrder_prod.INVEST_ORDER_ID
+		LEFT JOIN 
+			t_bp_invest_products t_products ON t_ivstOrder_prod.PROD_ID = t_products.PROD_ID 
+		LEFT JOIN 
+			t_bp_order_status t_order_status ON t_order_status.STATUS_ID = t_investOrder.ORDER_STATUS			
+		<include refid="Where_Clause_4_findInvestRedeemList"/>
+		ORDER BY
+				t_investOrder.CREATE_DATE DESC
+		LIMIT #{start},#{end}											
+	</select>
+
+	
+	<!-- 统计投资赎回信息的条数。 -->
+	<select id="countInvestRedeemList" resultType="java.lang.Long" parameterType="java.util.HashMap">
+		select
+			count(*)
+		FROM
+				T_BP_INVEST_ORDER t_investOrder 
+		LEFT JOIN 
+			T_BP_INVESTOR t_investor ON t_investOrder.INVESTOR_ID = t_investor.INVESTOR_ID
+		LEFT JOIN 
+			t_bp_investOrder_and_products t_ivstOrder_prod ON t_investOrder.INVEST_ORDER_ID = t_ivstOrder_prod.INVEST_ORDER_ID
+		LEFT JOIN 
+			t_bp_invest_products t_products ON t_ivstOrder_prod.PROD_ID = t_products.PROD_ID 
+		LEFT JOIN 
+			t_bp_order_status t_order_status ON t_order_status.STATUS_ID = t_investOrder.ORDER_STATUS			
+		<include refid="Where_Clause_4_findInvestRedeemList"/>
+		ORDER BY
+				t_investOrder.CREATE_DATE DESC
+		LIMIT #{start},#{end}			
+	</select>
+	
+</mapper>

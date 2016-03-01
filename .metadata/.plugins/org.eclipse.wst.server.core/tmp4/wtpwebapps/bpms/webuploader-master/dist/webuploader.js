@@ -4346,7 +4346,7 @@
     
                 // 已经重复了
                 if ( mapping[ hash ] ) {
-                    this.trigger( 'error', 'F_DUPLICATE', file );
+                    this.trigger( 'error', "'"+file.name+"',已经存在!", file );
                     return false;
                 }
             });

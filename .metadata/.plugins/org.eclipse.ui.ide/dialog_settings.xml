@@ -20,15 +20,19 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_NESTED_PROJECTS"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="D:\文档\2015-12-3\office web app module\officewebserver"/>
+			<item value="D:\文档\2015-7-9\office web app module\officewebserver"/>
 			<item value="E:\springMVC_myBatis1_test"/>
 			<item value="E:\pdfPreview"/>
 			<item value="E:\batchupload"/>
-			<item value="D:\henryyan-kft-activiti-demo-9340b4a"/>
-			<item value="E:\qqjrcrm\source\bpms"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
 			<item value=""/>
 		</list>
+	</section>
+	<section name="ResourceNavigator">
+		<item value="Aggregate for window 1428906854327" key="ResourceWorkingSetFilter.STORE_WORKING_SET"/>
+		<item value="1" key="ResourceViewer.STORE_SORT_TYPE"/>
 	</section>
 	<section name="CleanDialogSettings">
 		<item value="500" key="DIALOG_WIDTH"/>

@@ -1,0 +1,377 @@
+package com.bpms.action;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.service.InvestOrderService;
+import com.bpms.service.InvestRedeemService;
+import com.bpms.service.InvestRedeemWorkFlowService;
+import com.bpms.service.WorkFlowService;
+import com.bpms.util.Constants;
+import com.bpms.view.model.DataModel;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 
+ * 投资赎回的Action
+ * 
+ * @author 张健 2015/12/16.
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/12/16 张健 创建.
+ */
+@Namespace("/investRedeem")
+@Action(value = "investRedeemAction", results = {
+	// 跳转到“调整申请”办理任务界面，在本业务中，一般是申请提交者有权进行调整申请操作，申请者一般是理财经理。
+	@Result(name = "gotoTaskForm4InvestRedeemAdjustment", location = "/jsp/investRedeem/taskForm4InvestRedeemAdjustment.jsp", type = "dispatcher"),
+	
+	// 跳转到“团队经理”办理任务界面。
+	@Result(name = "gotoTaskForm4TuanDuiJingLi", location = "/jsp/investRedeem/taskForm4TuanDuiJingLi.jsp", type = "dispatcher"),
+	// 跳转到“大团经理”办理任务界面。
+	@Result(name = "gotoTaskForm4DaTuanJingLi", location = "/jsp/investRedeem/taskForm4DaTuanJingLi.jsp", type = "dispatcher"),
+	// 跳转到“营业部经理”办理任务界面。
+	@Result(name = "gotoTaskForm4YingYeBuJingLi", location = "/jsp/investRedeem/taskForm4YingYeBuJingLi.jsp", type = "dispatcher"),
+	// 跳转到“城市经理”办理任务界面。
+	@Result(name = "gotoTaskForm4ChengShiJingLi", location = "/jsp/investRedeem/taskForm4ChengShiJingLi.jsp", type = "dispatcher"),	
+	// 跳转到“区域总监”办理任务界面。
+	@Result(name = "gotoTaskForm4QuYuZongJian", location = "/jsp/investRedeem/taskForm4QuYuZongJian.jsp", type = "dispatcher"),				
+	// 跳转到“销客经理”办理任务界面。
+	@Result(name = "gotoTaskForm4XiaoKeJingLi", location = "/jsp/investRedeem/taskForm4XiaoKeJingLi.jsp", type = "dispatcher"),		
+	// 跳转到“总经理”办理任务界面。
+	@Result(name = "gotoTaskForm4ZongJingLi", location = "/jsp/investRedeem/taskForm4ZongJingLi.jsp", type = "dispatcher"),				
+	// 跳转到“销客专员”办理任务界面。
+	@Result(name = "gotoTaskForm4XiaoKeZhuanYuan", location = "/jsp/investRedeem/taskForm4XiaoKeZhuanYuan.jsp", type = "dispatcher"),		
+	// 跳转到“数据专员”办理任务界面。
+	@Result(name = "gotoTaskForm4ShuJuZhuanYuan", location = "/jsp/investRedeem/taskForm4ShuJuZhuanYuan.jsp", type = "dispatcher"),		
+	// 跳转到“结算专员”办理任务界面。
+	@Result(name = "gotoTaskForm4JieSuanZhuanYuan", location = "/jsp/investRedeem/taskForm4JieSuanZhuanYuan.jsp", type = "dispatcher")				
+})
+public class InvestRedeemAction extends BaseAction implements
+		ModelDriven<InvestOrder> {
+
+	private static final long serialVersionUID = 3680229897378856564L;
+
+	private InvestOrder investOrder = new InvestOrder();
+
+	@Autowired
+	private InvestRedeemService investRedeemService;
+
+	@Autowired
+	private InvestRedeemWorkFlowService investRedeemWorkFlowService;
+
+	@Autowired
+	private InvestOrderService investOrderService;
+
+	@Autowired
+	private WorkFlowService workFlowService;
+
+	// ********************************************************//
+	// **************** 与投资赎回数据信息相关的方法 **************//
+	// ********************************************************//
+	/**
+	 * 
+	 * @Title: findAlreadyApprovedInvestApplyList
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 上午11:27:59
+	 */
+	public String findAlreadyApprovedInvestApplyList() {
+		// 封装传入后台的参数。
+		Map<String, Object> param = new HashMap<String, Object>();
+		try {
+			param.put("start", this.getFirstResult());
+			param.put("end", this.getRows());			
+			// 获得当前,投资赎回操作的理财经理的ID
+			// 原因：理财经理A提交的投资申请，只能由理财经理A进行赎回操作，其不能对理财经理B提交的投资订单进行操作。
+			param.put("investApplySubmitter",
+					String.valueOf(Constants.getCurrendUser().getUserId()));
+
+			GridModel gridModel = new GridModel();
+			gridModel.setRows(investRedeemService
+					.findAlreadyApprovedInvestApplyList(param));
+			gridModel.setTotal(investRedeemService
+					.countAlreadyApprovedInvestApplyList(param));
+			this.OutputJson(gridModel);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	/**
+	 * 查询投资赎回信息数据List
+	 */
+	public String findInvestRedeemList(){
+		// 封装传入后台的参数。
+		Map<String, Object> param = new HashMap<String, Object>();
+		try {
+
+			param.put("start", this.getFirstResult());
+			param.put("end", this.getRows());
+			param.put("investorName4AdvancedQuery",
+					this.investOrder.getInvestorName()); // 封装高级查询中的“财富客户姓名”
+			param.put("contractNo4AdvancedQuery",
+					this.investOrder.getContractNo()); // 封装高级查询中的“合同编号”
+			// 获得当前,投资赎回操作的理财经理的ID
+			// 原因：理财经理A提交的投资申请，只能由理财经理A进行赎回操作，其不能对理财经理B提交的投资订单进行操作。
+			param.put("investApplySubmitter", String.valueOf(Constants.getCurrendUser().getUserId()));
+
+			GridModel gridModel = new GridModel();
+			gridModel.setRows(investRedeemService.findInvestRedeemList(param));
+			gridModel.setTotal(investRedeemService.countInvestRedeemList(param));			
+			this.OutputJson(gridModel);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;		
+	}
+	
+	
+	@Override
+	public InvestOrder getModel() {
+		return this.investOrder;
+	}
+	
+	
+	// ********************************************************//
+	// **************** 与投资赎回流程页面跳转相关的方法 **************//
+	// ********************************************************//	
+	/**
+	 * 跳转到“调整申请”的办理任务界面。
+	 */
+	public String gotoTaskForm4InvestRedeemAdjustment(){
+		return "gotoTaskForm4InvestRedeemAdjustment";
+	}		
+	
+	/**
+	 * 跳转到“团队经理”办理任务界面。
+	 */
+	public String gotoTaskForm4TuanDuiJingLi(){
+		return "gotoTaskForm4TuanDuiJingLi";
+	}
+	
+	/**
+	 * 跳转到“大团经理”办理任务界面。
+	 */	
+	public String gotoTaskForm4DaTuanJingLi(){
+		return "gotoTaskForm4DaTuanJingLi";
+	}
+
+	/**
+	 * 跳转到“营业部经理”办理任务界面。
+	 */	
+	public String gotoTaskForm4YingYeBuJingLi(){
+		return "gotoTaskForm4YingYeBuJingLi";
+	} 
+
+	/**
+	 * 跳转到“城市经理”办理任务界面。
+	 */	
+	public String gotoTaskForm4ChengShiJingLi(){
+		return "gotoTaskForm4ChengShiJingLi";
+	} 
+	
+	/**
+	 * 跳转到“区域总监”办理任务界面。
+	 */	
+	public String gotoTaskForm4QuYuZongJian(){
+		return "gotoTaskForm4QuYuZongJian";
+	} 	
+	
+	/**
+	 * 跳转到“销客经理”办理任务界面。
+	 */	
+	public String gotoTaskForm4XiaoKeJingLi(){
+		return "gotoTaskForm4XiaoKeJingLi";
+	}	
+
+	/**
+	 * 跳转到“总经理”办理任务界面。
+	 */	
+	public String gotoTaskForm4ZongJingLi(){
+		return "gotoTaskForm4ZongJingLi";
+	}	
+	
+	/**
+	 * 跳转到“销客专员”办理任务界面。
+	 */	
+	public String gotoTaskForm4XiaoKeZhuanYuan(){
+		return "gotoTaskForm4XiaoKeZhuanYuan";
+	}		
+
+	/**
+	 * 跳转到“数据专员”办理任务界面。
+	 */	
+	public String gotoTaskForm4ShuJuZhuanYuan(){
+		return "gotoTaskForm4ShuJuZhuanYuan";
+	}
+
+	/**
+	 * 跳转到“结算专员”办理任务界面。
+	 */	
+	public String gotoTaskForm4JieSuanZhuanYuan(){
+		return "gotoTaskForm4JieSuanZhuanYuan";
+	}			
+	
+	
+	// ********************************************************//
+	// **************** 与投资赎回流程，流程处理相关的方法 **************//
+	// ********************************************************//
+
+	/**
+	 * 启动投资赎回的工作流程。
+	 * @Title: saveStartProcess4InvestRedeem
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 下午4:42:59
+	 */
+	public String saveStartProcess4InvestRedeem() {
+		try {
+			OutputJson(getMessage(investRedeemWorkFlowService
+					.saveStartProcess4InvestRedeem(this.investOrder)));
+		} catch (ActivitiObjectNotFoundException e) {
+			OutputJson(new DataModel("提示", "您还没有部署投资申请流程!!", false));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 修改投资订单的 “流程类型”，将其类型在“投资申请流程”与“投资赎回类型”之间变换。
+	 * 
+	 * @Title: updateInvestOrderProcessType
+	 * @Description: TODO
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 下午9:01:39
+	 * @throws
+	 */
+	public String updateInvestOrderProcessType() {
+		try {
+			OutputJson(getMessage(investOrderService
+					.updateInvestOrderProcessType(
+							this.investOrder.getInvestOrderId(),
+							this.investOrder.getInvestProcessType())));
+		} catch (ActivitiObjectNotFoundException e) {
+			OutputJson(new DataModel("提示", "您还没有部署投资申请流程!!", false));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 更改投资订单的流程状态，将其由“2(已结束状态)”更改为“0(未开启状态)”
+	 * 
+	 * @Title: updateInvestOrderProcessStatusToWeiKaiQi
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月17日 上午10:00:09
+	 */
+	public String updateInvestRedeemProcessStatus() {
+		try {
+			OutputJson(getMessage(investOrderService
+					.updateInvestRedeemProcessStatus(
+							this.investOrder.getInvestOrderId(),
+							this.investOrder.getProcessStatus())));
+		} catch (ActivitiObjectNotFoundException e) {
+			OutputJson(new DataModel("提示",
+					"投资订单的流程状态由“2(已结束状态)”更改为“0(未开启状态)时出错”!!", false));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * 根据investOrderId，获取投资赎回的流程图
+	 * @Title: checkWorkFlowImg4InvestRedeemByInvestOrderId 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月17日 下午1:29:43
+	 */
+	public String checkWorkFlowImg4InvestRedeemByInvestOrderId(){
+		try {
+			investRedeemWorkFlowService.checkWorkFlowImg4InvestRedeemByInvestOrderId(this.investOrder.getInvestOrderId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+		
+	/**
+	 * 查询当前角色的代办任务列表（没有被签收的任务用）
+	 * @Title: findAllUnclaimedTaskList
+	 * @Description: TODO 待办任务列表
+	 */
+	public String findAllUnclaimedTaskList() {
+		GridModel gridModel = new GridModel();
+		gridModel.setRows(investRedeemWorkFlowService.findAllUnclaimedTaskList(getFirstResult(), getMaxResults()));
+		gridModel.setTotal(investRedeemWorkFlowService.findAllUnclaimedTaskCount());
+		OutputJson(gridModel);
+		return null;
+	}
+
+	/**
+	 * 当前角色的用户签收任务
+	 * @Title: saveMyTask
+	 * @Description: TODO 签收任务
+	 * @param @return
+	 * @return String
+	 * @throws
+	 */
+	public String pickMyTask() {
+		try {
+			investRedeemWorkFlowService.pickMyTask(investOrder.getTaskId());
+			OutputJson(new DataModel("提示", "恭喜你,签收成功!", true));
+		} catch (Exception e) {
+			e.printStackTrace();
+			OutputJson(new DataModel("提示", "出错了,签收失败!", false));
+		}
+		return null;
+	}	
+	
+	/**
+	 * 办理任务
+	 * @author: zhangjian
+	 * @time:2015年7月228日
+	 * @Title:受理任务页面中，点击办理任务时，会走这个InvestOrderAction
+	 */
+	public String findTaskFormKeyByTaskId() {
+		OutputJson(workFlowService.findTaskFormKeyByTaskId(investOrder
+				.getTaskId()));
+		return null;
+	}
+	
+	/**
+	 * @author zhangjian
+	 * @description 获取当前角色用户所有的受理任务
+	 * @return 用户所有的受理任务的json信息
+	 */
+	public String findAllClaimedTask() {
+		// 获取当前"角色（比如，销客专员）"已经受理的所有投资订单investOrder
+		List<InvestOrder> rows = investRedeemWorkFlowService.findAllClaimedTask(
+				getFirstResult(), getMaxResults());
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+		// 获取当前"角色（比如，销客专员）"已经受理的所有投资订单investOrder的"总数量"
+		Long total = investRedeemWorkFlowService.findAllClaimedTaskCount(userId);
+		this.OutputJson2(new GridModel(rows, total));
+		return null;
+	}		
+	
+}

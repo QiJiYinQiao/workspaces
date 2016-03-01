@@ -45,6 +45,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						            	  	return showOrgName(orgData,value);  
 										}
 								  }, 
+								  {field : 'status',title : '是否在职',width :150,align : 'center',
+									  formatter:function(value,row,index){
+									  	if(value=='A'){
+									  		return "在职";
+									  	}else{
+									  		return "离职";
+									  	}
+								  }},
 					              {field : 'description',title : '描述',width : 570,align : 'left'}
 					              ] ],toolbar:'#tb'
 				});
@@ -213,6 +221,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									});
 								}
 						});
+						 $('#dg').datagrid("reload");
 						}
 					 })
 				 }else{
@@ -225,8 +234,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				if (row) {
 					parent.$.modalDialog({
 						title : "编辑用户",
-						width : 600,
-						height : 400,
+						width : 850,
+						height : 650,
 						href : "jsp/user/userEditDlg.jsp",
 						onLoad:function(){
 							row["rpwd"]=row.password;
@@ -263,8 +272,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			function addRowsOpenDlg() {
 				parent.$.modalDialog({
 					title : "添加用户",
-					width : 600,
-					height : 400,
+					width : 850,
+					height : 650,
 					href : "jsp/user/userEditDlg.jsp",
 					buttons : [ {
 						text : '保存',

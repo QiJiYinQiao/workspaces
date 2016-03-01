@@ -1,5 +1,0 @@
-package com.bpms.service;
-
-public interface CarInfoService {
-
-}

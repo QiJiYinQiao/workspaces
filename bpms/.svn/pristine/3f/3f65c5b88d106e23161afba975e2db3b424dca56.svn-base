@@ -1,0 +1,38 @@
+-- 修改信用管理中心经理
+UPDATE t_users SET ORGANIZATION_ID =(SELECT ORGANIZATION_ID FROM t_organization WHERE FULL_NAME='IPC信用管理中心') WHERE login_act='yuege';
+update t_users set ORGANIZATION_ID =(SELECT ORGANIZATION_ID FROM t_organization WHERE FULL_NAME ='信贷管理部') WHERE login_act ='jipenghao';
+
+
+-- 配置组织机构ID常量代码
+SELECT 
+	CONCAT('//',FULL_NAME,'\n','public static final String ',
+	(CASE FULL_NAME
+			WHEN 'IPC信用管理中心' THEN 'LOAN_ORGANIZATION_ID'
+			WHEN 'IPC电核部' THEN 'LOAN_ORGANIZATION_ID_DIANHE'
+			WHEN 'IPC审贷部' THEN 'LOAN_ORGANIZATION_ID_SHENDAI'
+			WHEN 'IPC调查部' THEN 'LOAN_ORGANIZATION_ID_DIAOCHA'
+			WHEN 'IPC数据组' THEN 'LOAN_ORGANIZATION_ID_SHUJUZU'
+			WHEN '信贷管理部' THEN 'LOAN_LETTER_ID'
+			WHEN '贷款支持部' THEN 'LOAN_ZHICHI_ID'
+			WHEN '结算中心' THEN 'LOAN_ORGANIZATION_JIESUANZHONGXIN'
+			ELSE 'Not Find!!'
+	END),' ="',	ORGANIZATION_ID,'";')
+FROM t_organization 
+WHERE FULL_NAME IN (
+		'IPC信用管理中心',
+		'IPC电核部',
+		'IPC审贷部',
+		'IPC调查部',
+		'IPC数据组',
+		'信贷管理部',
+		'贷款支持部',
+		'结算中心'
+	);
+
+
+-- 修改组织机构regoin_type和dept_no和area_short_name
+SELECT * FROM t_organization WHERE MYID  ='JK' AND FULL_NAME LIKE '%营业部%';
+UPDATE t_organization SET DEPT_NO ='1' WHERE MYID ='JK' AND FULL_NAME LIKE '%营业部%';
+
+-- 0－地区，1－直辖市，2－省份，3－城市，4－其他
+SELECT * FROM t_organization WHERE REGION_TYPE ='1' OR REGION_TYPE  ='2' OR REGION_TYPE = '3' AND MYID  ='JK';

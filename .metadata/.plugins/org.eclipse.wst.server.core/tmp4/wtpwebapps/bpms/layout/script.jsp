@@ -46,7 +46,7 @@
 		a:hover {
 		 color: #FF0000;
 		}
-		
+		textarea{resize: none;}
 	</style>
 	<script type="text/javascript">
 		var attempData;
@@ -83,7 +83,7 @@
 			if(undefined==isDetail){
 				isDetail=='';
 			}
-			window.open('jsp/loanOrder/attachementDetail.jsp?auditId='+auditId+'&loanOrderId='+loanOrderId+'&userId='+userId+'&isDetail='+isDetail,
+			window.open('jsp/loanOrder/letter/attachementDetail.jsp?auditId='+auditId+'&loanOrderId='+loanOrderId+'&userId='+userId+'&isDetail='+isDetail,
 					"附件详情");
 			//, "height="+$(window).height()+", width="+$(window).width()*0.95+", top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no"
 		}

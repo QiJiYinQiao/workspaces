@@ -1,0 +1,22 @@
+package com.bpms.service;
+
+import com.bpms.model.InvestOrder;
+
+/**
+ * @ClassName: InvestRedeemWorkFlowService
+ * @Description: 投资流程ServiceImpl
+ * @author ZHANGJIAN
+ * @date 2015年12月16日 下午4:34:36
+ */
+public interface InvestRedeemWorkFlowService {
+	
+	/**
+	 * 启动投资赎回的流程
+	 * @Title: saveStartProcess4InvestRedeem 
+	 * @author ZHANGJIAN
+	 * @return boolean
+	 * @date 2015年12月16日 下午4:34:36
+	 */
+	public boolean saveStartProcess4InvestRedeem(InvestOrder investOrder);
+
+}

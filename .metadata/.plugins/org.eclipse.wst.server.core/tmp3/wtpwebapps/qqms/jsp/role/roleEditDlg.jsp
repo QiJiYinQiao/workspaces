@@ -1,6 +1,19 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
 <script type="text/javascript">
 	$(function() {
+		$("#roleType").combobox({
+			url:'baseAction!getDicText.action?code=role_type',
+			required:true,
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		
+		$("#pid").combobox({
+		    url: 'permission/permissionAssignmentAction!findAllRoleListNotPage1.action',    
+		    valueField: 'roleId',    
+		    textField: 'name'
+		})
+		
 		$("#form").form({
 			url :"permission/permissionAssignmentAction!persistenceRoleDlg.action",
 			onSubmit : function() {
@@ -102,12 +115,14 @@
 					 <tr>
 					    <th>角色名称</th>
 						<td><input name="name" id="name" placeholder="请输入角色名称" class="easyui-textbox easyui-validatebox" type="text" required="required"/></td>
-						<th>角色编码</th>
-						<td><input name="roleCode"  class="easyui-textbox easyui-validatebox" id="roleCode" type="text"/></td>
-					 </tr>
-					 <tr>
 						 <th>排序</th>
 						<td><input name="sort"  class="easyui-textbox easyui-validatebox" id="sort" type="text"/></td>
+					 </tr>
+					 <tr>
+						 <th>直属上级角色</th>
+						 <td><input name="pid"  class="easyui-textbox easyui-validatebox" id="pid" type="text"/></td>
+						 <th>角色种类</th>
+						 <td><input name="roleType"  class="easyui-textbox easyui-validatebox" id="roleType" type="text"/></td>
 					 </tr>
 					 <tr>
 						<th>描述</th>

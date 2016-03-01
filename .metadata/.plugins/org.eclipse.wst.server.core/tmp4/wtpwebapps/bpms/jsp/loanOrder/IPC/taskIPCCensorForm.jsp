@@ -16,8 +16,8 @@ $(function(){
 	$row = $grid.datagrid('getSelected');
 	$datagrid = $("#lookLoanOrderdg").datagrid({
 		url : "loanOrderHis/loanOrderHisAction!findAllLoanOrderHis.action",
-		width : 'auto',
-		height : 340,
+		fit : true,
+		fitColumns : true,
 		pagination:false,
 		rownumbers:true,
 		border:true,
@@ -27,12 +27,12 @@ $(function(){
 		multiSort:false,
 		fitColumns:true,
 		columns : [ [ 
-		              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
-		              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
-		              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'left'},
-		              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'left'},
-		              {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'left'},
-		              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.08),align : 'left',
+		              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),align : 'center'},
+		              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1),align : 'center'},
+		              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'center'},
+		              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'center'},
+		              {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'center'},
+		              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.08),align : 'center',
 			            	formatter:function(value,row,index){
 			            		return "<a href='javascript:void(0);' onclick='lookAttachment("+index+");'>查看附件</a>　　" ;
 			            	}  
@@ -106,13 +106,13 @@ $(function(){
 	//查看稽核信息
 	function checkAuditReportDetail(){
 		window.open("jsp/loanOrder/IPC/ipcAuditInfoRecordDetail.jsp?loanOrderId="+$row.loanOrderId,
-				"稽核信息详情", 'height=650, width=1000, top=200, left=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+				"稽核信息详情", "height="+($(window).height()*0.8)+", width=900, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
 	}
 	
 	//查看信审报告 
 	function checkApplicationReportDetail(){
 		window.open("jsp/loanOrder/IPC/ipcApplicationReportDetail.jsp?loanOrderId="+$row.loanOrderId+"&loanerId="+$row.loanerId,
-				"稽核信息详情", 'height=650, width=1000, top=200, left=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+				"稽核信息详情", "height="+($(window).height()*0.8)+", width=900, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
 	}
 	
 	//拒绝填写微贷呈报意见表
@@ -124,8 +124,8 @@ $(function(){
 		}
 		$rejectMBS = $("<div></div>").dialog({
 			title : "拒绝呈报意见表",
-			width : 1000,
-			height : 680,
+			width : 900,
+			height : $(window).height()*0.8,
 			modal : true,
 			closed : false,
 			closeable : true,
@@ -139,49 +139,47 @@ $(function(){
 	//通过并填写授信业务调查报告
 	function passWithCensor(){
 		// 验证备注信息是否已经填写
-		if($("#comment").val()=="" || $("#title").val()=="" ){
+		/* if($("#comment").val()=="" || $("#title").val()=="" ){
 			$.messager.alert("提示","请填写完备注信息后再进行提交!","warning")
 			return false;
-		}
+		} */
 		$passCensor = $("<div></div>").dialog({
 			title : "微贷呈报意见表",
-			width : 1000,
-			height : 680,
+			width : 900,
+			height : $(window).height()*0.8,
 			modal : true,
 			closed : false,
 			closeable : true,
 			href : 'jsp/loanOrder/IPC/ipcMicrocreditOpinionAdd.jsp',
 			onClose : function(){
-				$passCensor.dialog("close");
+				$passCensor.dialog("destroy");
 			}
 		});
 	}
 </script>
 <!-- 受理任务 S -->
 <div data-options="region:'north',title:'North Title',split:true">
-	<div style="width: 980px;height: 190px;overflow: auto;">
+	<div style="width: 900px;height: 190px;overflow: auto;">
 		<form id="acceptTaskForm" method="post">
 				<input name="id" id="id"  type="hidden"/>
 				<input name="auditId" type="hidden" value="noauditId"/>
 				 <table cellpadding="5px;">
-					 <tr>
-					    <th>客户姓名:</th>
-						<td><input name="name" readonly="readonly" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
-					</tr>
 					<tr>
+					    <th>客户姓名:</th>
+						<td><input name="name" readonly="readonly" type="text"/></td>
 						<th>身份证号:</th>
-						<td><input name="idNo" readonly="readonly" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'idcard'"/></td>
+						<td><input name="idNo" readonly="readonly" type="text"/></td>
 					</tr>
 					<tr>
 					 	<th>备注简述:</th>
-						<td colspan="3">
-							<textarea id="title" name="title" class="easyui-validatebox easyui-textbox" style="width:100%;height:15px;"></textarea>
+						<td>
+							<input id="title" name="title" class="easyui-validatebox easyui-textbox" style="border: 1px solid #DDDDDD;">
 						</td>
 					</tr>
 					<tr>
-					 	<th>备注详情:</th>
+					 	<th>备注详情</th>
 						<td colspan="3">
-							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;"></textarea>
+							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;resize:none;"></textarea>
 						</td>
 					</tr>
 					<tr>
@@ -200,16 +198,16 @@ $(function(){
 		</form>
 	</div>
 
-	<div style="width:980px;height:30px;">
+	<div style="width:900px;height:30px;">
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkApplicationReportDetail();">查看信审报告</a>
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkAuditReportDetail();">查看稽核信息</a>
+		<!-- <a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkAuditReportDetail();">查看稽核信息</a> -->
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="passWithCensor();">填写呈报意见表并通过</a>
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="rejectWithMBS();">填写调查拒绝表并驳回</a>
 		<!-- <a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('IPCCensorThrough');">IPC审查员通过</a>
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('IPCCensorReject');">IPC审查员驳回</a> -->
 	</div>
 	
-	<div id="lookInfo" class="easyui-accordion" style="height: 380px;width: 980px;overflow: hidden;">
+	<div id="lookInfo" class="easyui-accordion" style="height: 380px;width: 900px;overflow: hidden;">
 			<div title="备注信息" data-options="iconCls:'icon-cstbase',selected:true" >   
 				<table id="lookLoanOrderdg" title="申请备注的信息"></table>
 			</div>

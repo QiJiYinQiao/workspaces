@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;bpms/src/temp/loan/借款人委托划款授权书一份副.ftl&apos; to &apos;借款人委托划款授权书副.ftl&apos;" description="Rename resource &apos;借款人委托划款授权书一份副.ftl&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/temp/loan/借款人委托划款授权书一份副.ftl" name="借款人委托划款授权书副.ftl" stamp="1449110006352" updateReferences="true"/>
+</session>

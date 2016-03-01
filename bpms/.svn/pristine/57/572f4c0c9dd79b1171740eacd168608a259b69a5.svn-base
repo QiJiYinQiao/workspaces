@@ -1,0 +1,184 @@
+package com.bpms.model;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
+
+/**
+ * 投资订单和产品关联关系表
+ * 
+ * @author liuhh
+ *
+ */
+@Entity
+@Table(name = "t_bp_investorder_and_products")
+public class InvestorderAndProducts implements java.io.Serializable {
+
+	private static final long serialVersionUID = 1L;
+	private String id;
+	private String investOrderId;
+//	private String prodId;
+	private InvestProduct product;
+	private BigDecimal investEdu;
+	private Date beginDate;
+	private Date endDate;
+	private Date interestDate;
+	private BigDecimal usableEdu;
+	private String ifAdjustArs;       //是否调整理财收益率
+	private BigDecimal newArs;        //调整理财收益后的理财收益率
+	private String huaKouPlatform;    //划扣平台
+
+	public InvestorderAndProducts() {
+	}
+
+	public InvestorderAndProducts(String id) {
+		this.id = id;
+	}	
+
+	public InvestorderAndProducts(String id, String investOrderId,
+			InvestProduct product, BigDecimal investEdu, Date beginDate,
+			Date endDate, Date interestDate, BigDecimal usableEdu,
+			String ifAdjustArs, BigDecimal newArs, String huaKouPlatform) {
+		super();
+		this.id = id;
+		this.investOrderId = investOrderId;
+		this.product = product;
+		this.investEdu = investEdu;
+		this.beginDate = beginDate;
+		this.endDate = endDate;
+		this.interestDate = interestDate;
+		this.usableEdu = usableEdu;
+		this.ifAdjustArs = ifAdjustArs;
+		this.newArs = newArs;
+		this.huaKouPlatform = huaKouPlatform;
+	}
+
+	@Id
+	@GenericGenerator(name = "systemUUID", strategy = "uuid")
+	@GeneratedValue(generator = "systemUUID")
+	@Column(name = "ID", insertable = true, updatable = true, nullable = false, length = 40, unique = true)
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@Column(name = "INVEST_ORDER_ID", length = 40)
+	public String getInvestOrderId() {
+		return investOrderId;
+	}
+
+	public void setInvestOrderId(String investOrderId) {
+		this.investOrderId = investOrderId;
+	}
+
+//	@Column(name = "PROD_ID", length = 40)
+//	public String getProdId() {
+//		return prodId;
+//	}
+//
+//	public void setProdId(String prodId) {
+//		this.prodId = prodId;
+//	}
+	
+	@ManyToOne
+	@JoinColumn(name="PROD_ID")
+	public InvestProduct getProduct() {
+		return product;
+	}
+	
+	public void setProduct(InvestProduct product) {
+		this.product = product;
+	}
+
+	@Column(name = "INVEST_EDU", precision = 15, scale = 5)
+	public BigDecimal getInvestEdu() {
+		return this.investEdu;
+	}
+
+	public void setInvestEdu(BigDecimal investEdu) {
+		this.investEdu = investEdu;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "BEGIN_DATE", length = 10)
+	public Date getBeginDate() {
+		return this.beginDate;
+	}
+
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "END_DATE", length = 10)
+	public Date getEndDate() {
+		return this.endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name = "INTEREST_DATE", length = 10)
+	public Date getInterestDate() {
+		return interestDate;
+	}
+
+	public void setInterestDate(Date interestDate) {
+		this.interestDate = interestDate;
+	}
+
+	@Column(name = "USABLE_EDU", precision = 15, scale = 5)
+	public BigDecimal getUsableEdu() {
+		return usableEdu;
+	}
+
+	public void setUsableEdu(BigDecimal usableEdu) {
+		this.usableEdu = usableEdu;
+	}
+	
+	@Column(name = "IF_ADJUST_ARS", length = 1)
+	public String getIfAdjustArs() {
+		return ifAdjustArs;
+	}
+
+	public void setIfAdjustArs(String ifAdjustArs) {
+		this.ifAdjustArs = ifAdjustArs;
+	}
+
+	@Column(name = "NEW_ARS", precision = 5, scale = 2)
+	public BigDecimal getNewArs() {
+		return newArs;
+	}
+
+	public void setNewArs(BigDecimal newArs) {
+		this.newArs = newArs;
+	}
+
+	@Column(name = "HUAKOU_PLATFORM", length = 1)
+	public String getHuaKouPlatform() {
+		return huaKouPlatform;
+	}
+
+	public void setHuaKouPlatform(String huaKouPlatform) {
+		this.huaKouPlatform = huaKouPlatform;
+	}		
+
+}

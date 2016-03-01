@@ -8,14 +8,53 @@
 				return $.formatString('<span class="{0}" style="display:inline-block;vertical-align:middle;width:16px;height:16px;"></span>{1}', v.value, v.value);
 			}
 		});
+		//组织编码
+		$("#myid").combobox({
+			url:'baseAction!getDicText.action?code=organization_code',
+			required:true,
+			valueField:"dictCode",
+			textField:"dictName",
+			disabled:true
+		});
+		//组织层级
+		$("#treeLevel").combobox({
+			url:'baseAction!getDicText.action?code=tree_level',
+			required:true,
+			valueField:"dictCode",
+			textField:"dictName"
+		});
+		
 		$("#pid").combotree({
 			width:171,
 			url:"orgz/organizationAction!findOrganizationList.action",
 			idFiled:'id',
 		 	textFiled:'name',
 		 	parentField:'pid',
-		 	onChange:function(){
-		 		var pid = $(this).combotree('getValue');
+		 	onChange:function(newValue,oldValue){
+		 		var pid = newValue;
+				//判断是否已选中钱钱金融信息服务（北京）有限公司
+				if(pid=="1"){
+					$("#myid").combobox('enable')
+				}else{
+					$("#myid").combobox('disable')
+					//看是属于财富、借款、还是其他
+					var code;
+					$.ajax({
+						url:'orgz/organizationAction!getOrganizationCode.action',
+						data:'id='+pid,
+						async:false,
+						success:function(data){
+							code=data;
+						}
+					})
+					if(code=="CF"){
+						$("#myid").combobox('setValue','CF')
+					}else if(code=="JK"){
+						$("#myid").combobox('setValue','JK')
+					}else{
+						$("#myid").combobox('setValue','QT')
+					}
+				}
 		 		var regionType;
 		 		$.ajax({
 		 			url:'orgz/organizationAction!getRegionTypeById.action',
@@ -49,6 +88,30 @@
 		 	},
 			onLoadSuccess:function(){
 				var pid=$("#pid").combotree('getValue');
+				var ptext=$("#pid").combotree('getText');
+				//判断是否已选中钱钱金融信息服务（北京）有限公司
+				if(ptext=="钱钱金融信息服务（北京）有限公司"){
+					$("#myid").combobox('enable')
+				}else{
+					$("#myid").combobox('disable')
+					//看是属于财富、借款、还是其他
+					var code;
+					$.ajax({
+						url:'orgz/organizationAction!getOrganizationCode.action',
+						data:'id='+pid,
+						async:false,
+						success:function(data){
+							code=data;
+						}
+					})
+					if(code=="CF"){
+						$("#myid").combobox('setValue','CF')
+					}else if(code=="JK"){
+						$("#myid").combobox('setValue','JK')
+					}else{
+						$("#myid").combobox('setValue','QT')
+					}
+				}
 				var regionType;
 		 		$.ajax({
 		 			url:'orgz/organizationAction!getRegionTypeById.action',
@@ -81,6 +144,7 @@
 		 		}
 			}
 		});
+		
 		$("#form").form({
 			url :"orgz/organizationAction!persistenceOrganization.action",
 			onSubmit : function() {
@@ -181,8 +245,8 @@
 					 <tr>
 					    <th>组织名称</th>
 						<td><input name="fullName" id="fullName" placeholder="请输入组织名称" class="easyui-textbox easyui-validatebox" type="text" data-options="required:true"/></td>
-						<th>编码</th>
-						<td><input name="myid" id="myid" type="text"  class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
+						<th>业务种类</th>
+						<td><input name="myid" id="myid" type="text"  class="easyui-textbox easyui-validatebox"/></td>
 					 </tr>
 					 <tr>
 					    <th>英文名称</th>
@@ -202,6 +266,12 @@
 						<th>区域类型</th>
 						<td>
 						<input id="regionType" name="regionType" type="text" class="easyui-textbox easyui-validatebox"/>
+						</td>
+					 </tr>
+					 <tr>
+					 <th>组织层级：</th>
+					 	<td>
+						<input id="treeLevel" name="treeLevel" type="text" class="easyui-textbox easyui-validatebox"/>
 						</td>
 					 </tr>
 					 <tr>

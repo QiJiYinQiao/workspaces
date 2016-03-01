@@ -18,7 +18,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script type="text/javascript">
 		var $role;
 		var $user;
+		var $jointOrganCity;
+		var orgData;
+		var dj=[];
+		var $userId,$roleId;
 		$(function() {
+			transOrg();
 			$("#panel").panel({   
 				   width:'auto',   
 				   height:$(this).height(),   
@@ -40,7 +45,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				             // {field : 'password',title : '用户密码',width : 100,editor : "validatebox"},
 				              //{field : 'email',title : '邮箱',width : 150,align : 'left',editor : {type:'validatebox',options:{required:true,validType:'email'}}},
 				             // {field : 'tel',title : '电话',width : 100,align : 'left',editor : "text"},
-							  {field : 'organizeName',title : '组织部门',width : parseInt($(this).width()*0.1),align : 'left',editor : "text"},
+							  {field : 'organizeId',title : '组织部门',width : parseInt($(this).width()*0.1),align : 'left',formatter:function(value,row){
+				            	  	return showOrgName(orgData,value);  
+								}},
 				              {field : 'description',title : '描述',width : parseInt($(this).width()*0.1),align : 'left',editor : "text"}
 				              ] ],toolbar:"#tbUser",onDblClickRow:getRoles
 			});
@@ -59,8 +66,62 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					              {field : 'name',title : '角色名称',width :  parseInt($(this).width()*0.1),align : 'center',editor : {type:'validatebox',options:{required:true}}},
 					              //{field : 'sort',title : '排序',width : parseInt($(this).width()*0.1),align : 'center',editor : "numberbox"},
 					              {field : 'description',title : '角色描述',width :  parseInt($(this).width()*0.1),align : 'center',editor : "text"}
-					              ] ],toolbar:"#tbRole"
+					              ] ],toolbar:"#tbRole",
+					              onDblClickRow:function(index,row){
+									//有对接地区的可以选择对接地区，对接专员/对接助理/对接主管/结算专员/总裁办助理
+											///查看对接地区
+											var selectRow=$user.datagrid("getSelected");
+											//createTreegrid(selectRow.userId,row.roleId);
+											$userId=selectRow.userId;
+											$roleId=row.roleId;
+											if(row.roleCode.indexOf("DuiJie")!=-1 || row.roleCode=="JieSuanZhuanYuan" ||row.roleCode=="ZongCaiBanZhuLi"){
+												//选对接地区
+												var $dialog =$("<div></div>").dialog({
+													title: '选择用户负责对接区域',    
+												    width:  1000,    
+												    height: 800,  
+												    href:'jsp/roleConfig/joinOrgSelDlg.jsp',
+												    closed: false, 
+												    cache: false,    
+												    modal: true,
+												    buttons:[ {
+														text : '确定',
+														iconCls : 'icon-ok',
+														handler : function(){
+															//处理用户所负责的区域
+															var checkedIds=[];
+															var selections=$jointOrganCity.tree('getChecked')
+															var checkedIds="@";
+															for(var i in selections){
+																checkedIds+=selections[i].id+"@";
+															}
+															var userJoinOrganCity=selectRow.userId+"-"+row.roleId+"-"+checkedIds;
+															//若之前已选则删除原来的数据重新选择
+															for(var i in dj){
+																if(dj[i].split("-")[1]==row.roleId){
+																	dj.splice(i, 1)
+																}
+															}
+															 dj.push(userJoinOrganCity);
+															//清空当前所选并关闭弹窗
+															 $dialog.dialog('destroy');
+														}
+													}, {
+														text : '关闭',
+														iconCls : 'icon-cancel',
+														handler : function() {
+															//清空当前所选并关闭弹窗
+															$dialog.dialog('destroy');
+														}
+													}
+													]
+												})
+											}else{
+												$.messager.alert("提示信息","该用户没有对接地区！");
+											}
+									}
 			});
+
 			//搜索框
 			$("#searchbox").searchbox({ 
 				 menu:"#mm", 
@@ -85,13 +146,60 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			});
 		});
 		
+		/**根据id回显组织名称*/
+		function transOrg(){
+			$.ajax({
+				url:'user/userAction!showOrganizationName.action',
+				type:'post',
+				async:false,
+				dataType:'json',
+				success:function(data){
+					orgData=data;
+				}
+			});
+			return orgData;
+		}
+		function showOrgName(arr,orgId){
+			var orgName = "";
+			for (var i in arr) {
+				if(arr[i].organizationId == orgId){
+					orgName += arr[i].fullName;
+				}
+			}
+			return orgName;
+		}
+		//数组去重
+		function unique(arr) {
+		    var result = [], hash = {};
+		    for (var i = 0, elem; (elem = arr[i]) != null; i++) {
+		        if (!hash[elem]) {
+		            result.push(elem);
+		            hash[elem] = true;
+		        }
+		    }
+		    return result;
+		}
+		//保存用户角色及对接地区之间的关系
 		 function saveUserRoles(){
 			 var selectRow=$user.datagrid("getSelected");
 			 var selectRows=$role.datagrid("getSelections");
 			 var isCheckedIds=[];
-			 $.each(selectRows,function(i,e){
+			/** $.each(selectRows,function(i,e){
 				 isCheckedIds.push(e.roleId);
-			 });
+			 });*/
+			 $.each(selectRows,function(i,e){
+				 isCheckedIds.push(selectRow.userId+"-"+e.roleId+"-0");
+			 }); 
+			 dj=unique(dj);
+			 //替换有对接部门的
+			 for(var i in dj){
+				 for(var j in isCheckedIds){
+					 if(isCheckedIds[j].split("-")[1]==dj[i].split("-")[1]){
+						 isCheckedIds.splice(j,1,dj[i]);//删除并替换
+					 }
+				 }
+			 }
+			 
 			 if(selectRow){
 				 $.ajax({
 						url:"user/userAction!saveUserRoles.action",
@@ -120,11 +228,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					});
 			 }
 			 
-			 /*$.post("user/userAction!saveUserRoles.action", {userId:selectRow.userId,isCheckedIds:isCheckedIds}, function(rsp) {
-				 $.messager.alert(rsp.title, rsp.message);
-				}, "JSON").error(function() {
-					$.messager.alert("提示", "保存用户角色失败！");
-				});*/
 		 }
 		 function getRoles(rowIndex, rowData){
 			 $.post("user/userAction!findUsersRolesList.action", {userId:rowData.userId}, function(rsp) {
@@ -159,6 +262,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<span class="badge">提示</span>
 				<p>
 					为用户分配角色，请<span class="label-info"><strong>双击用户</strong></span>查看所属角色！
+					<span class="label-info"><strong>双击角色</strong></span>查看用户负责对接区域！
 					超级管理员默认拥有<span class="label-info"><strong>所有权限！</strong></span>
 				</p>
 			</div>
@@ -205,6 +309,5 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			</div>
 		</div>
 	</div>
-  </body>
   </body>
 </html>

@@ -1,0 +1,23 @@
+package com.bpms.service;
+
+import com.bpms.model.RoleAndPermission;
+
+
+/**
+ * 角色绑定权限service
+ * 
+ * @author liuhh
+ *
+ */
+public interface RoleAndPermissionService {
+
+	/**
+	 * 角色绑定权限
+	 */
+	void saveRoleAndPermissions(RoleAndPermission roleAndPermission);
+	
+	/**
+	 * 角色绑定权限是否已经存在
+	 */
+	RoleAndPermission isExistRoleAndPermissions(RoleAndPermission roleAndPermission);
+}

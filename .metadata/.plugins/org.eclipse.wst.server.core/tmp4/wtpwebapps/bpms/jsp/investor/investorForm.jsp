@@ -188,9 +188,9 @@ th{
     function initLinkPeopleGrid(investorId){
     	var uri = "";
     	if(investorId != null){
-    		uri = "contacts/contactsAction!findAllList.action?loanerId="+investorId
+    		uri = "contacts/contactsAction!findInvestorContactListByInvestorId.action?investorId="+investorId
     	}else{
-    		uri = "contacts/contactsAction!findAllList.action";
+    		uri = "contacts/contactsAction!findInvestorContactListByInvestorId.action";
     	}
     	$("#linkPeopleGrid").datagrid({
     		url : uri,

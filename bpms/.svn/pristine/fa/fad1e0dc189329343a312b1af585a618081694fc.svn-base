@@ -1,0 +1,27 @@
+//package com.bpms.quartz;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.scheduling.annotation.Scheduled;
+//import org.springframework.stereotype.Component;
+//
+//import com.bpms.service.LoanCustRepaymentDetailService;
+//
+///**
+// * 任务主要是看客户还款明细是否超过了15天，超过15天直接转催收
+// * 
+// * @author liuhh
+// *
+// */
+//@Component(value = "quartzjobManager")
+//public class QuartzOverdueReceivablesJob {
+//
+//	@Autowired
+//	protected LoanCustRepaymentDetailService detailService;
+//
+//	 @Scheduled(cron="0 */2 * * * ?")//每两分钟调用一次
+//	//@Scheduled(cron = "0 0 1 * * *")// 每天凌晨1点调用
+//	public void saveJob() {
+//		detailService.updateOverdueReceivablesDetail();
+//		System.out.println("Quartz的任务调度！！！");
+//	}
+//}

@@ -1,0 +1,31 @@
+package com.bpms.service;
+
+import com.bpms.model.Role;
+import com.bpms.model.RoleAndPermission;
+
+
+/**
+ * 角色绑定权限service
+ * 
+ * @author liuhh
+ *
+ */
+public interface RoleAndPermissionService {
+
+	/**
+	 * 角色绑定权限
+	 */
+	void saveRoleAndPermissions(RoleAndPermission roleAndPermission);
+	
+	/**
+	 * 角色绑定权限是否已经存在
+	 */
+	RoleAndPermission isExistRoleAndPermissions(RoleAndPermission roleAndPermission);
+	
+	/**
+	 * 根据RoleCode，删除关系表中相应的数据
+	 */
+	public boolean delRoleAndPermissionByRoleCode(Role role);
+
+	
+}

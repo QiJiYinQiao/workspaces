@@ -1,0 +1,387 @@
+package com.bpms.service.impl;
+
+import java.io.File;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.struts2.ServletActionContext;
+import org.hibernate.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.dao.BaseDAO;
+import com.bpms.model.LoanContract;
+import com.bpms.model.LoanOrder;
+import com.bpms.model.OrderStatus;
+import com.bpms.model.Organization;
+import com.bpms.model.Users;
+import com.bpms.mydao.LoanOrderMapper;
+import com.bpms.service.LoanContractService;
+import com.bpms.service.LoanOrderService;
+import com.bpms.service.LoanorderAndAccountinfoService;
+import com.bpms.service.LoanorderAndCompanyService;
+import com.bpms.service.LoanorderAndContactsService;
+import com.bpms.service.OrderStatusService;
+import com.bpms.service.OrganizationService;
+import com.bpms.service.UserService;
+import com.bpms.util.Collections;
+import com.bpms.util.Constants;
+import com.bpms.util.HqlUtil;
+import com.bpms.util.PageUtil;
+import com.bpms.util.ReadExcel;
+
+/**
+ * 
+ * 个人贷款业务申请单的serviceImp
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+@Service("loanOrderService")
+public class LoanOrderServiceImpl implements LoanOrderService {
+
+	@Autowired
+	private BaseDAO<LoanOrder> loanOrderDao;
+
+	@Autowired
+	private LoanOrderMapper loanOrderMapper;
+
+	@Autowired
+	private OrderStatusService orderStatusService;
+
+	// 紧急联系人与订单关系表
+	@Autowired
+	private LoanorderAndContactsService loanorderAndContactsServiceImpl;
+
+	// 开户行信息与订单关系表
+	@Autowired
+	private LoanorderAndAccountinfoService loanorderAndAccountinfoServiceImpl;
+
+	// 工作单位与订单关系表
+	@Autowired
+	private LoanorderAndCompanyService loanorderAndCompanyServiceImpl;
+
+	// 注入用户的service
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private OrganizationService organizationService;
+
+	@Autowired
+	private LoanContractService loanContractService;
+
+	@Override
+	public List<LoanOrder> findAllLoanOrder(Map<String, Object> map,
+			PageUtil pageUtil) {
+		String hql = "from LoanOrder t where 1=1";
+		hql += HqlUtil.getSearchConditionsHQL("t", map);
+		hql += HqlUtil.getGradeSearchConditionsHQL("t", pageUtil);
+		hql += " and t.creator = " + Constants.getCurrendUser().getUserId();
+		hql += " order by t.createDate desc";
+		return loanOrderDao.find(hql, map, pageUtil.getPage(),
+				pageUtil.getRows());
+	}
+
+	@Override
+	public Long getCount(Map<String, Object> map, PageUtil pageUtil) {
+		String hql = "select count(*) from LoanOrder t where 1=1";
+		hql += HqlUtil.getSearchConditionsHQL("t", map);
+		hql += HqlUtil.getGradeSearchConditionsHQL("t", pageUtil);
+		hql += " and t.creator = " + Constants.getCurrendUser().getUserId();
+		return loanOrderDao.count(hql, map);
+	}
+
+	@Override
+	public boolean persistenceLoanOrder(LoanOrder loanOrder) {
+		if (StringUtils.isBlank(loanOrder.getLoanOrderId())) {
+			// 获取当前用户的id
+			Users user = userService.findUserById(Constants.getCurrendUser()
+					.getUserId());
+			// 设置订单的创建者
+			loanOrder.setCreator(user.getUserId());
+			// 设置创建时间
+			loanOrder.setCreateDate(new Date());
+			// 设置订单状态
+			loanOrder.setProcessStatus("0");
+			// 设置创建者所属机构
+			loanOrder.setOrganizationId(user.getOrganization()
+					.getOrganizationId());
+			// 保存用户的信息
+			loanOrderDao.save(loanOrder);
+		} else {
+			loanOrderDao.update(loanOrder);
+		}
+		return true;
+	}
+
+	@Override
+	public boolean deleteLoanOrder(String loanOrderId) {
+		try {
+			// 解除该订单与紧急联系的关系
+			loanorderAndContactsServiceImpl.deleteByLoanOrderId(loanOrderId);
+			// 解除该订单与开户行信息的关系
+			loanorderAndAccountinfoServiceImpl.deleteByLoanOrderId(loanOrderId);
+			// 解除该订单与工作单位的关系
+			loanorderAndCompanyServiceImpl.deleteByLoanOrderId(loanOrderId);
+			// 删除订单
+			StringBuffer hql = new StringBuffer();
+			hql.append("delete from com.bpms.model.LoanOrder t where t.loanOrderId = '"
+					+ loanOrderId + "'");
+			loanOrderDao.executeHql(hql.toString());
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public void updateLoanOrderStauts(String id, String status,String processKey) {
+		LoanOrder loanOrder = loanOrderDao.get(LoanOrder.class, id);
+		OrderStatus orderStatus = orderStatusService.getOrderStatusByStatusCode(processKey + "_"+ status);
+		loanOrder.setOrderStatus(orderStatus);
+		loanOrderDao.save(loanOrder);
+	}
+
+	@Override
+	public LoanOrder findLoanOrderById(String id) {
+		return this.loanOrderDao.get(LoanOrder.class, id);
+	}
+
+	@Override
+	public void updateLoanOrderProcessStatus(String id, String processStatus) {
+		LoanOrder loanOrder = this.loanOrderDao.get(LoanOrder.class, id);
+		loanOrder.setProcessStatus(processStatus);
+	}
+
+	@Override
+	public Organization findLoanCityByOrderId(String loanOrderId) {
+		LoanOrder loanOrder = findLoanOrderById(loanOrderId);
+		if (loanOrder != null) {
+			return findLoanCityByOrganizationId(loanOrder.getOrganizationId());
+		}
+		return null;
+	}
+
+	private Organization findLoanCityByOrganizationId(Integer id) {
+		Organization organization = organizationService
+				.findOrganizationById(id);
+		if (null == organization)
+			return null;
+
+		if ("1".equals(organization.getRegionType())
+				|| "3".equals(organization.getRegionType())) {
+			return organization;
+		}
+		return findLoanCityByOrganizationId(organization.getPid());
+	}
+
+	@Override
+	public List<LoanOrder> findLoanOrderListByOrderStatus(PageUtil pageUtil) {
+		StringBuffer hql = new StringBuffer();
+		hql.append("from LoanOrder t where 1=1 ");
+		hql.append("and t.orderStatus.statusId = (select statusId from OrderStatus where statusCode = 'LoanOrder_SignatoryThrough') ");
+		hql.append("and t.loanOrderId in (select loanOrderId from LoanContract where obliMatchStatus = '0')");
+		return this.loanOrderDao.find(hql.toString(), pageUtil);
+	}
+
+	@Override
+	public Long countLoanOrderListByOrderStatus() {
+		StringBuffer hql = new StringBuffer();
+		hql.append("select count(*) from LoanOrder t where 1=1 ");
+		hql.append("and t.orderStatus.statusId = (select statusId from OrderStatus where statusCode = 'LoanOrder_SignatoryThrough') ");
+		hql.append("and t.loanOrderId in (select loanOrderId from LoanContract where obliMatchStatus = '0')");
+		return this.loanOrderDao.count(hql.toString());
+	}
+
+	@Override
+	public List<LoanOrder> queryLoanOrderByCondicions(Map<String, Object> map,
+			PageUtil pageUtil) {
+		StringBuffer hql = new StringBuffer(" from LoanOrder t where 1=1 ");
+		if (StringUtils.isNotBlank((String) map.get("name"))) {
+			hql.append(" AND t.name LIKE '%" + map.get("name") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("idNo"))) {
+			hql.append(" AND t.idNo LIKE '%" + map.get("idNo") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("mobileTel"))) {
+			hql.append(" AND t.mobileTel LIKE '%" + map.get("mobileTel")
+					+ "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("loanType"))) {
+			hql.append(" AND t.loanType = '" + map.get("loanType") + "' ");
+		}
+		hql.append(" and t.creator = " + Constants.getCurrendUser().getUserId());
+		hql.append(" order by t.createDate desc ");
+		return loanOrderDao.find(hql.toString(), pageUtil);
+	}
+
+	@Override
+	public Long getQueryCount(Map<String, Object> map, PageUtil pageUtil) {
+		StringBuffer hql = new StringBuffer(
+				" select count(*) from LoanOrder t where 1=1");
+		if (StringUtils.isNotBlank((String) map.get("name"))) {
+			hql.append(" AND t.name LIKE '%" + map.get("name") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("idNo"))) {
+			hql.append(" AND t.idNo LIKE '%" + map.get("idNo") + "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("mobileTel"))) {
+			hql.append(" AND t.mobileTel LIKE '%" + map.get("mobileTel")
+					+ "%' ");
+		}
+		if (StringUtils.isNotBlank((String) map.get("loanType"))) {
+			hql.append(" AND t.loanType = '" + map.get("loanType") + "' ");
+		}
+		hql.append(" and t.creator = " + Constants.getCurrendUser().getUserId());
+		return loanOrderDao.count(hql.toString());
+	}
+
+	@Override
+	public List<Users> findCadidatePersons(String roleCode, String loanOrderId) {
+		// 获取该订单的信息
+		LoanOrder loanOrder = findLoanOrderById(loanOrderId);
+		// 获取该订单所属地方结构的所有的roleCode用户信息列表
+		return userService.findUsersByRoleCodeAndOrganizationId(roleCode,
+				loanOrder.getOrganizationId());
+	}
+
+	@Override
+	public List<Users> findCadidatePersons(String roleCode) {
+		// 获取该订单所属地方结构的所有的roleCode用户信息列表
+		return userService.findUsersByRoleCode(roleCode);
+	}
+
+	@Override
+	public Long getMaxAssignmentTaskCounter() {
+		StringBuffer hsql = new StringBuffer(
+				"select  COALESCE(MAX(l.assignmentTaskCounter),0) FROM LoanOrder l WHERE l.loanType = 'A'");
+		return loanOrderDao.count(hsql.toString());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String loanInfo(LoanOrder loanOrder) {
+		/*
+		 * 默认值为(1-第一次申请) 1－第一次:此订单申请人之前从来没有过贷款申请记录. 2－循环贷:此订单申请人的最近一次申请记录通过了申请.
+		 * 3－二次进件:此订单申请人的最近一次申请记录没有通过申请.
+		 */
+
+		StringBuffer hql = new StringBuffer();
+		hql.append(" FROM LoanOrder lo WHERE lo.processStatus != 0");
+		hql.append(" AND lo.loanOrderId != :loanOrderId");
+		hql.append(" AND lo.idNo = :idNo");
+		hql.append(" ORDER BY lo.createDate DESC");
+
+		Query query = loanOrderDao.getCurrentSession().createQuery(
+				hql.toString());
+		query.setParameter("loanOrderId", loanOrder.getLoanOrderId());
+		query.setParameter("idNo", loanOrder.getIdNo());
+
+		List<LoanOrder> list = query.setFirstResult(0).setMaxResults(1).list();
+
+		// 判断用户除本次订单申请外的最近一次申请,是否存在,如果不存在则说明时第一次申请.
+		if (Collections.listIsEmpty(list)) {
+			return "1";
+		} else {
+			LoanContract loanContract = loanContractService
+					.findLoanContractByLoanOrderId(list.get(0).getLoanOrderId());
+			// 查看是否含有合同信息,如果含有合同信息,则说距离本次贷款申请的记录通过了申请,则说明是此次为循环贷
+			if (null != loanContract) {
+				return "2";
+			} else {
+				return "3";
+			}
+		}
+	}
+
+	@Override
+	public List<Map<String, Object>> findLoanOrderList(Map<String, Object> param) {
+		return loanOrderMapper.findLoanOrderList(param);
+	}
+
+	@Override
+	public long findLoanOrderListCount(Map<String, Object> param) {
+		return loanOrderMapper.findLoanOrderListCount(param);
+	}
+
+	@Override
+	public void exportIPCCountExcel(Map<String, Object> param) throws Exception {
+		// 获取导出数据
+		List<Map<String, Object>> modelList = loanOrderMapper.exportIPCCountExcel(param);
+		// 获取模板
+		String srcXlsxPath = ServletActionContext
+				.getServletContext()
+				.getRealPath(File.separator + "excel" + File.separator + "loan")
+				+ File.separator + "IPC业务受理统计表模板.xlsx";
+		Workbook workbook = ReadExcel.openExcleFile(srcXlsxPath);
+		// 获取工作簿
+		Sheet sheet = workbook.getSheetAt(0);
+		// 判断信息是否为空
+		if (Collections.listIsNotEmpty(modelList)) {
+			// 设置数据
+			for (int i = 0,size=modelList.size();i<size;i++) {
+					Map<String, Object> bean = modelList.get(i);
+					// 第一行不用copy
+					if (i+1 > 1) {
+						ReadExcel.copyRows(sheet, 2, 2, i+1);
+					}
+					Row row = sheet.getRow(i+1);
+					row.getCell(0).setCellValue(i+1);
+					row.getCell(1).setCellValue((String) bean.get("areaName"));
+					row.getCell(2).setCellValue((String)bean.get("loanerName"));
+					row.getCell(3).setCellValue((String)bean.get("loanerIdNo"));
+					row.getCell(4).setCellValue((String)bean.get("incomeSrc"));
+					row.getCell(5).setCellValue((String)bean.get("createDate"));
+					row.getCell(6).setCellValue((String)bean.get("firsPersonnel"));
+					row.getCell(7).setCellValue((String)bean.get("firsDate"));
+					row.getCell(8).setCellValue((String)bean.get("way"));
+					row.getCell(9).setCellValue((String)bean.get("surveyors"));
+					row.getCell(10).setCellValue((String)bean.get("operatorAB"));
+					row.getCell(11).setCellValue((String)bean.get("surveyDate"));
+					row.getCell(12).setCellValue(null!= bean.get("distance")?((BigDecimal)bean.get("distance")).doubleValue():0);
+					row.getCell(13).setCellValue((String)bean.get("operateDate"));
+					row.getCell(14).setCellValue((String)bean.get("finaPersonnel"));
+					row.getCell(15).setCellValue((String)bean.get("assigees"));
+					row.getCell(16).setCellValue((String)bean.get("结果"));
+					row.getCell(17).setCellValue((String)bean.get("completeDate"));
+					row.getCell(18).setCellValue(null!=bean.get("finishHours")?((Long)bean.get("finishHours")).doubleValue():0);
+					row.getCell(19).setCellValue((String)bean.get("有无复议"));
+					row.getCell(20).setCellValue((String)bean.get("复议结果"));
+					row.getCell(21).setCellValue(null!= bean.get("loanEdu")?((BigDecimal)bean.get("loanEdu")).doubleValue():0);
+					row.getCell(22).setCellValue(null!=bean.get("loanPeriods")?(Integer)bean.get("loanPeriods"):0);
+					row.getCell(23).setCellValue((String)bean.get("auditWay"));
+					row.getCell(24).setCellValue((String)bean.get("suggest"));
+					row.getCell(25).setCellValue((String)bean.get("contractStatus"));
+			}
+		}
+		HttpServletResponse response = ServletActionContext.getResponse();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		response.setHeader("Content-disposition","attachment;filename="
+										+ URLEncoder.encode("IPC业务受理统计表-" 
+										+ calendar.get(Calendar.YEAR) + "-" 
+										+ calendar.get(Calendar.MONTH + 1)
+										+ "-" + calendar.get(Calendar.DATE)
+										+ ".xlsx", "utf-8"));
+		OutputStream ouputStream = response.getOutputStream();
+		workbook.write(ouputStream);
+		ouputStream.flush();
+		ouputStream.close();
+	}
+}

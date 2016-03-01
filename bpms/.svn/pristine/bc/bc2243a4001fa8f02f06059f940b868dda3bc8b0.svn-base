@@ -1,0 +1,273 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+
+<style type="text/css">
+	/* #acceptTaskForm table input{border: none;} */
+	table {border-radius: 5px;}
+	.linkSpan{
+	  padding:5px;
+	  display:-moz-inline-box;
+	  display:inline-block;
+	  width:40%; 
+	  text-align: center;
+	}
+	.linkSpanS{
+	  padding:5px;
+	  display:-moz-inline-box;
+	  display:inline-block;
+	  width:10%; 
+	  text-align: center;
+	}
+	a{text-decoration: none;}
+	a:hover {
+	 color: #FF0000;
+	}
+	.table th{
+		text-align: right;
+	}
+	.table td{
+		text-align: left;
+	}	
+	textarea{resize: none;}
+</style>
+
+<script type="text/javascript">
+	var row,row1;
+	var investorId='${investorId}';
+	var investOrderId='${investOrderId}';
+	var taskId='${taskId}';
+	//从计息日期到回款日期之间的实际投资天数
+	var actualInvestDays;
+	
+	Date.prototype.diff = function(date){
+		  return (this.getTime() - date.getTime())/(24 * 60 * 60 * 1000);
+	}
+
+	
+	$(function(){
+		//查询投资人详细信息
+		$.ajax({
+			url:'investRedeem/investRedeemAction!findInvestRedeemInfo4HandleTask.action',
+			data:'investOrderId='+investOrderId,
+			dataType:'json',
+			async : false,
+			success:function(data){
+				row = data;
+			}
+		});
+							
+		//渲染页面数据——理财经理的营业部名称
+		$("#id4OrgFullName").html(row.orgFullName);
+		//渲染页面数据——投资者姓名		
+		$("#id4ChName").html(row.chName);
+		$("#id4ChName").css({ color: "#ff0011"});
+		//渲染页面数据——投资者姓名		
+		$("#id4ChName02").html(row.chName);
+		$("#id4ChName02").css({ color: "#ff0011"});
+		//渲染页面数据——投资起始日期，而不是计息日期
+		$("#id4BeginDate").html(row.beginDate);
+		$("#id4BeginDate").css({ color: "#ff0011"});
+		//渲染页面数据——理财产品名称
+		$("#id4ProdName").html(row.prodName);
+		$("#id4ProdName").css({ color: "#ff0011"});
+		//渲染页面数据——理财金额
+		$("#id4InvestEdu").html(row.investEdu);
+		$("#id4InvestEdu").css({ color: "#ff0011"});
+		//渲染页面数据——年化收益率
+		$("#id4Ars").html(row.ars);
+		$("#id4Ars").css({ color: "#ff0011"});
+		//渲染页面数据——新的年化收益率
+		$("#id4NewArs").html(row.newArs);
+		$("#id4NewArs").css({ color: "#ff0011"});
+		//渲染页面数据——申请人姓名(理财经理姓名)
+		$("#id4UserName").html(row.userName);
+		$("#id4UserName").css({ color: "#ff0011"});
+		//渲染页面数据——赎回申请日期
+		$("#id4RedeemBeginDate").html(row.redeemBeginDate);
+		$("id4RedeemBeginDate").css({ color: "#ff0011"});
+
+		//初始化页面时，隐藏“银行同期活期存款利率”输入域
+		$("#id4Th").css("display", "none");
+		$("#id4Td").css("display", "none");
+		/* $("#curDepositInterestRate").css("display", "none"); */
+
+		
+		//渲染回款日期这个组件
+		$("#huiKuanDate").datebox({
+			editable : "false",
+			onSelect : onChange4HuiKuanDate
+		});
+						
+		//若投资赎回流程中的实际投资日期（回款日期 - 计息日期） <45天，则显示“银行同期活期存款利率”输入域）
+		function onChange4HuiKuanDate(){
+
+			//1.计息日期的格式和类型转换
+	 		var strInterestDate = row.interestDate.split(" ")[0];  //注意，计息日期的格式为“yyyy-MM-dd HH:mm:ss”。
+	 		strInterestDate = strInterestDate.replace(/-/g, '/'); // "2010/08/01";
+	 		var dateInterestDate = new Date(strInterestDate);
+
+			//2.回款日期的格式和类型转换
+			var huiKuanDate = $("#huiKuanDate").datebox("getValue");
+	 		huiKuanDate = huiKuanDate.replace(/-/g, '/'); // "2010/08/01";
+	 		var dateHuiKuanDate = new Date(huiKuanDate);
+	 		
+	 		//实际投资天数
+	 		actualInvestDays = dateHuiKuanDate.diff(dateInterestDate);
+	 		
+	 		console.info("计息日期："+dateInterestDate+"________回款日期："+dateHuiKuanDate+"————————时间差（daysDiff）："+dateHuiKuanDate.diff(dateInterestDate));	 		
+	 		
+	 		//若实际投资日期（回款日期 - 计息日期） <45天，则显示“银行同期活期存款利率”输入域
+	 		if( actualInvestDays < 45){
+	 			$("#id4Th").show();
+	 			$("#id4Td").show();
+	 		} 
+	 		//否则，隐藏“银行同期活期存款利率”输入域这个组件
+	 		else {
+	 			$("#id4Th").hide();
+	 			$("#id4Td").hide();	 			
+	 		}	 		 			 			 		
+		}
+		
+		
+		// 查看投资申请备注信息DataGrid
+		$("#investApplyMemoDataGrid").datagrid({
+			url : "investOrderHis/investOrderHisAction!findAllInvestOrderHisList.action?investOrderId="+investOrderId,
+			width : 'auto',
+			height : 240,
+			pagination:true,
+			rownumbers:true,
+			border:true,
+			singleSelect:true,
+			nowrap:true,
+			columns : [ [ 
+			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
+			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
+			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'left'},
+			              {field : 'comment',title : '审批意见',width :parseInt($(this).width()*0.1),align : 'left'}
+			          ] ]
+		});										
+	});	
+	
+	
+	/**======审批通过或驳回=======*/
+	function  submitTask(result,object) {
+		
+/* 		var test = object.parent().style("width");
+		console.info("test = "+test); */		
+		
+		//回款日期
+		var huiKuanDate = $("#huiKuanDate").datebox("getValue");		
+ 		if(huiKuanDate == ""){
+ 			$.messager.alert("提示","请选择回款日期后再进行提交!","warning");
+ 			return false;
+		}		 		
+		
+		//如果用户可以输入“银行同期活期存款利率”（即该输入域可见），则要校验用户输入的信息
+ 		//投资期限不满45T 按照银行同期活期存款利率计算
+ 		var curDepositInterestRate = $("#curDepositInterestRate").val();	
+		
+		if( $("#id4Th").is(":visible") && $("#id4Td").is(":visible") ){			
+			console.info("test01 = "+$("#id4Th").is(":visible")+"---test02 = "+$("#id4Td").is(":visible"));
+			// 判断输入是否为空
+			if(curDepositInterestRate == ""){
+				$.messager.alert("提示","请填写银行同期活期存款利率后，再进行提交!","warning")
+				return false;
+			}
+			//判断输入的是否为数字
+			else if ( isNaN( curDepositInterestRate ) ){
+				$.messager.alert("提示","请填写正确的数字后再进行提交!","warning")
+				return false;				
+			}				
+			console.info( "curDepositInterestRate="+curDepositInterestRate );
+		}
+		
+		// 验证备注信息是否已经填写
+		if($("#comment").val()==""){
+			$.messager.alert("提示","请填写备注信息后再进行提交!","warning")
+			return false;
+		}				
+ 		
+		// 确认是否提交
+		$.messager.confirm('提示', '点击按钮之后将进入下一个任务活动环节,此任务将对您不可见!', function(r){
+			if (r){
+				var data = {
+					"comment" : $("#comment").val(),
+					"result" :result,
+					"investOrderId" :investOrderId,
+					"taskId": taskId,
+					"investRedeem.huiKuanDate" : huiKuanDate,
+					"investRedeem.curDepositInterestRate" : curDepositInterestRate,
+					"investRedeem.actualInvestDays" : actualInvestDays
+				}
+				console.info(data);
+				$.ajax({
+					type : "POST",
+					url : "investRedeem/investRedeemAction!submitTask.action", 
+					data : data,
+					success : function(msg) {
+						parent.$.modalDialog.openner.datagrid('reload');
+						parent.$.modalDialog.handler.dialog('close');
+					}
+				});
+			}
+		}); 
+	}
+	
+</script>
+
+<!-- 受理任务 S -->
+<div data-options="region:'north',title:'North Title',split:true">
+
+	<!-- 理财收益调整申请单文本界面 -->	
+	<div style="height: 320px; overflow: auto; border-color: black; border: 1px;" align="center">
+		<h1><font color="red">理财赎回申请概述</font></h1>
+		<div align="left" style="margin-left: 160px; font-size: 16px;">		
+			&nbsp;&nbsp;&nbsp;&nbsp;<span id="id4OrgFullName"></span>理财客户<span id="id4ChName"></span>于<span id="id4BeginDate"></span>投资理财<br>
+			产品<span id="id4ProdName"></span>，金额为<span id="id4InvestEdu"></span>元整。<br>			
+			&nbsp;&nbsp;&nbsp;&nbsp;现在因故申请终止协议，按照协议规定，自意支付钱钱金融信息服务（北京）有<br>限公司因终止协议所产生的相关费用。<br><br>		
+			<font color="red">总经理已经审批通过</font>		
+			<div style="margin-left: 470px">
+				申请人：<span id="id4ChName02"></span><br>
+				理财经理：<span id="id4UserName"></span><br>
+				赎回申请日期：<span id="id4RedeemBeginDate"></span>			
+			</div>
+		</div>			
+	</div>
+	
+	<!-- 工作人员填写备注的区域 -->
+<!-- 	<div style="height: 280px;overflow: auto;" > -->
+	<div style="margin-left: 160px;">
+		<form id="acceptTaskForm" method="post">
+			 <input name="id" id="id"  type="hidden"/>
+			 <input name="auditId" type="hidden" value="noauditId"/>			
+			 <table class="table" cellpadding="5px;">
+				<tr>
+					<th>回款日期：&nbsp;&nbsp;</th>						
+					<td><input name="huiKuanDate" id="huiKuanDate"/></td>
+					<th id="id4Th">银行同期活期存款利率(%)：&nbsp;&nbsp;</th>						
+					<td id="id4Td"><input name="curDepositInterestRate" id="curDepositInterestRate" class="easyui-textbox" editable="true"/></td>																	
+				</tr>
+				<tr>
+				 	<th>审批意见（必填）:</th><!--  -->
+					<td colspan="3"><textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:460px; height:20px;"></textarea></td>
+				</tr>						
+			 </table>								
+		</form>
+	</div>
+	
+		
+	<div style="width: 880px;height:30px;">
+		<a style="margin-left: 655px;" href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('XiaoKeZhuanYuanTongGuo',this);">提交数据</a>
+<!-- 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('XiaoKeZhuanYuanBoHui',this);">审批驳回</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('XiaoKeZhuanYuanJuJue',this);">审批拒绝</a>
+ -->	
+ 	</div>
+    <div id="lookInfo" class="easyui-accordion" style="height: 300px;width: 980px;overflow: hidden;">
+	    <div title="备注信息" data-options="iconCls:'icon-cstbase',selected:true" >   
+			<table id="investApplyMemoDataGrid" title="申请备注的信息"></table>
+		</div>
+	</div>
+	
+</div>   
+<!-- 受理任务 E -->		
+<div id="dd"></div>	

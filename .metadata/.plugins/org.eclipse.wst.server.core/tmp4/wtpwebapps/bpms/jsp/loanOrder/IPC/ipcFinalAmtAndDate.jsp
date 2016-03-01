@@ -1,97 +1,207 @@
+<%@page import="com.bpms.util.Constants"%>
+<%@page import="com.bpms.shiro.ShiroUser"%>
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<style type="text/css">
-	th {
-		text-align: left;
-	}
-	textarea {
-		width:100%;
-	}
-</style>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%
+ ShiroUser shiroUser = Constants.getCurrendUser();
+%>
 <script type="text/javascript">
-	
-	$(function(){
-	   // 渲染贷款期限
-	   $("input[name='loanPeriodType']").combobox({
-			url : "common/commonAction!findTextArr.action?codeMyid=loan_period_type",
-			valueField : 'code',
-			textField : 'text',
-			required:true,
-			editable:false
-	   });
-	   
-	   //查询贷款额度
-	   $.ajax({
-		   url : "microcreditOpinion/microcreditOpinionAction!findFinalLoanAmt.action",
-		   type:"post",
-		   data:{"loanOrderId":$row.loanOrderId},
-		   success:function(data){
-			  console.info(data);
-			  $("#oralAmt").val(data);
-		   }
-	   });
-	});
-	
-	function saveFinalAmtDate(){
-		var loanPeriodType = $("#finalLoanPeriodType").combobox("getValue");
-		var finalAmt = $("#finalAmt").val();
-		$("#saveFinalAmtDateForm").form("submit",{
-			url : "microcreditOpinion/microcreditOpinionAction!saveFinalAmtDate.action",
-			onSubmit : function(param) {
-				var isValid = $(this).form('validate');
-				if (isValid){
-					param.loanOrderId = $row.loanOrderId;
-				}
-				return isValid; // 返回false终止表单提交
-			},
-			success : function(data) {
-				faad.dialog("close");
-				data = $.parseJSON(data);
-				$.messager.show({
-					title:"提示",
-					msg:data.message,
-					showType:"slide",
-					tiemout:1000
-				});
-			}
-		});
-	}
-	
-</script>
+		$(function(){
+			// 渲染贷款期限
+		   $("input[name='loanPeriodType']").combobox({
+				url : "common/commonAction!findTextArr.action?codeMyid=loan_period_type",
+				valueField : 'code',
+				textField : 'text',
+				editable: false,
+				onSelect:function(){
+					 calculate();
+				},
+		   });
 
-	<div id="" >
-		<form id="saveFinalAmtDateForm" method="post">
-			<div style="width:92%;text-align: center;padding-left:20px;">
-				<table cellpadding="8">
+			// 渲染月服务费率
+		   $("#monthServiceFeeRate").combobox({
+				url : "common/commonAction!findTextArr.action?codeMyid=month_service_fee_rate",
+				valueField : 'code',
+				textField : 'text',
+				editable: false,
+				onSelect:function(){
+					 calculate();
+				},
+		   });
+			
+		 	//查询系统参数
+			function checkSysParameter(paramCode){
+				var datas = "";
+				$.ajax({
+					url:"sysParameter/sysParameterAction!findSysParameter.action",
+					type:"post",
+					async:false,
+					data:{"parmCode":paramCode},
+					success:function(data){
+						datas = data.parmValue;
+					},
+					error:function(){
+						
+					}
+				});
+				return datas;
+			}
+		 	
+			$("input[name='loanInterestRate']").numberbox({    
+			    value:checkSysParameter('loan_rate'),
+			    disabled:true
+			}); 
+			
+			$("#loanInterestRateText").val(Number($("#loanInterestRate").numberbox(
+			'getValue'))*100+"%");
+			
+			// 信贷方式
+		   $("input[name='auditWay']").combobox({
+				width:171,
+				url:"common/commonAction!findTextArr.action?codeMyid=audit_way",
+				valueField: 'code',
+				textField: 'text',
+				editable: false,
+				required:true,
+			});
+			
+		  //查询贷款额度
+		   $.ajax({
+			   url : "microcreditOpinion/microcreditOpinionAction!findFinalLoanAmt.action",
+			   type:"post",
+			   data:{"loanOrderId":$row.loanOrderId},
+			   success:function(data){
+				  $("#oralAmt").val(data);
+			   }
+		   });
+			
+			// 获取终审报告的信息
+			$.ajax({
+				url:"creditAuditReport/creditAuditReportAction!findCreditAuditReportByLoanOrderId.action",
+				type:"post",
+				data:{"loanOrderId":$row.loanOrderId},
+				async:false,
+				success:function(data){
+					if(undefined!=data.finalAuditReport) {
+						$("#finalAuditReport-form").form("load",data.finalAuditReport);
+					}
+				}
+			});
+		});
+		
+		// 保存资质分析的信息
+		function saveFinalAuditReport(result,object){
+			$(object).parents("form:first").form('submit', {
+				url : "finalAuditReportAction/finalAuditReportAction!saveFinalAuditReport.action",
+				onSubmit : function(param) {
+					var isValid = $(this).form('validate');
+					if (isValid){
+						param.loanOrderId = $row.loanOrderId;
+					}
+					return isValid; // 返回false终止表单提交
+				},
+				success : function(data) {
+					data = $.parseJSON(data);
+					$("#finalAuditReport-form").form("load",data.data);
+					$.messager.show({
+						title:"提示",
+						msg:data.message,
+						showType:"slide",
+						timeout:1000
+					});
+					$.messager.progress('close'); // 如果提交成功则隐藏进度条
+				}
+		});
+		}
+		
+		// 计算金额
+		function calculate() {
+			/* var firstSugAmt = Number($("#firstAuditSugAmt").val()); */
+			// 合同金额
+			var contractLoanAmount = Number($("#contractLoanAmount").val());
+			/* if(contractLoanAmount>firstSugAmt){
+				$.messager.alert("提示","合同金额不能大于初审建议金额","info");
+				return false;
+			} */
+			// 贷款期限
+			var loanPeriodType = Number($("#loanPeriodType").combobox("getText"));
+			// 月服务汇率
+			var monthServiceFeeRate = Number(parseFloat($("#monthServiceFeeRate")
+					.combobox("getText")) / 100.0);
+			// 利息
+			/* var loanInterestRate = Number($("#loanInterestRate")
+					.combobox("getText")); */
+			var loanInterestRate = Number($("#loanInterestRate").numberbox(
+					'getValue'));
+			// 信访费用
+			var visitFee = Number($("#visitFee").val());
+			// 计算金额
+			if (contractLoanAmount != "" && loanPeriodType != ""
+					&& monthServiceFeeRate != "" && loanInterestRate != ""
+					&& visitFee != "") {
+				// 实放金额 = 合同金额-(合同金额*(服务汇率*贷款期限)+信访费用)
+				var actualLoanAmount = contractLoanAmount
+						- (contractLoanAmount
+								* (monthServiceFeeRate * loanPeriodType) + visitFee);
+				// 月还款额 = (合同金额/贷款期限)+合同金额*利息
+				var monthRepay = (contractLoanAmount / loanPeriodType)
+						+ contractLoanAmount * loanInterestRate;
+				$("#actualLoanAmount").numberbox("setValue", actualLoanAmount);
+				$("#monthRepay").numberbox("setValue", monthRepay);
+			}
+		}
+</script>
+<!-- 终审资质分析 -->	
+	<div class="easyui-tabs" style="fit:true;">
+		<div title="资质分析">
+			<form id="finalAuditReport-form" method="post">
+				<input name="finaId" hidden="true">
+				<input name="finaPersonnel" type="hidden"/>
+				<input name="finaDate" type="hidden"/>
+				<textarea name="finaPersSugg" style="display: none;"></textarea>
+				<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
 					<tr>
+						<td colspan="6"><span style="font-weight: bold;font-size: 14px;width:60px;">[终审资质分析详情]</span></td>
+					</tr>
+					<tr>
+						<th>最终通过金额:</th>
+						<td><input id="contractLoanAmount" name="contractLoanAmount" onblur="calculate();" class="easyui-validatebox easyui-numberbox" data-options="min:0,max:999999999999,precision:2,required:true"/>元</td>
+						<th>贷款期限:</th>
+						<td><input id="loanPeriodType" name="loanPeriodType" onchange="calculate();" />月</td>
+						<th>月服务汇率:</th>
+						<td><input id="monthServiceFeeRate" name="monthServiceFeeRate" /></td>
+					</tr>
+					<tr>
+						<th>利息:</th>
+						<td>
+							<input id="loanInterestRate" name="loanInterestRate" type="hidden" class="easyui-validatebox easyui-numberbox" data-options="min:0,precision:2,required:true" />
+							<input id="loanInterestRateText" class="easyui-textbox" readonly="readonly"/>
+						</td>
+						<th>信访费用:</th>
+						<td ><input id="visitFee" name="visitFee"  class="easyui-validatebox easyui-numberbox"  data-options="required:true,min:0,precision:2,max:999,required:true" onblur="calculate();"/>元</td>
+						<th>信贷方式:</th>
+						<td>
+							<input id="auditWay" name="auditWay"/>
+						</td>
+					</tr>
+					<tr>
+						<th>实放金额:</th>
+						<td><input id="actualLoanAmount" name="actualLoanAmount"  class="easyui-validatebox easyui-textbox easyui-numberbox" data-options="disabled:true,min:0,precision:2,groupSeparator:','" />元</td>
+						<th>月还款额:</th>
+						<td><input id="monthRepay" name="monthRepay"  class="easyui-validatebox easyui-textbox easyui-numberbox" data-options="disabled:true,min:0,precision:2,groupSeparator:','" /></td>
 						<th>
-							原贷款额度
+							原审批通过额度
 						</th>
-						<td  colspan="2">
+						<td  colspan="">
 							<input id="oralAmt" class="easyui-textbox" readonly="readonly"/>元
 						</td>
 					</tr>
-				
 					<tr>
-						<th>
-							修改贷款额度
-						</th>
-						<td  colspan="2">
-							<input id="finalAmt" class="easyui-validatebox easyui-textbox" name="finalAmt" data-options="validType:'mDouble',required:true" />
-						</td>
-					</tr>
-					
-					<tr>
-						<th>
-							期限
-						</th>
-						<td colspan="2">
-							<input id="finalLoanPeriodType" class="easyui-textbox easyui-validatebox" name="loanPeriodType" />
+						<td colspan="6" style="text-align: right;">
+							<a href="javascript:void(0);" onclick="saveFinalAuditReport('',this);"	class="easyui-linkbutton" iconCls="icon-save">保存</a>
 						</td>
 					</tr>
 				</table>
-			</div>
-		</form>
-		<div id="upload_form" style="width: 90%; height: 30px; text-align: right;">
-			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="saveFinalAmtDate();">保存</a>
-		</div> 
-	</div>
+			</form>
+		</div>	
+	</div>	

@@ -1,0 +1,49 @@
+package com.bpms.listener.loan.ipc;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+import org.apache.commons.lang3.StringUtils;
+
+import com.bpms.listener.loan.BaseLoanTaskListener;
+import com.bpms.util.Constants;
+
+/**
+ * 审核专员活动节点监听器
+ * 
+ * @author liuhh
+ *
+ */
+@SuppressWarnings("serial")
+public class LoanIPCFinalAuditTaskListener extends BaseLoanTaskListener  implements TaskListener {
+
+	@Override
+	public String getRoleCode() {
+		return Constants.LOAN_ROLE_CODE_IPCSHENHEZHUANYUAN;
+	}
+
+	@Override
+	protected String[] getOrganizationIds() {
+		String[] organizationIds = { Constants.LOAN_ORGANIZATION_ID };
+		return organizationIds;
+	}
+
+	@Override
+	public void notify(DelegateTask task) {
+		// 设置当前用户执行的角色信息
+		setLocalVariableRole(task);
+		// 设置候选人组
+		addCandidateGroupHQ(task);
+		// 设置候选人组
+		addCandidateGroupLocal(task);
+
+		// 判断当前任务是否指派,如果是指派,则直接设定候选人
+		String userId = (String) task.getVariable("assessorId");
+		if(StringUtils.isNotEmpty(userId)){
+			task.setAssignee(userId);
+			// 发送消息提醒
+			sendMessageByAssignee(task);
+			return;
+		}
+	}
+
+}

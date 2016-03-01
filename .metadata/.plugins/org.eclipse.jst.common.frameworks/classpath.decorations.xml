@@ -1,7 +1,44 @@
 <classpath>
   <container id="bpms!org.eclipse.jst.j2ee.internal.web.container">
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/hibernate-core-4.1.9.Final.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE</source-attachment-path>
+      <attribute name="source_encoding">UTF-8</attribute>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-orm-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-orm-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-web-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-web-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-core-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-core-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-context-support-3.2.2.RELEASE.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-context-support-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-aop-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-aop-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/freemarker-2.3.16.jar">
+      <source-attachment-path>D:/文档/2015-7-9/freemarker-2.3.8</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-context-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-context-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-test-3.2.2.RELEASE.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-test-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
     <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/shiro-all-1.2.1.jar">
       <source-attachment-path>D:/shiro-root-1.2.3-source-release</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-expression-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-expression-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-tx-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-tx-3.2.2.RELEASE-sources.jar</source-attachment-path>
+    </entry>
+    <entry id="E:/workspaces/bpms/WebContent/WEB-INF/lib/spring-jdbc-3.2.2.jar">
+      <source-attachment-path>E:/spring-framework-3.2.2.RELEASE/libs/spring-jdbc-3.2.2.RELEASE-sources.jar</source-attachment-path>
     </entry>
   </container>
 </classpath>

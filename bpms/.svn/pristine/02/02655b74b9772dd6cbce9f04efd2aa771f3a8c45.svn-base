@@ -1,0 +1,104 @@
+package com.bpms.action;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.activiti.engine.ActivitiObjectNotFoundException;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.service.InvestRedeemService;
+import com.bpms.service.InvestRedeemWorkFlowService;
+import com.bpms.util.Constants;
+import com.bpms.view.model.DataModel;
+import com.bpms.view.model.GridModel;
+import com.opensymphony.xwork2.ModelDriven;
+
+/**
+ * 
+ * 投资赎回的Action
+ * @author 张健  2015/12/16.
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/12/16 张健 创建.
+ */
+@Namespace("/investRedeem")
+@Action(value = "investRedeemAction")
+public class InvestRedeemAction extends BaseAction implements ModelDriven<InvestOrder>{
+
+	private static final long serialVersionUID = 3680229897378856564L;
+	
+	private InvestOrder investOrder = new InvestOrder();
+	
+	@Autowired
+	private InvestRedeemService investRedeemService;
+	
+	@Autowired
+	private InvestRedeemWorkFlowService investRedeemWorkFlowService;
+	
+	//********************************************************//
+	//****************  与投资赎回数据信息相关的方法  **************//
+	//********************************************************//		
+	/**
+	 * 
+	 * @Title: findApprovedInvestList4Redeem 
+	 * @param @return
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 上午11:27:59
+	 */
+	public String findApprovedInvestList4Redeem(){		
+		//封装传入后台的参数。
+		Map<String, Object> param = new HashMap<String, Object>();		
+		try {
+			
+			param.put("start", this.getFirstResult());
+			param.put("end", this.getRows());
+			param.put("investorName4AdvancedQuery", this.investOrder.getInvestorName());  //封装高级查询中的“财富客户姓名”
+			param.put("contractNo4AdvancedQuery", this.investOrder.getContractNo());   //封装高级查询中的“合同编号”			
+			//获得当前,投资赎回操作的理财经理的ID
+			//原因：理财经理A提交的投资申请，只能由理财经理A进行赎回操作，其不能对理财经理B提交的投资订单进行操作。
+			param.put("investApplySubmitter", String.valueOf(Constants.getCurrendUser().getUserId()));
+						
+			GridModel gridModel = new GridModel();
+			gridModel.setRows(investRedeemService.findApprovedInvestList4Redeem(param));
+			gridModel.setTotal(investRedeemService.countApprovedInvestList4Redeem(param));
+			this.OutputJson(gridModel);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}			
+		return null;
+	}
+
+	@Override
+	public InvestOrder getModel() {		
+		return this.investOrder;
+	}
+	
+	
+	
+	//********************************************************//
+	//****************  与投资赎回流程，流程处理相关的方法  **************//
+	//********************************************************//
+	
+	/**
+	 * 启动投资赎回的工作流程。
+	 * @Title: saveStartProcess4InvestRedeem 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 下午4:42:59
+	 */
+	public String saveStartProcess4InvestRedeem(){
+		try {
+			OutputJson(getMessage(investRedeemWorkFlowService.saveStartProcess4InvestRedeem(this.investOrder)));
+		} catch (ActivitiObjectNotFoundException e) {
+			OutputJson(new DataModel("提示", "您还没有部署投资申请流程!!", false));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}

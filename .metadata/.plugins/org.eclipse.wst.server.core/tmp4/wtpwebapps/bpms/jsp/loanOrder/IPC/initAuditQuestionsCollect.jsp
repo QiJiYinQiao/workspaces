@@ -1,14 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 	<style type="text/css">
-		textarea{
-			width: 880px;
+ 		textarea{
+			width: 800px;
 			height:30px;
 		}
-		form{height:605px;}
-		.subDiv{
-			width: 98%; height: 30px; text-align: right;position: absolute;margin-top:5px;
-		}
+		/* form{height:605px;} */
 		table th{text-align:right;}
 	</style>
 	<script type="text/javascript">
@@ -68,11 +65,11 @@
 		}
 	</script>
 	
-	<div>
-		<form action="post">
+	<div style="width: 99.5%;height: 99.5%;overflow: auto;">
+		<form action="post" style="width: auto;height: auto;">
 			<table>
 				<tr>
-					<th>
+					<th colspan="2" style="text-align: left;">
 						<font size="5">问题</font>
 					</th>
 				</tr>
@@ -202,9 +199,12 @@
 						<textarea name="questions"  class="easyui-textbox"></textarea>
 					</td>
 				</tr>
+				<tr>
+					<th colspan="2" align="right">
+						<a href="javascript:void(0);" class="easyui-linkbutton" onclick="saveQuestions();">提交</a>
+					</th>
+				</tr>
+				
 			</table>
 		</form>
-		<div class="subDiv">
-			<a href="javascript:void(0);" class="easyui-linkbutton" onclick="saveQuestions();">提交</a>
-		</div>
 	</div>

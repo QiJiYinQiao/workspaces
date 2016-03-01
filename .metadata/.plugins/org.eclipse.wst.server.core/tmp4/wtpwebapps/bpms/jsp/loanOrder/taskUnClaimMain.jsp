@@ -10,7 +10,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <html>
   <head>
     <base href="<%=basePath%>">
-    <title>代办任务</title>
+    <title>待办任务</title>
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="cache-control" content="no-cache">
 	<meta http-equiv="expires" content="0">    
@@ -20,32 +20,60 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<script type="text/javascript">
 			var $grid;
 			$(function() {
+				$(window).resize(function(){  
+		            $("#dg").datagrid("resize",{  
+						height :$(window).height()-40,
+		            	width : 'auto'
+		            });                
+		        });
+				
 				 $grid=$("#dg").datagrid({
 					url : "loanOrder/loanOrderAction!findAllUnClaimTask.action",
 					width : 'auto',
-					height : $(this).height()*0.96,
+					height : $(window).height()-40,
 					pagination:true,
 					rownumbers:true,
 					border:true,
 					singleSelect:true,
 					nowrap:true,
 					multiSort:false,
-					columns : [ [ {field : 'name',title : '客户姓名',width : parseInt($(this).width()*0.06)},
-					              {field : 'idNo',title : '身份证号',width : parseInt($(this).width()*0.1)},
-					              {field : 'age',title : '年龄',width : parseInt($(this).width()*0.03)},
-					              {field : 'annualSalary',title : '年收入(单位:元)',width : parseInt($(this).width()*0.06)},
-					              {field : 'mortgageStatus',title : '居住情况',width : parseInt($(this).width()*0.1)},
-					              {field : 'loanAmount',title : '申请贷款额度(单位:元)',width : parseInt($(this).width()*0.08)},
-					              {field : 'loanMin',title : '最低接受额度(单位:元)',width : parseInt($(this).width()*0.08)},
-					              {field : 'loanPeriod',title : '申请贷款期限',width : parseInt($(this).width()*0.1)},
-					              {field : 'repayMethod',title : '还款方式',width : parseInt($(this).width()*0.1)},
-					              {field : 'purpose',title : '贷款用途',width : parseInt($(this).width()*0.1)},
-					              {field : 'orderStatus',title : '订单状态',width : parseInt($(this).width()*0.1),
+					border:false,
+					fitColumns:false,
+					pageSize:10,
+					pageList:[10,20,30,40],
+					columns : [ [ {field : 'name',title : '客户姓名',width : parseInt($(this).width()*0.06),align : 'center'},
+					              {field : 'idNo',title : '身份证号',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'age',title : '年龄',width : parseInt($(this).width()*0.03),align : 'center'},
+					              {field : 'annualSalary',title : '年收入(单位:元)',width : parseInt($(this).width()*0.06),align : 'center'},
+					              {field : 'mortgageStatus',title : '居住情况',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'loanAmount',title : '申请贷款额度(单位:元)',width : parseInt($(this).width()*0.08),align : 'center'},
+					              {field : 'loanMin',title : '最低接受额度(单位:元)',width : parseInt($(this).width()*0.08),align : 'center'},
+					              {field : 'loanPeriod',title : '申请贷款期限',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'repayMethod',title : '还款方式',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'belongTo',title : '所属业务',width : parseInt($(this).width()*0.05),align : 'center'},
+					              {field : 'loanInfo',title : '进件情况',width : parseInt($(this).width()*0.05),align : 'center',
+					            	  formatter:function(value,row,index){
+					            		  if(value=="1"){
+					            			  return "第一次申请";
+					            		  }else if(value=="2"){
+					            			  return "循环贷";
+					            		  }else if(value =="3"){
+					            			  return "二次进件"
+					            		  }else{
+					            			  return ""
+					            		  }
+				            	 	 }
+					              },
+					              {field : 'purpose',title : '贷款用途',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'orderStatus',title : '订单状态',width : parseInt($(this).width()*0.1),align : 'center',
 					            	  formatter: function(value,row,index){
 											return value.statusName;
 					            	  }
 					              }, 
-					              {field : 'operate',title : '操作',width : parseInt($(this).width()*0.2),
+					              {field : 'areaName',title : '业务所属地区',width : parseInt($(this).width()*0.05),align : 'center'},
+					              {field : 'companyName',title : '业务所属公司',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'deptName',title : '营业部',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'operate',title : '操作',width : parseInt($(this).width()*0.3),align : 'center',
 					            	  formatter: function(value,row,index){
 										var result="<a href='javascript:void(0);' onclick='loanOrderInfo("+ index + ");'>查看申请详情</a>　 ";
 		      							result +=  "<a href='javascript:void(0);' onclick='lookLoanOrderProcessCommentDialog("+index+");'>查看审批意见</a>　　";
@@ -61,8 +89,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		//查看详情
 		function loanOrderInfo(index) {
 			var row = getRowData($grid,index);
-			window.open("jsp/loanOrder/loanOrderDetailsForm.jsp?loanerId="+row.loanerId+"&loanOrderId="+row.loanOrderId,
-					"详情", 'height=650, width=1000, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+			window.open("jsp/loanOrder/order/loanOrderDetailsForm.jsp?loanerId="+row.loanerId+"&loanOrderId="+row.loanOrderId,
+					"详情", "height="+($(window).height()*0.8)+", width=900, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
 		}
 		
 		// 查看流程图片
@@ -100,8 +128,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			parent.$.modalDialog.openner= $grid;
 			parent.$.modalDialog({
 				title : '审批意见查看',
-				width : 1000,
-				height : 650,
+				width : 900,
+				height : $(window).height()*0.8,
 				href : "jsp/loanOrder/loanOrderProcessComment.jsp"});
 		}
 		
@@ -126,9 +154,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	</script>
   </head>
   <body>
-      <div data-options="region:'center',border : false">
+      <div>
   		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-				业务管理-->贷款业务管理-->代办任务
+					业务管理-->贷款业务管理-->任务办理-->待办任务
 		</div>
 		<table id="dg"></table>
 	    <div id="imageDialog"  class="easyui-dialog" title="流程图片" data-options="border:false,closed:true,fit:true">

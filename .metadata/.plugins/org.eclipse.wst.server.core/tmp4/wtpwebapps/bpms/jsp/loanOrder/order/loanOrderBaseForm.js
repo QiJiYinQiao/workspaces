@@ -1,0 +1,211 @@
+// 渲染下拉列表框的基本信息
+function RenderCombox(){
+		//获取附件类型combobox,并将数据保存 
+		$("#upload_form_divs input:first").combobox({
+			valueField : 'code',
+			textField : 'text',
+			url:'common/commonAction!findTextArr.action?codeMyid=attachment_type',
+			required:true,
+			editable:false
+		});
+
+	   //性别
+	   $("input[name^='gender']").combobox({
+			url : "common/commonAction!findTextArr.action?codeMyid=gender_type",
+			valueField : 'code',
+			textField : 'text',
+			required : true,
+			editable:false,
+	   });
+	   
+	   //婚姻状况
+	   $("input[name='marriageType']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=marriage_type",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });
+	   
+	   //是否有子女
+	   $("input[name$='hasChild']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=has_child",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+		});
+	   
+	   //房屋居住情况
+	   $("input[name$='mortgageStatus']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=mortgage_status",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+		});
+	   
+	   //与本人关系
+	   $("input[name$='relationship']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=relationship_type",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+		});
+	   
+	   //还款方式
+	   $("input[name$='repayMethod']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=repay_method",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });
+	    
+	   //贷款类型
+	   $("input[name$='loanType']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=loan_type",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });
+	   
+	   //账户介质
+	   $("input[name$='actMedium']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=account_medium",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });
+	   
+	   //账户性质
+	   $("input[name$='actNature']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=bankAccount_type",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });
+		
+	   // 单位性质
+	    $("input[name='corpNature']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=corp_nature",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });  
+	   
+	   // 主副银行卡
+	   $("input[name='primaryBackup']").combobox({
+			url:"common/commonAction!findTextArr.action?codeMyid=primary_backup",
+			valueField: 'code',
+			textField: 'text',
+			required : true,
+			editable:false
+	   });
+	   
+	   // 是否工商银行卡
+	   $("input[name='isICBC']").combobox({
+		   url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+		   valueField: 'code',
+		   textField: 'text',
+		   required : true,
+		   editable:false 
+	   })
+
+   }
+	//省
+	function renderProvinceSelect(pid,cid,aid,pvalue,cvalue,avalue){
+		$('#'+pid).combobox({   
+			url:'common/commonAction!findAreaDic.action?parentId=1',
+            valueField:'code',   
+            textField:'text',
+            editable:false,
+            onSelect:function(data){
+            	$('#'+cid).combobox("clear"); 
+        		$('#'+aid).combobox("clear");
+        		renderCitySelect(cid,aid,data,cvalue,avalue);
+        		pvalue=null;
+        		cvalue=null;
+        		avalue=null;
+        	},
+            onLoadSuccess:function(){
+            	if(pvalue==null || pvalue==""){
+	            	var val = $(this).combobox("getData");
+					if(!$.isEmptyObject(val)){
+		                $(this).combobox("select", val[0]["code"]);
+					} 	
+				}else{
+					$(this).combobox("select", pvalue);
+				}
+            }
+        }); 
+	}
+	
+	//市
+	function renderCitySelect(cid,aid,data,cvalue,avalue){
+		$('#'+cid).combobox({   
+			url:'common/commonAction!findAreaDic.action?parentId='+data.code,
+            valueField:'code',   
+            textField:'text',
+            editable:false,
+            onSelect:function(data){
+            	$('#'+aid).combobox("clear");
+            	renderAreaSelect(aid,data,avalue);
+            	cvalue=null;
+            	avalue=null;
+            },
+            onLoadSuccess:function(){
+            	if(cvalue==null || cvalue==""){
+	            	var val = $(this).combobox("getData");
+					if(!$.isEmptyObject(val)){
+		                $(this).combobox("select", val[0]["code"]);
+					} 	
+				}else{
+					$(this).combobox("select", cvalue);
+				}	
+            }
+        }); 
+	}
+	
+	//县
+	function renderAreaSelect(aid,data,avalue){
+		$('#'+aid).combobox({   
+			url:'common/commonAction!findAreaDic.action?parentId='+data.code,
+            valueField:'code',   
+            textField:'text',
+            editable:false,
+            onSelect:function(data){
+            	avalue=null;
+            },
+            onLoadSuccess:function(){
+            	if(avalue==null || avalue==""){
+	            	var val = $(this).combobox("getData");
+					if(!$.isEmptyObject(val)){
+		                $(this).combobox("select", val[0]["code"]);
+					} 	
+				}else{
+					$(this).combobox("select", avalue);
+				}	
+            }
+        }); 
+	}
+	
+	// 判断用户信息是否已经保存过
+	function checkIsSaveLoaner(){
+		var loanerOrderId = $("#loanOrderId").val();
+		 if(""==loanerOrderId){
+			 $.messager.alert("提示","请您填写客户基本资料并保存!","warning");
+			 return false;
+		 }
+		 return true;
+	}
+	   
+   // 清理表单信息
+   function clearFun(id){
+	   $("#"+id).form("clear");
+   }

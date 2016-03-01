@@ -74,7 +74,6 @@
 			type:"post",
 			data:{"loanerId":loanerId,"loanOrderId":loanOrderId},
 			success:function(data){
-				console.info(data);
 				appcicationReportData = data;
 				$("#loanerCARInfo-form").form("load",data);
 			}
@@ -84,6 +83,7 @@
 		$("#applicationReportTabs").tabs({
 			 onSelect:function(title,index){
 				 if(1==index){
+					 console.info(appcicationReportData);
 					// 渲染信审报告的工商网和人法网信息
 			 		loadCreditAuditReport(appcicationReportData);
 			 		// 渲染贷款详情
@@ -98,11 +98,28 @@
 					$("#accountsJournal-div input").attr("disabled","disabled");
 					$("#accountsJournal-div textarea").attr("disabled","disabled");
 				 }else if(3==index){
-					// 渲染资产信息
-					loadAssets($creditAuditReport.assets);
+					if(undefined==$creditAuditReport.assets){
+						$("#assets-div").hide();
+					}else{
+						$("#noAssets").hide();
+						// 渲染资产信息
+						loadAssets($creditAuditReport.assets);
+					}
 				 }else if(4==index){
-					// 渲染资产分析
-					loadFirstAuditReport(appcicationReportData)
+					 if(undefined!=appcicationReportData && null != appcicationReportData){
+						 if(undefined == appcicationReportData.note && undefined == appcicationReportData.firsDepSugg) {
+							 $("#firstAuditReport-div").hide();
+							 $("#finalAuditReportForm").hide();
+						 } else {
+							$("#noAuditReport").hide();
+							$("#firstAuditReport-div").css("display","block");
+							 // 渲染资产分析
+						 	loadFirstAuditReport(appcicationReportData)
+						 }
+					 } else {
+						 $("#firstAuditReport-div").hide();
+						 $("#finalAuditReportForm").hide();
+					 }
 				 }
 			 }
 		});
@@ -194,9 +211,15 @@
 	// 渲染资产分析
 	function loadFirstAuditReport(data){
 		if(!$.isEmptyObject(data)){
- 			$("#firstAuditReport-form").form("load",data);
+			if (undefined == data.firstSuggestAmt) {
+				$("#firstAuditReport-form").remove();
+				$("#firstAuditReport-formA").form("load",data);
+			} else {
+				$("#firstAuditReport-formA").remove();
+				$("#firstAuditReport-form").form("load",data);
+			}
 		}
-		if("1"==finalShow){
+		if("1"==finalShow && undefined != appcicationReportData.finaId){
 			$("#finalAuditReportForm").form("load",appcicationReportData);
 		}else{
 			$("#finalAuditReportForm").remove();
@@ -234,16 +257,25 @@
 		  	+"		</tr>"
 		  	+"			<tr>"
 		  	+"			<th>[入账金额:元]</th>"
-		  	+"			<td><input name='income01' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income02' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income03' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income04' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income05' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
-		  	+"			<td><input name='income06' style='width: 100px;' class='easyui-validatebox easyui-numberbox' data-options='min:0,precision:2'/></td>"
+		  	+"			<td><input name='income01' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income02' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income03' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income04' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income05' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='income06' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"		</tr>"
+			+"			<tr>"
+		  	+"			<th>[出账金额:元]</th>"
+		  	+"			<td><input name='outgo01' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo02' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo03' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo04' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo05' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
+		  	+"			<td><input name='outgo06' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/></td>"
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>月均:</th>"
-		  	+"			<td><input name='averageIncome' style='width: 100px;' class='easyui-validtebox easyui-numberbox' data-options='min:0,precision:2,required:true'/>元</td>"
+		  	+"			<td><input name='averageIncome' style='width: 100px;' class='easyui-numberbox' data-options=\"min:0,precision:2,groupSeparator:','\"/>元</td>"
 		  	+"		</tr>"
 		  	+"		<tr>"
 		  	+"			<th>流水分析:</th>"
@@ -331,7 +363,7 @@
 				</tr>
 				<tr>
 					<th>申贷金额:</th>
-					<td><input  name="loanAmount" class="easyui-textbox" />元</td>
+					<td><input  name="loanAmount" class="easyui-numberbox" data-options="groupSeparator:','" />元</td>
 					<th>贷款用途:</th>
 					<td><input  name="purpose" class="easyui-textbox" /></td>
 				</tr>
@@ -360,6 +392,14 @@
 					<th>进件城市:</th>
 					<td><input  name="loanCity" class="easyui-textbox" /></td>
 				</tr>
+				<tr>
+					<th>实际需求金额:</th>
+					<td><input name="actualNeedAmount"  class="easyui-numberbox" data-options="groupSeparator:','"/></td>
+					<th>进件情况:</th>
+					<td><input name="loanInfoText" class="easyui-textbox" /></td>
+					<th>进件情况说明:</th>
+					<td><input name="loanInfoDesc" class="easyui-textbox" /></td>
+				</tr>
 			</table>
 		</form>
 		
@@ -378,7 +418,7 @@
 					<th>年内逾期:</th>
 					<td><input name="yearOverdue" class=" easyui-textbox" /></td>
 					<th>未结清贷款总额:</th>
-					<td><input name="outstandingSum" class=" easyui-textbox" />元</td>
+					<td><input name="outstandingSum" class="easyui-numberbox" data-options="groupSeparator:','"/>元</td>
 				</tr>
 				<tr>
 					<th>未结清笔数:</th>
@@ -386,13 +426,13 @@
 					<th>累计逾期:</th>
 					<td><input name="cumulativeOverdue" class=" easyui-textbox" /></td>
 					<th>未结清贷款余额:</th>
-					<td><input name="outstandingBalance" class=" easyui-textbox"/>元	</td>
+					<td><input name="outstandingBalance" class="easyui-numberbox" data-options="groupSeparator:','"/>元	</td>
 				</tr>
 				<tr>
 					<th>逾期率:</th>
 					<td><input name="overdueRate"  class="easyui-textbox" /></td>
 					<th>月还额度:</th>
-					<td><input name="monthRepay"  class=" easyui-textbox" /></td>
+					<td><input name="monthRepay"  class="easyui-textbox" /></td>
 				</tr>
 				<tr>
 					<th>最近一笔贷款详情:</th>
@@ -416,23 +456,23 @@
 				</tr>
 				<tr>
 					<th>总卡数:</th>
-					<td ><input name="cardCount" style="width: 100px;" class=" easyui-textbox" /></td>
+					<td ><input name="cardCount" style="width: 100px;" class="easyui-textbox" /></td>
 					<th>在用卡数:</th>
-					<td><input name="cardInUse" style="width: 100px;" class=" easyui-textbox" /></td>
+					<td><input name="cardInUse" style="width: 100px;" class="easyui-textbox" /></td>
 					<th>逾期卡数:</th>
-					<td><input name="overdueCardCount" style="width: 100px;" class=" easyui-textbox" /></td>
+					<td><input name="overdueCardCount" style="width: 100px;" class="easyui-textbox" /></td>
 					<th >逾期比例:</th>
 					<td ><input name="overdueRatio" style="width: 100px;" class="easyui-textbox" />%</td>
 				</tr>
 				<tr>
 					<th>授信总额:</th>
-					<td><input name="creditTotalAmount" style="width: 100px;" class=" easyui-textbox" />元</td>
+					<td><input name="creditTotalAmount" style="width: 100px;" class="easyui-numberbox" data-options="groupSeparator:','" />元</td>
 					<th>使用额度:</th>
-					<td><input name="creditLimit" style="width: 100px;" class=" easyui-textbox" />元</td>
+					<td><input name="creditLimit" style="width: 100px;" class="easyui-numberbox" data-options="groupSeparator:','"/>元</td>
 					<th>最高额度:</th>
-					<td><input name="maxLimit" style="width: 100px;" class=" easyui-textbox" />元</td>
+					<td><input name="maxLimit" style="width: 100px;" class="easyui-numberbox" data-options="groupSeparator:','"/>元</td>
 					<th>月还额度:</th>
-					<td><input name="monthRepay" style="width: 100px;" class=" easyui-textbox" />元</td>
+					<td><input name="monthRepay" style="width: 100px;" class="easyui-numberbox" data-options="groupSeparator:','"/>元</td>
 				</tr>
 				<tr>
 					<th>年内逾期:</th>
@@ -520,7 +560,7 @@
 		<div class="easyui-accordion" style="fit:true;height: 580px;">
 		    <div title="流水信息(对公)" data-options="selected:true" style="overflow: auto;"> 
 				<div id="accountsJournal-corporate-div">
-					<div id="noMessage" style="width: 100%;height:250px;text-align: center;padding-top:250px;">
+					<div style="width: 100%;height:250px;text-align: center;padding-top:250px;">
 						<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
 							暂无流水信息(对公)
 						</font>
@@ -529,7 +569,7 @@
 			</div>
 		    <div title="流水信息(对私)">  
 				<div id="accountsJournal-private-div" style="overflow: auto;">
-					<div id="noMessage" style="width: 100%;height:250px;text-align: center;padding-top:250px;">
+					<div style="width: 100%;height:250px;text-align: center;padding-top:250px;">
 						<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
 							暂无流水信息(对私)
 						</font>
@@ -541,97 +581,139 @@
 	
 	<!-- 资产 -->
 	<div title="资产">
-		<form id="assets-form" method="post" style="height:580px;">
-			<input name="assetId" class="" hidden="true">
-			<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
-				<tr>
-					<td colspan="4"><span style="font-weight: bold;font-size: 14px;width:60px;">[资产详情]</span></td>
-				</tr>
-				<tr>
-					<th>房产:</th>
-					<td><input name="realEstate" class="easyui-textbox" /></td>
-					<th>车产:</th>
-					<td><input name="vehicle" class="easyui-textbox" /></td>
-				</tr>
-				<tr>
-					<th>同行业:</th>
-					<td><input name="theSameIndustry" class="easyui-textbox" /></td>
-				</tr>
-			</table>
-		</form>
+		<div id="noAssets" style="width: 100%;height:250px;text-align: center;padding-top:250px;">
+			<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
+				暂无资产信息
+			</font>
+		</div>  
+	
+		<div id="assets-div">
+			<form id="assets-form" method="post" style="height:580px;">
+				<input name="assetId" class="" hidden="true">
+				<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
+					<tr>
+						<td colspan="4"><span style="font-weight: bold;font-size: 14px;width:60px;">[资产详情]</span></td>
+					</tr>
+					<tr>
+						<th style="width:60px;">房产:</th>
+						<td><textarea name="realEstate" style="width:99%;" class="easyui-textbox"></textarea></td>
+					</tr>
+					<tr>
+						<th>车产:</th>
+						<td><textarea name="vehicle" style="width:99%;" class="easyui-textbox"></textarea></td>
+					</tr>
+					<tr>
+						<th>同行业:</th>
+						<td><input name="theSameIndustry" style="width:99%"  class="easyui-textbox" /></td>
+					</tr>
+				</table>
+			</form>
+		</div>
 	</div>
 	
 	<!-- 资质分析 -->
 	<div title="资质分析">
-		<form id="firstAuditReport-form" method="post" style="height:580px;">
-			<input name="firsId" hidden="true" class="">
-			<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
-				<tr>
-					<td colspan="6"><span style="font-weight: bold;font-size: 14px;width:60px;">[初审资质分析详情]</span></td>
-				</tr>
-				<tr>
-					<th>行业类型:</th>
-					<td><input name="industryType"  class="easyui-textbox" /></td>
-					<th>经营年限:</th>
-					<td><input name="comOperDuration"  class="easyui-textbox" />年</td>
-					<th>经营状态:</th>
-					<td><input name="comOperStatusText" class=" easyui-textbox"/></td>
-				</tr>
-				<tr>
-					<th>婚姻情况:</th>
-					<td><input name="marriageTypeText" class=" easyui-textbox"/></td>
-					<th>是否本地:</th>
-					<td><input name="isLocalResText" class=" easyui-textbox"/></td>
-					<th>信用情况:</th>
-					<td><input name="creditStatusText" class=" easyui-textbox" /></td>
-				</tr>
-				<tr>
-					<th>电核情况:</th>
-					<td><input name="phoneCheckStatusText" class="easyui-textbox"/></td>
-					<th>信访情况:</th>
-					<td><input name="visitStatusText" class="easyui-textbox"/></td>
-					<th>资质总评:</th>
-					<td><input name="qulificationStatusText" class="easyui-textbox"/><!-- <a href="#">查看细则</a></td> -->
-				</tr>
-				<tr>
-					<th>建议金额:</th>
-					<td><input name="firstSuggestAmt" type="text" class="easyui-textbox" /></td>
-					<th>信审方式:</th>
-					<td>
-						<input name="firstAuditWayText" class="easyui-textbox"/>
-					</td>
-					<th>外访人:</th>
-					<td>
-						<input name="outSurver" class="easyui-textbox"/>
-					</td>
-				</tr>
-				<tr>
-					<th>备注:</th>
-					<td colspan="6"><textarea name="note" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
-				</tr>
-				<tr>
-					<th>初审人:</th>
-					<td>
-						<input  name="firsPersonnelName" class="easyui-textbox" />
-					</td>
-					<th>初审日期</th>
-					<td><input  name="firsDate"  class="easyui-textbox" /></td>
-				</tr>
-				<tr>
-					<th>初审人员意见:</th>
-					<td colspan="6"><textarea name="firsPersSugg" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
-				</tr>
-				<tr>
-					<th>初审部门意见:</th>
-					<td colspan="6"><textarea name="firsDepSugg" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
-				</tr>
-				
-				<tr>
-					<th>初审资质分析说明:</th>
-					<td colspan="6"><textarea name="firstDescription" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
-				</tr>
-			</table>
-		</form>
+		<div id="noAuditReport" style="width: 100%;height:250px;text-align: center;padding-top:250px;">
+			<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
+				暂无资质分析
+			</font>
+		</div>  
+		<div id="firstAuditReport-div" style="display: none;">
+			<form id="firstAuditReport-form" method="post" style="height:370px;">
+				<input name="firsId" hidden="true" class="">
+				<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
+					<tr>
+						<td colspan="6"><span style="font-weight: bold;font-size: 14px;width:60px;">[初审资质分析详情]</span></td>
+					</tr>
+					<tr>
+						<th>行业类型:</th>
+						<td><input name="industryType"  class="easyui-textbox" /></td>
+						<th>经营年限:</th>
+						<td><input name="comOperDuration"  class="easyui-textbox" />年</td>
+						<th>资质总评:</th>
+						<td><input name="qulificationStatusText" class="easyui-textbox"/><!-- <a href="#">查看细则</a></td> -->
+					</tr>
+					<tr>
+						<th>婚姻情况:</th>
+						<td><input name="marriageTypeText" class=" easyui-textbox"/></td>
+						<th>是否本地:</th>
+						<td><input name="isLocalResText" class=" easyui-textbox"/></td>
+						<th>信用情况:</th>
+						<td><input name="creditStatusText" class=" easyui-textbox" /></td>
+					</tr>
+					<tr>
+						<th>电核情况:</th>
+						<td><input name="phoneCheckStatusText" class="easyui-textbox"/></td>
+						<th>信访情况:</th>
+						<td><input name="visitStatusText" class="easyui-textbox"/></td>
+						<th>经营状态:</th>
+						<td><input name="comOperStatusText" class=" easyui-textbox"/></td>
+					</tr>
+					<tr>
+						<th>建议金额:</th>
+						<td><input name="firstSuggestAmt" type="text" class="easyui-textbox" />万元</td>
+						<!-- <th>信审方式:</th>
+						<td>
+							<input name="firstAuditWayText" class="easyui-textbox"/>
+						</td> -->
+						<th>外访人:</th>
+						<td>
+							<input name="outSurver" class="easyui-textbox"/>
+						</td>
+					</tr>
+					<tr>
+						<th>备注:</th>
+						<td colspan="6"><textarea name="note" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
+					</tr>
+					<tr>
+						<th>电核人员:</th>
+						<td>
+							<input  name="firsPersonnelName" class="easyui-textbox" />
+						</td>
+						<th>审核日期</th>
+						<td><input  name="firsDate"  class="easyui-textbox" /></td>
+					</tr>
+					<tr>
+						<th>电核部门意见:</th>
+						<td colspan="6"><textarea name="firsDepSugg" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
+					</tr>
+				</table>
+			</form>
+			
+			<!-- 未完全填写的初审信息 -->
+			<form id="firstAuditReport-formA" method="post" style="height:350px;">
+				<input name="firsId" hidden="true" class="">
+				<table class="table" style="margin-top: 10px;width:100%;" cellpadding="5px;">
+					<tr>
+						<td colspan="6"><span style="font-weight: bold;font-size: 14px;width:60px;">[初审资质分析详情]</span></td>
+					</tr>
+					<tr>
+						<th>行业类型:</th>
+						<td><input name="industryType"  class="easyui-textbox" /></td>
+						<th>经营年限:</th>
+						<td><input name="comOperDuration"  class="easyui-textbox" />年</td>
+						<th>资质总评:</th>
+						<td><input name="qulificationStatusText" class="easyui-textbox"/><!-- <a href="#">查看细则</a></td> -->
+					</tr>
+					<tr>
+						<th>婚姻情况:</th>
+						<td><input name="marriageTypeText" class=" easyui-textbox"/></td>
+						<th>是否本地:</th>
+						<td><input name="isLocalResText" class=" easyui-textbox"/></td>
+						<th>信用情况:</th>
+						<td><input name="creditStatusText" class=" easyui-textbox" /></td>
+					</tr>
+					<tr>
+						<th>电核情况:</th>
+						<td><input name="phoneCheckStatusText" class="easyui-textbox"/></td>
+					</tr>
+					<tr>
+						<th>备注:</th>
+						<td colspan="6"><textarea name="note" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
+					</tr>
+				</table>
+			</form>
+		</div>
 		
 		<form id="finalAuditReportForm" method="post">
 			<input id="finaId" name="finaId" hidden="true">
@@ -641,41 +723,37 @@
 				</tr>
 				<tr>
 					<th>合同金额:</th>
-					<td><input id="contractLoanAmount" name="contractLoanAmount"  class="easyui-textbox" />元</td>
+					<td><input id="contractLoanAmount" name="contractLoanAmount"  class="easyui-numberbox" data-options="precision:2,groupSeparator:','"/>元</td>
 					<th>贷款期限:</th>
-					<td><input id="loanPeriodType" name="loanPeriodTypeText"  class="easyui-textbox"/>月</td>
+					<td><input id="loanPeriodType" name="loanPeriodTypeText"  class="easyui-textbox"/>个月</td>
 					<th>月服务汇率:</th>
 					<td><input id="monthServiceFeeRate" name="monthServiceFeeRateText" class="easyui-textbox"/></td>
 				</tr>
 				<tr>
 					<th>利息:</th>
-					<td><input id="loanInterestRate" name="loanInterestRate"  class="easyui-textbox" /></td>
+					<td><input id="loanInterestRate" name="loanInterestRate"  class="easyui-numberbox" data-options="precision:2,groupSeparator:','"/></td>
 					<th>信访费用:</th>
-					<td><input id="visitFee" name="visitFee"  class="easyui-textbox"  />元</td>
+					<td><input id="visitFee" name="visitFee"  class="easyui-numberbox" data-options="precision:2,groupSeparator:','"/>元</td>
 				</tr>
 				<tr>
 					<th>实放金额:</th>
-					<td><input id="actualLoanAmount" name="actualLoanAmount"  class="easyui-textbox" />元</td>
+					<td><input id="actualLoanAmount" name="actualLoanAmount"  class="easyui-numberbox" data-options="precision:2,groupSeparator:','"/>元</td>
 					<th>月还款额:</th>
-					<td><input id="finalmonthRepay" name="finalmonthRepay"  class="easyui-textbox" /></td>
+					<td><input id="finalmonthRepay" name="finalmonthRepay" class="easyui-numberbox" data-options="precision:2,groupSeparator:','"/></td>
 					<th>信审方式:</th>
 					<td><input id="finalAuditWayText" name="finalAuditWayText"  class="easyui-textbox" /></td>
 				</tr>
 				<tr>
-					<th>终审人:</th>
+					<th>审核专员:</th>
 					<td>
 						<input name="finaPersonnelName" class="easyui-textbox" />
 					</td>
-					<th>终审日期</th>
+					<th>审核日期</th>
 					<td><input name="finaDate"  class="easyui-textbox" /></td>
 				</tr>
 				<tr>
-					<th>终审人员意见:</th>
+					<th>审贷部门意见:</th>
 					<td colspan="6"><textarea name="finaPersSugg" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
-				</tr>
-				<tr>
-					<th>终审资质分析说明:</th>
-					<td colspan="6"><textarea name="finalDescription" style="width:95%;height:70px;" class="easyui-textbox" ></textarea></td>
 				</tr>
 			</table>
 		</form>

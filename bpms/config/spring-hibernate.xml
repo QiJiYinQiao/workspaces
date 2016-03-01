@@ -41,14 +41,18 @@
 		<property name="minIdle" value="0" />
 		<!-- 获取连接最大等待时间 -->
 		<property name="maxWait" value="60000" />
-
+		
+		<!-- 用来检测是否有效的SQL，如果设置为NULL testOn.... 都不会有效 -->
 		<property name="validationQuery" value="${validationQuery}" />
+		<!-- 申请连接时检测，默认TRUE，设置这个会降低性能 -->
 		<property name="testOnBorrow" value="false" />
+		<!-- 返回连接时检测，默认false，设置这个会降低性能 -->
 		<property name="testOnReturn" value="false" />
+		<!-- 申请连接时检测，如果空闲时间大于timeBetweenEvictionRunsMillis执行检测，不影响性能，推荐使用 -->
 		<property name="testWhileIdle" value="true" />
-
 		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
 		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		
 		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
 		<property name="minEvictableIdleTimeMillis" value="25200000" />
 

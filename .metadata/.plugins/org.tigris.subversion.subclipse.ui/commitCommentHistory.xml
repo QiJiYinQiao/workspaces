@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CommitComments>	<CommitComment>增加信贷方式，建议金额字段</CommitComment>
+<CommitComments>	<CommitComment>添加描述单位，㎡ 万元</CommitComment>
+	<CommitComment>业务员默认当前登录人</CommitComment>
+	<CommitComment>淡旺季多选从INT改为String
+</CommitComment>
+	<CommitComment>添加数据回显</CommitComment>
+	<CommitComment>增加信贷方式，建议金额字段</CommitComment>
 	<CommitComment>添加验证
 </CommitComment>
 	<CommitComment>外访调查报告</CommitComment>
 	<CommitComment>表单页面</CommitComment>
 	<CommitComment>信审页面</CommitComment>
 	<CommitComment>办理任务，pagination : false</CommitComment>
-	<CommitComment>根据订单ID，用户ID，附件名，附件类型判断附件是否存在</CommitComment>
-	<CommitComment>查看详情，不可编辑</CommitComment>
-	<CommitComment>附件上传，预览方法</CommitComment>
-	<CommitComment>终审 填写申请报告 功能提出页面，功能拆分</CommitComment>
 </CommitComments>

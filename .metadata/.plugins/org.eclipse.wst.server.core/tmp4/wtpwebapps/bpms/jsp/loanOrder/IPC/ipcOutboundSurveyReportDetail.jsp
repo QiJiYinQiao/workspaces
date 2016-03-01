@@ -14,13 +14,6 @@
 		$("#loanOrderId").val($row.loanOrderId);
 		$("#loanOrderIdS").val($row.loanOrderId);
 		//加载下拉框数据
-		$("#isLocal").combobox({
-			valueField : 'code',
-			textField : 'text',
-			editable:false ,
-			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
-			
-	    });
 		
 		$("#isOwn").combobox({
 			valueField : 'code',
@@ -29,11 +22,94 @@
 			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
 		});
 		
-		$("#isGuaranty").combobox({
+		$("#carIsGuar").combobox({
 			valueField : 'code',
 			textField : 'text',
 			editable:false ,
 			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+		});
+		
+		$("#houseIsGuar").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+		});
+		
+		$("#isRational").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+		});
+		
+		$("#offSeason").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			multiple:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=months",
+		});
+		
+		$("#busySeason").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			multiple:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=months",
+		});
+		
+		$("#shoulderSeason").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			multiple:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=months",
+		});
+		
+		//渲染调查人员信息
+		$('#surveyer').combogrid({    
+		    panelWidth:450,    
+		    idField:'userId',    
+		    textField:'name',
+		    multiple:true,  
+		    editable:false,
+		    required:true,
+		    queryParams: {"roleCode":"IPCXiaoEDiaoCha"},
+		    url : "loanOrder/loanOrderAction!findCandidatePersonsByCode.action?t="+ new Date(),
+			columns : [ [ 
+			              {field : 'name',title : '用户名',width : 100,align : 'center'},
+			              {field : 'email',title : '邮箱',width : 150,align : 'center'},
+			              {field : 'tel',title : '电话',width :150,align : 'center'},
+			              {field : 'organization',title : '组织',width :220,align : 'center',
+			            	    formatter:function(value,row){
+				            	  	return value.fullName;  
+								}
+						  }, 
+			              {field : 'description',title : '描述',width : 570,align : 'left'}
+		              ] ],
+		});
+		
+		$('#summarySurveyer').combogrid({    
+		    panelWidth:450,    
+		    idField:'userId',    
+		    textField:'name',
+		    multiple:true,  
+		    editable:false,
+		    required:true,
+		    queryParams: {"roleCode":"IPCXiaoEDiaoCha"},
+		    url : "loanOrder/loanOrderAction!findCandidatePersonsByCode.action?t="+ new Date(),
+			columns : [ [ 
+			              {field : 'name',title : '用户名',width : 100,align : 'center'},
+			              {field : 'email',title : '邮箱',width : 150,align : 'center'},
+			              {field : 'tel',title : '电话',width :150,align : 'center'},
+			              {field : 'organization',title : '组织',width :220,align : 'center',
+			            	    formatter:function(value,row){
+				            	  	return value.fullName;  
+								}
+						  }, 
+			              {field : 'description',title : '描述',width : 570,align : 'left'}
+		              ] ],
 		});
 		
 		$("#ipcSurveyReportForm input").attr("disabled","disabled");
@@ -54,8 +130,23 @@
 			data : {"loanOrderId":$row.loanOrderId},
 			type : "post",
 			success : function(data){
-				if(data){
+				if(data) {
+					$("#ipcSurveyReportDiv").hide();
+					if(data.surveyer){
+						data.surveyer = data.surveyer.replace(/\s/g,'').split(",");
+					}
+					if(data.shoulderSeason){
+						data.shoulderSeason = data.shoulderSeason.replace(/\s/g,'').split(",");
+					}
+					if(data.offSeason){
+						data.offSeason = data.offSeason.replace(/\s/g,'').split(",");
+					}
+					if(data.busySeason){
+						data.busySeason = data.busySeason.replace(/\s/g,'').split(",");
+					}
 					$("#ipcSurveyReportForm").form("load",data);
+				} else {
+					$("#ipcSurveyReportForm").hide();
 				}
 			}
 		});
@@ -69,7 +160,11 @@
 			type : "post",
 			success : function(data){
 				if(data){
+					$("#ipcSurveyReportSummaryDiv").hide();
+					data.surveyer = data.surveyer.replace(/\s/g,'').split(",");
 					$("#ipcSurveyReportSummaryForm").form("load",data);
+				}else{
+					$("#ipcSurveyReportSummaryForm").hide();
 				}
 			}
 		});
@@ -102,24 +197,30 @@
 	}
 	
 </script>
-<div id="" class="easyui-tabs" style="fit:true;overflow: hidden;">
-	<div title="外访调查报告">
-		<form id="ipcSurveyReportForm" method="post">
+<div id="" class="easyui-tabs" style="fit:true;">
+	<div title="小额调查报告总结">
+		<div id="ipcSurveyReportDiv" style="width: 100%;height:250px;text-align: center;padding-top:250px;">
+			<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
+				暂无小额调查报告
+			</font>
+		</div>  
+		
+		<form id="ipcSurveyReportForm" method="post" style="width:100%;height:610px;overflow: auto;">
 			<input type="hidden" name="outsurveyReportId">
 			<input id="loanOrderId" type="hidden" name="loanOrderId">
-			<table cellpadding="6">
+			<table>
 				<tr>
 					<th>
 						调查人员
 					</th>
 					<td>
-						<input name="surveyer" class="easyui-textbox ">
+						<input id="surveyer" name="surveyer" disabled="disabled">
 					</td>
 					<th>
 						调查时间
 					</th>
 					<td>
-						<input name="surveyDate" class="easyui-datebox " >
+						<input name="surveyDate" class="easyui-datebox" >
 					</td>
 					<th>
 						往返里程(km)
@@ -146,7 +247,7 @@
 						是否本地人
 					</th>
 					<td>
-						<input id="isLocal" name="isLocal" class="easyui-combobox" disabled="disabled">
+						<input name="isLocal" class="easyui-textbox">
 					</td>
 				</tr>
 				
@@ -167,38 +268,77 @@
 				
 				<tr>
 					<th>
-						车产信息
+						房产信息
 					</th>
 					<td colspan="3">
-						<input name="carInfo" class="easyui-textbox " style="width:100%;" >
+						<input name="houseInfo" class="easyui-textbox " style="width:100%;">
 					</td>
 					<th>
 						是否抵押
 					</th>
 					<td>
-						<input id="isGuaranty" name="isGuaranty" class="easyui-combobox"  disabled="disabled">
+						<input id="houseIsGuar" name="houseIsGuar" class="easyui-combobox" disabled="disabled">
 					</td>
 					<th>
 						其他
 					</th>
 					<td>
-						<input name="otherInfo" class="easyui-textbox " >
+						<input name="houseInfoOther" class="easyui-textbox ">
 					</td>
 				</tr>
 				
 				<tr>
 					<th>
-						实际资金需求(万元)
+						车产信息
 					</th>
-					<td >
-						<input name="actualAmt" class="easyui-textbox " style="width:100%;" >
+					<td colspan="3">
+						<input name="carInfo" class="easyui-textbox " style="width:100%;">
 					</td>
+					<th>
+						是否抵押
+					</th>
+					<td>
+						<input id="carIsGuar" name="carIsGuar" class="easyui-combobox" disabled="disabled">
+					</td>
+					<th>
+						其他
+					</th>
+					<td>
+						<input name="carInfoother" class="easyui-textbox ">
+					</td>
+				</tr>
 				
+				<tr>
 					<th>
 						实际贷款目的
 					</th>
+					<td colspan="7">
+						<input name="actPurpose" class="easyui-textbox " style="width:100%;" >
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						是否合理
+					</th>
+					<td>
+						<input id="isRational" name="isRational" class="easyui-combobox " style="width:100%;" disabled="disabled">
+					</td>
+					
+					<th>
+						理由
+					</th>
 					<td colspan="5">
-						<input name="actPurpose" class="easyui-textbox " style="width:100%;">
+						<input name="isRationalDesc" class="easyui-textbox " style="width:100%;" >
+					</td>
+				</tr>
+
+				<tr>
+					<th>
+						实际资金需求
+					</th>
+					<td colspan="2">
+						<input name="actualAmt" class="easyui-textbox "  >万元
 					</td>
 				</tr>
 				
@@ -216,7 +356,7 @@
 						<input name="inviewEmployee" class="easyui-textbox ">
 					</td>
 					<th>
-						可见客户数
+						顾客数
 					</th>
 					<td>
 						<input name="inviewCustomer" class="easyui-textbox ">
@@ -234,37 +374,37 @@
 						淡季(月份)
 					</th>
 					<td>
-						<input name="offSeason" class="easyui-textbox ">
+						<input id="offSeason" name="offSeason" disabled="disabled">
 					</td>
 					<th>
 						旺季(月份)
 					</th>
 					<td>
-						<input name="busySeason" class="easyui-textbox ">
+						<input id="busySeason" name="busySeason" disabled="disabled">
 					</td>
 					<th>
 						平季(月份)
 					</th>
 					<td>
-						<input name="shoulderSeason" class="easyui-textbox " >
+						<input id="shoulderSeason" name="shoulderSeason" disabled="disabled">
 					</td>
 				</tr>
 				
 				<tr>
 					<th>
-						淡季营业额
+						淡季营业额(万元)
 					</th>
 					<td>
 						<input name="offSeasonAmt" class="easyui-textbox " >
 					</td>
 					<th>
-						旺季营业额
+						旺季营业额(万元)
 					</th>
 					<td>
 						<input name="buysSeasonAmt" class="easyui-textbox ">
 					</td>
 					<th>
-						平季营业额
+						平季营业额(万元)
 					</th>
 					<td>
 						<input name="shoulderSeasonAmt" class="easyui-textbox ">
@@ -276,31 +416,31 @@
 						(选填) 毛利率
 					</th>
 					<td>
-						<input name="grossMargin" class="easyui-textbox " >
+						<input name="grossMargin" class="easyui-textbox " >%
 					</td>
 					<th>
 						净利率
 					</th>
 					<td>
-						<input name="netMargin" class="easyui-textbox " >
+						<input name="netMargin" class="easyui-textbox " >%
 					</td>
 					<th>
 						加价率
 					</th>
 					<td>
-						<input name="increaseMargin" class="easyui-textbox " >
+						<input name="increaseMargin" class="easyui-textbox " >%
 					</td>
 				</tr>
 				
 				<tr>
 					<th>
-						(选填) 口述毛利润
+						(选填) 口述毛利润(万元)
 					</th>
 					<td>
 						<input name="oralGrossMargin" class="easyui-textbox " >
 					</td>
 					<th>
-						口述净利润
+						口述净利润(万元)
 					</th>
 					<td>
 						<input name="oralNetmargin" class="easyui-textbox ">
@@ -391,7 +531,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="familySituation" rows="" cols="" class="easyui-textbox"></textarea>
+						<textarea name="familySituation" class="easyui-textbox"></textarea>
 					</td>
 				</tr>
 				
@@ -402,7 +542,18 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="otherSituation" rows="" cols="" class="easyui-textbox"></textarea>
+						<textarea name="otherSituation" class="easyui-textbox"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="8">
+						交叉检验
+					</th>
+				</tr>
+				<tr>
+					<td colspan="8">
+						<textarea name="crossTest" class="easyui-textbox "></textarea>
 					</td>
 				</tr>
 				
@@ -417,17 +568,23 @@
 	</div>
 	
 	<div title="外访调查报告总结">
-		<form id="ipcSurveyReportSummaryForm" method="post">
+		<div id="ipcSurveyReportSummaryDiv" style="width: 100%;height:250px;text-align: center;padding-top:250px;">
+			<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
+				暂无外访调查报告总结
+			</font>
+		</div>  
+	
+		<form id="ipcSurveyReportSummaryForm" method="post" style="width:100%;height:610px;overflow: auto;">
 			<input name="outsurveyReportSummaryId" type="hidden">
 			<input id="loanOrderIdS" type="hidden" name="loanOrderId">
-			<table cellpadding="6" style="width:98%;">
+			<table>
 				<tr>
 					<td colspan="4"></td>
 					<th>
 						调查人员
 					</th>
 					<td>
-						<input name="surveyer" class="easyui-textbox"> 
+						<input id="summarySurveyer" name="surveyer" disabled="disabled"> 
 					</td>
 					<th>
 						报告时间
@@ -475,7 +632,7 @@
 				</tr>
 				
 				<tr>
-					<th>建议放款额度</th>
+					<th>建议放款额度(万元)</th>
 					<td>
 						<input name="suggestAmt" class="easyui-textbox ">
 					</td>
@@ -489,7 +646,7 @@
 				
 				<tr>
 					<td colspan="8">
-						<textarea name="suggestAmtReason"  rows="" cols=""></textarea>
+						<textarea name="reason"  rows="" cols=""></textarea>
 					</td>
 				</tr>
 			</table>

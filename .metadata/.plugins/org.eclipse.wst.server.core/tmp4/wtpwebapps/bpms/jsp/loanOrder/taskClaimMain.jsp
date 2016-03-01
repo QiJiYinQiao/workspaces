@@ -34,32 +34,60 @@ String roles = shiroUser.getJsonRoles();
 			var $runTaskHandlePersonsGrid;
 			var $runTaskHandlePersonsDialog;
 			$(function() {
+					$(window).resize(function(){  
+			            $("#taskGrid").datagrid("resize",{  
+							height : $(window).height()-40,
+			            	width : 'auto'
+			            });                
+			        });
+					
 				 	$grid=$("#taskGrid").datagrid({
 					url : "loanOrder/loanOrderAction!findAllClaimTask.action",
 					width : 'auto',
-					height : $(this).height()*0.95,
+					height : $(window).height()-40,
 					pagination:true,
 					rownumbers:true,
 					border:true,
 					singleSelect:true,
 					nowrap:true,
 					multiSort:false,
-					columns : [ [ {field : 'name',title : '客户姓名',width : parseInt($(this).width()*0.04)},
-					              {field : 'idNo',title : '身份证号',width : parseInt($(this).width()*0.08)},
-					              {field : 'age',title : '年龄',width : parseInt($(this).width()*0.02)},
-					              {field : 'annualSalary',title : '年收入(单位:元)',width : parseInt($(this).width()*0.06)},
-					              {field : 'mortgageStatus',title : '居住情况',width : parseInt($(this).width()*0.1)},
-					              {field : 'loanAmount',title : '申请贷款额度(单位:元)',width : parseInt($(this).width()*0.08)},
-					              {field : 'loanMin',title : '最低接受额度(单位:元)',width : parseInt($(this).width()*0.08)},
-					              {field : 'loanPeriod',title : '申请贷款期限',width : parseInt($(this).width()*0.05)},
-					              {field : 'repayMethod',title : '还款方式',width : parseInt($(this).width()*0.05)},
-					              {field : 'purpose',title : '贷款用途',width : parseInt($(this).width()*0.12)},
-					              {field : 'orderStatus',title : '订单状态',width : parseInt($(this).width()*0.1),
+					border:false,
+					fitColumns:false,
+					pageSize:10,
+					pageList:[10,20,30,40],
+					columns : [ [ {field : 'name',title : '客户姓名',width : parseInt($(this).width()*0.04),align : 'center'},
+					              {field : 'idNo',title : '身份证号',width : parseInt($(this).width()*0.08),align : 'center'},
+					              {field : 'age',title : '年龄',width : parseInt($(this).width()*0.02),align : 'center'},
+					              {field : 'annualSalary',title : '年收入(单位:元)',width : parseInt($(this).width()*0.06),align : 'center'},
+					              {field : 'mortgageStatus',title : '居住情况',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'loanAmount',title : '申请贷款额度(单位:元)',width : parseInt($(this).width()*0.08),align : 'center'},
+					              {field : 'loanMin',title : '最低接受额度(单位:元)',width : parseInt($(this).width()*0.08),align : 'center'},
+					              {field : 'loanPeriod',title : '申请贷款期限',width : parseInt($(this).width()*0.05),align : 'center'},
+					              {field : 'repayMethod',title : '还款方式',width : parseInt($(this).width()*0.05),align : 'center'},
+					              {field : 'belongTo',title : '所属业务',width : parseInt($(this).width()*0.05),align : 'center'},
+					              {field : 'loanInfo',title : '进件情况',width : parseInt($(this).width()*0.05),align : 'center',
+					            	  formatter:function(value,row,index){
+					            		  if(value=="1"){
+					            			  return "第一次申请";
+					            		  }else if(value=="2"){
+					            			  return "循环贷";
+					            		  }else if(value =="3"){
+					            			  return "二次进件"
+					            		  }else{
+					            			  return ""
+					            		  }
+				            	 	 }
+					              },
+					              {field : 'purpose',title : '贷款用途',width : parseInt($(this).width()*0.12),align : 'center'},
+					              {field : 'orderStatus',title : '订单状态',width : parseInt($(this).width()*0.1),align : 'center',
 					            	  formatter:function(value,row,index){
 					            		  return value.statusName;
 					            	  }
 				            	  },
-					              {field : 'operate',title : '操作',width : parseInt($(this).width()*0.25),
+					              {field : 'areaName',title : '业务所属地区',width : parseInt($(this).width()*0.05),align : 'center'},
+					              {field : 'companyName',title : '业务所属公司',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'deptName',title : '营业部',width : parseInt($(this).width()*0.1),align : 'center'},
+					              {field : 'operate',title : '操作',width : parseInt($(this).width()*0.35),align : 'center',
 					            	  formatter: function(value,row,index){
 											var result="<a href='javascript:void(0);' onclick='loanOrderInfo("+ index + ");'>查看申请详情</a>　 ";
 			      							result+="<a href='javascript:void(0);' onclick='lookLoanOrderProcessCommentDialog("+index+");'>查看审批意见</a>　 ";
@@ -94,8 +122,8 @@ String roles = shiroUser.getJsonRoles();
 		//查看详情
 		function loanOrderInfo(index) {
 			var row = getRowData($grid,index);
-			window.open("jsp/loanOrder/loanOrderDetailsForm.jsp?loanerId="+row.loanerId+"&loanOrderId="+row.loanOrderId,
-					"详情", 'height=650, width=1000, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+			window.open("jsp/loanOrder/order/loanOrderDetailsForm.jsp?loanerId="+row.loanerId+"&loanOrderId="+row.loanOrderId,
+					"详情", "height="+($(window).height()*0.8)+", width=900, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
 		}
 
 		// 查看流程图片
@@ -111,31 +139,31 @@ String roles = shiroUser.getJsonRoles();
 			var row = getRowData($grid,index);
 			$runTaskHandlePersonsDialog = $('#runTaskHandlePersonsDialog').dialog({
 				title:"任务候选人列表",
-				width: 1000,    
-			    height: 650,    
+				width : 700,
+				height : $(window).height()*0.8,
 			    closed: false,    
 			    cache: false,    
 			    modal: true   
 			});
 			$runTaskHandlePersonsGrid = $("#runTaskHandlePersonsGrid").datagrid({
-				url : "loanOrder/loanOrderAction!findRunTaskHandlePersons.action",
-				width : 'auto',
-				height :  $(this).height()-190,
+				url : "loanOrder/loanOrderAction!getIdentityLinkCandidateGroupUsers.action",
+				fit:true,
+				fitColumns:true,
 				queryParams: {"taskId": row.taskId},
 				rownumbers:true,
 				border:false,
 				singleSelect:true,
 				striped:true,
 				columns : [ [ 
-				              {field : 'name',title : '用户名',width : 100,align : 'center'},
-				              {field : 'email',title : '邮箱',width : 150,align : 'center'},
-				              {field : 'tel',title : '电话',width :150,align : 'center'},
-				              {field : 'organization',title : '组织',width :220,align : 'center',
+				              {field : 'name',title : '用户名',width : $(window).height()*0.1,align : 'center'},
+				              {field : 'email',title : '邮箱',width : $(window).height()*0.3,align : 'center'},
+				              {field : 'tel',title : '电话',width :$(window).height()*0.2,align : 'center'},
+				              {field : 'organization',title : '组织',width :$(window).height()*0.2,align : 'center',
 				            	    formatter:function(value,row){
 					            	  	return value.fullName;  
 									}
-							  }, 
-				              {field : 'description',title : '描述',width : 570,align : 'left'}
+							  }
+				              /*, {field : 'description',title : '描述',width : $(window).height()*0.3,align : 'left'} */
 				              ] ],
 				toolbar : [ {
 					iconCls : 'icon-save',
@@ -181,9 +209,9 @@ String roles = shiroUser.getJsonRoles();
 				data : {"taskId":row.taskId},
 				success : function(jspName) {
 					$taskFormDialog = $("#taskForm").dialog({
-							title : '稽核信息记录表',
-							width : 1000,
-							height : 650,
+							title : '办理任务',
+							width : 900,
+							height : $(window).height()*0.8,
 							modal:true,
 							href : "jsp/loanOrder/"+jspName
 						}); 
@@ -197,16 +225,16 @@ String roles = shiroUser.getJsonRoles();
 			parent.$.modalDialog.openner= $grid;
 			parent.$.modalDialog({
 				title : '审批意见查看',
-				width : 1000,
-				height : 650,
+				width : 900,
+				height : $(window).height()*0.8,
 				href : "jsp/loanOrder/loanOrderProcessComment.jsp"});
 		}
 	</script>
   </head>
   <body>
-      <div data-options="region:'center',border : false">
+      <div>
 	  		<div class="well well-small" style="margin-left: 5px;margin-top: 5px">
-					业务管理-->贷款业务管理-->受理任务
+					业务管理-->贷款业务管理-->任务办理-->受理任务
 			</div>
 			<table id="taskGrid" title="受理任务"></table>
 			<!-- 流程图 -->

@@ -1,7 +1,8 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
-<!-- 初审(外访完毕，原经手人) -->
+<!-- 电核专员(小额调查完毕之后) -->
 <style type="text/css">
+	#acceptTaskForm table input{border: none;}
 	table {border-radius: 5px;}
 	.linkSpan{
 	  padding:5px;
@@ -37,8 +38,8 @@
 		// 渲染备注
 		$datagrid =  $("#lookLoanOrderdg").datagrid({
 			url : "loanOrderHis/loanOrderHisAction!findAllLoanOrderHis.action",
-			width : 'auto',
-			height : 360,
+			fit : true,
+			fitColumns : true,
 			pagination:false,
 			rownumbers:true,
 			border:true,
@@ -48,12 +49,12 @@
 			multiSort:false,
 			fitColumns:true,
 			columns : [ [ 
-			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
-			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
-			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.08),align : 'left',
+			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.08),align : 'center',
 				            	formatter:function(value,row,index){
 				            		return "<a href='javascript:void(0);' onclick='lookAttachment("+index+");'>查看附件</a>　　" ;
 				            	}  
@@ -101,10 +102,10 @@
 	// 提交表单信息
 	function  submitTask(result) {
 		// 验证备注信息是否已经填写
-		if($("#comment").val()==""||$("#title").val()==""){
+		/* if($("#comment").val()==""||$("#title").val()==""){
 			$.messager.alert("提示","请填写完备注信息后再进行提交!","warning")
 			return false;
-		}
+		} */
 		// 确认是否提交
 		$.messager.confirm('提示', '点击按钮之后将进入下一个任务活动环节,此任务将对您不可见!', function(r){
 			if (r){
@@ -114,7 +115,7 @@
 					"result" :result,
 					"loanOrderId" : $row.loanOrderId,
 					"taskId" :$row.taskId,
-					"processingResult":result=="InitialAuditThrough"?"A":"B"
+					"processingResult":result=="IPCInitialAudit2Through"?"A":"B"
 				}
 				$.ajax({
 					type : "POST",
@@ -132,21 +133,21 @@
 	//查看稽核信息
 	function checkAuditReportDetail(){
 		window.open("jsp/loanOrder/IPC/ipcAuditInfoRecordDetail.jsp?loanOrderId="+$row.loanOrderId,
-				"稽核信息详情", 'height=650, width=1000, top=200, left=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+				"稽核信息详情", "height="+($(window).height()*0.8)+", width=900, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
 	}
 
 	//查看信审报告 
 	function checkApplicationReportDetail(){
-		window.open("jsp/loanOrder/IPC/ipcApplicationReportDetail.jsp?loanOrderId="+$row.loanOrderId+"&loanerId="+$row.loanerId+"&isFinalShow=1",
-				"稽核信息详情", 'height=650, width=1000, top=200, left=400, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no')
+		window.open("jsp/loanOrder/IPC/ipcApplicationReportDetail.jsp?loanOrderId="+$row.loanOrderId+"&loanerId="+$row.loanerId,
+				"稽核信息详情", "height="+($(window).height()*0.8)+", width=900, top=100, left=200, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no")
 	}
 	
 	//填写初审资质分析
 	function firstAuditAnaly(){
 		var faa = $("<div></div>").dialog({
 			title : "初审资质分析",
-			width : 1000,
-			height : 680,
+			width : 900,
+			height : $(window).height()*0.8,
 			closed : false,
 			closeable : true,
 			modal : true,
@@ -160,40 +161,42 @@
 	//查看外访调查报告及总结
 	function checkOurSurveyReport(){
 		$("<div></div>").dialog({
-			title:"外访调查报告及总结",
-			width:1180,
-			height:680,
+			title:"小额调查报告及总结",
+			width:1000,
+			height : $(window).height()*0.8,
 			closed:false,
 			closeable:true,
 			modal:true,
-			href:"jsp/loanOrder/IPC/ipcOutboundSurveyReportDetail.jsp"
+			href:"jsp/loanOrder/IPC/ipcOutboundSurveyReportDetail.jsp",
+			onClose:function(){
+				$(this).dialog("destroy");
+			}
 		});
 	}
 </script>
 <!-- 受理任务 S -->
 <div data-options="region:'north',title:'North Title',split:true" style="overflow: hidden;">
-	<div style="width: 980px;height: 190px;overflow: auto;">
+	<div style="width: 900px;height: 190px;overflow: auto;">
 		<form id="acceptTaskForm" method="post">
 				<input name="id" id="id"  type="hidden"/>
 				<input name="auditId" type="hidden" value="noauditId"/>
 				 <table class="table" cellpadding="5px;">
-					 <tr>
+					<tr>
 					    <th>客户姓名:</th>
-						<td><input name="name" readonly="readonly" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
-						
+						<td><input name="name" readonly="readonly" type="text"/></td>
 						<th>身份证号:</th>
-						<td><input name="idNo" readonly="readonly" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'idcard'"/></td>
+						<td><input name="idNo" readonly="readonly" type="text"/></td>
 					</tr>
 					<tr>
 					 	<th>备注简述:</th>
-						<td colspan="3">
-							<textarea id="title" name="title" class="easyui-validatebox easyui-textbox" style="width:100%;height:15px;"></textarea>
+						<td>
+							<input id="title" name="title" class="easyui-validatebox easyui-textbox" style="border: 1px solid #DDDDDD;">
 						</td>
 					</tr>
 					<tr>
-					 	<th>备注详情:</th>
+					 	<th>备注详情</th>
 						<td colspan="3">
-							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;"></textarea>
+							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;resize:none;"></textarea>
 						</td>
 					</tr>
 					<tr>
@@ -212,16 +215,16 @@
 		</form>
 	</div>
 	
-	<div style="width: 980px;height:30px;">
+	<div style="width: 900px;height:30px;">
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkApplicationReportDetail();">查看信审报告</a>
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkAuditReportDetail();">查看稽核信息</a>
+		<!-- <a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkAuditReportDetail();">查看稽核信息</a> -->
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="checkOurSurveyReport();">查看外访调查报告及总结</a>
 		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="firstAuditAnaly();">填写初审资质分析</a>
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('InitialAuditThrough');" >初审通过</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('IPCInitialAudit2Through');" >电核专员通过</a>
 	</div>
 	
 	<!-- 附件和备注信息列表 -->
-	<div id="lookInfo" class="easyui-accordion" style="height: 390px;width: 980px;overflow: hidden;">
+	<div id="lookInfo" class="easyui-accordion" style="height: 390px;width: 900px;overflow: hidden;">
 	    <div title="备注信息" data-options="iconCls:'icon-cstbase',selected:true">   
 			<table id="lookLoanOrderdg" title="申请备注的信息" style="overflow: auto;"></table>
 		</div>

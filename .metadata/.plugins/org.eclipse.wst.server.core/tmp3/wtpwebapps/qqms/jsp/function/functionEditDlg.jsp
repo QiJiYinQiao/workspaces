@@ -163,6 +163,7 @@
 							<select id="systemType" class="easyui-combobox" name="systemType" style="width:171px;" data-options="required:true">
 								<option value="0">CRM系统</option>
 								<option value="1">BPMS系统</option>
+								<option value="2">OA系统</option>
 							</select>
 						</td>
 					</tr>

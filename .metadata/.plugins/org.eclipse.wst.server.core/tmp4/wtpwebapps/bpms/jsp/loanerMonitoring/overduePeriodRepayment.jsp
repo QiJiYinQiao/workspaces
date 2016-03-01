@@ -25,11 +25,19 @@
 	}
 </style>
 <script type="text/javascript">
+var $lcid;
 $(function(){
+	$(window).resize(function(){  
+        $("#customerRepaymentDetailTab").datagrid("resize",{  
+			height : $(window).height()-160,
+        	width : 'auto'
+        });                
+    });
+	
 	$("#customerRepaymentDetailTab").datagrid({
 		url : "loanCustRepaymentDetail/loanCustRepaymentDetailAction!findOverduePeriodCustRepaymentDetails.action",
 		width : 'auto',
-		height : parseInt($(this).height()*0.8), 
+		height : $(window).height()-160, 
 		pagination:true,
 		rownumbers:true,
 		border:true,
@@ -342,8 +350,7 @@ function interestFreeFormCancel(){
 	$("#interestFreeDlg").dialog("close");
 }
 
-//查看合同详情
-function checkContractDetail(index){
+/* function checkContractDetail(index){
 	var rows = $("#customerRepaymentDetailTab").datagrid("getRows");
 	var contractNo = rows[index].contractNo;
 	$("#contractDetailForm input").attr("disabled","disabled");
@@ -367,7 +374,25 @@ function checkContractDetail(index){
 	    	});
 	    }
 	});   
+} */
 
+//查看合同详情
+function checkContractDetail(index){
+	var rows = $("#customerRepaymentDetailTab").datagrid("getRows");
+	$lcid = rows[index].lcId;
+	$("<div></div>").dialog({
+		title:"合同详情",
+		width: 1050,   
+	    height: 600,   
+	    closed: false,   
+	    cache: false,   
+	    closable:true,
+	    modal: true,
+	    href:"jsp/loanerMonitoring/loanContractDetail.jsp",
+	    onClose:function(){
+	    	$(this).dialog("destroy");
+	    }
+	});
 }
 
 //查看客户详情
@@ -405,7 +430,7 @@ function loanerDetailDlg(data){
 	<body>
 		<div>
 			<div style="margin-left: 5px;margin-top: 5px">
-				业务管理-->财务监控管理-->贷款客户监管-->客户还款管理
+				业务管理-->财务监控管理-->贷款客户监管-->逾期还款
 			</div>
 			<div style="padding-top:5px;">
 				<font size="3em">[查询条件]</font>
@@ -521,27 +546,27 @@ function loanerDetailDlg(data){
 				<table cellpadding="8px;">
 					<tr>
 						<th>滞纳金</th>
-						<td><input id="lateFee" name="lateFee" style="border:none;" readonly="readonly"/>元</td>
+						<td><input id="lateFee" name="lateFee" class="easyui-numberbox" style="border:none;" readonly="readonly"/>元</td>
 					</tr>
 					
 					<tr>
 						<th>罚息</th>
-						<td><input id="defaultInterest" name="defaultInterest" style="border:none;" readonly="readonly"/>元</td>
+						<td><input id="defaultInterest" name="defaultInterest" class="easyui-numberbox" style="border:none;" readonly="readonly"/>元</td>
 					</tr>
 					
 					<tr>
 						<th>免息</th>
-						<td><input id="freeInterestFee" name="freeInterestFee" style="border:none;" readonly="readonly"/>元</td>
+						<td><input id="freeInterestFee" name="freeInterestFee" class="easyui-numberbox" style="border:none;" readonly="readonly"/>元</td>
 					</tr>
 					
 					<tr>
 						<th>待还月还金额</th>
-						<td><input id="needMonthFee" name="needMonthFee" style="border:none;" readonly="readonly"/>元</td>
+						<td><input id="needMonthFee" name="needMonthFee" class="easyui-numberbox" style="border:none;" readonly="readonly"/>元</td>
 					</tr>
 					
 					<tr>
 						<th>待还总金额</th>
-						<td><input id="needPay" name="needPay" style="border:none;" readonly="readonly"/>元</td>
+						<td><input id="needPay" name="needPay" class="easyui-numberbox" style="border:none;" readonly="readonly"/>元</td>
 					</tr>
 					
 					<tr>
@@ -551,7 +576,7 @@ function loanerDetailDlg(data){
 					
 					<tr>
 						<th>请输入还款金额</th>
-						<td><input id="repayAmt" name="repayAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'intOrFloat',required:true"/>元</td>
+						<td><input id="repayAmt" name="repayAmt" class="easyui-numberbox easyui-validatebox" data-options="validType:'intOrFloat',required:true"/>元</td>
 					</tr>
 				</table>
 			</form>
@@ -591,109 +616,6 @@ function loanerDetailDlg(data){
 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-save" onclick="interestFreeFormSave();">确定</a>
 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-cancel" onclick="interestFreeFormCancel();">取消</a>
 			</div>
-		</div>
-		
-		<div id="contractDetailDlg" style="display:none;">
-			<form id="contractDetailForm">
-				<table cellpadding="8px;" style="width:100%;height:100%;">
-					<tr>
-						<th>所属地区</th>
-						<td><input name="organizationId" class="easyui-textbox" /></td>
-						<th>合同编号</th>
-						<td><input name="contractNo" class="easyui-textbox" /></td>
-						<th>合同签署日期</th>
-						<td><input name="contractSignDate" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>通讯地址</th>
-						<td><input name="loanCurAddr" class="easyui-textbox" /></td>
-						<th>联系方式</th>
-						<td><input name="loanMobileTel" class="easyui-textbox" /></td>
-						<th>业务员</th>
-						<td><input name="salesMan" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>开户人姓名</th>
-						<td><input name="loanerActName" class="easyui-textbox" /></td>
-						<th>开户行名称</th>
-						<td><input name="loanerBankName" class="easyui-textbox" /></td>
-						<th>开户行账号</th>
-						<td><input name="loanerActNum" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>客户姓名</th>
-						<td><input name="loanName" class="easyui-textbox" /></td>
-						<th>身份证</th>
-						<td><input name="loanIdNo" class="easyui-textbox" /></td>
-						<th>户籍地址</th>
-						<td><input name="loanHukouAddr" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>贷款类型</th>
-						<td><input name="loanTypeName" class="easyui-textbox" /></td>
-						<th>贷款金额(元)</th>
-						<td><input name="loanEdu" class="easyui-textbox" /></td>
-						<th>贷款期数(期)</th>
-						<td><input name="loanPeriod" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>服务费(元)</th>
-						<td><input name="monthlyFee" class="easyui-textbox" /></td>
-						<th>外访费(元)</th>
-						<td><input name="visitFee" class="easyui-textbox" /></td>
-						<th>放款金额(元)</th>
-						<td><input name="loanEdu" class="easyui-textbox" /></td>
-					</tr>
-					
-					
-					
-					<tr>
-						<th>月还金额(元)</th>
-						<td><input name="monthlyRepayment" class="easyui-textbox" /></td>
-						<th>月还款日</th>
-						<td><input name="monthlyRepaymentDate" class="easyui-textbox" /></td>
-						<th>划扣平台</th>
-						<td><input name="drawPlatform" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>放款日期</th>
-						<td><input name="loanBgDate" class="easyui-textbox" /></td>
-						<th>还款开始日期</th>
-						<td><input name="repaymentBgDate" class="easyui-textbox" /></td>
-						<th>还款截止日期</th>
-						<td><input name="repaymentEndDate" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>划扣日期</th>
-						<td><input name="drawDate" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>贷审委A</th>
-						<td><input name="loanReviewRommitteeName1" class="easyui-textbox" /></td>
-						<th>贷审委B</th>
-						<td><input name="loanReviewRommitteeName2" class="easyui-textbox" /></td>
-						<th>贷审委C</th>
-						<td><input name="loanReviewRommitteeName3" class="easyui-textbox" /></td>
-					</tr>
-					
-					<tr>
-						<th>业务经办人A</th>
-						<td><input name="operatorAName" class="easyui-textbox" /></td>
-						<th>业务经办人B</th>
-						<td><input name="operatorBName" class="easyui-textbox" /></td>
-						<th>团队经理</th>
-						<td><input name="teamManger" class="easyui-textbox" /></td>
-					</tr>
-				</table>
-			</form>
 		</div>
 		
 		<div id="loanerDetailDlg" style="display:none;">

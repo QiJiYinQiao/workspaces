@@ -1,0 +1,54 @@
+package com.bpms.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.mydao.invest.InvestRedeemMapper;
+import com.bpms.service.InvestRedeemService;
+import common.Logger;
+
+@Service("investRedeemService")
+public class InvestRedeemServiceImpl implements InvestRedeemService {
+	
+	private Logger logger = Logger.getLogger(InvestRedeemServiceImpl.class);
+	
+	@Autowired
+	private InvestRedeemMapper investRedeemMapper; 
+
+	@Override
+	public List<Map<String, Object>> findAlreadyApprovedInvestApplyList(
+			Map<String, Object> param) {
+		return investRedeemMapper.findAlreadyApprovedInvestApplyList(param);
+	}
+
+	@Override
+	public Long countAlreadyApprovedInvestApplyList(Map<String, Object> param) {
+		return investRedeemMapper.countAlreadyApprovedInvestApplyList(param);
+	}
+
+	@Override
+	public List<Map<String, Object>> findInvestRedeemList(
+			Map<String, Object> param) {
+		return investRedeemMapper.findInvestRedeemList(param);
+	}
+
+	@Override
+	public Long countInvestRedeemList(Map<String, Object> param) {
+		return investRedeemMapper.countInvestRedeemList(param);
+	}
+
+	@Override
+	public int updateInvestReddemBeginDate(Map<String, Object> param) {
+		return investRedeemMapper.updateInvestReddemBeginDate(param);
+	}
+
+	@Override
+	public Map<String, Object> findInvestRedeemInfo4HandleTask(
+			Map<String, Object> param) {
+		return investRedeemMapper.findInvestRedeemInfo4HandleTask(param);
+	}
+
+}

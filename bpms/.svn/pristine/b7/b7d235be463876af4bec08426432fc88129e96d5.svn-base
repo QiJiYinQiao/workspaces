@@ -1,0 +1,33 @@
+package com.bpms.service;
+
+import com.bpms.model.Role;
+
+/**
+ * 角色查询的service
+ * 
+ * @author liuhh
+ *
+ */
+public interface RoleService {
+
+	/**
+	 * 根据角色的code获取角色信息
+	 * 
+	 * @param roleCode
+	 * @return
+	 */
+	public Role findRoleByCode(String roleCode);
+	
+	/**
+	 * 根据橘色的名称获取角色信息
+	 * @param roleName 角色的名称
+	 * @return 角色的信息
+	 */
+	public Role findRoleByName(String roleName);
+	
+	/**
+	 * 保存角色的信息
+	 * @param role
+	 */
+	public void saveRole(Role role);
+}

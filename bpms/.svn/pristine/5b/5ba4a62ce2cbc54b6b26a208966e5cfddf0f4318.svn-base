@@ -1,0 +1,26 @@
+package com.bpms.mydao.invest;
+
+import java.util.List;
+import java.util.Map;
+
+public interface InvestRedeemMapper {
+	
+	/**
+	 * 获得所有有待进行投资赎回申请的Invest信息。
+	 * @Title: findApprovedInvestList4Redeem 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 上午11:32:04
+	 */
+	public List<Map<String, Object>> findApprovedInvestList4Redeem(Map<String, Object> param);
+	
+	/**
+	 * 统计所有有待进行投资赎回申请的Invest信息的条数。
+	 * @Title: countApprovedInvestList4Redeem 
+	 * @author ZHANGJIAN
+	 * @return String
+	 * @date 2015年12月16日 上午11:33:08
+	 */
+	public Long countApprovedInvestList4Redeem(Map<String, Object> param);
+	
+}

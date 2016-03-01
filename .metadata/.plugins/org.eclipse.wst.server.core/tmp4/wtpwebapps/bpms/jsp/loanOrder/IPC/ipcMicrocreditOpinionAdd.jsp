@@ -26,37 +26,18 @@ $(function(){
 		textField : 'text',
 		required:true,
 		url:'users/usersAction!findUsers.action',
-		onLoadSuccess : function(){
-			userData = $(this).combobox("getData");
-			for (var item in userData[0]) {
-                if (item == "code") {
-                    $(this).combobox("select", userData[0][item]);
-                }
-            }
-		},
 		editable:false ,
-		onSelect:function(record){
-			$("input[name='operatorAS']").val(record.text);
-		},
     }); 
    
-	   $("#microcreditOpinionDlg input[name='operatorB']").combobox({
-			valueField : 'code',
-			textField : 'text',
-			required:true,
-			url:'users/usersAction!findUsers.action',
-			onLoadSuccess : function(){
-				var val = $(this).combobox("getData");
-				if(!$.isEmptyObject(val)){
-					userData = val;
-	                $(this).combobox("select", val[0]["code"]);
-				}
-			},
-			editable:false ,
-			onSelect:function(record){
-				$("input[name='operatorBS']").val(record.text);
-			},
-	   }); 
+   $("#microcreditOpinionDlg input[name='operatorB']").combobox({
+		valueField : 'code',
+		textField : 'text',
+		required:true,
+		width:250,
+		url:'users/usersAction!findUsers.action',
+		editable:false ,
+		multiple:true
+   }); 
 	
 	//还款期限
 	$("#microcreditOpinionDlg input[name='adviceLoanPeriod']").combobox({
@@ -88,6 +69,17 @@ $(function(){
 		}
 	});
 	
+ 	//婚姻状况
+	$("input[name='marriageType']").combobox({
+	   	url:"common/commonAction!findTextArr.action?codeMyid=marriage_type",
+		valueField: 'code',
+		textField: 'text',
+		editable:false,
+		onLoadSuccess:function(){
+			$(this).combobox("select",$row.marriageType);
+		},
+	});
+	
 	// 微带呈报意见表信息
 	loadData();
 })
@@ -109,7 +101,7 @@ function checkSysParameter(paramCode){
 
 // 保存微保意见
 function saveMicrocreditOpinion(formId,dlgId){
-	var isCheck = false;
+	/* var isCheck = false;
 	$("#checkBoxDiv input[type='checkbox']").each(function() {
 		if($(this).attr("checked")){
 			isCheck = true;
@@ -118,7 +110,7 @@ function saveMicrocreditOpinion(formId,dlgId){
 	if(isCheck==false){
 		$.messager.alert("提示","至少选择一条风险控制措施","info");
 		return false;
-	}
+	} */
 	// 确认是否提交
 	$.messager.confirm('提示', '点击按钮之后将进入下一个任务活动环节,此任务将对您不可见!', function(r){
 		if (r){
@@ -140,12 +132,22 @@ function saveMicrocreditOpinion(formId,dlgId){
 
 // 获取微贷承包意见表的信息
 function loadData(){
-	$("#microcreditOpinionForm").form("clear");
+	//$("#microcreditOpinionForm").form("clear");
 	//加载微贷业务表
-	$("#microcreditOpinionForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action?loanOrderId="+$row.loanOrderId);
+	//$("#microcreditOpinionForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action?loanOrderId="+$row.loanOrderId);
+	$.ajax({
+		url:"microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action",
+		type:"post",
+		data:{"loanOrderId":$row.loanOrderId},
+		success:function(data){
+			if(data) {
+				data.operatorB = data.operatorB.replace(/\s/g,"").split(",");
+				$("#microcreditOpinionForm").form("load",data);
+			}
+		}
+	});
 	$("#microcreditOpinionForm :input").removeAttr("disabled");
 	
-	$("#microcreditOpinionForm input[name='adviceLoanAmt']").val("");
 	// 组织机构的信息--进件城市
 	$.ajax({
 		type : "POST",
@@ -161,17 +163,15 @@ function loadData(){
 	$("#microcreditOpinionDlg input[name='loanOrderId']").val($row.loanOrderId);
 	$("#microcreditOpinionDlg input[name='idNo']").val($row.idNo);
 	$("#microcreditOpinionDlg input[name='purpose']").val($row.purpose);
-	$("#microcreditOpinionDlg input[name='adviceLoanAmt']").val($row.loanAmount);
 	//checkSysParameter
 	$("#microcreditOpinionDlg input[name='loanMthd']").val(checkSysParameter('loan_mthd'));
 	$("#microcreditOpinionDlg input[name='adviceRepayMthd']").val(checkSysParameter('repay_mthd'));
 	$("#microcreditOpinionDlg input[name='loanRate']").val(checkSysParameter('loan_rate'));
+	$("#microcreditOpinionDlg input[name='loanRateText']").val(Number(checkSysParameter('loan_rate'))*100+"%");
 	$("#microcreditOpinionDlg input[name='counselingRate']").val(checkSysParameter('counseling_rate'));
+	$("#microcreditOpinionDlg input[name='counselingRateText']").val(Number(checkSysParameter('counseling_rate'))*100+"%");
 	$("#microcreditOpinionDlg input[name='collectionMthd']").val(checkSysParameter('collection_mthd'));
 	
-	// 设置办理人
-	$("input[name='operatorAS']").val($("#operatorA").combobox('getText'));
-	$("input[name='operatorBS']").val($("#operatorB").combobox('getText'));
 	//根据订单ID 共同贷款人 名称 ID
 	$.ajax({
 		url : "loanerJoint/loanerJointAction!findLoanerJointByOrderId.action",
@@ -195,11 +195,8 @@ function loadData(){
 <div id="microcreditOpinionDlg">
 	<form id="microcreditOpinionForm" method="post">
 		<input name="mcbrId" type="hidden" />
-		<div style="text-align:center;">
-			<font size="4" style="font-weight: bold;">微贷业务呈报意见表</font>
-		</div>
 		<div>
-			<table cellpadding="8px;">
+			<table cellpadding="8px;" style="width:100%;">
 				<tr>
 					<th>
 						借款人
@@ -214,12 +211,11 @@ function loadData(){
 					<td>
 						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="idNo"  type="text" />
 					</td>
+					
 					<th>
-						贷款用途
+						婚姻状况
 					</th>
-					<td>
-						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="purpose"  type="text" value=""/>
-					</td>
+					<td><input name="marriageType" class="easyui-combobox" disabled="disabled"/></td>
 				</tr>
 				
 				<tr>
@@ -239,7 +235,8 @@ function loadData(){
 						利率(年)
 					</th>
 					<td>
-						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="loanRate"  type="text" />%
+						<input name="loanRate"  type="hidden" />
+						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="loanRateText"/>
 					</td>
 				</tr>
 				
@@ -270,13 +267,21 @@ function loadData(){
 						咨询服务费
 					</th>
 					<td>
-						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="counselingRate"  type="text" />%
+						<input name="counselingRate"  type="hidden" />
+						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="counselingRateText"  type="text" />
 					</td>
 					
 					<th>
 						经办机构/部门
 					</th>
 					<td><input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="loanCtiy"  type="text"/></td>
+				
+					<th>
+						贷款用途
+					</th>
+					<td>
+						<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="purpose"  type="text" value=""/>
+					</td>
 				</tr>
 				
 				<tr>
@@ -284,7 +289,7 @@ function loadData(){
 						建议金额(元)
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true" name="adviceLoanAmt" />
+						<input class="easyui-validatebox easyui-numberbox" data-options="required:true,min:0,max:999999999999,precision:2,groupSeparator:','" name="adviceLoanAmt" />
 					</td>
 					<th>
 						期限(月)
@@ -302,69 +307,30 @@ function loadData(){
 					<th>
 						经办人
 					</th>
-					<td colspan="3">
+					<td colspan="4">
 						A:<input id="operatorA" class="easyui-validatebox easyui-textbox easyui-combobox" name="operatorA"  />&nbsp;&nbsp;&nbsp;
 						B:<input id="operatorB" class="easyui-validatebox easyui-textbox easyui-combobox" name="operatorB" /> 
 					</td>
 				</tr>
+				<tr>
+					<th>
+						具体措施如下:
+					</th>
+				</tr>
+				<tr>
+					<td colspan="6">
+						<textarea class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'" name="specificMeasures" style="width:99%;height:270px;resize: none;"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="6">
+						<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
+							<a href="javascript:void(0);" class="easyui-linkbutton" onclick="saveMicrocreditOpinion('microcreditOpinionForm');">提交</a>
+						</div> 
+					</td>
+				</tr>
 			</table>
-			<div style="width:99.5%;height:270px;">
-				<div id="checkBoxDiv" style="padding-left:10px;height:30px;">
-						<span style="font-weight:bold;">风险控制措施:&nbsp;&nbsp;&nbsp;</span>
-						<input class="checkbox" id="chedixinyong" type="checkbox" name="riskCtrlMeasures" checked="checked" value="车抵+信用" /><label for="chedixinyong">车抵+信用</label>
-						<input class="checkbox" id="xinyong" type="checkbox" name="riskCtrlMeasures" value="信用" /><label for="xinyong">信用</label>
-						<input class="checkbox" id="zejiafengxiancuoshi" type="checkbox" name="riskCtrlMeasures" value="增加风控措施" /><label for="zejiafengxiancuoshi">增加风控措施</label>
-						<input class="checkbox" id="qita" type="checkbox" name="riskCtrlMeasures" value="其他" /><label for="qita">其他</label>
-						<span style="padding-left:20px;font-weight:bold;">具体措施如下:</span>
-				</div>
-				<div style="height:230px;overflow:auto;">
-						<textarea class="easyui-validatebox easyui-textbox" data-options="required:true" name="specificMeasures" style="width:99%;height:220px;resize: none;">
-						
-						</textarea>
-				</div>
-			</div>
-			<div>
-				<table cellpadding="8px;">
-					<tr>
-						<th rowspan="2">
-							业务经办人
-						</th>
-						<td>
-							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="operatorAS" type="text" />
-						</td>
-						<th rowspan="2">
-							后台人员
-						</th>
-						<th>
-							初次上会
-						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="firstMeeting" type="text" />
-						</td>
-						<th rowspan="2">
-							部门负责人
-						</th>
-						<td rowspan="2">
-							<input class="easyui-validatebox easyui-textbox" name="deptPrincipal" data-options="required:true" />
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input readonly="readonly" style="background-color: #EBEBE4;" class="easyui-validatebox easyui-textbox" name="operatorBS" type="text" />
-						</td>
-						<th>
-							补调核实
-						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="verification" type="text" />
-						</td>
-					</tr>
-				</table>
-			</div>
 		</div>
 	</form>
-	<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="saveMicrocreditOpinion('microcreditOpinionForm');">提交</a>
-	</div> 
 </div>
 <!-- 微贷业务呈报意见表E -->	

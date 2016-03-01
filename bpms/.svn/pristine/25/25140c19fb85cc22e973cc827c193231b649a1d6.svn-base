@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.invest.InvestApplyMapper">
+
+	<!-- SQL语句findInvestApplyList的查询条件 -->
+	<sql id="Where_Clause_4_findInvestApplyList">
+		<where>
+				t_investor.INVESTOR_STATUS = 'A'
+		</where>
+	</sql>
+	
+	<!-- 获取订单信息列表的查询语句SQL -->
+	<select id="findInvestApplyList" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT
+				<!-- 投资业务订单表 --> 
+				t_investOrder.INVEST_ORDER_ID AS "investOrderId", <!-- 投资订单ID。 --> 
+				t_investOrder.INVESTOR_ID AS "investorId",        <!-- 投资者ID。 -->
+				t_investOrder.ORDER_STATUS AS "orderStatus",      <!-- 投资订单状态，比如销客专员通过。 -->
+				t_investOrder.ORDER_DESC AS "orderDesc",          <!-- 投资订单描述。 -->
+				t_investOrder.CONTRACT_NO AS "contractNo",        <!-- 合同编号。 -->
+				t_investOrder.SIGN_SITE AS "signSite",            <!-- 合同签署地方。 -->
+				t_investOrder.SIGN_DATE AS "signDate",            <!-- 合同签署日期。 -->
+				t_investOrder.MOB_TEL AS "mobTel",                <!-- 联系电话 -->
+				t_investOrder.FINANCING_MGR AS "financingMgr",    <!-- 理财经理为当前订单的最初受理人，此处记录企业内部用户ID -->
+				t_investOrder.FM_PHONE AS "fmPhone",              <!-- 理财经理电话 -->
+				t_investOrder.FM_SIGN_DATE AS "fmSignDate",       <!-- 理财经理签字日期 -->
+				t_investOrder.DEPT_MGR AS "deptMgr",              <!-- 部门主管，此处存放的数值为员工的ID -->
+				t_investOrder.DM_SIGN_DATE AS "dmSignDate",       <!-- 部门主管签字日期 -->
+				t_investOrder.CREATOR AS "creator",               <!-- 登记人是当前系统登录用户并且为订单填写的企业内部用户，此处记录用户ID -->
+				t_investOrder.CREATE_DATE AS "createDate",        <!-- 投资申请的创建日期 -->
+				t_investOrder.BANK_NAME AS "bankName",            <!-- 投资开户行名称，第三方支付必需 -->
+				t_investOrder.ACT_NO AS "actNo",                  <!-- 开户行账号，第三方支付必需 -->
+				t_investOrder.ACT_NAME AS "actName",                   <!-- 账户名称 -->
+				IFNULL(t_investOrder.ACT_MEDIUM,'A') AS "actMedium",   <!-- 账户介质 -->
+				IFNULL(t_investOrder.ACT_NATURE,'A') AS "actNature",   <!-- 账户性质 -->
+				t_investOrder.ID_CARD AS "idCard",                     <!-- 身份证号码 -->
+				t_investOrder.PROCESS_STATUS AS "processStatus",       <!-- 流程状态，， -->
+				t_investOrder.ORGANIZATION_ID  AS "organizationId",    <!-- 登记人所属机构 -->
+				t_investOrder.INVEST_PROCESS_TYPE  AS "investProcessType",    <!-- 投资流程类型 -->
+				
+				<!-- 投资人信息表 --> 
+				IFNULL(t_investor.INVESTOR_TYPE,'A') AS "investorType",    <!-- 投资人类型 -->
+				t_investor.INVESTOR_STATUS AS "investorStatus",               <!-- 投资人状态 -->
+				t_investor.CH_NAME AS "chName",                               <!-- 财富客户中文姓名 -->
+				t_investor.EN_NAME AS "enName",                               <!-- 财富客户英文姓名 -->
+				IFNULL(t_investor.GENDER_TYPE,'A') AS "genderType",           <!-- 性别 -->
+				t_investor.BIRTHDAY AS "birthday",                            <!-- 出生日期 -->
+				t_investor.NATIONALITY AS "nationality",                      <!-- 国籍 -->
+				IFNULL(t_investor.MARITAL_STATUS,'Y') AS "maritalStatus",     <!-- 婚姻状况 -->
+				IFNULL(t_investor.FAMILY_STATUS,'Y') AS "familyStatus",       <!-- 家庭情况 -->
+				IFNULL(t_investor.FAM_INC_STA,'Y') AS "famIncSta",            <!-- 家庭收入情况 -->
+				IFNULL(t_investor.ID_TYPE,'Y') AS "idType",                   <!-- 证件类型 -->
+				t_investor.ID_NO AS "idNo",                                   <!-- 证件号码 -->
+				t_investor.ID_ISSUE_DATE AS "idIssueDate",                    <!-- 签发日期 -->
+				t_investor.ID_EXPIRE_DATE AS "idExpireDate",                  <!-- 失效日期 -->
+				t_investor.ID_LOCATION AS "idLocation",                 <!-- 发证机构所在地 -->
+				t_investor.DEGREE_TYPE AS "degreeType",                 <!-- 学历类型 -->
+				IFNULL(t_investor.JOB_TYPE,'Y') AS "jobType",           <!-- 职业类型 -->
+				t_investor.INDUSTRY AS "industry",                      <!-- 所属行业 -->
+				t_investor.COMPANY_NAME AS "companyName",               <!-- 单位名称 -->
+				t_investor.YEARS_OF_WORK AS "yearsOfWork",              <!-- 工作年限 -->
+				IFNULL(t_investor.COMP_SCALE,'Y') AS "compScale",       <!-- 单位规模 -->
+				t_investor.JOB_TITLE AS "jobTitle",                     <!-- 职务 -->
+				t_investor.MOBILE_TEL AS "mobileTel",                   <!-- 投资客户移动电话 -->
+				t_investor.FIXED_TEL AS "fixedTel",                     <!-- 投资客户固定电话 -->
+				t_investor.EMAIL AS "email",                    <!-- 电子邮箱 -->
+				t_investor.COMM_ADDR AS "commAddr",             <!-- 通讯地址 -->
+				t_investor.ZIP AS "zip",                        <!-- 邮政编码 -->
+				
+				<!-- 关系表：投资订单表与理财产品表关系表 --> 
+				t_ivstOrder_prod.INVEST_EDU AS "investEdu",     <!-- 投资额度 -->
+				t_ivstOrder_prod.BEGIN_DATE AS "beginDate",     <!-- 投资开始日期，即划扣日期 -->
+				t_ivstOrder_prod.INTEREST_DATE AS "interestDate",  <!-- 计息日期，划扣日期的下一个工作日（遇节假日顺延） -->
+				
+				<!-- 理财产品信息表  --> 
+				t_products.PROD_ID AS "prodId",                 <!-- 理财产品ID -->
+				t_products.PROD_NAME AS "prodName"              <!-- 理财产品名称 -->		
+		FROM
+				T_BP_INVEST_ORDER t_investOrder 
+		LEFT JOIN 
+			T_BP_INVESTOR t_investor ON t_investOrder.INVESTOR_ID = t_investor.INVESTOR_ID
+		LEFT JOIN 
+			t_bp_investOrder_and_products t_ivstOrder_prod ON t_investOrder.INVEST_ORDER_ID = t_ivstOrder_prod.INVEST_ORDER_ID
+		LEFT JOIN 
+			t_bp_invest_products t_products ON t_ivstOrder_prod.PROD_ID = t_products.PROD_ID 				
+		
+		<include refid="Where_Clause_4_findInvestApplyList"/>
+		ORDER BY 
+			t_investOrder.CREATE_DATE
+		LIMIT 
+			#{start},#{end}
+	</select>
+
+    <!-- 根据条件查询获取订单信息列表的个数查询语句SQL -->
+	<select id="countInvestApplyList" resultType="java.lang.Long" parameterType="java.util.HashMap">
+		select
+			count(*)
+		FROM
+				T_BP_INVEST_ORDER t_investOrder 
+		LEFT JOIN 
+			T_BP_INVESTOR t_investor ON t_investOrder.INVESTOR_ID = t_investor.INVESTOR_ID
+		LEFT JOIN 
+			t_bp_investOrder_and_products t_ivstOrder_prod ON t_investOrder.INVEST_ORDER_ID = t_ivstOrder_prod.INVEST_ORDER_ID
+		LEFT JOIN 
+			t_bp_invest_products t_products ON t_ivstOrder_prod.PROD_ID = t_products.PROD_ID 
+		<include refid="Where_Clause_4_findInvestApplyList"/>
+		ORDER BY
+				t_investOrder.CREATE_DATE 
+		LIMIT #{start},#{end}							
+		
+	</select>
+	
+	
+
+	<!-- SQL语句findInvestApplyInfoList4AdjustArs的查询条件 -->
+	<sql id="Where_Clause_4_findInvestApplyInfo4AdjustArs">
+		<where>
+			t1.INVEST_ORDER_ID = #{investOrderId}
+			AND t1.process_status = '1'		
+		</where>				
+	</sql>
+
+
+	<!-- 获取有待调整理财收益率的客户的相关投资信息。 -->
+	<select id="findInvestApplyInfo4AdjustArs" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT 
+			get_org_name_by_userOrgId(t4.ORGANIZATION_ID) as "orgFullName",
+			t6.CH_NAME as "chName",
+			t2.BEGIN_DATE as "beginDate",
+			t3.PROD_NAME as "prodName",
+			t2.INVEST_EDU as "investEdu",
+			t3.ARS as "ars",
+			t2.NEW_ARS as "newArs",
+			t4.USER_NAME as "userName",
+			t1.FM_SIGN_DATE as "fmSignDate"
+		FROM 
+			t_bp_invest_order t1 
+		LEFT JOIN t_bp_investorder_and_products t2 ON t1.INVEST_ORDER_ID = t2.INVEST_ORDER_ID
+		LEFT JOIN t_bp_invest_products t3          ON t3.PROD_ID = t2.PROD_ID
+		LEFT JOIN t_users t4                       ON t4.USER_ID = t1.FINANCING_MGR
+		LEFT JOIN t_organization t5                ON t4.ORGANIZATION_ID = t5.ORGANIZATION_ID
+		LEFT JOIN t_bp_investor t6                 ON t1.INVESTOR_ID = t6.INVESTOR_ID
+		<include refid="Where_Clause_4_findInvestApplyInfo4AdjustArs"></include>			
+	</select>
+</mapper>

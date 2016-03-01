@@ -1,146 +1,745 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="com.qqjrbj.bpms.invest">
-  <process id="InvestOrder" name="投资业务流程" isExecutable="true">
-    <startEvent id="startevent1" name="流程开始">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="InvestOrder" name="投资业务流程(新版)" isExecutable="true">
+    <startEvent id="startevent1" name="投资流程开始">
       <extensionElements>
-        <activiti:executionListener event="start" class="com.bpms.listener.InvestProcessStartExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="start" class="com.bpms.listener.invest.InvestApplyStartExeListener"></activiti:executionListener>
       </extensionElements>
     </startEvent>
-    <userTask id="AdjustOrder" name="调整订单" activiti:assignee="${curUserId}" activiti:formKey="investOrder/investOrderAction!gotoTaskOrderResubmit.action">
-      <extensionElements>
-        <activiti:taskListener event="create" class="com.bpms.listener.InvestOrderResubmitTaskListener"></activiti:taskListener>
-      </extensionElements>
-    </userTask>
-    <userTask id="DeptAssistant" name="部门助理" activiti:formKey="investOrder/investOrderAction!gotoTaskDeptZlForm.action">
-      <extensionElements>
-        <activiti:taskListener event="create" class="com.bpms.listener.InvestDeptAssistantTaskListener"></activiti:taskListener>
-      </extensionElements>
-    </userTask>
-    <endEvent id="endevent1" name="End"></endEvent>
-    <sequenceFlow id="OrderSubmitted" name="订单已提交" sourceRef="startevent1" targetRef="DeptAssistant">
-      <extensionElements>
-        <activiti:executionListener event="updateInvestOrderStatus" class="com.bpms.listener.InvestOrderStatusExecutionListener"></activiti:executionListener>
-      </extensionElements>
-    </sequenceFlow>
+    <serviceTask id="servicetask1" name="系统判断是否调整理财收益" activiti:class="com.bpms.listener.invest.InvestServiceTaskDelegate"></serviceTask>
+    <sequenceFlow id="flow1" name="提交申请" sourceRef="startevent1" targetRef="servicetask1"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="FinancingOrder_flow3" sourceRef="DeptAssistant" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="SalesCustComm" name="销客专员" activiti:formKey="investOrder/investOrderAction!gotoTaskSalesCustCommForm.action">
+    <sequenceFlow id="flow2" sourceRef="servicetask1" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="TuanDuiJingLi" name="团队经理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4TuanDuiJingLi.action">
       <extensionElements>
-        <activiti:taskListener event="create" class="com.bpms.listener.InvestSalesCustCommTaskListener"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestTuanDuiJingLiTaskListener"></activiti:taskListener>
       </extensionElements>
     </userTask>
+    <sequenceFlow id="AdjustArs" name="调整理财收益" sourceRef="exclusivegateway1" targetRef="TuanDuiJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="AdjustArs"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow4" sourceRef="TuanDuiJingLi" targetRef="exclusivegateway2"></sequenceFlow>
+    <userTask id="DaTuanJingLi" name="大团经理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4DaTuanJingLi.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestDaTuanJingLiTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="TuanDuiJingLiTongGuo" name="团队经理通过" sourceRef="exclusivegateway2" targetRef="DaTuanJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='TuanDuiJingLiTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="DeptAssistantAgree" name="部门助理通过" sourceRef="exclusivegateway1" targetRef="SalesCustComm">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DeptAssistantAgree'}]]></conditionExpression>
+    <sequenceFlow id="flow6" sourceRef="DaTuanJingLi" targetRef="exclusivegateway3"></sequenceFlow>
+    <userTask id="YingYeBuJingLi" name="营业部经理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4YingYeBuJingLi.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestYingYeBuJingLiTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="DaTuanJingLiTongGuo" name="大团经理通过" sourceRef="exclusivegateway3" targetRef="YingYeBuJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DaTuanJingLiTongGuo'}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow4" sourceRef="SalesCustComm" targetRef="exclusivegateway3"></sequenceFlow>
-    <sequenceFlow id="SalesCustCommAgree" name="销客专员通过" sourceRef="exclusivegateway3" targetRef="endevent1">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='SalesCustCommAgree'}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="SalesCustCommReject" name="销客专员驳回" sourceRef="exclusivegateway3" targetRef="DeptAssistant">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='SalesCustCommReject'}]]></conditionExpression>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow8" sourceRef="YingYeBuJingLi" targetRef="exclusivegateway4"></sequenceFlow>
+    <userTask id="ChengShiJingLi" name="城市经理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4ChengShiJingLi.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestChengShiJingLiTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="YingYeBuJingLiTongGuo" name="营业部经理通过" sourceRef="exclusivegateway4" targetRef="ChengShiJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='YingYeBuJingLiTongGuo'}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="OrderResubmitted" name="订单重提" sourceRef="exclusivegateway5" targetRef="DeptAssistant">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='OrderResubmitted'}]]></conditionExpression>
+    <sequenceFlow id="flow10" sourceRef="ChengShiJingLi" targetRef="exclusivegateway5"></sequenceFlow>
+    <userTask id="QuYuZongJian" name="区域总监" activiti:formKey="investApply/investApplyAction!gotoTaskForm4QuYuZongJian.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestQuYuZongJianTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="ChengShiJingLiTongGuo" name="城市经理通过" sourceRef="exclusivegateway5" targetRef="QuYuZongJian">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ChengShiJingLiTongGuo'}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow10" sourceRef="AdjustOrder" targetRef="exclusivegateway5"></sequenceFlow>
-    <sequenceFlow id="DeptAssistantReject" name="部门助理驳回" sourceRef="exclusivegateway1" targetRef="AdjustOrder">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DeptAssistantReject'}]]></conditionExpression>
+    <exclusiveGateway id="exclusivegateway6" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow12" sourceRef="QuYuZongJian" targetRef="exclusivegateway6"></sequenceFlow>
+    <userTask id="ZongJingLi" name="总经理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4ZongJingLi.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestZongJingLiTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="QuYuZongJianTongGuo" name="区域总监通过" sourceRef="exclusivegateway6" targetRef="ZongJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='QuYuZongJianTongGuo'}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="OrderRevoke" name="订单撤销" sourceRef="exclusivegateway5" targetRef="endevent1">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='OrderRevoke'}]]></conditionExpression>
+    <exclusiveGateway id="exclusivegateway7" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow14" sourceRef="ZongJingLi" targetRef="exclusivegateway7"></sequenceFlow>
+    <userTask id="BuMenZhuLi" name="部门助理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4BuMenZhuLi.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestBuMenZhuLiTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="ZongJingLiTongGuo" name="总经理通过" sourceRef="exclusivegateway7" targetRef="BuMenZhuLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ZongJingLiTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.invest.InvestProcessStopExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="ChengShiJingLiJuJue" name="城市经理拒绝" sourceRef="exclusivegateway5" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ChengShiJingLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="TuanDuiJingLiJuJue" name="团队经理拒绝" sourceRef="exclusivegateway2" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='TuanDuiJingLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="InvestApplyAdjustment4NewArs" name="申请调整" activiti:formKey="investApply/investApplyAction!gotoTaskForm4InvestApplyAdjustment4NewArs.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestApplyAdjustmentTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="TuanDuiJingLiBoHui" name="团队经理驳回" sourceRef="exclusivegateway2" targetRef="InvestApplyAdjustment4NewArs">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='TuanDuiJingLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="DaTuanJingLiJuJue" name="大团经理拒绝" sourceRef="exclusivegateway3" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DaTuanJingLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="DaTuanJingLiBoHui" name="大团经理驳回" sourceRef="exclusivegateway3" targetRef="InvestApplyAdjustment4NewArs">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DaTuanJingLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="YingYeBuJingLiJuJue" name="营业部经理拒绝" sourceRef="exclusivegateway4" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='YingYeBuJingLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="YingYeBuJingLiBoHui" name="营业部经理驳回" sourceRef="exclusivegateway4" targetRef="InvestApplyAdjustment4NewArs">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='YingYeBuJingLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ChengShiJingLiBoHui" name="城市经理驳回" sourceRef="exclusivegateway5" targetRef="InvestApplyAdjustment4NewArs">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ChengShiJingLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="QuYuZongJianJuJue" name="区域总监拒绝" sourceRef="exclusivegateway6" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='QuYuZongJianJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="QuYuZongJianBoHui" name="区域总监驳回" sourceRef="exclusivegateway6" targetRef="InvestApplyAdjustment4NewArs">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='QuYuZongJianBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ZongJingLiJuJue" name="总经理拒绝" sourceRef="exclusivegateway7" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ZongJingLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ZongJingLiBoHui" name="总经理驳回" sourceRef="exclusivegateway7" targetRef="InvestApplyAdjustment4NewArs">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ZongJingLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="NotAdjustArs" name="不调整理财收益" sourceRef="exclusivegateway1" targetRef="BuMenZhuLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=="NotAdjustArs"}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway8" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow16" sourceRef="InvestApplyAdjustment4NewArs" targetRef="exclusivegateway8"></sequenceFlow>
+    <sequenceFlow id="InvestApplyResubmit4NewArs" name="申请重提" sourceRef="exclusivegateway8" targetRef="servicetask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InvestApplyResubmit4NewArs'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway9" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow18" sourceRef="BuMenZhuLi" targetRef="exclusivegateway9"></sequenceFlow>
+    <userTask id="XiaoKeZhuanYuan" name="销客专员" activiti:formKey="investApply/investApplyAction!gotoTaskForm4XiaoKeZhuanYuan.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestXiaoKeZhuanYuanTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="BuMenZhuLiTongGuo" name="部门助理通过" sourceRef="exclusivegateway9" targetRef="XiaoKeZhuanYuan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='BuMenZhuLiTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway10" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow20" sourceRef="XiaoKeZhuanYuan" targetRef="exclusivegateway10"></sequenceFlow>
+    <userTask id="ShuJuZhuanYuan" name="数据专员" activiti:formKey="investApply/investApplyAction!gotoTaskForm4ShuJuZhuanYuan.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestShuJuZhuanYuanTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="XiaoKeZhuanYuanTongGuo" name="销客专员通过" sourceRef="exclusivegateway10" targetRef="ShuJuZhuanYuan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeZhuanYuanTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway11" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow22" sourceRef="ShuJuZhuanYuan" targetRef="exclusivegateway11"></sequenceFlow>
+    <userTask id="JieSuanZhuanYuan" name="结算专员" activiti:formKey="investApply/investApplyAction!gotoTaskForm4JieSuanZhuanYuan.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestJieSuanZhuanYuanTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="ShuJuZhuanYuanTongGuo" name="数据专员通过" sourceRef="exclusivegateway11" targetRef="JieSuanZhuanYuan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ShuJuZhuanYuanTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway12" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow24" sourceRef="JieSuanZhuanYuan" targetRef="exclusivegateway12"></sequenceFlow>
+    <userTask id="XiaoKeJingLi" name="销客经理" activiti:formKey="investApply/investApplyAction!gotoTaskForm4XiaoKeJingLi.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestXiaoKeJingLiTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="JieSuanZhuanYuanTongGuo" name="结算专员通过" sourceRef="exclusivegateway12" targetRef="XiaoKeJingLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='JieSuanZhuanYuanTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway13" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow26" sourceRef="XiaoKeJingLi" targetRef="exclusivegateway13"></sequenceFlow>
+    <userTask id="XiaoKeZhuGuan" name="销客主管" activiti:formKey="investApply/investApplyAction!gotoTaskForm4XiaoKeZhuGuan.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestXiaoKeZhuGuanTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="XiaoKeJingLiTongGuo" name="销客经理通过" sourceRef="exclusivegateway13" targetRef="XiaoKeZhuGuan">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeJingLiTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway14" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow28" sourceRef="XiaoKeZhuGuan" targetRef="exclusivegateway14"></sequenceFlow>
+    <endEvent id="endevent2" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.invest.InvestProcessStopExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="XiaoKeZhuGuanTongGuo" name="销客主管通过" sourceRef="exclusivegateway14" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeZhuGuanTongGuo'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="InvestApplyAdjustment02" name="调整申请" activiti:formKey="investApply/investApplyAction!gotoTaskForm4InvestApplyAdjustment02.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.invest.InvestApplyAdjustmentTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="BuMenZhuLiBoHui" name="部门助理驳回" sourceRef="exclusivegateway9" targetRef="InvestApplyAdjustment02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='BuMenZhuLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent3" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.invest.InvestProcessStopExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="ShuJuZhuanYuanJuJue" name="数据专员拒绝" sourceRef="exclusivegateway11" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ShuJuZhuanYuanJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway15" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow32" sourceRef="InvestApplyAdjustment02" targetRef="exclusivegateway15"></sequenceFlow>
+    <sequenceFlow id="BuMenZhuLiJuJue" name="部门助理拒绝" sourceRef="exclusivegateway9" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='BuMenZhuLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XiaoKeZhuanYuanBoHui" name="销客专员驳回" sourceRef="exclusivegateway10" targetRef="InvestApplyAdjustment02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeZhuanYuanBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XiaoKeZhuanYuanJuJue" name="销客专员拒绝" sourceRef="exclusivegateway10" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeZhuanYuanJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="ShuJuZhuanYuanBoHui" name="数据专员驳回" sourceRef="exclusivegateway11" targetRef="InvestApplyAdjustment02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='ShuJuZhuanYuanBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="JieSuanZhuanYuanJuJue" name="结算专员拒绝" sourceRef="exclusivegateway12" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='JieSuanZhuanYuanJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="JieSuanZhuanYuanBoHui" name="结算专员驳回" sourceRef="exclusivegateway12" targetRef="InvestApplyAdjustment02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='JieSuanZhuanYuanBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XiaoKeJingLiJuJue" name="销客经理拒绝" sourceRef="exclusivegateway13" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeJingLiJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XiaoKeJingLiBoHui" name="销客经理驳回" sourceRef="exclusivegateway13" targetRef="InvestApplyAdjustment02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeJingLiBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XiaoKeZhuGuanJuJue" name="销客主管拒绝" sourceRef="exclusivegateway14" targetRef="endevent3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeZhuGuanJuJue'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="XiaoKeZhuGuanBoHui" name="销客主管驳回" sourceRef="exclusivegateway14" targetRef="InvestApplyAdjustment02">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='XiaoKeZhuGuanBoHui'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InvestApplyRevoke4NewArs" name="申请撤销" sourceRef="exclusivegateway8" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InvestApplyRevoke4NewArs'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InvestApplyResubmit" name="申请重提" sourceRef="exclusivegateway15" targetRef="BuMenZhuLi">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InvestApplyResubmit'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="InvestApplyRevoke" name="申请撤销" sourceRef="exclusivegateway15" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='InvestApplyRevoke'}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_InvestOrder">
     <bpmndi:BPMNPlane bpmnElement="InvestOrder" id="BPMNPlane_InvestOrder">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="60.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="520.0" y="50.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="AdjustOrder" id="BPMNShape_AdjustOrder">
-        <omgdc:Bounds height="55.0" width="105.0" x="275.0" y="223.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="DeptAssistant" id="BPMNShape_DeptAssistant">
-        <omgdc:Bounds height="55.0" width="105.0" x="425.0" y="130.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="450.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
+        <omgdc:Bounds height="65.0" width="105.0" x="485.0" y="130.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
-        <omgdc:Bounds height="40.0" width="40.0" x="457.0" y="230.0"></omgdc:Bounds>
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="230.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="SalesCustComm" id="BPMNShape_SalesCustComm">
-        <omgdc:Bounds height="55.0" width="105.0" x="425.0" y="300.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="TuanDuiJingLi" id="BPMNShape_TuanDuiJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="390.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DaTuanJingLi" id="BPMNShape_DaTuanJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="460.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
-        <omgdc:Bounds height="40.0" width="40.0" x="457.0" y="380.0"></omgdc:Bounds>
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="550.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="YingYeBuJingLi" id="BPMNShape_YingYeBuJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="620.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="710.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ChengShiJingLi" id="BPMNShape_ChengShiJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="780.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
-        <omgdc:Bounds height="40.0" width="40.0" x="190.0" y="230.0"></omgdc:Bounds>
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="870.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge bpmnElement="OrderSubmitted" id="BPMNEdge_OrderSubmitted">
-        <omgdi:waypoint x="477.0" y="95.0"></omgdi:waypoint>
-        <omgdi:waypoint x="477.0" y="130.0"></omgdi:waypoint>
+      <bpmndi:BPMNShape bpmnElement="QuYuZongJian" id="BPMNShape_QuYuZongJian">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="940.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway6" id="BPMNShape_exclusivegateway6">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1030.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ZongJingLi" id="BPMNShape_ZongJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="1100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway7" id="BPMNShape_exclusivegateway7">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="BuMenZhuLi" id="BPMNShape_BuMenZhuLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="1260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="330.0" y="873.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InvestApplyAdjustment4NewArs" id="BPMNShape_InvestApplyAdjustment4NewArs">
+        <omgdc:Bounds height="55.0" width="105.0" x="690.0" y="383.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway8" id="BPMNShape_exclusivegateway8">
+        <omgdc:Bounds height="40.0" width="40.0" x="860.0" y="390.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway9" id="BPMNShape_exclusivegateway9">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1350.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="XiaoKeZhuanYuan" id="BPMNShape_XiaoKeZhuanYuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="1420.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway10" id="BPMNShape_exclusivegateway10">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1510.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ShuJuZhuanYuan" id="BPMNShape_ShuJuZhuanYuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="1580.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway11" id="BPMNShape_exclusivegateway11">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1660.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="JieSuanZhuanYuan" id="BPMNShape_JieSuanZhuanYuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="1730.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway12" id="BPMNShape_exclusivegateway12">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1820.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="XiaoKeJingLi" id="BPMNShape_XiaoKeJingLi">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="1900.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway13" id="BPMNShape_exclusivegateway13">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="1990.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="XiaoKeZhuGuan" id="BPMNShape_XiaoKeZhuGuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="485.0" y="2070.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway14" id="BPMNShape_exclusivegateway14">
+        <omgdc:Bounds height="40.0" width="40.0" x="517.0" y="2160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="520.0" y="2230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="InvestApplyAdjustment02" id="BPMNShape_InvestApplyAdjustment02">
+        <omgdc:Bounds height="55.0" width="105.0" x="295.0" y="1343.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="725.0" y="1663.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway15" id="BPMNShape_exclusivegateway15">
+        <omgdc:Bounds height="40.0" width="40.0" x="60.0" y="1350.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="537.0" y="85.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="130.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="60.0" x="487.0" y="95.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="48.0" x="547.0" y="99.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="FinancingOrder_flow3" id="BPMNEdge_FinancingOrder_flow3">
-        <omgdi:waypoint x="477.0" y="185.0"></omgdi:waypoint>
-        <omgdi:waypoint x="477.0" y="230.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="537.0" y="195.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="230.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="DeptAssistantAgree" id="BPMNEdge_DeptAssistantAgree">
-        <omgdi:waypoint x="477.0" y="270.0"></omgdi:waypoint>
-        <omgdi:waypoint x="477.0" y="300.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="AdjustArs" id="BPMNEdge_AdjustArs">
+        <omgdi:waypoint x="537.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="300.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="487.0" y="270.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="270.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
-        <omgdi:waypoint x="477.0" y="355.0"></omgdi:waypoint>
-        <omgdi:waypoint x="477.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="355.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="390.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SalesCustCommAgree" id="BPMNEdge_SalesCustCommAgree">
-        <omgdi:waypoint x="477.0" y="420.0"></omgdi:waypoint>
-        <omgdi:waypoint x="477.0" y="450.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="TuanDuiJingLiTongGuo" id="BPMNEdge_TuanDuiJingLiTongGuo">
+        <omgdi:waypoint x="537.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="460.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="487.0" y="420.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="72.0" x="488.0" y="429.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="SalesCustCommReject" id="BPMNEdge_SalesCustCommReject">
-        <omgdi:waypoint x="497.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="606.0" y="400.0"></omgdi:waypoint>
-        <omgdi:waypoint x="606.0" y="157.0"></omgdi:waypoint>
-        <omgdi:waypoint x="530.0" y="157.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="537.0" y="515.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="550.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DaTuanJingLiTongGuo" id="BPMNEdge_DaTuanJingLiTongGuo">
+        <omgdi:waypoint x="537.0" y="590.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="620.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="509.0" y="380.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="72.0" x="488.0" y="589.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="OrderResubmitted" id="BPMNEdge_OrderResubmitted">
-        <omgdi:waypoint x="210.0" y="230.0"></omgdi:waypoint>
-        <omgdi:waypoint x="210.0" y="157.0"></omgdi:waypoint>
-        <omgdi:waypoint x="425.0" y="157.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="537.0" y="675.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="710.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="YingYeBuJingLiTongGuo" id="BPMNEdge_YingYeBuJingLiTongGuo">
+        <omgdi:waypoint x="537.0" y="750.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="780.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="48.0" x="240.0" y="141.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="84.0" x="488.0" y="750.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
-        <omgdi:waypoint x="275.0" y="250.0"></omgdi:waypoint>
-        <omgdi:waypoint x="230.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="835.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="870.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="DeptAssistantReject" id="BPMNEdge_DeptAssistantReject">
-        <omgdi:waypoint x="457.0" y="250.0"></omgdi:waypoint>
-        <omgdi:waypoint x="380.0" y="250.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="ChengShiJingLiTongGuo" id="BPMNEdge_ChengShiJingLiTongGuo">
+        <omgdi:waypoint x="537.0" y="910.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="940.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="390.0" y="230.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="72.0" x="488.0" y="910.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="OrderRevoke" id="BPMNEdge_OrderRevoke">
-        <omgdi:waypoint x="210.0" y="270.0"></omgdi:waypoint>
-        <omgdi:waypoint x="210.0" y="467.0"></omgdi:waypoint>
-        <omgdi:waypoint x="460.0" y="467.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="537.0" y="995.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1030.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="QuYuZongJianTongGuo" id="BPMNEdge_QuYuZongJianTongGuo">
+        <omgdi:waypoint x="537.0" y="1070.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1100.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="48.0" x="270.0" y="449.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="72.0" x="488.0" y="1069.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="537.0" y="1155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1190.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ZongJingLiTongGuo" id="BPMNEdge_ZongJingLiTongGuo">
+        <omgdi:waypoint x="537.0" y="1230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1260.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="498.0" y="1229.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ChengShiJingLiJuJue" id="BPMNEdge_ChengShiJingLiJuJue">
+        <omgdi:waypoint x="517.0" y="890.0"></omgdi:waypoint>
+        <omgdi:waypoint x="365.0" y="890.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="381.0" y="898.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="TuanDuiJingLiJuJue" id="BPMNEdge_TuanDuiJingLiJuJue">
+        <omgdi:waypoint x="517.0" y="410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="409.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="873.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="387.0" y="418.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="TuanDuiJingLiBoHui" id="BPMNEdge_TuanDuiJingLiBoHui">
+        <omgdi:waypoint x="557.0" y="410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0" y="410.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="590.0" y="390.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DaTuanJingLiJuJue" id="BPMNEdge_DaTuanJingLiJuJue">
+        <omgdi:waypoint x="517.0" y="570.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="569.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="873.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="387.0" y="578.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DaTuanJingLiBoHui" id="BPMNEdge_DaTuanJingLiBoHui">
+        <omgdi:waypoint x="557.0" y="570.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="569.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="438.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="590.0" y="551.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="YingYeBuJingLiJuJue" id="BPMNEdge_YingYeBuJingLiJuJue">
+        <omgdi:waypoint x="517.0" y="730.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="730.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="873.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="381.0" y="738.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="YingYeBuJingLiBoHui" id="BPMNEdge_YingYeBuJingLiBoHui">
+        <omgdi:waypoint x="557.0" y="730.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="729.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="438.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="588.0" y="711.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ChengShiJingLiBoHui" id="BPMNEdge_ChengShiJingLiBoHui">
+        <omgdi:waypoint x="557.0" y="890.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="889.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="438.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="588.0" y="871.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="QuYuZongJianJuJue" id="BPMNEdge_QuYuZongJianJuJue">
+        <omgdi:waypoint x="517.0" y="1050.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1050.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="908.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="371.0" y="1030.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="QuYuZongJianBoHui" id="BPMNEdge_QuYuZongJianBoHui">
+        <omgdi:waypoint x="557.0" y="1050.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1049.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="438.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="586.0" y="1031.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ZongJingLiJuJue" id="BPMNEdge_ZongJingLiJuJue">
+        <omgdi:waypoint x="517.0" y="1210.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1210.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="908.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="381.0" y="1190.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ZongJingLiBoHui" id="BPMNEdge_ZongJingLiBoHui">
+        <omgdi:waypoint x="557.0" y="1210.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1209.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="438.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="590.0" y="1191.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="NotAdjustArs" id="BPMNEdge_NotAdjustArs">
+        <omgdi:waypoint x="517.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="172.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="172.0" y="1287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="1287.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="84.0" x="296.0" y="230.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="795.0" y="410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="860.0" y="410.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InvestApplyResubmit4NewArs" id="BPMNEdge_InvestApplyResubmit4NewArs">
+        <omgdi:waypoint x="880.0" y="390.0"></omgdi:waypoint>
+        <omgdi:waypoint x="879.0" y="162.0"></omgdi:waypoint>
+        <omgdi:waypoint x="590.0" y="162.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="741.0" y="171.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="537.0" y="1315.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1350.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BuMenZhuLiTongGuo" id="BPMNEdge_BuMenZhuLiTongGuo">
+        <omgdi:waypoint x="537.0" y="1390.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1420.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="1390.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="537.0" y="1475.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1510.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeZhuanYuanTongGuo" id="BPMNEdge_XiaoKeZhuanYuanTongGuo">
+        <omgdi:waypoint x="537.0" y="1550.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1580.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="1550.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="537.0" y="1635.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1660.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ShuJuZhuanYuanTongGuo" id="BPMNEdge_ShuJuZhuanYuanTongGuo">
+        <omgdi:waypoint x="537.0" y="1700.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1730.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="1700.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="537.0" y="1785.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1820.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="JieSuanZhuanYuanTongGuo" id="BPMNEdge_JieSuanZhuanYuanTongGuo">
+        <omgdi:waypoint x="537.0" y="1860.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1900.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="1860.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="537.0" y="1955.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="1990.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeJingLiTongGuo" id="BPMNEdge_XiaoKeJingLiTongGuo">
+        <omgdi:waypoint x="537.0" y="2030.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="2070.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="2030.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="537.0" y="2125.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="2160.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeZhuGuanTongGuo" id="BPMNEdge_XiaoKeZhuGuanTongGuo">
+        <omgdi:waypoint x="537.0" y="2200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="537.0" y="2230.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="547.0" y="2200.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BuMenZhuLiBoHui" id="BPMNEdge_BuMenZhuLiBoHui">
+        <omgdi:waypoint x="517.0" y="1370.0"></omgdi:waypoint>
+        <omgdi:waypoint x="400.0" y="1370.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="419.0" y="1350.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ShuJuZhuanYuanJuJue" id="BPMNEdge_ShuJuZhuanYuanJuJue">
+        <omgdi:waypoint x="557.0" y="1680.0"></omgdi:waypoint>
+        <omgdi:waypoint x="725.0" y="1680.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="596.0" y="1663.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
+        <omgdi:waypoint x="295.0" y="1370.0"></omgdi:waypoint>
+        <omgdi:waypoint x="100.0" y="1370.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="BuMenZhuLiJuJue" id="BPMNEdge_BuMenZhuLiJuJue">
+        <omgdi:waypoint x="557.0" y="1370.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1370.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1663.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="596.0" y="1350.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeZhuanYuanBoHui" id="BPMNEdge_XiaoKeZhuanYuanBoHui">
+        <omgdi:waypoint x="517.0" y="1530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1398.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="400.0" y="1510.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeZhuanYuanJuJue" id="BPMNEdge_XiaoKeZhuanYuanJuJue">
+        <omgdi:waypoint x="557.0" y="1530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1530.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1663.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="596.0" y="1510.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="ShuJuZhuanYuanBoHui" id="BPMNEdge_ShuJuZhuanYuanBoHui">
+        <omgdi:waypoint x="517.0" y="1680.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1680.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1398.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="387.0" y="1663.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="JieSuanZhuanYuanJuJue" id="BPMNEdge_JieSuanZhuanYuanJuJue">
+        <omgdi:waypoint x="557.0" y="1840.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1839.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1698.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="596.0" y="1821.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="JieSuanZhuanYuanBoHui" id="BPMNEdge_JieSuanZhuanYuanBoHui">
+        <omgdi:waypoint x="517.0" y="1840.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1840.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1398.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="381.0" y="1820.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeJingLiJuJue" id="BPMNEdge_XiaoKeJingLiJuJue">
+        <omgdi:waypoint x="557.0" y="2010.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="2010.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1698.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="596.0" y="1990.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeJingLiBoHui" id="BPMNEdge_XiaoKeJingLiBoHui">
+        <omgdi:waypoint x="517.0" y="2010.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="2010.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1398.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="381.0" y="1990.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeZhuGuanJuJue" id="BPMNEdge_XiaoKeZhuGuanJuJue">
+        <omgdi:waypoint x="557.0" y="2180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="2179.0"></omgdi:waypoint>
+        <omgdi:waypoint x="742.0" y="1698.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="596.0" y="2161.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="XiaoKeZhuGuanBoHui" id="BPMNEdge_XiaoKeZhuGuanBoHui">
+        <omgdi:waypoint x="517.0" y="2180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="2180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="347.0" y="1398.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="381.0" y="2160.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InvestApplyRevoke4NewArs" id="BPMNEdge_InvestApplyRevoke4NewArs">
+        <omgdi:waypoint x="880.0" y="430.0"></omgdi:waypoint>
+        <omgdi:waypoint x="879.0" y="1367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="879.0" y="2247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="555.0" y="2247.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="100.0" x="821.0" y="549.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InvestApplyResubmit" id="BPMNEdge_InvestApplyResubmit">
+        <omgdi:waypoint x="80.0" y="1350.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="1287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="485.0" y="1287.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="90.0" y="1291.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="InvestApplyRevoke" id="BPMNEdge_InvestApplyRevoke">
+        <omgdi:waypoint x="80.0" y="1390.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="2247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="520.0" y="2247.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="90.0" y="1609.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

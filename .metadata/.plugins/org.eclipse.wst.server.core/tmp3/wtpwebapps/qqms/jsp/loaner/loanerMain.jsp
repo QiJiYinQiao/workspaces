@@ -50,12 +50,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					            	  formatter:function(value,row){
 					            		  return "<a style=\"color:blue;text-decoration:none;\" onmouseover=\"this.style.color='red'\" onmouseout=\"this.style.color='blue'\" href=\"javascript:void(0)\" onclick=\"showLoanerOrderList('"+row.loanerId+"');\">点击查看客户贷款订单详情</a>";
 									}
-					              },
+					              }/* ,
 					              {field : 'b',title : '客户履历详情',width :300,align : 'center',
 					            	  formatter:function(value,row){
 					            		  return "<a style=\"color:blue;text-decoration:none;\" onmouseover=\"this.style.color='red'\" onmouseout=\"this.style.color='blue'\" href=\"javascript:void(0)\" onclick=\"showLoanerHisList('"+row.loanerId+"');\">点击查看客户履历变更详情</a>";
 									}  
-					              }
+					              } */
 					              ] ]
 				});
 			});

@@ -26,41 +26,51 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			var degreeTypeArr = jqueryUtil.getTextArr("degree_type");//学历
 			$(function() {
 				 $dg = $("#dg");
+				 
+					
+					// 自动调整页面高度
+				 	$(window).resize(function(){  
+			            $("#dg").datagrid({  
+			            	height: $(window).height()-100,
+			            	width : 'auto'
+			            });                
+				    });				 
+				 
 				 $grid=$dg.datagrid({
 					url : "investor/investorAction!findAllInvestor.action",
 					width : 'auto',
-					height : $(this).height()-40,
+					height : $(window).height()-40,
 					pagination:true,
 					rownumbers:true,
 					border:false,
 					singleSelect:true,
 					nowrap:true,
 					multiSort:false,
-					columns : [ [ {field : 'chName',title : '客户姓名',width :80,align : 'center'},
-					              {field : 'idType',title : '证件类型',width : 100,align : 'center',formatter:function(value, row, index){
+					columns : [ [ {field : 'chName',title : '客户姓名', width : parseInt($(this).width() * 0.05) ,align : 'center'},
+					              {field : 'idType',title : '证件类型', width : parseInt($(this).width() * 0.05) ,align : 'center',formatter:function(value, row, index){
 								        return jqueryUtil.showText(value,idtypeArr);
 							         }  
 		                          },
-		                          {field : 'idNo',title : '证件号码',width : 200,align : 'center'},
-					              {field : 'genderType',title : '性别',width : 80,align : 'center',
+		                          {field : 'idNo',title : '证件号码', width : parseInt($(this).width() * 0.09) ,align : 'center'},
+					              {field : 'genderType',title : '性别', width : parseInt($(this).width() * 0.04) ,align : 'center',
 									formatter:function(value, row, index){
 										return jqueryUtil.showText(value,sexArr);
 									}
 								  },
-					              {field : 'mobileTel',title : '移动电话',width :150,align : 'center'},
-					              {field : 'industry',title : '所属行业',width : 150,align : 'center'},
-					              {field : 'jobType',title : '职业',width :160,align : 'center',
+					              {field : 'mobileTel',title : '移动电话', width : parseInt($(this).width() * 0.07) ,align : 'center'},
+					              {field : 'industry',title : '所属行业', width : parseInt($(this).width() * 0.05) ,align : 'center'},
+					              {field : 'jobType',title : '职业', width : parseInt($(this).width() * 0.06) ,align : 'center',
 					            	  formatter:function(value, row, index){
 											return jqueryUtil.showText(value,jobtypeArr);
 									  }  
 					              },
-					              {field : 'yearsOfWork',title : '工作年限',width : 60,align : 'center'},
-					              {field : 'degreeType',title : '学历',width : 60,align : 'center',formatter:function(value, row, index){
+					              {field : 'yearsOfWork',title : '工作年限', width : parseInt($(this).width() * 0.05) ,align : 'center'},
+					              {field : 'degreeType',title : '学历', width : parseInt($(this).width() * 0.05) ,align : 'center',formatter:function(value, row, index){
 					            	  return jqueryUtil.showText(value,degreeTypeArr);
 					              }},
-					              {field : 'birthday',title : '出生日期',width : 150,align : 'center'},
-					              {field : 'email',title : '邮箱',width : 150,align : 'center'},
-					              {field : 'companyName',title : '单位名称',width :200,align : 'center'}
+					              {field : 'birthday',title : '出生日期', width : parseInt($(this).width() * 0.07) ,align : 'center'},
+					              {field : 'email',title : '邮箱', width : parseInt($(this).width() * 0.09) ,align : 'center'},
+					              {field : 'companyName',title : '单位名称', width : parseInt($(this).width() * 0.1) ,align : 'center'}
 					              ] ],toolbar:'#tb'
 				});
 				//搜索框

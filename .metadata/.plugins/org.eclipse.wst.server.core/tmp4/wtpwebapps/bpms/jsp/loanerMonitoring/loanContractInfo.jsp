@@ -19,11 +19,17 @@
 </style>
 <script type="text/javascript">
 $(function(){
+	$(window).resize(function(){  
+        $("#loanContractInfoTab").datagrid("resize",{  
+			height : $(window).height()-120,
+        	width : 'auto'
+        });                
+    });
 	// 查看申请状态
 	$datagrid = $("#loanContractInfoTab").datagrid({
 		url : "loanContract/loanContractAction!findLoanContractInfo.action",
 		width : 'auto',
-		height : parseInt($(this).height()*0.85),
+		height :$(window).height()-120,
 		pagination:true,
 		rownumbers:true,
 		border:true,
@@ -185,7 +191,7 @@ $(function(){
 			</form>
 			<div style="text-align:right;">
 				<span style="color:red;float:left;padding-top:6px;">
-					注:不输入任何查询条件，默认查询所有客户还款详情
+					<!-- 注:不输入任何查询条件，默认查询所有客户还款详情 -->
 				</span>
 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-search" onclick="subLoanCractForm();">执行查询</a>
 				<a href="javascript:void(0);" class="easyui-linkbutton" iconCls="icon-reload" onclick="resetLoanCractForm();">重置条件</a>
@@ -240,23 +246,23 @@ $(function(){
 					<th>贷款类型</th>
 					<td><input name="loanTypeName" class="easyui-textbox" /></td>
 					<th>贷款金额(元)</th>
-					<td><input name="loanEdu" class="easyui-textbox" /></td>
+					<td><input name="loanEdu" class="easyui-numberbox" /></td>
 					<th>贷款期数(期)</th>
 					<td><input name="loanPeriod" class="easyui-textbox" /></td>
 				</tr>
 				
 				<tr>
 					<th>服务费(元)</th>
-					<td><input name="monthlyFee" class="easyui-textbox" /></td>
+					<td><input name="monthlyFee" class="easyui-numberbox" /></td>
 					<th>外访费(元)</th>
-					<td><input name="visitFee" class="easyui-textbox" /></td>
+					<td><input name="visitFee" class="easyui-numberbox" /></td>
 					<th>放款金额(元)</th>
-					<td><input name="loanEdu" class="easyui-textbox" /></td>
+					<td><input name="loanEdu" class="easyui-numberbox" /></td>
 				</tr>
 				
 				<tr>
 					<th>月还金额(元)</th>
-					<td><input name="monthlyRepayment" class="easyui-textbox" /></td>
+					<td><input name="monthlyRepayment" class="easyui-numberbox" /></td>
 					<th>月还款日</th>
 					<td><input name="monthlyRepaymentDate" class="easyui-textbox" /></td>
 					<th>划扣平台</th>

@@ -25,10 +25,19 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			var $grid;
 			$(function() {				
 				 $dg = $("#dg");
+				 
+					// 自动调整页面高度
+				 	$(window).resize(function(){  
+				            $("#dg").datagrid({  
+				            	height: $(window).height()-100,
+				            	width : 'auto'
+				            });                
+				        });				 
+				 
 				 $grid=$dg.datagrid({
 					url : "investProduct/investProductAction!getAllInvestProducts.action",
 					width : 'auto',
-					height : $(this).height()-127,
+					height : $(window).height()-127,
 					pagination:true,
 					rownumbers:true,
 					border:false,

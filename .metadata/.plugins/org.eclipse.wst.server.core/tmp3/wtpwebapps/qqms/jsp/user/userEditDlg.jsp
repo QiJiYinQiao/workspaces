@@ -3,6 +3,7 @@
 	<script type="text/javascript" src="js/validate.js"></script>
 <script type="text/javascript">
 	$(function() {
+		//组织机构
 		$("#organizeId").combotree({
 			width:171,
 			url:"orgz/organizationAction!findOrganizationList.action",
@@ -13,6 +14,42 @@
 		 		//$("#organizeName").val(node.text);
 		 	}
 		});
+		//有字典的下拉框
+		$("#gender").combobox({
+			url:'baseAction!getDicText.action?code=gender_type',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		$("#nation").combobox({
+			url:'baseAction!getDicText.action?code=nation',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		$("#healthStatus").combobox({
+			url:'baseAction!getDicText.action?code=health_status',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		$("#domiType").combobox({
+			url:'baseAction!getDicText.action?code=domi_type',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		$("#maritalStatus").combobox({
+			url:'baseAction!getDicText.action?code=marital_status',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		$("#education").combobox({
+			url:'baseAction!getDicText.action?code=degree_type',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
+		$("#ecRelation").combobox({
+			url:'baseAction!getDicText.action?code=relationship_type',
+			valueField:"dictCode",
+			textField:"dictName"
+		})
 		
 		$("#form").form({
 			url :"user/userAction!persistenceUsersDig.action",
@@ -124,35 +161,101 @@
 				<input name="creater" id="creater"  type="hidden"/>
 				<input name="status" id="status"  type="hidden"/>
 				 <table>
+				 <tr>
+				 <th colspan="5">注:标<span style="color: red">*</span>为必填项</th>
+				 </tr>
 					 <tr>
-					    <td style="text-align: right;">用户编码:</td>
+					    <td style="text-align: right;"><span style="color: red">*</span>用户编码:</td>
 						<td><input name="myid" id="myid" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,25]'"/></td>
-						<td style="text-align: right;">用户账号:</td>
+						<td style="text-align: right;"><span style="color: red">*</span>用户账号:</td>
 						<td><input name="account"  class="easyui-textbox easyui-validatebox" id="account" data-options="required:true,validType:'length[0,25]'"/></td>
-					 </tr>
-					 <tr>
-					    <td style="text-align: right;">用户名:</td>
+					    <td style="text-align: right;"><span style="color: red">*</span>用户名:</td>
 						<td><input name="name" id="name" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,25]'"/></td>
-						<td style="text-align: right;">用户密码:</td>
-						<td><input id="password" name="password" type="password" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,64]'"/></td>
 					 </tr>
 					 <tr>
-					    <td style="text-align: right;">重复密码:</td>
+						<td style="text-align: right;"><span style="color: red">*</span>用户密码:</td>
+						<td><input id="password" name="password" type="password" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,64]'"/></td>
+					    <td style="text-align: right;"><span style="color: red">*</span>重复密码:</td>
 					    <td>
 					      <input id="rpwd" name="rpwd" type="password" class="easyui-textbox easyui-validatebox" required="required" validType="same['password']"/>  
 					    </td>
 					    <td style="text-align: right;">邮箱:</td>
-						<td><input id="email" name="email" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'email'"/></td>
+						<td><input id="email" name="email" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'email'"/></td>
 					 </tr>
-					  <tr>
-						<td style="text-align: right;">电话:</td>
-						<td><input id="tel" name="tel" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'mobile'"/></td>
+					 <tr>
+					 	<td style="text-align: right;">固定电话:</td>
+						<td><input id="tel" name="tel" class="easyui-textbox easyui-numberbox" data-options="validType:'length[0,20]'"/></td>
+						<td style="text-align: right;">移动电话:</td>
+						<td><input id="mobile" name="mobile" class="easyui-textbox easyui-numberbox" data-options="validType:'mobile'"/></td>
 					    <td style="text-align: right;">组织部门:</td>
 						<td colspan="3"><input id="organizeId" name="organizeId" type="text" class="easyui-textbox easyui-validatebox"/></td>
 					 </tr>
+					  <tr>
+						<td style="text-align: right;">年龄:</td>
+						<td><input name="age" id="age" class="easyui-textbox easyui-numberbox"/></td>
+						<td style="text-align: right;">性别:</td>
+						<td><input id="gender" name="gender" class="easyui-textbox easyui-validatebox"/></td>
+					    <td style="text-align: right;">民族:</td>
+						<td><input id="nation" name="nation" type="text" class="easyui-textbox easyui-validatebox"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">籍贯:</td>
+						<td><input id="origo" name="origo" class="easyui-textbox easyui-validatebox"/></td>
+						<td style="text-align: right;">出生日期:</td>
+						<td><input id="birthday" name="birthday" class="easyui-textbox easyui-datebox"/></td>
+						<td style="text-align: right;">身高（cm）:</td>
+						<td><input id="height" name="height" class="easyui-textbox easyui-numberbox"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">体重(kg):</td>
+						<td><input id="weight" name="weight" class="easyui-textbox easyui-validatebox"/></td>
+					    <td style="text-align: right;">健康状况:</td>
+						<td><input id="healthStatus" name="healthStatus" type="text" class="easyui-textbox easyui-validatebox"/></td>
+						<td style="text-align: right;">户籍性质:</td>
+						<td><input id="domiType" name="domiType" class="easyui-textbox easyui-validatebox"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">身份证号码:</td>
+						<td><input id="idCard" name="idCard" class="easyui-textbox easyui-validatebox" data-options="validType:'idcard'"/></td>
+					    <td style="text-align: right;">身份证地址:</td>
+						<td><input id="idCardAddr" name="idCardAddr" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+						<td style="text-align: right;">婚姻状况:</td>
+						<td><input id="maritalStatus" name="maritalStatus" class="easyui-textbox easyui-validatebox"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">最高学历:</td>
+						<td><input id="education" name="education" class="easyui-textbox easyui-validatebox"/></td>
+					    <td style="text-align: right;">毕业院校:</td>
+						<td><input id="graduateSchool" name="graduateSchool" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,50]'"/></td>
+						<td style="text-align: right;">专业:</td>
+						<td><input id="major" name="major" class="easyui-textbox easyui-validatebox"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">毕业时间:</td>
+						<td><input id="graduateDate" name="graduateDate" class="easyui-textbox easyui-datebox"/></td>
+					    <td style="text-align: right;">参加工作时间:</td>
+						<td><input id="takejobDate" name="takejobDate" type="text" class="easyui-textbox easyui-datebox"/></td>
+						<td style="text-align: right;">户口所在地:</td>
+						<td><input id="domiAddr" name="domiAddr" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">通讯地址:</td>
+						<td><input id="postalAddr" name="postalAddr" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+						<td style="text-align: right;">工资卡号:</td>
+						<td><input id="salCardNo" name="salCardNo" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+						<td style="text-align: right;">紧急联系人:</td>
+						<td><input id="ecContactsName" name="ecContactsName" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+					 </tr>
+					  <tr>
+						<td style="text-align: right;">紧急联系人<br/>联系方式:</td>
+						<td><input id="ecLandline" name="ecLandline" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+						<td style="text-align: right;">与本人关系:</td>
+						<td><input id="ecRelation" name="ecRelation" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,256]'"/></td>
+					 </tr>
+					 
 					 <tr>
-						<td style="text-align: right;">描述:</td>
-						<td colspan="3"><textarea class="easyui-textbox" name="description"  style="width: 415px;height: 100px;"></textarea></td>
+						<td style="text-align: right;">备注:</td>
+						<td colspan="5"><textarea class="easyui-textbox" name="description"  style="width: 615px;height: 100px;" maxlength="100"></textarea></td>
 					</tr>
 				 </table>
 			</fieldset>

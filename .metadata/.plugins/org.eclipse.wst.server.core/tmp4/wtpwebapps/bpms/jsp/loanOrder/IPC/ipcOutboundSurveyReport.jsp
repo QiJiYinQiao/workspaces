@@ -14,16 +14,8 @@
 		$("#quest").empty();
 		$("#loanOrderId").val($row.loanOrderId);
 		$("#loanOrderIdS").val($row.loanOrderId);
-		
+		$("#isRationalDescN").attr("disabled","disabled").hide();
 		//加载下拉框数据
-		$("#isLocal").combobox({
-			valueField : 'code',
-			textField : 'text',
-			editable:false ,
-			required:true,
-			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
-			
-	    });
 		
 		$("#isOwn").combobox({
 			valueField : 'code',
@@ -33,12 +25,140 @@
 			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
 		});
 		
-		$("#isGuaranty").combobox({
+		$("#carIsGuar").combobox({
 			valueField : 'code',
 			textField : 'text',
 			editable:false ,
 			required:true,
 			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+		});
+		
+		$("#houseIsGuar").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			required:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+		});
+		
+		$("#isRational").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			required:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
+			onSelect:function(param) {
+				if(param.code=="Y") {
+					$("#isRationalDescY").removeAttr("disabled").show();
+					$("#isRationalDescN").val(" ").attr("disabled","disabled").hide();
+					$("#isRationalDescN").focus();
+				} else {
+					$("#isRationalDescN").removeAttr("disabled").show();
+					$("#isRationalDescY").attr("disabled","disabled").hide();
+				}
+			}
+		});
+		
+		$("#offSeason").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			multiple:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=months",
+			onChange:function(param){
+				var vals = $("#offSeason").combobox("getValues");
+				if(vals.length>0) {
+					$("#offSeasonAmtN").hide();
+					$("#offSeasonAmtY").removeAttr("disabled").show();
+				} else {
+					$("#offSeasonAmtY").val(0).attr("disabled","disabled").hide();
+					$("#offSeasonAmtY").focus();
+					$("#offSeasonAmtN").show();
+				}
+			}
+		});
+		
+		$("#busySeason").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			multiple:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=months",
+			onChange:function(param){
+				var vals = $("#busySeason").combobox("getValues");
+				if(vals.length) {
+					$("#buysSeasonAmtY").removeAttr("disabled").show();
+					$("#buysSeasonAmtN").hide();
+				} else {
+					$("#buysSeasonAmtN").show();
+					$("#buysSeasonAmtY").val(0).attr("disabled","disabled").hide();
+					$("#buysSeasonAmtY").focus();
+				}
+			}
+		});
+		
+		$("#shoulderSeason").combobox({
+			valueField : 'code',
+			textField : 'text',
+			editable:false ,
+			multiple:true,
+			url:"common/commonAction!findTextArr.action?codeMyid=months",
+			onChange:function(param){
+				var vals = $("#shoulderSeason").combobox("getValues");
+				if(vals.length) {
+					$("#shoulderSeasonAmtY").removeAttr("disabled").show();
+					$("#shoulderSeasonAmtN").hide();
+				} else {
+					$("#shoulderSeasonAmtN").show();
+					$("#shoulderSeasonAmtY").val(0).attr("disabled","disabled").hide();
+					$("#shoulderSeasonAmtY").focus();
+				}
+			}
+		});
+		
+		//渲染调查人员信息
+		$('#surveyer').combogrid({    
+		    panelWidth:450,    
+		    idField:'userId',    
+		    textField:'name',
+		    multiple:true,  
+		    editable:false,
+		    required:true,
+			queryParams: {"roleCode":"IPCXiaoEDiaoCha"},
+			url : "loanOrder/loanOrderAction!findCandidatePersonsByCode.action?t="+ new Date(),
+			columns : [ [ 
+			              {field : 'name',title : '用户名',width : 100,align : 'center'},
+			              {field : 'email',title : '邮箱',width : 150,align : 'center'},
+			              {field : 'tel',title : '电话',width :150,align : 'center'},
+			              {field : 'organization',title : '组织',width :220,align : 'center',
+			            	    formatter:function(value,row){
+				            	  	return value.fullName;  
+								}
+						  }, 
+			              {field : 'description',title : '描述',width : 570,align : 'left'}
+		              ] ],
+		});
+		
+		$('#summarySurveyer').combogrid({    
+		    panelWidth:550,    
+		    idField:'userId',    
+		    textField:'name',
+		    multiple:true,  
+		    editable:false,
+		    required:true,
+			queryParams: {"roleCode":"IPCXiaoEDiaoCha"},
+			url : "loanOrder/loanOrderAction!findCandidatePersonsByCode.action?t="+ new Date(),
+			columns : [ [ 
+			              {field : 'name',title : '用户名',width : 100,align : 'center'},
+			              {field : 'email',title : '邮箱',width : 150,align : 'center'},
+			              {field : 'tel',title : '电话',width :150,align : 'center'},
+			              {field : 'organization',title : '组织',width :220,align : 'center',
+			            	    formatter:function(value,row){
+				            	  	return value.fullName;  
+								}
+						  }, 
+			              {field : 'description',title : '描述',width : 570,align : 'left'}
+		              ] ],
 		});
 		
 		queryOutSurveyReport();
@@ -53,7 +173,19 @@
 			data : {"loanOrderId":$row.loanOrderId},
 			type : "post",
 			success : function(data){
-				if(data){
+				if(data) {
+					if(data.surveyer){
+						data.surveyer = data.surveyer.replace(/\s/g,'').split(",");
+					}
+					if(data.shoulderSeason){
+						data.shoulderSeason = data.shoulderSeason.replace(/\s/g,'').split(",");
+					}
+					if(data.offSeason){
+						data.offSeason = data.offSeason.replace(/\s/g,'').split(",");
+					}
+					if(data.busySeason){
+						data.busySeason = data.busySeason.replace(/\s/g,'').split(",");
+					}
 					$("#ipcSurveyReportForm").form("load",data);
 				}
 			}
@@ -68,6 +200,7 @@
 			type : "post",
 			success : function(data){
 				if(data){
+					data.surveyer = data.surveyer.replace(/\s/g,'').split(",");
 					$("#ipcSurveyReportSummaryForm").form("load",data);
 				}
 			}
@@ -88,13 +221,14 @@
 						questionHtml += "<input name='questions' type='hidden' value='"+item.questionId+"' />";
 						if(item.answerId){
 							questionHtml += "<input name='answerId' type='hidden' value='"+item.answerId+"' />";
-							questionHtml += "<textarea name='answers' style='width:100%;height:40px;'>"+item.answer+"</textarea>";
+							questionHtml += "<textarea name='answers' style='width:100%;height:40px;' class='easyui-validatebox easyui-textbox' data-options='required:true,validType:\"length[0,2000]\"'>"+item.answer+"</textarea>";
 						}else{
 							questionHtml += "<input name='answerId' type='hidden' />";
-							questionHtml += "<textarea name='answers' style='width:100%;height:40px;'></textarea>";
+							questionHtml += "<textarea name='answers' style='width:100%;height:40px;' class='easyui-textbox easyui-validatebox' data-options='required:true,validType:\"length[0,2000]\"'></textarea>";
 						}
 					});
 					$("#quest").append(questionHtml);
+					$.parser.parse($("#quest"));
 				}
 			}
 		});
@@ -185,18 +319,18 @@
 		});
 	}
 </script>
-<div id="" class="easyui-tabs" style="fit:true;overflow: hidden;">
-	<div title="外访调查报告">
-		<form id="ipcSurveyReportForm" method="post">
+<div id="" class="easyui-tabs" style="fit:true;">
+	<div title="小额调查报告">
+		<form id="ipcSurveyReportForm" method="post" style="width:100%;height:580px;overflow: auto;">
 			<input type="hidden" name="outsurveyReportId">
 			<input id="loanOrderId" type="hidden" name="loanOrderId">
-			<table cellpadding="6">
+			<table>
 				<tr>
 					<th>
 						调查人员
 					</th>
 					<td>
-						<input name="surveyer" class="easyui-textbox easyui-validatebox" data-options="required:true">
+						<input id="surveyer" name="surveyer">
 					</td>
 					<th>
 						调查时间
@@ -208,7 +342,7 @@
 						往返里程(km)
 					</th>
 					<td>
-						<input name="distance" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble1'" >
+						<input name="distance" class="easyui-numberbox easyui-validatebox" data-options="min:0,max:999999,required:true" >
 					</td>
 				</tr>
 				
@@ -217,19 +351,19 @@
 						客户姓名
 					</th>
 					<td>
-						<input name="customerName"  class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,40]'" >
+						<input name="customerName"  class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,20]'" >
 					</td>
 					<th>
 						经营地址
 					</th>
 					<td colspan="3">
-						<input name="comAddress" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,120]'">
+						<input name="comAddress" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,256]',required:true">
 					</td>
 					<th>
 						是否本地人
 					</th>
 					<td>
-						<input id="isLocal" name="isLocal" class="easyui-combobox" >
+						<input name="isLocal" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,25]',required:true">
 					</td>
 				</tr>
 				
@@ -238,7 +372,7 @@
 						家庭地址
 					</th>
 					<td colspan="5">
-						<input name="homeAddress" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,120]'">
+						<input name="homeAddress" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,256]',required:true">
 					</td>
 					<th>
 						是否自有
@@ -250,38 +384,78 @@
 				
 				<tr>
 					<th>
-						车产信息
+						房产信息
 					</th>
 					<td colspan="3">
-						<input name="carInfo" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,120]'" >
+						<input name="houseInfo" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,200]',required:true" >
 					</td>
 					<th>
 						是否抵押
 					</th>
 					<td>
-						<input id="isGuaranty" name="isGuaranty" class="easyui-combobox" >
+						<input id="houseIsGuar" name="houseIsGuar" class="easyui-combobox" >
 					</td>
 					<th>
 						其他
 					</th>
 					<td>
-						<input name="otherInfo" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,120]'">
+						<input name="houseInfoOther" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,200]',required:true">
 					</td>
 				</tr>
 				
 				<tr>
 					<th>
-						实际资金需求(万元)
+						车产信息
 					</th>
-					<td >
-						<input name="actualAmt" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'mDouble1'">
+					<td colspan="3">
+						<input name="carInfo" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,200]',required:true" >
 					</td>
+					<th>
+						是否抵押
+					</th>
+					<td>
+						<input id="carIsGuar" name="carIsGuar" class="easyui-combobox" >
+					</td>
+					<th>
+						其他
+					</th>
+					<td>
+						<input name="carInfoother" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,200]',required:true">
+					</td>
+				</tr>
 				
+				<tr>
 					<th>
 						实际贷款目的
 					</th>
+					<td colspan="7">
+						<input name="actPurpose" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,200]',required:true">
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						是否合理
+					</th>
+					<td>
+						<input id="isRational" name="isRational" class="easyui-combobox easyui-validatebox" style="width:100%;">
+					</td>
+					
+					<th>
+						理由
+					</th>
 					<td colspan="5">
-						<input name="actPurpose" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,120]'">
+						<input id="isRationalDescY" name="isRationalDesc" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,512]'">
+						<input id="isRationalDescN" name="isRationalDesc" class="easyui-textbox easyui-validatebox" style="width:100%;" data-options="validType:'length[0,512]',required:true">
+					</td>
+				</tr>
+
+				<tr>
+					<th>
+						实际资金需求
+					</th>
+					<td colspan="2">
+						<input name="actualAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble1',required:true">万元
 					</td>
 				</tr>
 				
@@ -290,19 +464,19 @@
 						客户口述员工总数
 					</th>
 					<td >
-						<input name="oralEmployee" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,10]']">
+						<input name="oralEmployee" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,5]'],required:true">
 					</td>
 					<th>
 						可见员工数
 					</th>
 					<td>
-						<input name="inviewEmployee" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,10]']">
+						<input name="inviewEmployee" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,5]'],required:true">
 					</td>
 					<th>
-						可见客户数
+						顾客数
 					</th>
 					<td>
-						<input name="inviewCustomer" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,10]']">
+						<input name="inviewCustomer" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,5]'],required:true">
 					</td>
 				</tr>
 				
@@ -317,40 +491,43 @@
 						淡季(月份)
 					</th>
 					<td>
-						<input name="offSeason" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,2]']" >
+						<input id="offSeason" name="offSeason" >
 					</td>
 					<th>
 						旺季(月份)
 					</th>
 					<td>
-						<input name="busySeason" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,2]']">
+						<input id="busySeason" name="busySeason" >
 					</td>
 					<th>
 						平季(月份)
 					</th>
 					<td>
-						<input name="shoulderSeason" class="easyui-textbox easyui-validatebox" data-options="validType:['integer','length[0,2]']">
-					</td>
+						<input id="shoulderSeason" name="shoulderSeason" >
+					</td> 
 				</tr>
 				
 				<tr>
 					<th>
-						淡季营业额
+						淡季营业额(万元)
 					</th>
 					<td>
-						<input name="offSeasonAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
+						<input id="offSeasonAmtY" name="offSeasonAmt" style="display:none;" disabled="disabled" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true">
+						<input id="offSeasonAmtN" name="offSeasonAmt" disabled="disabled" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
 					</td>
 					<th>
-						旺季营业额
+						旺季营业额(万元)
 					</th>
 					<td>
-						<input name="buysSeasonAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
+						<input id="buysSeasonAmtY" name="buysSeasonAmt" style="display:none;" disabled="disabled" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true">
+						<input id="buysSeasonAmtN" name="buysSeasonAmt" disabled="disabled" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
 					</td>
 					<th>
-						平季营业额
+						平季营业额(万元)
 					</th>
 					<td>
-						<input name="shoulderSeasonAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
+						<input id="shoulderSeasonAmtY" name="shoulderSeasonAmt" style="display:none;" disabled="disabled" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true">
+						<input id="shoulderSeasonAmtN" name="shoulderSeasonAmt" disabled="disabled" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
 					</td>
 				</tr>
 				
@@ -359,34 +536,34 @@
 						(选填) 毛利率
 					</th>
 					<td>
-						<input name="grossMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,5]'" >
+						<input name="grossMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,5]',required:true" >%
 					</td>
 					<th>
 						净利率
 					</th>
 					<td>
-						<input name="netMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,5]'">
+						<input name="netMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,5]',required:true">%
 					</td>
 					<th>
 						加价率
 					</th>
 					<td>
-						<input name="increaseMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,5]'">
+						<input name="increaseMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'length[0,5]',required:true">%
 					</td>
 				</tr>
 				
 				<tr>
 					<th>
-						(选填) 口述毛利润
+						(选填) 口述毛利润(万元)
 					</th>
 					<td>
-						<input name="oralGrossMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'" >
+						<input name="oralGrossMargin" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true" >
 					</td>
 					<th>
-						口述净利润
+						口述净利润(万元)
 					</th>
 					<td>
-						<input name="oralNetmargin" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
+						<input name="oralNetmargin" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true">
 					</td>
 				</tr>
 				
@@ -397,7 +574,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="businessHis" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="businessHis" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,1024]'"></textarea>
 					</td>
 				</tr>
 				
@@ -408,7 +585,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="businessModel" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="businessModel" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,1024]'"></textarea>
 					</td>
 				</tr>
 				
@@ -419,7 +596,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="updownSituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="updownSituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,512]'"></textarea>
 					</td>
 				</tr>
 				
@@ -430,7 +607,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="businessAssetSitutaion" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="businessAssetSitutaion" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,512]'"></textarea>
 					</td>
 				</tr>
 				
@@ -441,7 +618,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="loanSituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="loanSituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,512]'"></textarea>
 					</td>
 				</tr>
 				
@@ -452,7 +629,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="manageStaticFee" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="manageStaticFee" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,512]'"></textarea>
 					</td>
 				</tr>
 				
@@ -463,7 +640,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="otherBusinessProject" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="otherBusinessProject" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,512]'"></textarea>
 					</td>
 				</tr>
 				
@@ -474,7 +651,7 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="familySituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="familySituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,200]'"></textarea>
 					</td>
 				</tr>
 				
@@ -485,7 +662,18 @@
 				</tr>
 				<tr>
 					<td colspan="8">
-						<textarea name="otherSituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true"></textarea>
+						<textarea name="otherSituation" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,1024]'"></textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<th colspan="8">
+						交叉检验
+					</th>
+				</tr>
+				<tr>
+					<td colspan="8">
+						<textarea name="crossTest" rows="" cols="" class="easyui-textbox easyui-validatebox" data-options="required:true,validType:'length[0,1024]'"></textarea>
 					</td>
 				</tr>
 				
@@ -506,8 +694,8 @@
 		</form>
 	</div>
 	
-	<div title="外访调查报告总结">
-		<form id="ipcSurveyReportSummaryForm" method="post">
+	<div title="小额调查报告总结">
+		<form id="ipcSurveyReportSummaryForm" method="post" style="width:100%;height:580px;overflow: auto;">
 			<input name="outsurveyReportSummaryId" type="hidden">
 			<input id="loanOrderIdS" type="hidden" name="loanOrderId">
 			<table cellpadding="6" style="width:98%;">
@@ -516,15 +704,15 @@
 					<th>
 						调查人员
 					</th>
-					<td>
-						<input name="surveyer" class="easyui-textbox easyui-validatebox " data-options="required:true"> 
+					<td colspan="2">
+						<input id="summarySurveyer" name="surveyer"> 
 					</td>
-					<th>
+					<!-- <th>
 						报告时间
 					</th>
 					<td>
-						<input name="reportingTime" class="easyui-datebox easyui-validatebox " data-options="">
-					</td>
+						<input name="reportingTime" class="easyui-datebox easyui-validatebox " data-options="editable:false">
+					</td> -->
 				</tr>
 				
 				<tr>
@@ -548,7 +736,7 @@
 				
 				<tr>
 					<td colspan="8">
-						<textarea name="doubtfulPoint" rows="" cols="" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea>
+						<textarea name="doubtfulPoint" rows="" cols="" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,2500]'"></textarea>
 					</td>
 				</tr>
 				
@@ -560,26 +748,26 @@
 				
 				<tr>
 					<td colspan="8">
-						<textarea name="customerAnaly" rows="" cols="" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea>
+						<textarea name="customerAnaly" rows="" cols="" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,2500]'"></textarea>
 					</td>
 				</tr>
 				
 				<tr>
-					<th>建议放款额度</th>
+					<th>建议放款额度(万元)</th>
 					<td>
-						<input name="suggestAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble'">
+						<input name="suggestAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true">
 					</td>
 				</tr>
 				
 				<tr>
 					<th colspan="8">
-						风控措施并给出相应理由
+						备注(包括风控措施并给出相应理由)
 					</th>
 				</tr>
 				
 				<tr>
 					<td colspan="8">
-						<textarea name="suggestAmtReason"  rows="" cols="" class="easyui-validatebox easyui-textbox" data-options="required:true"></textarea>
+						<textarea name="reason"  rows="" cols="" class="easyui-validatebox easyui-textbox" data-options="required:true,validType:'length[0,1024]'"></textarea>
 					</td>
 				</tr>
 				

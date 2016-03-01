@@ -47,7 +47,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 		     <tr>
 		        <th align="center">年化收益（%）</th>
-	     		<td><input name="ars" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).ars}%"/></td>
+	     		<td><input name="ars" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).ars}%" /></td>	     																		
 		        <th align="center">到期收益（%）</th>
 	     		<td><input name="ytm" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).ytm}%"/></td>
 		     </tr>
@@ -55,24 +55,37 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		     <tr>
 		        <th align="center">理财金额（元）</th>
 	     		<td><input name="investEdu" class="easyui-textbox" disabled="disabled" value='<fmt:formatNumber value="${InvestorAndInvestProductRows.get(0).investEdu}" pattern="#.00"/>'/></td>
-		        <th align="center">年化折标系数</th>
-	     		<td><input name="msf" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).msf}"/></td>
+
+	     		<c:if test="${InvestorAndInvestProductRows.get(0).ifAdjustArs == 'Y'}">
+			        <th align="center"><font color="red">新的年化收益（%）</font></th>
+		     		<td><input name="newArs" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).newArs}%" /></td>	     		
+	     		</c:if>
 		     </tr>
 
 			<!-- 从数据字典中获取还款方式的中文字符 -->
-			<script type="text/javascript">
+<!-- 			<script type="text/javascript">
 				$("#repaymentMode").val(jqueryUtil.showDicText("repayment_mode","${InvestorAndInvestProductRows.get(0).repaymentMode}"));//还款方式
-			</script>	
+			</script>	 -->				
 
 		     <tr>
+		        <th align="center">年化折标系数</th>
+	     		<td><input name="msf" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).msf}"/></td>		     
 		        <th align="center">还款方式</th>		     	     				     	     		
- 				<td><input id="repaymentMode" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).repaymentMode}"/></td>					
-		        <th align="center">意向投资日期</th>
-	     		<td><input name="beginDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${InvestorAndInvestProductRows.get(0).beginDate}" pattern="yyyy年MM月dd日"/>'/></td>
+ 				<td>
+ 					<%-- <input id="repaymentMode" class="easyui-textbox" disabled="disabled" value="${InvestorAndInvestProductRows.get(0).repaymentMode}"/> --%> 					
+		     		<c:if test="${InvestorAndInvestProductRows.get(0).repaymentMode == 'A'}">
+			     		<input name="repaymentMode" id="repaymentMode" class="easyui-textbox" disabled="disabled" value="利随本清"/>	     		
+		     		</c:if> 					
+		     		<c:if test="${InvestorAndInvestProductRows.get(0).repaymentMode == 'B'}">
+			     		<input name="repaymentMode" id="repaymentMode" class="easyui-textbox" disabled="disabled" value="按月回息"/>	     		
+		     		</c:if> 					 					 					
+ 				</td> 			 								
 		     </tr>
 
 		     <tr>
-		     </tr>		     		     
+		     </tr>
+		        <th align="center">意向投资日期</th>
+	     		<td><input name="beginDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${InvestorAndInvestProductRows.get(0).beginDate}" pattern="yyyy年MM月dd日"/>'/></td>		     		     		     
 		        <th align="center">到期日期</th>
 	     		<td><input name="endDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${InvestorAndInvestProductRows.get(0).endDate}" pattern="yyyy年MM月dd日"/>'/></td>
 		     </tr>

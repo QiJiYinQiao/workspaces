@@ -33,18 +33,20 @@
 		<property name="beans">
 			<map>
 				<entry key="loanServiceTaskDelegate" value-ref="loanServiceTaskDelegate" />
+				<entry key="investServiceTaskDelegate" value-ref="investServiceTaskDelegate" />
 			</map>
 		</property>
 	</bean>
 
-	<bean id="loanServiceTaskDelegate" class=" com.bpms.listener.loan.LoanServiceTaskDelegate" />
+	<bean id="loanServiceTaskDelegate" class="com.bpms.listener.loan.LoanServiceTaskDelegate" />
+
+ 	<!-- 自定义bean 处理系统自动判断投资客户是否调整理财收益率（即，年化收益率） -->
+	<bean id="investServiceTaskDelegate" class="com.bpms.listener.invest.InvestServiceTaskDelegate"/>	
 
 	<!-- 创建流程引擎对象 -->
 	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
 		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
 	</bean>
-
-
 
 	<!-- 由流程引擎对象提供的方法，创建Activiti工作流的Service -->
 	<bean id="repositoryService" factory-bean="processEngine"
@@ -57,5 +59,8 @@
 		factory-method="getHistoryService" />
 	<bean id="formService" factory-bean="processEngine"
 		factory-method="getFormService" />
-
+	<bean id="identityService" factory-bean="processEngine"
+		factory-method="getIdentityService" />
+	<bean id="managementService" factory-bean="processEngine"
+		factory-method="getManagementService" />
 </beans>

@@ -1,0 +1,306 @@
+package com.bpms.util;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+
+import com.bpms.shiro.ShiroUser;
+
+/**
+ * 
+ * 系统常用的常量
+ * 
+ * @author 刘洪虎 2015/05/07.
+ * 
+ * @version V1.00.
+ * 
+ *          更新履历： V1.00 2015/05/07 刘洪虎 创建.
+ */
+public class Constants {
+
+	/** 系统中的空串。 */
+	public static final String EMPTY = "";
+
+	/** session中的用户的信息. */
+	public static final String LOGIN_SESSION_DATANAME = "users";
+
+	/** 登录用户的地址. */
+	public static final String LOGIN_URL = "login";
+
+	/** 成功页面. */
+	public static final String LOGIN_SUCCESS_URL = "index";
+
+	/** 退出登录的地址. */
+	public static final String LOGIN_LOGIN_OUT_URL = "loginout";
+
+	/** 登录信息提示的消息的key. */
+	public static final String LOGIN_MSG = "loginMsg";
+
+	/** 登录时用户名为空的时候,提示信息. */
+	public static final String USERNAME_IS_NULL = "用户名为空!";
+
+	/** 用户已经登录的提示信息. */
+	public static final String LOGIN_IS_EXIST = "该用户已登录!";
+
+	/** 异常回话的提示消息. */
+	public static final String UNKNOWN_SESSION_EXCEPTION = "异常会话!";
+
+	/** 账号错的提示消息. */
+	public static final String UNKNOWN_ACCOUNT_EXCEPTION = "账号错误!";
+
+	/** 登录时候,密码错误. */
+	public static final String INCORRECT_CREDENTIALS_EXCEPTION = "密码错误!";
+
+	/** 登录时候,账号被锁定. */
+	public static final String LOCKED_ACCOUNT_EXCEPTION = "账号已被锁定，请与系统管理员联系!";
+
+	/** 登录的时候,验证码输入错误的提示信息. */
+	public static final String INCORRECT_CAPTCHA_EXCEPTION = "验证码错误!";
+
+	/** 　没有授权的提示信息． */
+	public static final String AUTHENTICATION_EXCEPTION = "您没有授权!";
+
+	/** 出现未知情况的时候,提示的信息. */
+	public static final String UNKNOWN_EXCEPTION = "出现未知异常,请与系统管理员联系!";
+
+	/** 增加树节点的状态标示. */
+	public static final String TREE_GRID_ADD_STATUS = "add";
+
+	/** 更新数据成功的标示. */
+	public static final String POST_DATA_SUCCESS = "数据更新成功!";
+
+	/** 提交数据失败的标示. */
+	public static final String POST_DATA_FAIL = "提交失败了!";
+
+	/** 模糊查询的拼接符. */
+	public static final String GET_SQL_LIKE = "%";
+
+	/** 是不是菜单类型的权限 */
+	public static final String IS_FUNCTION = "F";
+
+	/** 显示数据的标示. */
+	public static final String PERSISTENCE_STATUS = "A";
+
+	/** 逻辑删除的标示. */
+	public static final String PERSISTENCE_DELETE_STATUS = "I";
+
+	/** 系统admin. */
+	public static final String SYSTEM_ADMINISTRATOR = "admin";
+
+	/** 返回response的头部的信息文本. */
+	public static final String TEXT_TYPE_PLAIN = "text/plain";
+
+	/** 返回response的头部的信息页面. */
+	public static final String TEXT_TYPE_HTML = "text/html";
+
+	/** 是不是操作类型的权限(增删改). */
+	public static final String FUNCTION_TYPE_O = "O";
+
+	/** 展开状态. */
+	public static final String TREE_STATUS_OPEN = "open";
+
+	/** 折叠状态. */
+	public static final String TREE_STATUS_CLOSED = "closed";
+
+	/** 是否含有子菜单的提示信息. */
+	public static final String IS_EXT_SUBMENU = " 或可能包含菜单!";
+
+	/** 当用户的key. */
+	public static final String SHIRO_USER = "shiroUser";
+
+	/** sql文件的后缀名称. */
+	public static final String FILE_SUFFIX_SQL = ".sql";
+
+	/** 压缩包的后缀. */
+	public static final String FILE_SUFFIX_ZIP = ".zip";
+
+	/** 参数未获取到异常信息 */
+	public static final String PARAMETER_NOTFOUND_EXCEPTION = "系统参数未获取到！";
+
+	// 流程启动者流程变量key
+	public static final String CURRENT_USER_KEY = "curUserId";
+	
+	// 事业贷月服务汇率
+	public static final String BUSINESS_LOAN_MONTHLY_RATE= "0.016";
+	
+	// 工薪贷月服务汇率
+	public static final String WAGE_LOAN_MONTHLY_RATE = "0.013";
+	
+	/** 借款业务流程各角色ID */
+	// 业务员
+	public static final String LOAN_ORDER_CODE_FINANCIALMANAGER = "YeWuYuan";
+	// 签约人
+	public static final String LOAN_ROLE_CODE_SIGNATORY = "QianYueRen";
+	// 贷款结算中心-结算专员
+	public static final String LOAN_ROLE_CODE_JIESUANZHUANYUAN = "DaiKuanJieSuanZhuanYuan";
+	// 贷款结算中心-结算放款
+	public static final String LOAN_ROLE_CODE_JIESUANFANGKUAN = "DaiKuanJieSuanFangKuan";
+	// 初审
+	public static final String LOAN_ROLE_CODE_INITIALAUDIT = "XinShenChuShen";
+	// 初审组长
+	public static final String LOAN_ROLE_CODE_INITIALGROUPLEADER = "XinShenChuShenZuZhang";
+	// 外访
+	public static final String LOAN_ROLE_CODE_VISIT = "XinShenWaiFang";
+	// 终审
+	public static final String LOAN_ROLE_CODE_FINALAUDIT = "XinShenZhongShen";
+	// 审批主管
+	public static final String LOAN_ROLE_CODE_APPROVALMGR = "XinShenShenPiZhuGuan";
+	// 审批经理
+	public static final String LOAN_ROLE_CODE_APPROVALLEADER = "XinShenShenPiJingLi";
+	// 数据岗
+	public static final String LOAN_ROLE_CODE_DATAPOST = "XinShenShuJuGang";
+
+	/** 借款申请流程中的IPC业务分支。 */
+	// IPC数据岗
+	public static final String LOAN_ROLE_CODE_IPCSHUJUGANG = "IPCShuJuGang";
+	// IPC电核专员
+	public static final String LOAN_ROLE_CODE_IPCDIANHEZHUANYUAN = "IPCDianHeZhuanYuan";
+	// IPC电核部主管
+	public static final String LOAN_ROLE_CODE_IPCDIANHEZHUGUAN = "IPCDianHeBuZhuGuan";
+	// IPC小额调查
+	public static final String LOAN_ROLE_CODE_IPCXIAOERDIAOCHA = "IPCXiaoEDiaoCha";
+	// IPC当地组长
+	public static final String LOAN_ROLE_CODE_IPCDANGDIZUZHANG = "IPCDangDiZuZhang";
+	// IPC地方调查
+	public static final String LOAN_ROLE_CODE_IPCDIFANGDIAOCHA = "IPCDiaoChaZhuanYuan";
+	// IPC负责人
+	public static final String LOAN_ROLE_CODE_IPCFUZEREN = "IPCXinYongGuanLiZhongXinJingLi";
+	// IPC贷审委
+	public static final String LOAN_ROLE_CODE_IPCDAISHENWEI ="IPCShenDaiWei";
+	// IPC车贷负责人
+	public static final String LOAN_ROLE_CODE_IPCCHEDAIFUZEREN = "CheDaiFuZeRen";
+	// IPC车贷数据
+	public static final String LOAN_ROLE_CODE_IPCCHEDAISHUJU = "CheDaiShuJuZhuanYuan";
+	// IPC审核专员
+	public static final String LOAN_ROLE_CODE_IPCSHENHEZHUANYUAN = "IPCShenHeZhuanYuan";
+	// IPC审贷部主管
+	public static final String LOAN_ROLE_CODE_IPCSHENDAIBUZHUGUAN = "IPCShenDaiBuZhuGuan";
+	// IPC部门主管
+	public static final String LOAN_ROLE_CODE_IPCBUMENZHUGUAN = "IPCDiaoChaBuZhuGuan";
+
+	/** 借款业务流程ServiceTask节点所需参数常量 */
+	// 系统参数－额度上限系统参数对应的key值
+	public static final String LOAN_PARAMETER_EDULIMIT = "eduLimit";
+	// 流程运行额度的key
+	public static final String LOAN_PARAMETER_CUSTRATING = "custRating";
+	// 系统参数－评级上限
+	public static final String LOAN_PARAMETER_RATINGLIMIT = "ratingLimit";
+	// 流程运行参数的key
+	public static final String LOAN_PARAMETER_LOANEDU = "loanEdu";
+
+	
+	/**************************************************/
+	/**************** 财富业务流程相关常量  *******************/
+	/**************************************************/		
+	//财富业务常量：调整理财收益率
+	public static final String INVEST_CONST_ADJUST_ARS = "AdjustArs";
+	//财富业务常量：不调整理财收益率
+	public static final String INVEST_CONST_NOT_ADJUST_ARS = "NotAdjustArs";	
+
+	//财富业务角色常量：
+	//团队经理
+	public static final String INVEST_ROLE_CODE_TUANDUIJINGLI = "TuanDuiJingLi";	
+	//大团经理
+	public static final String INVEST_ROLE_CODE_DATUANJINGLI = "DaTuanJingLi";
+	//营业部经理
+	public static final String INVEST_ROLE_CODE_YINGYEBUJINGLI = "YingYeBuJingLi";
+	//城市经理
+	public static final String INVEST_ROLE_CODE_CHENGSHIJINGLI = "ChengShiJingLi";
+	//区域总监
+	public static final String INVEST_ROLE_CODE_QUYUZONGJIAN = "QuYuZongJian";
+	//区域总监
+	public static final String INVEST_ROLE_CODE_ZONGJINGLI = "ZongJingLi";	
+	
+	// 部门助理
+	public static final String INVEST_ROLE_CODE_BUMENZHULI = "BuMenZhuLi";
+	// 销客专员
+	public static final String INVEST_ROLE_CODE_XIAOKEZHUANYUAN = "XiaoKeZhuanYuan";
+	// 数据专员
+	public static final String INVEST_ROLE_CODE_SHUJUZHUANYUAN = "ShuJuZhuanYuan";
+	// 结算专员
+	public static final String INVEST_ROLE_CODE_JIESUANZHUANYUAN = "JieSuanZhuanYuan";
+	// 销客经理
+	public static final String INVEST_ROLE_CODE_XIAOKEJINGLI = "XiaoKeJingLi";		
+	// 销客主管
+	public static final String INVEST_ROLE_CODE_XIAOKEZHUGUAN = "XiaoKeZhuGuan";
+
+	/** 结算中心 **/
+	public static final String INVEST_ROLE_CODE_ACCOUNTINGDEPT = "DaiKuanJieSuanZhongXin";
+
+	public static final String INVEST_ROLE_CODE_LICAIJINGLI = "LiCaiJingLi";
+	
+	
+	/** 理财产品年化收益率常量**/
+	//钱富宝45T利率
+	public static final BigDecimal INTEREST_RATE_4_QIANFUBAO_45T = new BigDecimal("0.06");	
+	//钱富宝90T利率
+	public static final BigDecimal INTEREST_RATE_4_QIANFUBAO_90T = new BigDecimal("0.08");	
+	//钱富宝180T利率
+	public static final BigDecimal INTEREST_RATE_4_QIANFUBAO_180T = new BigDecimal("0.1");		
+
+	/** 理财产品年投资周期常量**/
+	//钱富宝45T理财周期
+	public static final int INVEST_PERIOD_4_QIANFUBAO_45T = 45;	
+	//钱富宝90T理财周期
+	public static final int INVEST_PERIOD_4_QIANFUBAO_90T = 90;	
+	//钱富宝180T理财周期
+	public static final int INVEST_PERIOD_4_QIANFUBAO_180T = 180;
+	//钱富宝360T理财周期
+	public static final int INVEST_PERIOD_4_QIANFUBAO_360T = 360;	
+	
+	//--------贷款-配置组织机构的ID-----------//
+	//IPC电核部
+	public static final String LOAN_ORGANIZATION_ID_DIANHE ="45";
+	//信贷管理部
+	public static final String LOAN_LETTER_ID ="76";
+	//IPC审贷部
+	public static final String LOAN_ORGANIZATION_ID_SHENDAI ="146";
+	//结算中心
+	public static final String LOAN_ORGANIZATION_JIESUANZHONGXIN ="238";
+	//贷款支持部
+	public static final String LOAN_ZHICHI_ID ="261";
+	//IPC调查部
+	public static final String LOAN_ORGANIZATION_ID_DIAOCHA ="307";
+	//IPC信用管理中心
+	public static final String LOAN_ORGANIZATION_ID ="516";
+	//IPC数据组
+	public static final String LOAN_ORGANIZATION_ID_SHUJUZU ="517";
+	//--------贷款-配置组织机构的ID-----------//
+
+	// 公司借款人默认为董事长于德建
+	public static final String LENDER = "于德建";
+	// 公司董事长于德建的身份证号
+	public static final String LENDER_IDNO = "131126197912150054";
+	// 流程启动的实例的key
+	public static final String PROCESS_KEY = "PROCESS_KEY";
+	// 业务流程key对应的流程变量的key
+	public static final String PROCESS_BUSINESS_KEY = "ProcessBusinessKey";
+
+	/**
+	 * 生成UUID主键
+	 * 
+	 * @return 主键
+	 */
+	public static String getPrimaryKeyByUUID() {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * 获取当前登录的用户的信息
+	 * 
+	 * @return 当前登录的用户的信息
+	 */
+	public static ShiroUser getCurrendUser() {
+		Subject subject = SecurityUtils.getSubject();
+		return (ShiroUser) subject.getSession().getAttribute(SHIRO_USER);
+	}
+
+	/**
+	 * 私有的构造方法,工具类不支持实例化操作
+	 */
+	private Constants() {
+
+	}
+}

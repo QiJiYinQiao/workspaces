@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="com.qqjrbj.bpms.invest">
+  <process id="InvestOrder" name="投资业务流程" isExecutable="true">
+    <startEvent id="startevent1" name="流程开始">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.bpms.listener.InvestProcessStartExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="AdjustOrder" name="调整订单" activiti:assignee="${curUserId}" activiti:formKey="investOrder/investOrderAction!gotoTaskOrderResubmit.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.InvestOrderResubmitTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="DeptAssistant" name="部门助理" activiti:formKey="investOrder/investOrderAction!gotoTaskDeptZlForm.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.InvestDeptAssistantTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="OrderSubmitted" name="订单已提交" sourceRef="startevent1" targetRef="DeptAssistant">
+      <extensionElements>
+        <activiti:executionListener event="updateInvestOrderStatus" class="com.bpms.listener.InvestOrderStatusExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="FinancingOrder_flow3" sourceRef="DeptAssistant" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="SalesCustComm" name="销客专员" activiti:formKey="investOrder/investOrderAction!gotoTaskSalesCustCommForm.action">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.bpms.listener.InvestSalesCustCommTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="DeptAssistantAgree" name="部门助理通过" sourceRef="exclusivegateway1" targetRef="SalesCustComm">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DeptAssistantAgree'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="SalesCustComm" targetRef="exclusivegateway3"></sequenceFlow>
+    <sequenceFlow id="SalesCustCommAgree" name="销客专员通过" sourceRef="exclusivegateway3" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='SalesCustCommAgree'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="SalesCustCommReject" name="销客专员驳回" sourceRef="exclusivegateway3" targetRef="DeptAssistant">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='SalesCustCommReject'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="OrderResubmitted" name="订单重提" sourceRef="exclusivegateway5" targetRef="DeptAssistant">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='OrderResubmitted'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="AdjustOrder" targetRef="exclusivegateway5"></sequenceFlow>
+    <sequenceFlow id="DeptAssistantReject" name="部门助理驳回" sourceRef="exclusivegateway1" targetRef="AdjustOrder">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='DeptAssistantReject'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="OrderRevoke" name="订单撤销" sourceRef="exclusivegateway5" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result=='OrderRevoke'}]]></conditionExpression>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_InvestOrder">
+    <bpmndi:BPMNPlane bpmnElement="InvestOrder" id="BPMNPlane_InvestOrder">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="AdjustOrder" id="BPMNShape_AdjustOrder">
+        <omgdc:Bounds height="55.0" width="105.0" x="275.0" y="223.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DeptAssistant" id="BPMNShape_DeptAssistant">
+        <omgdc:Bounds height="55.0" width="105.0" x="425.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="450.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="457.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="SalesCustComm" id="BPMNShape_SalesCustComm">
+        <omgdc:Bounds height="55.0" width="105.0" x="425.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="457.0" y="380.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="190.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="OrderSubmitted" id="BPMNEdge_OrderSubmitted">
+        <omgdi:waypoint x="477.0" y="95.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="130.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="487.0" y="95.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="FinancingOrder_flow3" id="BPMNEdge_FinancingOrder_flow3">
+        <omgdi:waypoint x="477.0" y="185.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DeptAssistantAgree" id="BPMNEdge_DeptAssistantAgree">
+        <omgdi:waypoint x="477.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="300.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="487.0" y="270.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="477.0" y="355.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SalesCustCommAgree" id="BPMNEdge_SalesCustCommAgree">
+        <omgdi:waypoint x="477.0" y="420.0"></omgdi:waypoint>
+        <omgdi:waypoint x="477.0" y="450.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="487.0" y="420.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SalesCustCommReject" id="BPMNEdge_SalesCustCommReject">
+        <omgdi:waypoint x="497.0" y="400.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="400.0"></omgdi:waypoint>
+        <omgdi:waypoint x="606.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="157.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="509.0" y="380.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="OrderResubmitted" id="BPMNEdge_OrderResubmitted">
+        <omgdi:waypoint x="210.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="210.0" y="157.0"></omgdi:waypoint>
+        <omgdi:waypoint x="425.0" y="157.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="240.0" y="141.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="275.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="230.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DeptAssistantReject" id="BPMNEdge_DeptAssistantReject">
+        <omgdi:waypoint x="457.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="250.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="390.0" y="230.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="OrderRevoke" id="BPMNEdge_OrderRevoke">
+        <omgdi:waypoint x="210.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="210.0" y="467.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="467.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="270.0" y="449.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

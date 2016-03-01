@@ -1,8 +1,12 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+<%
+	String taskId = request.getParameter("taskId");
+%>
 <script type="text/javascript">
 	var $grid ;
 	$(function(){
+		var $taskId = $("#taskId").val();
 		// 查看申请状态
 		var row = parent.$.modalDialog.openner.datagrid('getSelected');
 		$grid = $("#lookLoanOrderdg").datagrid({
@@ -28,6 +32,19 @@
 			              }
 			              ] ]
 		});
+		
+		//是否显示查看附件
+		$.ajax({
+			url:"investApply/investApplyAction!isShowAttachment.action",
+			type:"post",
+			async:false,
+			data:{"taskId":$taskId},
+			success:function(data){
+				if(data){
+					$("#lookLoanOrderdg").datagrid("hideColumn","id");
+				}
+			}	
+		});
 	});
 	
 	// 根据行索引获取行信息
@@ -49,7 +66,8 @@
 				    modal: true   
 			});
 			$("#lookAttachmentList").datagrid({
-				url : "attachment/attachmentAction!findAllAttachmentList.action",
+				// url : "attachment/attachmentAction!findAllAttachmentList.action",
+				url : "attachment/attachmentAction!findAttachmentListByUserIdAndOrderId.action",
 				width : 'auto',
 				height : 430,
 				pagination:false,
@@ -74,5 +92,6 @@
 </script>
 <table id="lookLoanOrderdg" title="申请备注的信息"></table>
 <div id="attachmentList">
+	<input type="hidden" id="taskId" value="<%=taskId%>">
 	<table id="lookAttachmentList" title="申请附件的信息"></table>
 </div>

@@ -16,10 +16,21 @@
 		   type:"post",
 		   data:{"loanOrderId":$row.loanOrderId},
 		   success:function(data){
-			  console.info(data);
 			  $("#oralAmt").val(data);
 		   }
 	   });
+	   
+	   //查询车抵额度
+	   $.ajax({
+			url:"carInfo/carInfoAction!findCarInfoByOrderId.action",
+			type:"post",
+			data:{"loanOrderId":$row.loanOrderId},
+			success:function(data){
+				if(data){
+					$("#carAmt").val(data.vehicleMortgageAmt);
+				}
+			}
+		});
 	});
 	
 	function saveCarPledgeAmt(){
@@ -47,8 +58,9 @@
 	}
 	
 	function countFinalAMt(key){
-		key.value= key.value.replace(/[^\d]/g,'') ;
-		var finalAmt = parseInt(key.value)+parseInt($("#oralAmt").val());
+		key.value= key.value.replace(/[^\d]/g,'');
+		var carAmt = $("#carAmt").val();
+		var finalAmt = parseInt(key.value==""?0:key.value)+parseInt(carAmt==""?0:carAmt);
 		$("#finalAmt").val(finalAmt);
 	}
 	
@@ -60,19 +72,28 @@
 				<table cellpadding="8">
 					<tr>
 						<th>
-							原贷款额度
+							车抵额度
 						</th>
 						<td  colspan="2">
-							<input id="oralAmt" class="easyui-textbox" readonly="readonly"/>元
+							<input id="carAmt" name="vehicleMortgageAmt" class="easyui-textbox" disabled="disabled"/>元
 						</td>
 					</tr>
 				
 					<tr>
 						<th>
-							增加车抵金额
+							原审批通过额度
 						</th>
 						<td  colspan="2">
-							<input id="carPledgeAmt" onkeyup="countFinalAMt(this);" onblur="countFinalAMt(this);" class="easyui-validatebox easyui-textbox" data-options="validType:'mDouble',required:true" />元
+							<input id="oralAmt" class="easyui-textbox" disabled="disabled"/>元
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							最终通过额度
+						</th>
+						<td  colspan="2">
+							<input id="finalAccrossAmt" name="finalAmt" onkeyup="countFinalAMt(this);" onblur="countFinalAMt(this);" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true"/>元
 						</td>
 					</tr>
 					
@@ -81,7 +102,7 @@
 							总计贷款额度
 						</th>
 						<td colspan="2">
-							<input id="finalAmt" name="finalAmt" class="easyui-textbox" readonly="readonly" />元
+							<input id="finalAmt" class="easyui-textbox" readonly="readonly" />元
 						</td>
 					</tr>
 				</table>

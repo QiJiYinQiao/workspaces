@@ -30,11 +30,17 @@
     <constant name="log4j.logger.org.apache.struts2.convention" value="DEBUG" />
 	
 	<package name="default-package" extends="convention-default">
-			<interceptors>
+		<interceptors>
+			<!-- 日志拦截器 -->
+			<interceptor name="loggerInterceptor" class="com.bpms.interceptor.LoggerInterceptor" />
+			<interceptor-stack name="myInterceptor">
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="loggerInterceptor"></interceptor-ref>
+			</interceptor-stack>
 			<!-- 字符集拦截器 -->
 			<interceptor name="encodingInterceptor" class="com.bpms.interceptor.EncodingInterceptor" />
 			<interceptor-stack name="encodingStack">
-				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="myInterceptor"></interceptor-ref>
 				<interceptor-ref name="encodingInterceptor"></interceptor-ref>
 			</interceptor-stack>
 			<!-- session拦截器 -->
@@ -55,17 +61,18 @@
 			</interceptor-stack>
 		</interceptors>
 		<!-- 全局拦截器栈 -->
-		<!-- <default-interceptor-ref name="sessionStack"></default-interceptor-ref>
+		<default-interceptor-ref name="sessionStack"></default-interceptor-ref>
 
 		<global-results>
-			<result name="noAuth">/pages/error/noAuth.jsp</result>
-			<result name="noSession">/pages/error/noSession.jsp</result>
-			<result name="strutsException">/pages/error/strutsException.jsp</result>
+			<result name="noAuth">/error/noAuth.jsp</result>
+			<result name="noSession">/error/noSession.jsp</result>
+			<result name="strutsException">/error/strutsException.jsp</result>
 		</global-results>
 
 		<global-exception-mappings>
 			<exception-mapping result="strutsException" exception="java.lang.Exception"></exception-mapping>
-		</global-exception-mappings> -->
+		</global-exception-mappings>
 			
 	</package> 
 </struts>
+

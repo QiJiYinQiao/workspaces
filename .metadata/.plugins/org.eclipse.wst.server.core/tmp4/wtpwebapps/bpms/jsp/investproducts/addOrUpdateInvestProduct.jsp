@@ -20,8 +20,12 @@
 			
 	
 	/** 清空新添加的理财产品的的数据**/
-	function clearForm(){
-		$("#investProductInputOrSaveForm").form("clear");		
+	function clearForm(){	
+		$.messager.confirm('警告', '是否确定重置此款理财产品的信息？</br>这会将本款理财产品的信息清空!!!', function(flag) {
+			if(flag){
+				$("#investProductInputOrSaveForm").form("clear");								
+			}
+		});
 	}	
 	
 	

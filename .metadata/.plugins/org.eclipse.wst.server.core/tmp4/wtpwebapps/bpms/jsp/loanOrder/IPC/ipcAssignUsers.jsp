@@ -13,28 +13,24 @@ $(function(){
 	}
 	// 渲染用户的信息的列表
 	var assignUsersGrid = $("#assignUsersGrid").datagrid({
-		url : "loanOrder/loanOrderAction!findCandidatePersons.action",
-		width : 'auto',
-		height :  $(this).height()-190,
-		queryParams: {"loanOrderId": $row.loanOrderId,"roleCode":"IPCDiFangDiaoCha"},
+		url : "users/usersAction!findUsesrsByRoleCode.action",
+		fit:true,
+		fitColumns:true,
+		queryParams: {"roleCode":$assignUserParam.roleCode},
 		rownumbers:true,
 		border:false,
 		singleSelect:true,
 		striped:true,
 		columns : [ [ 
-		              {field : 'name',title : '用户名',width : 100,align : 'center'},
-		              {field : 'email',title : '邮箱',width : 150,align : 'center'},
-		              {field : 'tel',title : '电话',width :150,align : 'center'},
-		              {field : 'organization',title : '组织',width :220,align : 'center',
-		            	    formatter:function(value,row){
-			            	  	return value.fullName;  
-							}
-					  }, 
-		              {field : 'description',title : '描述',width : 570,align : 'left'}
+		              {field : 'companyName',title : '公司',width :$(window).height()*0.2,align : 'center' },
+		              {field : 'deptName',title : '营业部',width :$(window).height()*0.2,align : 'center' },
+		              {field : 'userName',title : '用户名',width : $(window).height()*0.1,align : 'center'},
+		              {field : 'email',title : '邮箱',width : $(window).height()*0.3,align : 'center'},
+		              {field : 'tel',title : '电话',width :$(window).height()*0.2,align : 'center'}
 		              ] ],
 		toolbar : [ {
 			iconCls : 'icon-save',
-			text : '指定',
+			text : '指派审查员',
 			handler : function(){
 					// 修改处理人
 					var user  = assignUsersGrid.datagrid("getSelected");
@@ -48,10 +44,10 @@ $(function(){
 							var data = {
 								"comment" : $("#comment").val(),
 								"title" : $("#title").val(),
-								"result" :"IPCGroupLeaderThrough",
+								"result" :$assignUserParam.result,
 								"loanOrderId" : $row.loanOrderId,
 								"taskId": $row.taskId,
-								"processingResult":"A",
+								"processingResult":$assignUserParam.processingResult,
 								"userId":user.userId
 							}
 							$.ajax({
@@ -67,12 +63,46 @@ $(function(){
 						}
 					});
 				}
-			}]
+			}],
+			onLoadSuccess:function(data){
+			 	var rows = data.rows;
+	            var cMergeMap = {};
+	            var dMergeMap = {};
+	            if(rows){
+	            	for(var i=0;i<rows.length;i++){
+	            		var companyName = rows[i].companyName;
+	            		if( companyName in cMergeMap ){
+	            			cMergeMap[companyName].rowspan++;
+	            		}else{
+	            			cMergeMap[companyName]={"index":i,"rowspan":1}
+	            		}
+	            		
+	            		var deptName = rows[i].deptName;
+	            		if( deptName in dMergeMap ){
+	            			dMergeMap[deptName].rowspan++;
+	            		}else{
+	            			dMergeMap[deptName]={"index":i,"rowspan":1}
+	            		}
+	            	}
+	            }
+	            for(var i in cMergeMap){
+	                $(this).datagrid('mergeCells',{
+	                    index: cMergeMap[i].index,
+	                    field: 'companyName',
+	                    rowspan: cMergeMap[i].rowspan
+	                });
+	            }
+	            for(var i in dMergeMap){
+	                $(this).datagrid('mergeCells',{
+	                    index: dMergeMap[i].index,
+	                    field: 'deptName',
+	                    rowspan: dMergeMap[i].rowspan
+	                });
+	            }
+		}
 	});
 })
 </script>
 <!-- 指派人的信息列表 S -->
-<div title="指派的用户的信息列表" data-options="iconCls:'icon-cstbase',selected:true" >   
-	<table id="assignUsersGrid" title="申请备注的信息"></table>
-</div>
+<table id="assignUsersGrid"></table>
 <!-- 指派人的信息列表 E -->

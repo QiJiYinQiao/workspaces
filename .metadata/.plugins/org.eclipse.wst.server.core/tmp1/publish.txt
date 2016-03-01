@@ -1,4 +1,5 @@
 #Tomcat publish data
-#Tue Sep 22 14:42:40 CST 2015
-org.eclipse.jst.jee.server\:/binary\:D\:\\gradle-2.3\\caches\\modules-2\\files-2.1\\org.springframework\\spring-web\\4.2.0.RELEASE\\b21f7dfe6145ebe1ce6cd5d8853cceacf42e3380\\spring-web-4.2.0.RELEASE.jar=WEB-INF/lib/spring-web-4.2.0.RELEASE.jar
+#Mon Jan 18 16:33:51 CST 2016
+org.eclipse.jst.j2ee.server\:/binary\:D\:\\gradle-2.3\\caches\\modules-2\\files-2.1\\org.springframework\\spring-web\\4.2.4.RELEASE\\d4bcc6f4d8b64d7af9b67bc17f0d5106dce97926\\spring-web-4.2.4.RELEASE.jar=WEB-INF/lib/spring-web-4.2.4.RELEASE.jar
+org.eclipse.jst.jee.server\:/binary\:D\:\\gradle-2.3\\caches\\modules-2\\files-2.1\\org.springframework\\spring-web\\4.2.4.RELEASE\\d4bcc6f4d8b64d7af9b67bc17f0d5106dce97926\\spring-web-4.2.4.RELEASE.jar=WEB-INF/lib/spring-web-4.2.4.RELEASE.jar
 org.eclipse.jst.j2ee.server\:/binary\:D\:\\gradle-2.3\\caches\\modules-2\\files-2.1\\org.springframework\\spring-web\\4.2.1.RELEASE\\e37e34274768989bae9470b6eaffe51e09bd1e44\\spring-web-4.2.1.RELEASE.jar=WEB-INF/lib/spring-web-4.2.1.RELEASE.jar

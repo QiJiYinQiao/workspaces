@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.loan.UsersMapper">
+
+	<!-- 根据角色编码获取用户信息的SQL -->
+	<select id="findUsersByRoleCode" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT
+			u.USER_ID AS "userId",
+			u.USER_NAME AS "userName",
+			u.EMAIL AS "email",
+			u.TEL AS "tel",
+			tor.FULL_NAME AS "deptName",
+			tor1.FULL_NAME AS "companyName",
+			(SELECT tarea.FULL_NAME FROM t_organization tarea WHERE tarea.ORGANIZATION_ID = get_org_by_region(u.ORGANIZATION_ID,'0')) AS "areaName"
+		FROM
+			t_users u
+		INNER JOIN t_user_and_role ur ON u.USER_ID = ur.USER_ID
+		INNER JOIN t_role r ON ur.ROLE_ID  = r.ROLE_ID
+		INNER JOIN t_organization tor ON tor.ORGANIZATION_ID = u.ORGANIZATION_ID
+		INNER JOIN t_organization tor1 ON tor1.ORGANIZATION_ID = tor.PID
+		WHERE
+			ur.`STATUS` = 'A'
+		AND r.ROLE_CODE = #{roleCode}
+		ORDER BY areaName,companyName,deptName 
+	</select>
+	
+</mapper>

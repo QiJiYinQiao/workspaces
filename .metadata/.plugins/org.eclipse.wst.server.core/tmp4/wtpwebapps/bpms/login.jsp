@@ -91,8 +91,10 @@ margin-left: 88px;
 	<div class="text_success">
 		<img src="extend/loader_green.gif" alt="Please wait" /> <span>登陆成功!请稍后....</span>
 	</div>
+	<div style="position: absolute; margin: 20px auto;margin-top: -148px; margin-right: auto; margin-bottom: 20px; margin-left: -200px; top: 30%; left: 48%;">
+		<strong style="font-size: 40px;font-family: sans-serif;">钱钱金融风控管理系统</strong>
+	</div>
 	<div id="login">
-		<div class="ribbon" style="background-image:url(extend/typelogin.png);"></div>
 		<div class="inner">
 			<div class="logo">
 				<img src="extend/toplogo-jeecg.png" />
@@ -101,21 +103,21 @@ margin-left: 88px;
 				<form name="formLogin" action="systemAction!load.action" id="formLogin" method="post">
 					<input name="userKey" type="hidden" id="userKey" value="D1B5CC2FE46C4CC983C073BCA897935608D926CD32992B5900" />
 					<div class="tip">
-						<input class="userName" name="userName" type="text" id="userName" title="用户名" iscookie="true" value="admin" nullmsg="请输入用户名!" />
+						<input class="userName" name="userName" type="text" id="userName" title="用户名" iscookie="true"  nullmsg="请输入用户名!" />
 					</div>
 					<div class="tip">
-						<input class="password" name="password" type="password" id="password" title="密码" value="admin" nullmsg="请输入密码!" />
+						<input class="password" name="password" type="password" id="password" title="密码" nullmsg="请输入密码!" />
 					</div>
-					<div id="cap" class="tip">
-						<!-- <input class="captcha" name="captcha" type="text" id="captcha"  nullmsg="请输入验证码!" /> -->
+					<!-- <div id="cap" class="tip">
+						<input class="captcha" name="captcha" type="text" id="captcha"  nullmsg="请输入验证码!" />
 						<input class="captcha" name="captcha" type="text" id="captcha" />
 						<img style="width:85px;height:35px;margin-top: -10px;" align="absmiddle" id="Kaptcha" src="Kaptcha.jpg"/>
-					</div>
+					</div> -->
 					<div class="loginButton">
-						<div style="float: left; margin-left: -9px;">
+						<!-- <div style="float: left; margin-left: -9px;">
 							<input type="checkbox" id="on_off" name="remember" checked="ture" class="on_off_checkbox" value="0" /> <span class="f_help">是否记住用户名?</span>
-						</div>
-						<div style="float: right; padding: 3px 0; margin-right: -12px;">
+						</div> -->
+						<div style="padding: 3px 0; margin-right: -12px;">
 							<div>
 								<ul class="uibutton-group">
 									<li><a class="uibutton normal" href="javascript:void(0);" id="but_login">登陆</a>
@@ -124,9 +126,9 @@ margin-left: 88px;
 									</li>
 								</ul>
 							</div>
-							<div style="float: left; margin-left: 30px;">
+							<!-- <div style="float: left; margin-left: 30px;">
 								<a href="javascript:void(0);"><span class="f_help">是否初始化admin的密码</span></a>
-							</div>
+							</div> -->
 						</div>
 						<div class="clear"></div>
 					</div>

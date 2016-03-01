@@ -136,24 +136,21 @@ pageEncoding="UTF-8"%>
 		z-index: 9999;
 	}
 	
-	img{
-		max-width:100%;
-		max-height: 100%;
-	}
-	
 </style>
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/xheditor/jquery-1.8.0.min.js"></script>
 <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/easyui-lang-zh_CN.js"></script>
-<body style="background-color: #123659;">
+<body style="background-color: #123659;overflow: hidden;">
 	<div id="mws-container" class="clearfix" style="width:100%;height:100%;">
 		<input type="hidden" id="auditId" value="<%=auditId%>">
 		<input type="hidden" id="loanOrderId" value="<%=loanOrderId%>">
 		<input type="hidden" id="userId" value="<%=userId%>">
 		<!-- 如果为1 则是查看详情，禁止编辑 -->
 		<input type="hidden" id="isDetail" value="<%=isDetail%>">
+		<!-- 判断是否点击放大缩小按钮，如果点击，设置滚轮事件为放大缩小 -->
+		<input type="hidden" id="isClickZoom" value="0">
          <div class="container">
          		<div id="noAttachment" style="width: 100%;height:250px;text-align: center;padding-top:250px;display: none;">
 					<font size="10" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;color: white;">
@@ -267,15 +264,19 @@ pageEncoding="UTF-8"%>
 			var rollListStr = "";								  //滚动详情DOM字符串
 			photoListStr += "<ul id='photoListUlId' class='photoListUlClass'>";
 			rollListStr += "<div id='photoDetail' style='position:absolute;width:100%;height:100%;left:0px;top:0px;display: none;z-index: 999;overflow: hidden;background-color: gray;'>";
-			rollListStr += "<div style='position:absolute;right:10px;top:10px;width:60px;height:60px;z-index: 9999;cursor:pointer;' onClick=\"closeBtnOn();\"><img src='img/close.png' /></div>"
+			rollListStr += "<div style='position:fixed;right:100px;top:10px;width:100px;height:40px;z-index: 9999;float: left;padding-left:5px;'>";
+			rollListStr += "<div onClick='zoomIn();' style='background:url(img/bigger.png);width:30px;height:30px;display: inline-block;margin-right:5px;'></div>";
+			rollListStr += "<div onClick='zoomOut();' style='background:url(img/smaller.png);width:30px;height:30px;display: inline-block;'></div>";
+			rollListStr += "</div>";
+			rollListStr += "<div style='position:fixed;right:10px;top:10px;width:60px;height:60px;z-index: 9999;cursor:pointer;' onClick=\"closeBtnOn();\"><img src='img/close.png' style='max-width:100%;max-height:100%;'/></div>"
 			
 //			rollListStr += "<ul id='' class='clearfix'><li style='width:"+$(window).width()+"px;height:"+$(window).height()*0.85+"px;margin:0;padding:0;' > <img id='imgplace' src='"+photoList[0].attURL+"' alt='' /> </li> </ul>";
-			rollListStr += "<div style='width:"+$(window).width()+"px;height:"+$(window).height()*0.85+"px;margin:0;padding:0;overflow:auto;text-align:center;' > <img id='imgplace' src='"+photoList[0].attURL+"' alt='' /> </div> ";
+			rollListStr += "<div style='width:"+$(window).width()+"px;height:"+$(window).height()*0.85+"px;margin:0;padding:0;overflow:auto;text-align:center;' > <img id='imgplace' style='max-width:100%;max-height:100%;' src='"+photoList[0].attURL+"' alt='' /> </div> ";
 			
 			rollListStr += "<div id='previousBtn' style='position: absolute;left: 0px;top:400px;width:60px;height:60px;cursor: pointer;' onclick=\"lastPage();\">";
-			rollListStr += "<img src='img/go_previous.png' alt='上一张' /></div>";
+			rollListStr += "<img src='img/go_previous.png' alt='上一张' style='max-width:100%;max-height:100%'/></div>";
 			rollListStr += "<div id='nextBtn' style='position: absolute;right: 10px;top:400px;width:60px;height:60px;cursor: pointer;' onclick=\"nextPage();\">";
-			rollListStr += "<img src='img/go_next.png' alt='下一张' /></div>";
+			rollListStr += "<img src='img/go_next.png' alt='下一张' style='max-width:100%;max-height:100%'/></div>";
 			rollListStr += "<div id='photoRoll' style='position: absolute;bottom:0px;height:110px;background-color: gray;width: "+$(window).width()+"px;overflow: hidden;'><ul id='rollPhotos'>"; //图片详细列表dom字符串
 			
 			for(var i = 0; i < photoList.length; i++){
@@ -324,11 +325,14 @@ pageEncoding="UTF-8"%>
 		
 		//查看图片详情
 		function checkPhotoDetail(index){
+			$("#imgplace").removeAttr("style").css({"max-width":"100%","max-height":"100%"});
+			$("#isClickZoom").val("0");
 			$(".checkedPhoto").removeAttr("class");
 			$("#photoDetail").css("display","block").show();
 			isRollPhotoListOpen = true;
 			photoListsize = photoListNow.length;
 			$("#imgplace").attr("src",photoListNow[index].attURL);
+			placeMiddle("imgplace");
 			$("#photoRollList"+index+"").attr("class","checkedPhoto");
 			imageIndex = index;
 			lefts = -parseInt(index)*110;
@@ -337,12 +341,15 @@ pageEncoding="UTF-8"%>
 		
 		//上一页
 		function lastPage(){
+			$("#imgplace").removeAttr("style").css({"max-width":"100%","max-height":"100%"});
+			$("#isClickZoom").val("0");
 			if(imageIndex == 0){
 				imageIndex = photoListsize;
 				lefts = -(photoListsize-2)*110;
 			}
 			imageIndex--;
 			$("#imgplace").attr("src",photoListNow[imageIndex].attURL);
+			placeMiddle("imgplace");
 			$(".checkedPhoto").removeAttr("class");
 			$("#photoRollList"+imageIndex+"").attr("class","checkedPhoto");
 			lefts += 110;
@@ -351,12 +358,15 @@ pageEncoding="UTF-8"%>
 		
 		//下一页
 		function nextPage(){
+			$("#imgplace").removeAttr("style").css({"max-width":"100%","max-height":"100%"});
+			$("#isClickZoom").val("0");
 			imageIndex++;
 			if(imageIndex == photoListsize){
 				imageIndex = 0;
 				lefts = 150;//减去多少显示多少张图片 
 			}
 			$("#imgplace").attr("src",photoListNow[imageIndex].attURL);
+			placeMiddle("imgplace");
 			$(".checkedPhoto").removeAttr("class");
 			$("#photoRollList"+imageIndex+"").attr("class","checkedPhoto");
 			lefts += -110;
@@ -365,8 +375,11 @@ pageEncoding="UTF-8"%>
 		
 		//滚动栏点击
 		function checkPhotoRoll(index){
+			$("#imgplace").removeAttr("style").css({"max-width":"100%","max-height":"100%"});
+			$("#isClickZoom").val("0");
 			imageIndex = index;
 			$("#imgplace").attr("src",photoListNow[index].attURL);
+			placeMiddle("imgplace");
 			$(".checkedPhoto").removeAttr("class");
 			$("#photoRollList"+index+"").attr("class","checkedPhoto");
 		}
@@ -518,12 +531,14 @@ pageEncoding="UTF-8"%>
 			$("#allUnChecked").hide();
 		}
 		
+		//下载操作下，全选 
 		function downloadPhotoAllChecked(){
 			$("div .editPhotoUNChecked").attr("class","editPhotoChecked");
 			$("#allDownloadChecked").css("display","none");
 			$("#allDownloadUnChecked").css("display","block");
 		}
 		
+		//下载操作下，反选
 		function downloadPhotoAllUnChecked(){
 			$("div .photoEditDC").css("display","block");
 			$("div .editPhotoChecked").attr("class","editPhotoUNChecked");
@@ -552,6 +567,65 @@ pageEncoding="UTF-8"%>
 		function downloadAttachment(photoAttids){
 			downFileByFormPost("attachment/attachmentAction!downloadAttachment.action", {"photoAttids":photoAttids})
 		}
+
+		//放大
+		function zoomIn(){
+			$("#imgplace").css({"max-width":"","max-height":""});
+			var width = $("#imgplace").width();
+			var height = $("#imgplace").height();
+			$("#imgplace").width(width*1.1);
+			$("#imgplace").height(height*1.1);
+			placeMiddle("imgplace");
+			$("#isClickZoom").val("1");
+		};
+		
+		//缩小
+		function zoomOut(){
+			$("#imgplace").css({"max-width":"","max-height":""});
+			var width = $("#imgplace").width();
+			var height = $("#imgplace").height();
+			$("#imgplace").width(width*0.9);
+			$("#imgplace").height(height*0.9);
+			placeMiddle("imgplace");
+			$("#isClickZoom").val("1");
+		};
+		
+		//控制图片居中显示 
+		function placeMiddle(eleid){
+			var height = $("#"+eleid).height();
+			var pHeight = $("#"+eleid).parent().height();
+			var marginHeight = pHeight*0.5-height*0.5;
+			if(marginHeight<0){
+				marginHeight=0;
+			}
+			$("#"+eleid).css("margin-top",marginHeight);
+		}
+		
+		//鼠标滚轮事件
+		var scrollFunc=function(e){ 
+		    e=e || window.event; 
+		    var t1=document.getElementById("wheelDelta"); 
+		    var t2=document.getElementById("detail"); 
+		    var val = $("#isClickZoom").val();
+		    if(e.wheelDelta && val == "1"){//IE/Opera/Chrome 
+		      if(e.wheelDelta>0){
+		    	  zoomIn();
+		      }else {
+		    	  zoomOut();
+		      }
+		    }else if(e.detail && val == "1"){//Firefox 
+		    	if(e.detail>0){
+		        	zoomIn();
+		        }else {
+		        	zoomOut();
+		        }
+		    } 
+		} 
+		/*注册事件*/ 
+		if(document.addEventListener){ 
+		    document.addEventListener('DOMMouseScroll',scrollFunc,false); 
+		}//W3C 
+		window.onmousewheel=document.onmousewheel=scrollFunc;//IE/Opera/Chrome 
 	</script>
 </body>
 </html>

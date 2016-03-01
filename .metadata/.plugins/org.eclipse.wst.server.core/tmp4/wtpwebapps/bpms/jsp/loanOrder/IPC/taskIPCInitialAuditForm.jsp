@@ -1,6 +1,6 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
-<!-- 初审部门（IPC数据处理完）  -->
+<!-- 电核专员(电核部主管指派完毕后)  -->
 <style type="text/css">
 	#acceptTaskForm table input{border: none;}
 	table {border-radius: 5px;}
@@ -40,8 +40,8 @@
 		// 渲染备注
 		$datagrid =  $("#lookLoanOrderdg").datagrid({
 			url : "loanOrderHis/loanOrderHisAction!findAllLoanOrderHis.action",
-			width : 'auto',
-			height : 360,
+			fit : true,
+			fitColumns : true,
 			pagination:false,
 			rownumbers:true,
 			border:true,
@@ -51,12 +51,12 @@
 			multiSort:false,
 			fitColumns:true,
 			columns : [ [ 
-			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),sortable:true},
-			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1)},
-			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'left'},
-			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.08),align : 'left',
+			              {field : 'agentTime',title : '受理时间',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'roleName',title : '受理角色',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'assigneeName',title : '受理人',width : parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'title',title : '审批简述',width :parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'comment',title : '审批详情',width :parseInt($(this).width()*0.1),align : 'center'},
+			              {field : 'id',title : '查看附件',width :parseInt($(this).width()*0.08),align : 'center',
 				            	formatter:function(value,row,index){
 				            		return "<a href='javascript:void(0);' onclick='lookAttachment("+index+");'>查看附件</a>　　" ;
 				            	}  
@@ -101,18 +101,20 @@
 		checkAttachementDetail('noauditId',$row.loanOrderId,row.assignee,'2');
 	}
 	
-	// 提交表单信息
-	function  submitTask(result) {
+	// 完成任务,弹出问题及答疑汇总
+	function  submitThroughTask(result) {
 		// 验证备注信息是否已经填写
-		if($("#comment").val()=="" || $("#title").val() ==""){
-			$.messager.alert("提示","请填写完备注信息后再进行提交!","warning")
-			return false;
-		}
+		if(result!="IPCInitialAuditThrough") {
+			if($("#comment").val()=="" || $("#title").val() ==""){
+				$.messager.alert("提示","请填写完备注信息后再进行提交!","warning")
+				return false;
+			}
+		} 
 		$result = result;
 		$quesDlg = $("<div></div>").dialog({
 			title : "问题及答疑汇总",
-			width : 1000,
-			height : 680,
+			width : 900,
+			height : $(window).height()*0.8,
 			closed : false,
 			closeable : true,
 			modal : true,
@@ -122,13 +124,41 @@
 			href : "jsp/loanOrder/IPC/initAuditQuestionsCollect.jsp"
 		});
 	}
+	
+	// 完成任务,驳回到电核部主管
+	function submitRejectTask(result){
+		// 验证备注信息是否已经填写
+		if(result!="IPCInitialAuditThrough") {
+			if($("#comment").val()=="" || $("#title").val() ==""){
+				$.messager.alert("提示","请填写完备注信息后再进行提交!","warning")
+				return false;
+			}
+		} 
+		var data = {
+			"comment" : $("#comment").val(),
+			"title" :$("#title").val(),
+			"result" : result,
+			"loanOrderId" : $row.loanOrderId,
+			"taskId" :$row.taskId,
+			"processingResult":$result=="IPCInitialAuditThrough"?"A":"B"
+		}
+		$.ajax({
+			type : "POST",
+			url : "loanOrder/loanOrderAction!submitTask.action",
+			data : data,
+			success : function(msg) {
+				$grid.datagrid('reload');
+				$taskFormDialog.dialog('close');
+			}
+		});
+	}
 
 	//填写信审报告
 	function applicationReport(){
 		$("<div></div>").dialog({
 			title : '信审报告',
-			width : 1000,
-			height : 650,
+			width : 900,
+			height : $(window).height()*0.8,
 			modal:true,
 			href : "jsp/loanOrder/IPC/ipcApplicationReportTbs.jsp?t="+new Date(),
 			onClose:function(){
@@ -141,8 +171,8 @@
 	function ipcAuditInfoRecord(){
 		$("<div></div>").dialog({
 			title : '稽核信息记录表',
-			width : 1000,
-			height : 650,
+			width : 900,
+			height : $(window).height()*0.8,
 			modal:true,
 			href : "jsp/loanOrder/IPC/ipcAuditInfoRecordTbs.jsp?t="+new Date(),
 			onClose:function(){
@@ -154,29 +184,27 @@
 </script>
 <!-- 受理任务 S -->
 <div data-options="region:'north',title:'North Title',split:true" style="overflow: hidden;">
-	<div style="width: 980px;height: 190px;overflow: auto;">
+	<div style="width: 900px;height: 190px;overflow: auto;">
 		<form id="acceptTaskForm" method="post">
 				<input name="id" id="id"  type="hidden"/>
 				<input name="auditId" type="hidden" value="noauditId"/>
 				 <table class="table" cellpadding="5px;">
 					 <tr>
 					    <th>客户姓名:</th>
-						<td><input name="name" readonly="readonly" type="text" class="easyui-textbox easyui-validatebox" data-options="required:true"/></td>
-					</tr>
-					<tr>
+						<td><input name="name" readonly="readonly" type="text"/></td>
 						<th>身份证号:</th>
-						<td><input name="idNo" readonly="readonly" type="text" class="easyui-textbox easyui-validatebox" data-options="validType:'idcard'"/></td>
+						<td><input name="idNo" readonly="readonly" type="text"/></td>
 					</tr>
 					<tr>
 					 	<th>备注简述:</th>
-						<td colspan="3">
-							<textarea id="title" name="title" class="easyui-validatebox easyui-textbox" style="width:100%;height:15px;"></textarea>
+						<td>
+							<input id="title" name="title" class="easyui-validatebox easyui-textbox" style="border: 1px solid #DDDDDD;">
 						</td>
 					</tr>
 					<tr>
-					 	<th>备注详情:</th>
+					 	<th>备注详情</th>
 						<td colspan="3">
-							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;"></textarea>
+							<textarea id="comment" name="comment" class="easyui-validatebox easyui-textbox" style="width:100%;height:70px;resize:none;"></textarea>
 						</td>
 					</tr>
 					<tr>
@@ -195,15 +223,15 @@
 		</form>
 	</div>
 	
-	<div style="width: 980px;height:30px;">
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="ipcAuditInfoRecord()">填写稽核信息</a>
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="applicationReport()">填写申请报告</a>
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('IPCInitialAuditThrough');" >初审通过</a>
-		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitTask('IPCInitialAuditReject');" >初审驳回</a>	
+	<div style="width: 900px;height:30px;">
+		<!-- <a href="javascript:void(0);" class="easyui-linkbutton" onclick="ipcAuditInfoRecord()">填写稽核信息</a> -->
+		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="applicationReport()">填写信审报告</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitThroughTask('IPCInitialAuditThrough');" >电核专员通过</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" onclick="submitRejectTask('IPCInitialAuditReject');" >电核专员驳回</a>	
 	</div>
 	
 	<!-- 附件和备注信息列表 -->
-	<div id="lookInfo" class="easyui-accordion" style="height: 390px;width: 980px;overflow: hidden;">
+	<div id="lookInfo" class="easyui-accordion" style="height: 390px;width: 900px;overflow: hidden;">
 	    <div title="备注信息" data-options="iconCls:'icon-cstbase',selected:true">   
 			<table id="lookLoanOrderdg" title="申请备注的信息" style="overflow: auto;"></table>
 		</div>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bpms.mydao.invest.InvestReportExportMapper">
+	
+	<!-- 获取订单信息列表的查询语句SQL -->
+	<select id="queryInvestorSummaryStatement" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+		SELECT 
+			IFNULL(tio.CONTRACT_NO,'') contractNo,
+			tio.INVESTOR_NAME name,
+			ti.ID_NO idNo,
+			ti.MOBILE_TEL mobilePhone,
+			ti.COMM_ADDR address,
+			ti.ZIP zipCode,
+			ti.EMAIL email,
+			tio.BANK_NAME bankName,
+			tio.ACT_NO cardNo,
+			IFNULL(tiap.INVEST_EDU,0) investAmt,
+			tip.PROD_NAME productName,
+			IFNULL(tip.ARS,0) ars,
+			tiap.NEW_ARS newArs,
+			tio.FINANCING_MGR financialAdvisor,
+			tip.PROD_STATUS pstatus,
+			tiap.HUAKOU_PLATFORM transferPlatform,
+			tip.REPAYMENT_MODE repaymentMethod,
+			tip.LENDING_CYCLE days,
+			tio.INVEST_ORDER_ID investOrderId,
+			tiap.IS_NEW_ARS_FINALLY_APPROVED isOk,
+			DATE_FORMAT(tiap.BEGIN_DATE,'%Y-%m-%d') transferDate,
+			DATE_FORMAT(tiap.END_DATE,'%Y-%m-%d') dueDate ,
+			DATE_FORMAT(tiap.INTEREST_DATE,'%Y-%m-%d') interestDate,
+			get_org_name_by_userOrgId(tio.ORGANIZATION_ID) businessDepartment
+			FROM t_bp_invest_order tio 
+			LEFT JOIN t_bp_investor ti ON tio.INVESTOR_ID = ti.INVESTOR_ID
+			LEFT JOIN t_bp_investorder_and_products tiap ON tio.INVEST_ORDER_ID = tiap.INVEST_ORDER_ID
+			LEFT JOIN t_bp_invest_products tip ON tip.PROD_ID = tiap.PROD_ID
+		WHERE 1 = 1 
+	    <if test="name!=null and name!=''">
+	        AND tio.INVESTOR_NAME LIKE CONCAT('%',CONCAT(#{name},'%'))		    
+	    </if>
+	    <if test="transferPlatform!=null and transferPlatform!=''">
+	        AND tiap.HUAKOU_PLATFORM = #{transferPlatform} 
+	    </if>
+	    <if test="bankName!=null and bankName!=''">
+	        AND tio.BANK_NAME LIKE CONCAT('%',CONCAT(#{bankName},'%'))		
+	    </if>
+	    <if test="productName!=null and productName!=''">
+	      <!--   AND tip.PROD_NAME LIKE CONCAT('%',CONCAT(#{productName},'%'))		 -->
+	      AND tip.PROD_ID  =  #{productName}	     
+	    </if>
+	    <if test="transferDateStart!=null">
+	        <choose>
+	            <when test="transferDateEnd!=null">
+	                 AND tiap.BEGIN_DATE BETWEEN #{transferDateStart} AND #{transferDateEnd}    
+	            </when>
+	            <otherwise>
+					AND tiap.BEGIN_DATE = #{transferDateStart} 	                
+	            </otherwise>
+	        </choose>
+	    </if>
+	    <if test="dueDateStart!=null">
+	        <choose>
+	            <when test="dueDateEnd!=null">
+	                AND tiap.END_DATE BETWEEN #{dueDateStart} AND #{dueDateEnd}      
+	            </when>
+	            <otherwise>
+	                AND tiap.END_DATE = #{dueDateStart}  
+	            </otherwise>
+	        </choose>
+	    </if>
+	    <if test="repaymentMethod!=null and repaymentMethod!=''">
+	        AND tip.REPAYMENT_MODE = #{repaymentMethod}  
+	    </if>
+		<if test="mobilePhone!=null and mobilePhone!=''">
+		   AND ti.MOBILE_TEL LIKE CONCAT('%',CONCAT(#{mobilePhone},'%'))	
+		</if>
+		<if test="idNo!=null and idNo!=''">
+		    AND ti.ID_NO LIKE CONCAT('%',CONCAT(#{idNo},'%'))	
+		</if>
+		<if test="email!=null and email!=''">
+		    AND ti.EMAIL LIKE CONCAT('%',CONCAT(#{email},'%'))	
+		</if>
+		<if test="pstatus!=null and pstatus!=''">
+		    AND tip.PROD_STATUS = #{pstatus}     
+		</if>
+		<if test="contractNo!=null and contractNo!=''">
+			AND tio.CONTRACT_NO LIKE CONCAT('%',CONCAT(#{contractNo},'%'))	    
+		</if>
+		<if test="cardNo!=null and cardNo!=''">
+		    AND tio.ACT_NO LIKE CONCAT('%',CONCAT(#{cardNo},'%'))	    
+		</if>
+		<if test="businessDepartment!=null and businessDepartment!=''">
+		    AND tio.ORGANIZATION_ID = #{businessDepartment}
+		</if>
+		
+		<if test="start !=null and end !=null">
+			LIMIT #{start},#{end}
+		</if>
+	</select>
+
+   	<!-- 获取订单信息列表的查询语句SQL -->
+	<select id="queryInvestorSummaryStatementCount" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		SELECT 
+			count(1)
+			FROM t_bp_invest_order tio 
+			LEFT JOIN t_bp_investor ti ON tio.INVESTOR_ID = ti.INVESTOR_ID
+			LEFT JOIN t_bp_investorder_and_products tiap ON tio.INVEST_ORDER_ID = tiap.INVEST_ORDER_ID
+			LEFT JOIN t_bp_invest_products tip ON tip.PROD_ID = tiap.PROD_ID
+		WHERE 1 = 1 
+			<if test="name!=null and name!=''">
+		        AND tio.INVESTOR_NAME LIKE CONCAT('%',CONCAT(#{name},'%'))		    
+		    </if>
+		    <if test="transferPlatform!=null and transferPlatform!=''">
+		        AND tiap.HUAKOU_PLATFORM = #{transferPlatform} 
+		    </if>
+		    <if test="bankName!=null and bankName!=''">
+		        AND tio.BANK_NAME LIKE CONCAT('%',CONCAT(#{bankName},'%'))		
+		    </if>
+		    <if test="productName!=null and productName!=''">
+		      <!--   AND tip.PROD_NAME LIKE CONCAT('%',CONCAT(#{productName},'%'))		 -->    
+		        AND tip.PROD_ID  =  #{productName}	    
+		    </if>
+		    <if test="transferDateStart!=null">
+		        <choose>
+		            <when test="transferDateEnd!=null">
+		                 AND tiap.BEGIN_DATE BETWEEN #{transferDateStart} AND #{transferDateEnd}    
+		            </when>
+		            <otherwise>
+						AND tiap.BEGIN_DATE = #{transferDateStart} 	                
+		            </otherwise>
+		        </choose>
+		    </if>
+		    <if test="dueDateStart!=null">
+		        <choose>
+		            <when test="dueDateEnd!=null">
+		                AND tiap.END_DATE,'%Y-%m-%d' BETWEEN #{dueDateStart} AND #{dueDateEnd}      
+		            </when>
+		            <otherwise>
+		                AND tiap.END_DATE  = #{dueDateStart}
+		            </otherwise>
+		        </choose>
+		    </if>
+		    <if test="repaymentMethod!=null and repaymentMethod!=''">
+		        AND tip.REPAYMENT_MODE = #{repaymentMethod}  
+		    </if>
+		    <if test="mobilePhone!=null and mobilePhone!=''">
+			   AND ti.MOBILE_TEL LIKE CONCAT('%',CONCAT(#{mobilePhone},'%'))	
+			</if>
+			<if test="idNo!=null and idNo!=''">
+			    AND ti.ID_NO LIKE CONCAT('%',CONCAT(#{idNo},'%'))	
+			</if>
+			<if test="email!=null and email!=''">
+			    AND ti.EMAIL LIKE CONCAT('%',CONCAT(#{email},'%'))	
+			</if>
+			<if test="pstatus!=null and pstatus!=''">
+			    AND tip.PROD_STATUS = #{pstatus}     
+			</if>
+			<if test="contractNo!=null and contractNo!=''">
+				AND tio.CONTRACT_NO LIKE CONCAT('%',CONCAT(#{contractNo},'%'))	    
+			</if>
+			<if test="cardNo!=null and cardNo!=''">
+			    AND tio.ACT_NO LIKE CONCAT('%',CONCAT(#{cardNo},'%'))	    
+			</if>
+			<if test="businessDepartment!=null and businessDepartment!=''">
+			    AND tio.ORGANIZATION_ID = #{businessDepartment}
+			</if>
+	</select>
+	
+	
+	<select id="queryTeamManager" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	    SELECT t.USER_NAME name FROM t_users t WHERE t.USER_ID IN (
+			SELECT h.ASSIGNEE ass FROM t_bp_invest_order_his h 
+			INNER JOIN t_role r ON h.role_id = r.role_id AND role_code='TuanDuiJingLi' 
+			WHERE h.INVEST_ORDER_ID = #{investOrderId} 
+		)
+	</select>
+	
+	<select id="queryGroupManager" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+	    SELECT t.USER_NAME name FROM t_users t WHERE t.USER_ID IN (
+			SELECT h.ASSIGNEE ass FROM t_bp_invest_order_his h 
+			INNER JOIN t_role r ON h.role_id = r.role_id AND role_code='DaTuanJingLi' 
+			WHERE h.INVEST_ORDER_ID = #{investOrderId} 
+		)
+	</select>
+</mapper>

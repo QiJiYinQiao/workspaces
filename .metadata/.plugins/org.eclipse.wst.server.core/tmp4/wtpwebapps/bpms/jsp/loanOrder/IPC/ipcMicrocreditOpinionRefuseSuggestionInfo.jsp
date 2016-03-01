@@ -12,7 +12,7 @@
 <html>
 <head>
 <base href="<%=basePath%>">
-<title>信审报告</title>
+<title>拒绝决议表</title>
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
@@ -65,7 +65,21 @@ var purpose = '<%=purpose%>';
 var loanAmount ='<%=request.getParameter("loanAmount")%>';
 $(function(){
 	//加载拒绝决议表
-	$("#microcreditOpinionRefuseForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action?loanOrderId="+loanOrderId);
+	//$("#microcreditOpinionRefuseForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionDetailByOid.action?loanOrderId="+loanOrderId);
+	//加载拒绝决议表   
+    $.ajax({
+		url : "microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionDetailByOid.action",
+		data : {"loanOrderId":loanOrderId},
+		type : "POST",
+		async:false,
+		success : function(data) {
+			if(data){
+				data.operatorB = data.operatorB.replace("/\s/g","").split(",");
+				$("#microcreditOpinionRefuseForm").form("load",data);
+			}
+		}
+	});   
+	
 	// 组织机构的信息--进件城市
 	$.ajax({
 		type : "POST",
@@ -83,8 +97,9 @@ $(function(){
 	$("#microcreditOpinionRefuseDlg input[name='loanOrderId']").val(loanOrderId);
 	$("#microcreditOpinionRefuseDlg input[name='idNo']").val(loanerIdNo);
 	$("#microcreditOpinionRefuseDlg input[name='purpose']").val(purpose);
-	$("#microcreditOpinionRefuseDlg input[name='loanAmount']").val(loanAmount);
+	$("#microcreditOpinionRefuseDlg input[name='loanAmount']").numberbox("setValue",loanAmount);
 });
+
 </script>
 <!-- 拒绝决议表S -->
 <div id="microcreditOpinionRefuseDlg">
@@ -94,20 +109,26 @@ $(function(){
 			<font size="4" style="font-weight: bold;">拒绝决议表</font>
 		</div>
 		<div>
-			<table cellpadding="8px;">
+			<table cellpadding="8px;" style="width:100%;height:100%;">
 				<tr>
 					<th>
 						客户姓名
 					</th>
 					<td>
-						<input name="name" class="easyui-textbox" disabled="disabled"  type="text" value="韩冰"/>
+						<input name="name" class="easyui-textbox" disabled="disabled"   value="韩冰"/>
 						<input name="loanOrderId" type="hidden" />
 					</td>
 					<th>
 						身份证号
 					</th>
 					<td >
-						<input disabled="disabled"   class="easyui-validatebox easyui-textbox" name="idNo"  type="text" />
+						<input disabled="disabled"   class=" easyui-textbox" name="idNo"   />
+					</td>
+					<th>
+						贷款目的
+					</th>
+					<td >
+						<input name="purpose"  disabled="disabled"  class=" easyui-textbox"/>
 					</td>
 				</tr>
 				
@@ -116,68 +137,39 @@ $(function(){
 						申请金额(元)
 					</th>
 					<td>
-						<input name="loanAmount" disabled="disabled"  class="easyui-validatebox easyui-textbox" type="text" value=""/>
+						<input name="loanAmount" disabled="disabled"  class="easyui-numberbox" data-options="precision:2,groupSeparatro:','"/>
 					</td>
 					<th>
 						调查日期
 					</th>
 					<td >
-						<input id="surveyDate" name="surveyDate"  disabled="disabled"  class="easyui-textbox easyui-datebox" data-options="editable:false"/>
+						<input name="surveyDate"  disabled="disabled" class=" easyui-textbox" />
 					</td>
-				</tr>
-				
-				<tr>
-					<th>
-						贷款目的
-					</th>
-					<td colspan="3">
-						<input name="purpose"  disabled="disabled"  class="easyui-validatebox easyui-textbox"/>
-					</td>
-				</tr>
-				
-				<tr>
 					<th>
 						所在地区
 					</th>
-					<td><input disabled="disabled"  class="easyui-validatebox easyui-textbox" name="loanCtiy"  type="text"/></td>
+					<td><input disabled="disabled"  class=" easyui-textbox" name="loanCtiy"  /></td>
+					
+				</tr>
+				
+				<tr>
 					<th>
 						调查人员
 					</th>
-					<td>
-						A:<input id="operatorAR"   disabled="disabled"   class="easyui-validatebox easyui-textbox "  name="operatorA" />&nbsp;&nbsp;&nbsp;
-						B:<input id="operatorBR"   disabled="disabled"   class="easyui-validatebox easyui-textbox " name="operatorB"  /> 
+					<td colspan="4">
+						A:<input name="operatorAName" class="easyui-textbox" disabled="disabled"/>&nbsp;&nbsp;&nbsp;
+						B:<input name="operatorBName" class="easyui-textbox" style="width:250px;" disabled="disabled"/> 
+					</td>
+				</tr>
+				<tr>
+					<th>拒绝原因:</th>
+				</tr>
+				<tr>
+					<td colspan="6">
+						<textarea class="easyui-validatebox easyui-textbox" name="rejectCause" disabled="disabled" style="width:99%;height:320px;resize: none;"></textarea>
 					</td>
 				</tr>
 			</table>
-			<div style="width:99.5%;height:400px;">
-				<div style="height:30px;">
-						<span style="font-weight:bold;padding-left:10px;">拒绝原因：</span>
-				</div>
-				<div style="padding:20px 0 20px 20px;height:330px;overflow:auto;">
-					<textarea disabled="disabled"   class="easyui-validatebox easyui-textbox" name="rejectCause" style="width:99%;height:320px;resize: none;"></textarea>
-				</div>
-			</div>
-			<div style="height:40px;">
-				<table cellpadding="8px;">
-					<tr>
-						<th>
-							业务经办人
-						</th>
-						<td>
-							<input disabled="disabled"  type="text" name="operatorAR" class="easyui-validatebox easyui-textbox" />
-						</td>
-						<td>
-							<input disabled="disabled"  type="text" name="operatorBR" class="easyui-validatebox easyui-textbox" />
-						</td>
-						<th >
-							部门负责人
-						</th>
-						<td >
-							<input disabled="disabled" class="easyui-validatebox easyui-textbox" name="deptPrincipal" data-options="required:true"/>
-						</td>
-					</tr>
-				</table>
-			</div>
 		</div>
 	</form>	
  </div>

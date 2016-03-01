@@ -7,7 +7,7 @@
 	<display-name>bpms</display-name>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:spring.xml,classpath:spring-hibernate.xml,classpath:activiti-context.xml</param-value>
+		<param-value>classpath:spring-beans.xml</param-value>
 	</context-param>
 	<filter>
 		<filter-name>shiroFilter</filter-name>

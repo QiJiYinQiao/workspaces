@@ -26,10 +26,17 @@
 </style>
 <script type="text/javascript">
 $(function(){
+	$(window).resize(function(){  
+        $("#customerRepaymentDetailTab").datagrid("resize",{  
+			height : $(window).height()-160,
+        	width : 'auto'
+        });                
+    });
+	
 	$("#customerRepaymentDetailTab").datagrid({
 		url : "loanCustRepaymentDetail/loanCustRepaymentDetailAction!findAssetCollectionCustRepaymentDetails.action",
 		width : 'auto',
-		height : parseInt($(this).height()*0.8),
+		height : $(window).height()-160,
 		pagination:true,
 		rownumbers:true,
 		border:true,
@@ -200,7 +207,7 @@ function checkContractDetail(index){
 	<body>
 		<div>
 			<div style="margin-left: 5px;margin-top: 5px">
-				业务管理-->财务监控管理-->贷款客户监管-->客户还款管理
+				业务管理-->资产管理-->资产催收
 			</div>
 			<div style="padding-top:5px;">
 				<font size="3em">[查询条件]</font>

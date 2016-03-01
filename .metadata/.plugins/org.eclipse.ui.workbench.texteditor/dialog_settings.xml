@@ -2,37 +2,41 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item value="273" key="DIALOG_WIDTH"/>
-		<item value="292" key="DIALOG_Y_ORIGIN"/>
-		<item value="1444" key="DIALOG_X_ORIGIN"/>
+		<item value="434" key="DIALOG_Y_ORIGIN"/>
 		<item value="399" key="DIALOG_HEIGHT"/>
+		<item value="1461" key="DIALOG_X_ORIGIN"/>
 		<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="true" key="wrap"/>
-		<item value="false" key="casesensitive"/>
 		<item value="false" key="isRegEx"/>
+		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
-		<item value="true" key="wholeword"/>
-		<item value="queryLoaner" key="selection"/>
+		<item value="false" key="wholeword"/>
+		<item value="updateClaimTask" key="selection"/>
 		<list key="findhistory">
-			<item value="queryLoaner"/>
-			<item value="createView"/>
-			<item value="showView"/>
-			<item value="carInfoForm"/>
-			<item value="auditWay"/>
-			<item value="findAllClaimTask"/>
-			<item value="isGuaranty"/>
-			<item value=",required:true"/>
+			<item value="updateClaimTask"/>
+			<item value="updateCliamTask"/>
+			<item value="getIdentityLinkCandidateGroupUsers"/>
+			<item value="runTaskHandlePersons"/>
+			<item value="指派"/>
+			<item value="getOrganizationByLoanOrderId"/>
+			<item value="load"/>
+			<item value="添加"/>
 		</list>
 		<list key="replacehistory">
 			<item value=""/>
+			<item value="data-options=\&quot;min:0,precision:2,groupSeparator:&apos;,&apos;\&quot;"/>
+			<item value="&quot;&quot;"/>
+			<item value="#ddd"/>
 			<item value="integer"/>
 			<item value="保存"/>
 			<item value="10"/>
 			<item value="attType"/>
-			<item value="&quot;#attType&quot;"/>
-			<item value="370"/>
-			<item value="photoListsize"/>
 		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item value="390" key="DIALOG_Y_ORIGIN"/>
+		<item value="729" key="DIALOG_X_ORIGIN"/>
 	</section>
 </section>

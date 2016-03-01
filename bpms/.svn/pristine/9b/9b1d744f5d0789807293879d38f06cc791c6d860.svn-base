@@ -1,0 +1,21 @@
+package com.bpms.model.vo;
+
+import java.io.Serializable;
+
+/**
+ * 该VO类用于封装与“投资申请”相关的信息，包含一下基本信息：
+ *     1.投资订单信息(InvestOrder)，
+ *     2.投资者信息(Investor)
+ *     3.投资者所选理财产品信息(InvestProduct)
+ *     4.
+ * @ClassName: InvestorAndInvestOrderModel 
+ * @author ZHANGJIAN 
+ * @date 2015年7月20日 下午4:30:27
+ */
+public class InvestApplyInvestOrderInvestorAndProductVoModel implements
+		Serializable, Cloneable {
+	
+	private static final long serialVersionUID = 3255678099066283726L;
+	
+	
+}

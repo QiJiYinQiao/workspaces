@@ -12,7 +12,7 @@
 <html>
 <head>
 <base href="<%=basePath%>">
-<title>信审报告</title>
+<title>微贷呈报意见表</title>
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
@@ -64,65 +64,197 @@
 	var purpose = '<%=purpose%>';
 	
 	$(function(){
-		$("#microcreditOpinionForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action?loanOrderId="+loanOrderId);
-		$("#microcreditOpinionForm input[name='name']").val(loanerName);
-		$("#microcreditOpinionForm input[name='idNo']").val(loanerIdNo);
-		$("#microcreditOpinionForm input[name='purpose']").val(purpose);
-		$("#microcreditOpinionForm input").attr("readonly","readonly").css("background-color","#EBEBE4");
-		$("#microcreditOpinionForm textarea").attr("readonly","readonly").css("background-color","#F5F5F5");
-
-		//渲染贷审委信息
 		$.ajax({
-				type : "POST",
-				url : "loanOrderHis/loanOrderHisAction!findLoanOrderHis.action",
-				data : {"loanOrderId":loanOrderId},
-				success : function(data) {
-					if(data && data.length >0){
-						// 贷审委是否通过
-						$("#processingResult1").val(data[0].processingResult);
-						$("#processingResult2").val(data[1].processingResult);
-						$("#processingResult3").val(data[2].processingResult);
+			url:"microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionDetailByOid.action",
+			type:"post",
+			data:{"loanOrderId":loanOrderId},
+			success:function(data){
+				if(data.mcbrId){
+					$("#microcreditOpinionForm").form("load",data);
+					$("#microcreditOpinionForm input[name='name']").val(loanerName);
+					$("#microcreditOpinionForm input[name='idNo']").val(loanerIdNo);
+					$("#microcreditOpinionForm input[name='purpose']").val(purpose);
+					$("#loadInfo input").attr("readonly","readonly").css("background-color","#EBEBE4");
+					$("#loadInfo textarea").attr("readonly","readonly").css("background-color","#F5F5F5");
 
-						// 贷审委制定的信贷方式
-						$("#auditWay1").val(data[0].auditWayValue);
-						$("#auditWay2").val(data[1].auditWayValue);
-						$("#auditWay3").val(data[2].auditWayValue);
-
-						// 贷审委给出意见
-						$("#comment1").val(data[0].comment);
-						$("#comment2").val(data[1].comment);
-						$("#comment3").val(data[2].comment);
-					}
+					loadDaiShenWeiInfo();
+				}else{
+					$("#microcreditOpinionForm").hide();
+					$("#noMessage").css("display","block");
 				}
-			});
-		
-			setTimeout(loadAudtiWayText,300);
+			}
 		});
-	
-		function loadAudtiWayText(){
-			$.ajax({
-				url:"common/commonAction!findTextArr.action?codeMyid=audit_way",
-				type:"post",
-				async:false,
-				success:function(data){
-					var auditWay = $("#auditWay").val();
-					$.each(data,function(i,item){
-						if(item.code==auditWay){
-							$("#auditWayText").val(item.text);
-						}
-					});
+		
+		// 渲染是否通过
+		$("#moprocessingResult").combobox({
+			valueField : 'code',
+			textField : 'text',
+			url:'common/commonAction!findTextArr.action?codeMyid=processing_result',
+			onLoadSuccess : function(){
+				var val = $(this).combobox("getData");
+				if(!$.isEmptyObject(val)){
+	                $(this).combobox("select", val[0]["code"]);
 				}
-			});
+			}
+	    });
+		
+		// 渲染贷款期限
+	   $("#mofinalLoanPeriod").combobox({
+			url : "common/commonAction!findTextArr.action?codeMyid=loan_period_type",
+			valueField : 'code',
+			textField : 'text',
+			required:true,
+			editable:false,
+			onSelect:function() {
+				calculate();
+			}
+	   });
+		
+	   $("#mofinalRepayMthd").val(checkSysParameter("repay_mthd"));
+	   
+	   //查询车辆信息
+	   $.ajax({
+			url:"carInfo/carInfoAction!findCarInfoByOrderId.action",
+			type:"post",
+			data:{"loanOrderId":loanOrderId},
+			success:function(data){
+				if(data){
+					$("#moBrandModels").val(data.carName);
+					$("#moVehicleMortgageAmt").val(data.vehicleMortgageAmt);
+				}else{
+					$("#moBrandModels").val("暂无车抵");
+					$("#moVehicleMortgageAmt").val("0");
+				}
+			}
+		});
+	   
+	 	//查询贷款额度
+	   $.ajax({
+		   url : "microcreditOpinion/microcreditOpinionAction!findFinalLoanAmt.action",
+		   type:"post",
+		   data:{"loanOrderId":loanOrderId},
+		   success:function(data){
+			  $("#oralAmt").val(data);
+		   }
+	   });
+		
+	});
+	
+	//渲染贷审委信息
+	function loadDaiShenWeiInfo(){
+		$.ajax({
+			type : "POST",
+			url : "loanOrderHis/loanOrderHisAction!findLoanOrderHis.action",
+			data : {"loanOrderId":loanOrderId},
+			success : function(data) {
+				if(data && data.length >0){
+					// 贷审委是否通过
+					$("#processingResult1").val(data[0].processingResult);
+					$("#processingResult2").val(data[1].processingResult);
+					$("#processingResult3").val(data[2].processingResult);
+
+					// 贷审委制定的信贷方式
+					$("#auditWay1").val(data[0].auditWayValue);
+					$("#auditWay2").val(data[1].auditWayValue);
+					$("#auditWay3").val(data[2].auditWayValue);
+					
+					// 贷审委是否进行补调
+					$("#auxiliary1").val(data[0].auxiliaryValue);
+					$("#auxiliary2").val(data[1].auxiliaryValue);
+					$("#auxiliary3").val(data[2].auxiliaryValue);
+
+					// 贷审委给出意见
+					$("#comment1").val(data[0].comment);
+					$("#comment2").val(data[1].comment);
+					$("#comment3").val(data[2].comment);
+				}
+			}
+		});
+	}
+	
+	// 计算金额
+	function calculate() {
+		// 合同金额
+		var contractLoanAmount = Number($("#mofinalAmt").val());
+		// 贷款期限
+		var loanPeriodType = Number($("#mofinalLoanPeriod").combobox("getText"));
+		// 月服务汇率
+		var monthServiceFeeRate = Number(parseFloat($("#mocounselingRate").val()));
+		// 利率
+		var loanInterestRate = Number($("#moloanRate").val());
+		// 信访费用
+		var visitFee = Number($("#movisitFee").val());
+		// 计算金额
+		if (contractLoanAmount != "" && loanPeriodType != ""
+				&& monthServiceFeeRate != "" && loanInterestRate != ""
+				&& visitFee != "") {
+			// 实放金额 = 合同金额-(合同金额*(服务汇率*贷款期限)+信访费用)
+			var actualLoanAmount = contractLoanAmount
+					- (contractLoanAmount
+							* (monthServiceFeeRate * loanPeriodType) + visitFee);
+			// 月还款额 = (合同金额/贷款期限)+合同金额*利息
+			var monthRepay = (contractLoanAmount / loanPeriodType)
+					+ contractLoanAmount * loanInterestRate;
+			$("#moactualLoanAmount").numberbox("setValue", actualLoanAmount);
+			$("#momonthRepay").numberbox("setValue", monthRepay);
 		}
+	}
+	
+	//查询系统参数
+	function checkSysParameter(paramCode){
+		var datas = "";
+		$.ajax({
+			url:"sysParameter/sysParameterAction!findSysParameter.action",
+			type:"post",
+			async:false,
+			data:{"parmCode":paramCode},
+			success:function(data){
+				datas = data.parmValue;
+			},
+			error:function(){
+				
+			}
+		});
+		return datas;
+	}
+	
+	function saveMic() {
+		$("#microcreditOpinionForm").form('submit', {
+			url : "microcreditOpinion/microcreditOpinionAction!saveMicrocreditOpinion.action",
+			onSubmit : function(param) {
+				var isValid = $("#microcreditOpinionForm").form('validate');
+				return isValid; // 返回false终止表单提交
+			},
+			success : function(data) {
+				data = $.parseJSON(data);
+				$.messager.show({
+					title:"提示",
+					msg:data.message,
+					showType:"slide",
+					timeout:1000
+				});
+			}
+		});
+	}
 </script>
-<body>
+<body style="overflow: hidden;">
+	<div id="noMessage" style="width: 100%;height:300px;text-align: center;padding-top:250px;display: none;">
+		<font size="6" style="font-weight: bold;box-shadow: 3px 3px 5px 3px;">
+			暂无微贷业务呈报意见
+		</font>
+	</div>
+	<div style="width: 100%;height:650px;text-align: center;overflow: auto;">
 	<form id="microcreditOpinionForm" method="post">
 		<input name="mcbrId" type="hidden" />
+		<input name="loanMthd"  type="hidden" />
+		<input name="collectionMthd"  type="hidden" />
+		<input name="operatorA" type="hidden" />
+		<input name="operatorB" type="hidden" />
 		<div style="text-align:center;">
 			<font size="4" style="font-weight: bold;">微贷业务呈报意见表</font>
 		</div>
 		<div>
-			<table cellpadding="8px;">
+			<table id="loadInfo" cellpadding="8px;" style="width:100%;height:100%;">
 				<tr>
 					<th>
 						借款人
@@ -141,7 +273,8 @@
 						咨询服务费
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="counselingRate"  type="text" />%
+						<input id="mocounselingRate" name="counselingRate"  type="hidden" />
+						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="counselingRateText"  type="text" />
 					</td>
 				</tr>
 				
@@ -159,10 +292,10 @@
 						<input class="easyui-validatebox easyui-textbox" name="coborrowerIdno"  type="text" />
 					</td>
 					<th>
-						收取方式
+						贷款用途
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="collectionMthd"  type="text" />
+						<input class="easyui-validatebox easyui-textbox" name="purpose"  type="text" value=""/>
 					</td>
 				</tr>
 				
@@ -171,48 +304,19 @@
 						建议金额(元)
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="adviceLoanAmt"  type="text"/>
+						<input class="easyui-validatebox easyui-numberbox" name="adviceLoanAmt" data-options="precision:2,groupSeparator:','"/>
 					</td>
 					<th>
 						期限(月)
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="adviceLoanPeriod"  type="text" />
+						<input class="easyui-validatebox easyui-textbox" name="adviceLoanPeriodText"  type="text" />
+						<input name="adviceLoanPeriod"  type="hidden" />
 					</td>
-					<th>
-						放款方式
-					</th>
-					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="loanMthd"  type="text" />
-					</td>
-				</tr>
-				
-				<tr>
-					<th>
-						贷款用途
-					</th>
-					<td>
-						<input class="easyui-validatebox easyui-textbox" name="purpose"  type="text" value=""/>
-					</td>
-					<th>
-						利率(年)
-					</th>
-					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="loanRate"  type="text" />%
-					</td>
-					<th>
-						还款方式
-					</th>
-					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="adviceRepayMthd"  type="text" />
-					</td>
-				</tr>
-
-				<tr>
 					<th>信贷方式:</th>
 					<td>
-						<input id="auditWay" name="auditWay" type="hidden"/>
 						<input id="auditWayText" name="auditWayText" class="easyui-textbox"/>
+						<input name="auditWay" type="hidden"/>
 					</td>
 				</tr>
 
@@ -226,87 +330,170 @@
 					<th>
 						经办人
 					</th>
-					<td colspan="3">
-						A:<input id="useridA" class="easyui-validatebox easyui-textbox" name="operatorA"  type="text" />&nbsp;&nbsp;&nbsp;
-						B:<input id="useridB" class="easyui-validatebox easyui-textbox" name="operatorB"  type="text" /> 
+					<td colspan="4">
+						A:<input name="operatorAName" class="easyui-textbox"/>&nbsp;&nbsp;&nbsp;
+						B:<input name="operatorBName" class="easyui-textbox" style="width:250px;"/> 
+					</td>
+				</tr>
+				<tr>
+					<th>
+						具体措施如下:
+					</th>
+				</tr>
+				<tr>
+					<td colspan="6">
+						<textarea class="easyui-validatebox easyui-textbox" data-options="required:true" name="specificMeasures" style="width:99%;height:270px;resize: none;">
+						
+						</textarea>
+					</td>
+				</tr>
+				<tr>
+					<th >贷审委1</th>
+					<td colspan="7">
+						是否通过:<input id="processingResult1"  name="processingResult" class="easyui-textbox"/>
+						信贷方式:<input id="auditWay1" class="easyui-textbox"/>
+						是否补调:<input id="auxiliary1" class="easyui-textbox"/>
+						<textarea class="easyui-textbox" id="comment1" style="width:99%;height:70px;resize: none;">
+					</textarea></td>
+				</tr>
+				<tr>
+					<th >贷审委2</th>
+					<td colspan="7">
+						是否通过:<input id="processingResult2" name="processingResult" class="easyui-textbox"/>
+						信贷方式:<input id="auditWay2" class="easyui-textbox" type="text"/>
+						是否补调:<input id="auxiliary2" class="easyui-textbox"/>
+						<textarea class="easyui-textbox" id="comment2"  style="width:99%;height:70px;resize: none;"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<th>贷审委3</th>
+					<td colspan="7">
+						是否通过:<input id="processingResult3" name="processingResult" class="easyui-textbox" type="text"/>
+						信贷方式:<input id="auditWay3" class="easyui-textbox" type="text"/>
+						是否补调:<input id="auxiliary3" class="easyui-textbox"/>
+						<textarea class="easyui-textbox" id="comment3" style="width:99%;height:70px;resize: none;"></textarea>
 					</td>
 				</tr>
 			</table>
-			<div style="width:99.5%;height:270px;">
-				<div style="padding-left:10px;height:30px;">
-						<span style="font-weight:bold;">风险控制措施:&nbsp;&nbsp;&nbsp;</span>
-						<input class="easyui-textbox" name="riskCtrlMeasures" />
-						
-						<span style="padding-left:20px;font-weight:bold;">具体措施如下:</span>
-				</div>
-				<div style="height:230px;overflow:auto;">
-						<textarea class="easyui-validatebox easyui-textbox" name="specificMeasures" style="width:99%;height:220px;resize: none;">
-						
-						</textarea>
-				</div>
-			</div>
-			<div>
-				<table cellpadding="8px;">
+				<table cellpadding="8px;" style="width:100%;height:100%;">
 					<tr>
-						<th rowspan="2">
-							业务经办人
-						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="operatorA" type="text" />
-						</td>
-						<th rowspan="2">
-							后台人员
-						</th>
+						<th>信访费用:</th>
+						<td ><input id="movisitFee" name="visitFee"  class="easyui-validatebox easyui-numberbox"  data-options="required:true,min:0,precision:2,max:999.99,required:true" onblur="calculate();"/>元</td>
 						<th>
-							初次上会
+							原审批通过额度
 						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="firstMeeting" type="text" />
-						</td>
-						<th rowspan="2">
-							部门负责人
-						</th>
-						<td rowspan="2">
-							<input class="easyui-validatebox easyui-textbox" name="deptPrincipal" type="text" />
+						<td  colspan="">
+							<input id="oralAmt" class="easyui-textbox" readonly="readonly"/>元
 						</td>
 					</tr>
+				
 					<tr>
+						<th>
+							通过金额
+						</th>
 						<td>
-							<input class="easyui-validatebox easyui-textbox" name="operatorB" type="text" />
+							<input id="mofinalAmt" name="finalLoanAmt" class="easyui-textbox easyui-validatebox" data-options="validType:'mDouble',required:true" onblur="calculate();">元
 						</td>
 						<th>
-							补调核实
+							期限
 						</th>
 						<td>
-							<input class="easyui-validatebox easyui-textbox" name="verification" type="text" />
+							<input id="mofinalLoanPeriod" name="finalLoanPeriod">
+						</td>
+						<th>
+							最终还款方式
+						</th>
+						<td>
+							<input id="mofinalRepayMthd" name="finalRepayMthd" class="easyui-textbox easyui-validatebox" readonly="readonly">
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							实放金额
+						</th>
+						<td>
+							<input id="moactualLoanAmount" name="actualLoanAmount" class="easyui-validatebox easyui-numberbox" data-options="disabled:true,min:0,precision:2,groupSeparator:','">元
+						</td>
+						<th>
+							利率
+						</th>
+						<td>
+							<input name="loanRateText" class="easyui-validatebox easyui-textbox" disabled="disabled">
+							<input id="moloanRate" name="loanRate" type="hidden">
+						</td>
+						<th>
+							月还金额
+						</th>
+						<td>
+							<input id="momonthRepay" name="monthRepay" class="easyui-validatebox easyui-numberbox" data-options="disabled:true,min:0,precision:2,groupSeparator:','">元
+						</td>
+					</tr>
+					
+					<tr>
+						<th>
+							意见汇总
+						</th>
+					</tr>
+					<tr>
+						<th>
+							是否通过:
+						</th>
+						<td>
+							<input id="moprocessingResult" name="isThrough" />
 						</td>
 					</tr>
 					<tr>
-						<th >贷审委1</th>
-						<td colspan="7">
-							是否通过:<input id="processingResult1"  name="processingResult" class="easyui-textbox" readonly="readonly"/>
-							信贷方式:<input id="auditWay1"  name="auditWay" class="easyui-textbox" readonly="readonly"/>
-							<textarea class="easyui-textbox" id="comment1" style="width:99%;height:70px;resize: none;" type="text" readonly="readonly">
-						</textarea></td>
-					</tr>
-					<tr>
-						<th >贷审委2</th>
-						<td colspan="7">
-							是否通过:<input id="processingResult2" name="processingResult" class="easyui-textbox" type="text" readonly="readonly"/>
-							信贷方式:<input id="auditWay2" name="auditWay" class="easyui-textbox" type="text" readonly="readonly"/>
-							<textarea class="easyui-textbox" id="comment2"  style="width:99%;height:70px;resize: none;" readonly="readonly"></textarea>
+						<th>
+							理由/建议
+						</th>
+						<td colspan="5">
+							<textarea name="reason" class="easyui-textbox" style="width:95%;height:70px;resize: none;"></textarea>
 						</td>
 					</tr>
 					<tr>
-						<th>贷审委3</th>
-						<td colspan="7">
-							是否通过:<input id="processingResult3" name="processingResult" class="easyui-textbox" type="text" readonly="readonly"/>
-							信贷方式:<input id="auditWay3" name="auditWay" class="easyui-textbox" type="text" readonly="readonly"/>
-							<textarea class="easyui-textbox" id="comment3" style="width:99%;height:70px;resize: none;" readonly="readonly"></textarea>
+						<th>
+							婚姻状况
+						</th>
+						<td>
+							<input name="maritalStatus" class="easyui-textbox" disabled="disabled"/>
+						</td>
+						<th>
+							备注
+						</th>
+						<td colspan="3"><input name="maritalStatusRemark" class="easyui-textbox easyui-validatebox" style="width:95%;"/></td>
+					</tr>
+					<tr>
+						<th>
+							车辆信息
+						</th>
+						<td>
+							<input id="moBrandModels" class="easyui-textbox" readonly="readonly"/>
+						</td>
+						<th>
+							车抵金额
+						</th>
+						<td>
+							<input id="moVehicleMortgageAmt" class="easyui-textbox" readonly="readonly"/>
 						</td>
 					</tr>
+					<tr>
+						<th>
+							备注
+						</th>
+						<td colspan="5"><input name="carInfoRemark" class="easyui-textbox easyui-validatebox" style="width:95%;"/></td>
+					</tr>
+					
+					<tr>
+					<td colspan="6">
+						<div id="upload_form" style="width: 100%; height: 30px; text-align: right;">
+							<a href="javascript:void(0);" class="easyui-linkbutton" onclick="saveMic();">保存</a>
+						</div> 
+					</td>
+				</tr>
 				</table>
 			</div>
-		</div>
 	</form>
+	
+	</div>
 </body>

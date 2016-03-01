@@ -12,7 +12,7 @@
 <html>
 <head>
 <base href="<%=basePath%>">
-<title>信审报告</title>
+<title>微贷呈报意见表</title>
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
@@ -64,16 +64,30 @@
 	var purpose = '<%=purpose%>';
 	
 	$(function(){
-		$("#microcreditOpinionForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action?loanOrderId="+loanOrderId);
+	    //加载微贷呈报意见表
+	    $.ajax({
+			url : "microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionDetailByOid.action",
+			data : {"loanOrderId":loanOrderId},
+			type : "POST",
+			async:false,
+			success : function(data) {
+				console.info(data);
+				if(data){
+					$("#microcreditOpinionForm").form("load",data);
+				}
+			}
+		});   
+	   
+		//$("#microcreditOpinionForm").form("load","microcreditOpinion/microcreditOpinionAction!findMicrocreditOpinionByOid.action?loanOrderId="+loanOrderId);
 		$("#microcreditOpinionForm input[name='name']").val(loanerName);
 		$("#microcreditOpinionForm input[name='idNo']").val(loanerIdNo);
 		$("#microcreditOpinionForm input[name='purpose']").val(purpose);
 		$("#microcreditOpinionForm input").attr("readonly","readonly").css("background-color","#EBEBE4");
 		$("#microcreditOpinionForm textarea").attr("readonly","readonly").css("background-color","#F5F5F5");
-		setTimeout(loadAudtiWayText,300);
+		//setTimeout(loadAudtiWayText,300);
 	});
 	
-	function loadAudtiWayText(){
+	/* function loadAudtiWayText(){
 		$.ajax({
 			url:"common/commonAction!findTextArr.action?codeMyid=audit_way",
 			type:"post",
@@ -87,7 +101,7 @@
 				});
 			}
 		});
-	}
+	} */
 </script>
 <body>
 	<form id="microcreditOpinionForm" method="post">
@@ -102,20 +116,20 @@
 						借款人
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="name"  type="text" />
+						<input readonly="readonly" class=" easyui-textbox" name="name"   />
 						<input name="loanOrderId" type="hidden" />
 					</td>
 					<th>
 						身份证号
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="idNo"  type="text" />
+						<input readonly="readonly" class=" easyui-textbox" name="idNo"   />
 					</td>
 					<th>
-						咨询服务费
+						咨询服务费率
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="counselingRate"  type="text" />%
+						<input readonly="readonly" class=" easyui-textbox" name="counselingRateText"   />
 					</td>
 				</tr>
 				
@@ -124,19 +138,19 @@
 						共同借款人
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="coborrowerName"  type="text" />
+						<input class=" easyui-textbox" name="coborrowerName"   />
 					</td>
 					<th>
 						身份证号
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="coborrowerIdno"  type="text" />
+						<input class=" easyui-textbox" name="coborrowerIdno"   />
 					</td>
 					<th>
 						收取方式
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="collectionMthd"  type="text" />
+						<input readonly="readonly" class=" easyui-textbox" name="collectionMthd"   />
 					</td>
 				</tr>
 				
@@ -145,19 +159,19 @@
 						建议金额(元)
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="adviceLoanAmt"  type="text"/>
+						<input class="easyui-numberbox" name="adviceLoanAmt" data-options="precision:2,groupSeparator:','" />
 					</td>
 					<th>
 						期限(月)
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="adviceLoanPeriod"  type="text" />
+						<input class="easyui-textbox" name="adviceLoanPeriodText"   />
 					</td>
 					<th>
 						放款方式
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="loanMthd"  type="text" />
+						<input readonly="readonly" class=" easyui-textbox" name="loanMthd"   />
 					</td>
 				</tr>
 				
@@ -166,28 +180,31 @@
 						贷款用途
 					</th>
 					<td>
-						<input class="easyui-validatebox easyui-textbox" name="purpose"  type="text" value=""/>
+						<input class=" easyui-textbox" name="purpose"   value=""/>
 					</td>
 					<th>
 						利率(年)
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="loanRate"  type="text" />%
+						<input readonly="readonly" class=" easyui-textbox" name="loanRateText"   />
 					</td>
 					<th>
 						还款方式
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name="adviceRepayMthd"  type="text" />
+						<input readonly="readonly" class=" easyui-textbox" name="adviceRepayMthd"   />
 					</td>
 				</tr>
 				
 				<tr>
 					<th>信贷方式:</th>
 					<td>
-						<input id="auditWay" name="auditWay" type="hidden"/>
-						<input id="auditWayText" name="auditWayText" class="easyui-textbox"/>
+						<input name="auditWayText" class="easyui-textbox"/>
 					</td>
+					<th>
+						婚姻状况
+					</th>
+					<td><input name="maritalStatus" class="easyui-combobox" disabled="disabled"/></td>
 				</tr>
 				
 				<tr>
@@ -195,68 +212,28 @@
 						经办机构/部门
 					</th>
 					<td>
-						<input readonly="readonly" class="easyui-validatebox easyui-textbox" name=""  type="text" value="IPC项目组-保定"/>
+						<input readonly="readonly" class=" easyui-textbox" name=""   value="IPC项目组-保定"/>
 					</td>
 					<th>
 						经办人
 					</th>
-					<td colspan="3">
-						A:<input id="useridA" class="easyui-validatebox easyui-textbox" name="operatorA"  type="text" />&nbsp;&nbsp;&nbsp;
-						B:<input id="useridB" class="easyui-validatebox easyui-textbox" name="operatorB"  type="text" /> 
+					<td colspan="4">
+						A:<input name="operatorAName" class="easyui-textbox"/>&nbsp;&nbsp;&nbsp;
+						B:<input name="operatorBName" class="easyui-textbox" style="width:250px;"/> 
+					</td>
+				</tr>
+				<tr>
+					<th>
+						具体措施如下:
+					</th>
+				</tr>
+				<tr>
+					<td colspan="6">
+						<textarea class="easyui-validatebox easyui-textbox" data-options="required:true" name="specificMeasures" style="width:99%;height:270px;resize: none;"></textarea>
 					</td>
 				</tr>
 			</table>
-			<div style="width:99.5%;height:270px;">
-				<div style="padding-left:10px;height:30px;">
-						<span style="font-weight:bold;">风险控制措施:&nbsp;&nbsp;&nbsp;</span>
-						<input class="easyui-textbox" name="riskCtrlMeasures" />
-						
-						<span style="padding-left:20px;font-weight:bold;">具体措施如下:</span>
-				</div>
-				<div style="height:230px;overflow:auto;">
-						<textarea class="easyui-validatebox easyui-textbox" name="specificMeasures" style="width:99%;height:220px;resize: none;">
-						
-						</textarea>
-				</div>
-			</div>
-			<div>
-				<table cellpadding="8px;">
-					<tr>
-						<th rowspan="2">
-							业务经办人
-						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="operatorA" type="text" />
-						</td>
-						<th rowspan="2">
-							后台人员
-						</th>
-						<th>
-							初次上会
-						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="firstMeeting" type="text" />
-						</td>
-						<th rowspan="2">
-							部门负责人
-						</th>
-						<td rowspan="2">
-							<input class="easyui-validatebox easyui-textbox" name="deptPrincipal" type="text" />
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="operatorB" type="text" />
-						</td>
-						<th>
-							补调核实
-						</th>
-						<td>
-							<input class="easyui-validatebox easyui-textbox" name="verification" type="text" />
-						</td>
-					</tr>
-				</table>
-			</div>
 		</div>
 	</form>
 </body>
+</html>

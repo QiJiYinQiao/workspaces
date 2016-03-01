@@ -1,0 +1,343 @@
+package com.bpms.model.vo;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class InvestRedeemFinanceDetails4ClientVO implements Serializable,Cloneable {
+
+	private static final long serialVersionUID = 5499948588174390487L;
+	
+	/******************** 投资订单investOrder信息  ********************/
+	private String investOrderId;   //投资订单ID
+	private String investorId;      //投资者ID
+	private String contractNo;      //合同编号	
+	private String financingMgr;    //理财经理
+	private String orgFullName;     //理财经理所在的营业部	 
+	private String investProcessType;  //投资流程类型
+	private String processStatus;    //投资流程状态
+	
+	/*************** 投资者 investor表信息  ***************/
+	private String chName;           //投资者名称
+	private String investorStatus;   //投资者状态
+		
+	
+	/*************** 投资业务订单investOrder与理财产品investProduct关联表信息  ***************/
+	private BigDecimal investEdu;   //投资金额，即理财金额
+	private Date beginDate;         //意向投资日期(划扣日期)
+	private Date interestDate;      //计息日期
+	private Date endDate;	        //到期日期
+
+		
+	/******************** 理财产品investProduct信息  ********************/
+	private String prodId;          //理财产品ID	
+	private String prodName;      	//产品名称
+	private Integer lendingCycle;	//出借周期，即理财天数
+	private BigDecimal ars;         //年化收益率
+	private String repaymentMode;   //还款方式
+	
+	
+	/******************** InvestRedeem表对应的信息  ********************/
+	private Date redeemBeginDate;	            //赎回申请日期		
+	private Date huiKuanDate;                   //回款日期	
+	private BigDecimal curDepositInterestRate;  //银行同期活期存款利率	
+	private Integer actualInvestDays;		    //实际理财天数（从计息日期到回款日期之间实际的天数）
+		
+	
+	/******************** 保存各种金额相关信息  ********************/
+	private BigDecimal defaultPenalty;        //违约金
+	private BigDecimal serviceCharge;         //服务费
+	private BigDecimal interestPaid4Redeem;   //已付利息
+	private BigDecimal yingFuInterest;        //应付利息
+	private BigDecimal moneyReturned4Redeem;  //应回款
+	
+	public InvestRedeemFinanceDetails4ClientVO(){}			
+
+	public InvestRedeemFinanceDetails4ClientVO(String investOrderId,
+			String investorId, String contractNo, String financingMgr,
+			String orgFullName, String investProcessType, String processStatus,
+			String chName, String investorStatus, BigDecimal investEdu,
+			Date beginDate, Date interestDate, Date endDate, String prodId,
+			String prodName, Integer lendingCycle, BigDecimal ars,
+			String repaymentMode, Date redeemBeginDate, Date huiKuanDate,
+			BigDecimal curDepositInterestRate, Integer actualInvestDays,
+			BigDecimal defaultPenalty, BigDecimal serviceCharge,
+			BigDecimal interestPaid4Redeem, BigDecimal yingFuInterest,
+			BigDecimal moneyReturned4Redeem) {
+		super();
+		this.investOrderId = investOrderId;
+		this.investorId = investorId;
+		this.contractNo = contractNo;
+		this.financingMgr = financingMgr;
+		this.orgFullName = orgFullName;
+		this.investProcessType = investProcessType;
+		this.processStatus = processStatus;
+		this.chName = chName;
+		this.investorStatus = investorStatus;
+		this.investEdu = investEdu;
+		this.beginDate = beginDate;
+		this.interestDate = interestDate;
+		this.endDate = endDate;
+		this.prodId = prodId;
+		this.prodName = prodName;
+		this.lendingCycle = lendingCycle;
+		this.ars = ars;
+		this.repaymentMode = repaymentMode;
+		this.redeemBeginDate = redeemBeginDate;
+		this.huiKuanDate = huiKuanDate;
+		this.curDepositInterestRate = curDepositInterestRate;
+		this.actualInvestDays = actualInvestDays;
+		this.defaultPenalty = defaultPenalty;
+		this.serviceCharge = serviceCharge;
+		this.interestPaid4Redeem = interestPaid4Redeem;
+		this.yingFuInterest = yingFuInterest;
+		this.moneyReturned4Redeem = moneyReturned4Redeem;
+	}
+
+
+
+
+	public String getInvestOrderId() {
+		return investOrderId;
+	}
+
+	public void setInvestOrderId(String investOrderId) {
+		this.investOrderId = investOrderId;
+	}
+
+	public String getInvestorId() {
+		return investorId;
+	}
+
+	public void setInvestorId(String investorId) {
+		this.investorId = investorId;
+	}
+
+	public String getContractNo() {
+		return contractNo;
+	}
+
+	public void setContractNo(String contractNo) {
+		this.contractNo = contractNo;
+	}
+
+	public String getFinancingMgr() {
+		return financingMgr;
+	}
+
+	public void setFinancingMgr(String financingMgr) {
+		this.financingMgr = financingMgr;
+	}
+
+	public String getOrgFullName() {
+		return orgFullName;
+	}
+
+	public void setOrgFullName(String orgFullName) {
+		this.orgFullName = orgFullName;
+	}
+
+	public String getInvestProcessType() {
+		return investProcessType;
+	}
+
+	public void setInvestProcessType(String investProcessType) {
+		this.investProcessType = investProcessType;
+	}
+
+	public String getProcessStatus() {
+		return processStatus;
+	}
+
+	public void setProcessStatus(String processStatus) {
+		this.processStatus = processStatus;
+	}
+
+	public String getChName() {
+		return chName;
+	}
+
+	public void setChName(String chName) {
+		this.chName = chName;
+	}
+
+	public BigDecimal getInvestEdu() {
+		return investEdu;
+	}
+
+	public void setInvestEdu(BigDecimal investEdu) {
+		this.investEdu = investEdu;
+	}
+
+	public Date getBeginDate() {
+		return beginDate;
+	}
+
+	public void setBeginDate(Date beginDate) {
+		this.beginDate = beginDate;
+	}
+
+	public Date getInterestDate() {
+		return interestDate;
+	}
+
+	public void setInterestDate(Date interestDate) {
+		this.interestDate = interestDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getProdId() {
+		return prodId;
+	}
+
+	public void setProdId(String prodId) {
+		this.prodId = prodId;
+	}
+
+	public String getProdName() {
+		return prodName;
+	}
+
+	public void setProdName(String prodName) {
+		this.prodName = prodName;
+	}
+
+	public Integer getLendingCycle() {
+		return lendingCycle;
+	}
+
+	public void setLendingCycle(Integer lendingCycle) {
+		this.lendingCycle = lendingCycle;
+	}
+
+	public BigDecimal getArs() {
+		return ars;
+	}
+
+	public void setArs(BigDecimal ars) {
+		this.ars = ars;
+	}
+
+	public String getRepaymentMode() {
+		return repaymentMode;
+	}
+
+	public void setRepaymentMode(String repaymentMode) {
+		this.repaymentMode = repaymentMode;
+	}
+
+	public Date getRedeemBeginDate() {
+		return redeemBeginDate;
+	}
+
+	public void setRedeemBeginDate(Date redeemBeginDate) {
+		this.redeemBeginDate = redeemBeginDate;
+	}
+
+	public Date getHuiKuanDate() {
+		return huiKuanDate;
+	}
+
+	public void setHuiKuanDate(Date huiKuanDate) {
+		this.huiKuanDate = huiKuanDate;
+	}
+
+	public BigDecimal getCurDepositInterestRate() {
+		return curDepositInterestRate;
+	}
+
+	public void setCurDepositInterestRate(BigDecimal curDepositInterestRate) {
+		this.curDepositInterestRate = curDepositInterestRate;
+	}
+
+	public Integer getActualInvestDays() {
+		return actualInvestDays;
+	}
+
+	public void setActualInvestDays(Integer actualInvestDays) {
+		this.actualInvestDays = actualInvestDays;
+	}
+
+	public BigDecimal getDefaultPenalty() {
+		return defaultPenalty;
+	}
+
+	public void setDefaultPenalty(BigDecimal defaultPenalty) {
+		this.defaultPenalty = defaultPenalty;
+	}
+
+	public BigDecimal getServiceCharge() {
+		return serviceCharge;
+	}
+
+	public void setServiceCharge(BigDecimal serviceCharge) {
+		this.serviceCharge = serviceCharge;
+	}
+
+	public BigDecimal getInterestPaid4Redeem() {
+		return interestPaid4Redeem;
+	}
+
+	public void setInterestPaid4Redeem(BigDecimal interestPaid4Redeem) {
+		this.interestPaid4Redeem = interestPaid4Redeem;
+	}
+
+	public BigDecimal getMoneyReturned4Redeem() {
+		return moneyReturned4Redeem;
+	}
+
+	public void setMoneyReturned4Redeem(BigDecimal moneyReturned4Redeem) {
+		this.moneyReturned4Redeem = moneyReturned4Redeem;
+	}
+
+	public String getInvestorStatus() {
+		return investorStatus;
+	}
+
+	public void setInvestorStatus(String investorStatus) {
+		this.investorStatus = investorStatus;
+	}
+
+	public BigDecimal getYingFuInterest() {
+		return yingFuInterest;
+	}
+
+	public void setYingFuInterest(BigDecimal yingFuInterest) {
+		this.yingFuInterest = yingFuInterest;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+
+	@Override
+	public String toString() {
+		return "InvestRedeemFinanceDetails4ClientVO [investOrderId="
+				+ investOrderId + ", investorId=" + investorId
+				+ ", contractNo=" + contractNo + ", financingMgr="
+				+ financingMgr + ", orgFullName=" + orgFullName
+				+ ", investProcessType=" + investProcessType
+				+ ", processStatus=" + processStatus + ", chName=" + chName
+				+ ", investorStatus=" + investorStatus + ", investEdu="
+				+ investEdu + ", beginDate=" + beginDate + ", interestDate="
+				+ interestDate + ", endDate=" + endDate + ", prodId=" + prodId
+				+ ", prodName=" + prodName + ", lendingCycle=" + lendingCycle
+				+ ", ars=" + ars + ", repaymentMode=" + repaymentMode
+				+ ", redeemBeginDate=" + redeemBeginDate + ", huiKuanDate="
+				+ huiKuanDate + ", curDepositInterestRate="
+				+ curDepositInterestRate + ", actualInvestDays="
+				+ actualInvestDays + ", defaultPenalty=" + defaultPenalty
+				+ ", serviceCharge=" + serviceCharge + ", interestPaid4Redeem="
+				+ interestPaid4Redeem + ", yingFuInterest=" + yingFuInterest
+				+ ", moneyReturned4Redeem=" + moneyReturned4Redeem + "]";
+	}	
+	
+}

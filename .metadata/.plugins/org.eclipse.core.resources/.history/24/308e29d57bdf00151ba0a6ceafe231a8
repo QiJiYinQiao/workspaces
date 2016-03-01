@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//config/docConverter.properties=UTF-8
+encoding//config/email.properties=UTF-8
+encoding//config/filesys.properties=UTF-8
+encoding//src/com/bpms/util/DocConverter.java=GBK
+encoding/<project>=UTF-8

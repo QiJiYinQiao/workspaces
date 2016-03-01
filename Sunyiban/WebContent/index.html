@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>动态散花背景</title>
+<title>恋吾花</title>
 <meta name="description" content="Change OR Die" />
 <!-- Required Stylesheets -->
 <link rel="stylesheet" type="text/css" href="css/reset.css" media="screen" />
@@ -66,31 +66,48 @@
 *{margin:0;padding:0;list-style-type:none;}
 a,img{border:0;}
 body{font:12px/180% Arial, Helvetica, sans-serif, "新宋体";}
+#loginDiv{position:absolute;z-index:9999;}
 </style>
-	<div style="left:750px;top:550px;position:absolute;z-index: 9999;">
+	<div id="loginDiv">
 		<div id="mws-login">
-	    	<h1>Login</h1>
+	    	<h1>登陆</h1>
 	        <div class="mws-login-lock"><img src="css/icons/24/locked-2.png" alt="" /></div>
 	    	<div id="mws-login-form">
 	        	<form class="mws-form" action="hello" method="post">
 	                <div class="mws-form-row">
 	                	<div class="mws-form-item large">
-	                    	<input type="text" class="mws-login-username mws-textinput" placeholder="username" />
+	                    	<input type="text" class="mws-login-username mws-textinput" placeholder="请输入用户名" />
 	                    </div>
 	                </div>
 	                <div class="mws-form-row">
 	                	<div class="mws-form-item large">
-	                    	<input type="password" class="mws-login-password mws-textinput" placeholder="password" />
+	                    	<input type="password" class="mws-login-password mws-textinput" placeholder="请输入密码" />
 	                    </div>
 	                </div>
 	                <div class="mws-form-row">
-	                	<input type="submit" value="Login" class="mws-button green mws-login-button" />
+	                	<input type="submit" value="登陆" class="mws-button green mws-login-button" />
 	                </div>
 	            </form>
 	        </div>
 	    </div>
 	</div>
   <canvas id="sakura"></canvas>
+<!-- 登陆框居中 -->
+<script type="text/javascript">
+	window.onload = function() {
+		var windowWidth = document.body.clientWidth / 2;
+		var windowHeight = document.body.clientHeight / 2;
+		var divWidth = document.getElementById("loginDiv").offsetWidth / 2;
+		var divHeight = document.getElementById("loginDiv").offsetWidth / 2;
+		//style="left:750px;top:550px;position:absolute;z-index: 9999;"
+		var loginDiv = document.getElementById("loginDiv");
+		loginDiv.style.left = Number(windowWidth) - Number(divWidth) + "px";
+		loginDiv.style.top = Number(windowHeight) + "200px";
+	
+		//alert("windowWidth=="+windowWidth+"___________windowHeight==="+windowHeight);
+	}
+</script>
+  
 <!-- sakura shader -->
 <script id="sakura_point_vsh" type="x-shader/x_vertex">
 uniform mat4 uProjection;

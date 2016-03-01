@@ -19,5 +19,15 @@
 			<type>2</type>
 			<location>C:/Program Files/Java/jdk1.7.0_75</location>
 		</link>
+		<link>
+			<name>.link2</name>
+			<type>2</type>
+			<location>E:/spring-framework-3.2.2.RELEASE</location>
+		</link>
+		<link>
+			<name>.link3</name>
+			<type>2</type>
+			<location>D:/文档/2015-7-9/freemarker-2.3.8</location>
+		</link>
 	</linkedResources>
 </projectDescription>

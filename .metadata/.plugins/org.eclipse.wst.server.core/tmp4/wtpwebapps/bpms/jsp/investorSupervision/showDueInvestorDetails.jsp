@@ -26,7 +26,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			var row;
 			var $dg;
 			var $grid;
-			var excelurl = "investorSupervision/investorSupervisionAction!doExportExcel.action";
+			var excelurl = "investorSupervision/investorSupervisionAction!doExportExcel4DueInvestors.action";
 			$(function() {
 				
 				//初始化高级查询区域的组件
@@ -178,7 +178,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				endDate02 : endDate02
 			});
 			//设置导出报表的url
-			excelurl = "investorSupervision/investorSupervisionAction!doExportExcel.action?contractNo="+contractNo+"&investorName="+ encodeURI(encodeURI(investorName))+"&prodId="+prodId+"&interestDate01="+interestDate01+"&interestDate02="+interestDate02+"&endDate01="+endDate01+"&endDate02="+endDate02;
+			excelurl = "investorSupervision/investorSupervisionAction!doExportExcel4DueInvestors.action?contractNo="+contractNo+"&investorName="+ encodeURI(encodeURI(investorName))+"&prodId="+prodId+"&interestDate01="+interestDate01+"&interestDate02="+interestDate02+"&endDate01="+endDate01+"&endDate02="+endDate02;
 		}
 
 		//充值条件

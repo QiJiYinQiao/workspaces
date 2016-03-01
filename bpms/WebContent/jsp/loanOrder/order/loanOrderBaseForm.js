@@ -4,48 +4,43 @@ function RenderCombox(){
 		$("#upload_form_divs input:first").combobox({
 			valueField : 'code',
 			textField : 'text',
-			method : 'get',
 			url:'common/commonAction!findTextArr.action?codeMyid=attachment_type',
 			required:true,
 			editable:false
 		});
 
 	   //性别
-	   $("#baseGenderType").combobox({
+	   $("input[name^='gender']").combobox({
 			url : "common/commonAction!findTextArr.action?codeMyid=gender_type",
 			valueField : 'code',
 			textField : 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
 	   
 	   //婚姻状况
-	   $("#baseMarriageType").combobox({
+	   $("input[name='marriageType']").combobox({
 			url:"common/commonAction!findTextArr.action?codeMyid=marriage_type",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
 	   
 	   //是否有子女
-	   $("#baseHasChild").combobox({
+	   $("input[name$='hasChild']").combobox({
 			url:"common/commonAction!findTextArr.action?codeMyid=has_child",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 		});
 	   
 	   //房屋居住情况
-	   $("#baseMortgageStatus").combobox({
+	   $("input[name$='mortgageStatus']").combobox({
 			url:"common/commonAction!findTextArr.action?codeMyid=mortgage_status",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 		});
@@ -55,7 +50,6 @@ function RenderCombox(){
 			url:"common/commonAction!findTextArr.action?codeMyid=relationship_type",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 		});
@@ -65,17 +59,15 @@ function RenderCombox(){
 			url:"common/commonAction!findTextArr.action?codeMyid=repay_method",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
 	    
 	   //贷款类型
-	   $("#baseLoanType").combobox({
+	   $("input[name$='loanType']").combobox({
 			url:"common/commonAction!findTextArr.action?codeMyid=loan_type",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
@@ -85,7 +77,6 @@ function RenderCombox(){
 			url:"common/commonAction!findTextArr.action?codeMyid=account_medium",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
@@ -95,17 +86,15 @@ function RenderCombox(){
 			url:"common/commonAction!findTextArr.action?codeMyid=bankAccount_type",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
 		
 	   // 单位性质
-	    $("#baseCorpNature").combobox({
+	    $("input[name='corpNature']").combobox({
 			url:"common/commonAction!findTextArr.action?codeMyid=corp_nature",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });  
@@ -115,7 +104,6 @@ function RenderCombox(){
 			url:"common/commonAction!findTextArr.action?codeMyid=primary_backup",
 			valueField: 'code',
 			textField: 'text',
-			method : 'get',
 			required : true,
 			editable:false
 	   });
@@ -125,7 +113,6 @@ function RenderCombox(){
 		   url:"common/commonAction!findTextArr.action?codeMyid=yes_or_no",
 		   valueField: 'code',
 		   textField: 'text',
-		   method : 'get',
 		   required : true,
 		   editable:false 
 	   })
@@ -137,7 +124,6 @@ function RenderCombox(){
 			url:'common/commonAction!findAreaDic.action?parentId=1',
             valueField:'code',   
             textField:'text',
-            method : 'get',
             editable:false,
             onSelect:function(data){
             	$('#'+cid).combobox("clear"); 
@@ -166,7 +152,6 @@ function RenderCombox(){
 			url:'common/commonAction!findAreaDic.action?parentId='+data.code,
             valueField:'code',   
             textField:'text',
-            method : 'get',
             editable:false,
             onSelect:function(data){
             	$('#'+aid).combobox("clear");
@@ -193,7 +178,6 @@ function RenderCombox(){
 			url:'common/commonAction!findAreaDic.action?parentId='+data.code,
             valueField:'code',   
             textField:'text',
-            method : 'get',
             editable:false,
             onSelect:function(data){
             	avalue=null;

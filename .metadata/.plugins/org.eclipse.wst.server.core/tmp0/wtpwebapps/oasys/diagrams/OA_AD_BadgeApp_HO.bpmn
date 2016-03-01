@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="BadgeAppHo" name="工牌申请(总部)" isExecutable="true">
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.oasys.listener.ad.badgeApp.BadgeAppStartExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="XingZhengZhuanYuan" name="行政专员" activiti:formKey="jsp/ad/badgeApply/userTask/badgeDefaultTask.jsp?{&quot;btType&quot;:&quot;1&quot;}">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.oasys.listener.ad.badgeApp.BadgeAppAssistantTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.oasys.listener.ad.badgeApp.BadgeAppStopExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="XingZhengZhuanYuan1" name="行政专员通过" sourceRef="XingZhengZhuanYuan" targetRef="endevent1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${result==1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="XingZhengZhuanYuan"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_BadgeAppHo">
+    <bpmndi:BPMNPlane bpmnElement="BadgeAppHo" id="BPMNPlane_BadgeAppHo">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="660.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="XingZhengZhuanYuan" id="BPMNShape_XingZhengZhuanYuan">
+        <omgdc:Bounds height="55.0" width="105.0" x="625.0" y="180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="660.0" y="290.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="XingZhengZhuanYuan1" id="BPMNEdge_XingZhengZhuanYuan1">
+        <omgdi:waypoint x="677.0" y="235.0"></omgdi:waypoint>
+        <omgdi:waypoint x="677.0" y="290.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="650.0" y="249.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="677.0" y="75.0"></omgdi:waypoint>
+        <omgdi:waypoint x="677.0" y="180.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

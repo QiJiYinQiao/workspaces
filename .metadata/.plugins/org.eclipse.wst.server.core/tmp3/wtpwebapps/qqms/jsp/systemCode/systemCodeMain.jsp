@@ -42,7 +42,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					                 }
 					    ]],
 					columns : [ [ {field : 'dictCode',title : '字典编码',width : parseInt($(this).width()*0.1),align : 'left'},
-					              {field : 'sort',title : '排序编码',width : parseInt($(this).width()*0.1)},
+					       /*        {field : 'sort',title : '排序编码',width : parseInt($(this).width()*0.1)}, */
 					              {field : 'description',title : '字典描述',width : parseInt($(this).width()*0.2),align : 'left'}
 					              ] ],toolbar:'#tb'
 				});

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<item value="false" key="J2EE_EXPORT_OVERWRITE"/>
+	<item value="true" key="J2EE_EXPORT_OVERWRITE"/>
 	<item value="false" key="J2EE_EXPORT_SOURCE"/>
 	<list key="J2EE_IMPORT_null">
 		<item value="D:\activiti-5.17.0\wars\activiti-rest.war"/>
@@ -11,6 +11,9 @@
 		<item value="E:\yoyoplayer1.3\YOYOPlayer.jar"/>
 	</list>
 	<list key="J2EE_EXPORT_JST_WEB">
+		<item value="D:\文档\2015-7-9\office web app module\officewebserver.war"/>
+		<item value="C:\Program Files\Java\apache-tomcat-7.0.59\webapps\bpms.war"/>
+		<item value="C:\Program Files\Java\apache-tomcat-8.0.21\webapps\bpms.war"/>
 		<item value="C:\Program Files\Java\apache-tomcat-8.0.21\webapps\JXC.war"/>
 		<item value="C:\Users\Sun\Desktop\JXC.war"/>
 	</list>

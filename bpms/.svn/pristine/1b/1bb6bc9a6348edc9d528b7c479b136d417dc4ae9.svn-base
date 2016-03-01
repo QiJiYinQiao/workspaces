@@ -1,0 +1,15 @@
+package com.bpms.listener.investRedeem;
+
+import org.activiti.engine.delegate.DelegateTask;
+import org.activiti.engine.delegate.TaskListener;
+
+public class InvestRedeemTaskListener implements TaskListener {
+
+	private static final long serialVersionUID = 9054407863573951214L;
+
+	@Override
+	public void notify(DelegateTask delegateTask) {
+
+	}
+
+}

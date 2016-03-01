@@ -31,7 +31,7 @@
 			      <th>合同签署日期:</th>			      
 			      <td><input name="signDate" class="easyui-textbox" disabled="disabled" value='<fmt:formatDate value="${investOrderObj.signDate}" pattern="yyyy年MM月dd日"/>'/></td>
 			      <th>理财经理:</th>			      
-			      <td><input name="financingMgr" class="easyui-textbox" disabled="disabled" value="${investOrderObj.financingMgr}"/></td>		      
+			      <td><input name="financingMgr" class="easyui-textbox" disabled="disabled" value="${investOrderObj.financingMgr.name}"/></td>		      
 			   </tr>
 			   
 			   <tr align="center">
@@ -155,7 +155,14 @@
 				      <th>投资金额:</th>				      
 				      <td><input name="investEdu" class="easyui-textbox" disabled="disabled" value='<fmt:formatNumber value="${investProductList.get(0).investEdu}" pattern="#.00"/>元'/></td>
 				   </tr> 
-				   				   				   
+				   
+		     		<c:if test="${investProductList.get(0).ifAdjustArs != '' && investProductList.get(0).ifAdjustArs == 'Y'}">
+		     			<tr align="center">
+					        <th align="center"><font color="red">新的年化收益（%）</font></th>
+				     		<td><input name="newArs" class="easyui-textbox" disabled="disabled" value="${investProductList.get(0).newArs}%"/></td>
+			     		</tr>	     		
+		     		</c:if>				   
+				   				   				   				   
 				   <tr align="center">
 				      <th>模式特点:</th>				      
 				      <td colspan="3"><textarea id="prodDesc" name="prodDesc" style="width: 90%;"  disabled="disabled">${investProductList.get(0).prodDesc}</textarea></td>				      				   

@@ -30,7 +30,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	
 			var $dg;
 			var $grid;
-			var excelurl = "investorSupervision/investorSupervisionAction!doExportExcelTwo.action";
+			// 导出返息客户明细报表的url 			
+			var excelurl = "investorSupervision/investorSupervisionAction!doExportExcel4ReturnInterestToInvestors.action";
 			$(function() {
 				
 				//初始化高级查询区域的组件
@@ -82,6 +83,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					              },
 					              {field : 'lendingCycle',  title : '理财天数（天）',   width : parseInt($(this).width()*0.07), align:'center' },
 					              {field : 'ars', title : '年化收益率（%）',   width : parseInt($(this).width()*0.07), align:'center' },
+					              {field : 'newArs', title : '新的年化收益率（%）',   width : parseInt($(this).width()*0.07), align:'center',
+					              	formatter : function(value, row, index){
+					              		if(row.isNewArsFinallyApproved == "N" || row.isNewArsFinallyApproved == "" || value == "" || value == null){
+					              			return "没有调整年化收益率";
+					              		}else{
+					              			return value;
+					              		}
+					              	}
+					              },
 					              {field : 'investEdu',      title : '理财金额（元）',   width : parseInt($(this).width()*0.07), align:'center' },
 					              {field : 'totalInterest',  title : '利息总额（元）',       width : parseInt($(this).width()*0.07), align:'center' },
 					              {field : 'interestPerMonth', title : '月付利息（元）',       width : parseInt($(this).width()*0.07), align:'center' },
@@ -179,8 +189,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				rtnInterestYearSelect : rtnInterestYearSelect
 			});
 
-			//设置导出报表的url
-			excelurl = "investorSupervision/investorSupervisionAction!doExportExcelTwo.action?contractNo="+contractNo+"&investorName="+ encodeURI(encodeURI(investorName))+"&prodId="+prodId+"&rtnInterestMonSelect="+rtnInterestMonSelect+"&rtnInterestYearSelect="+rtnInterestYearSelect;
+			//设置导出高级查询中， 返息客户明细报表的url
+			excelurl = "investorSupervision/investorSupervisionAction!doExportExcel4ReturnInterestToInvestors.action?contractNo="+contractNo+"&investorName="+ encodeURI(encodeURI(investorName))+"&prodId="+prodId+"&rtnInterestMonSelect="+rtnInterestMonSelect+"&rtnInterestYearSelect="+rtnInterestYearSelect;
 		}
 
 		//充值条件

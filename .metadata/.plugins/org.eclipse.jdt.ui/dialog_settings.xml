@@ -98,6 +98,16 @@
 			</list>
 		</section>
 	</section>
+	<section name="ProblemSeveritiesConfigurationBlock">
+		<item value="false" key="expanded4"/>
+		<item value="false" key="expanded3"/>
+		<item value="false" key="expanded2"/>
+		<item value="false" key="expanded1"/>
+		<item value="false" key="expanded7"/>
+		<item value="false" key="expanded6"/>
+		<item value="false" key="expanded5"/>
+		<item value="true" key="expanded0"/>
+	</section>
 	<section name="SourceActionDialog.methods">
 		<item value="false" key="SkipNull"/>
 		<item value="10" key="LimitValue"/>
@@ -111,7 +121,7 @@
 		<item value="true" key="IgnoreDefault"/>
 	</section>
 	<section name="ClasspathContainerSelectionPage">
-		<item value="5" key="index"/>
+		<item value="4" key="index"/>
 	</section>
 	<section name="org.eclipse.jdt.internal.ui.typehierarchy.QuickHierarchy">
 		<item value="600" key="org.eclipse.jdt.internal.ui.typehierarchy.HierarchyInformationControlDIALOG_WIDTH"/>
@@ -141,7 +151,7 @@
 	<section name="DialogBounds_GetterSetterTreeSelectionDialog">
 		<item value="587" key="DIALOG_WIDTH"/>
 		<item value="173" key="DIALOG_Y_ORIGIN"/>
-		<item value="1052" key="DIALOG_X_ORIGIN"/>
+		<item value="443" key="DIALOG_X_ORIGIN"/>
 		<item value="766" key="DIALOG_HEIGHT"/>
 		<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
 	</section>
@@ -168,7 +178,7 @@
 		<item value="574" key="DIALOG_WIDTH"/>
 		<item value="30" key="DIALOG_Y_ORIGIN"/>
 		<item value="748" key="DIALOG_HEIGHT"/>
-		<item value="681" key="DIALOG_X_ORIGIN"/>
+		<item value="456" key="DIALOG_X_ORIGIN"/>
 		<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="WorkingSetModelAwareSelectionDialog">
@@ -213,6 +223,13 @@
 		<item value="false" key="expanded1"/>
 		<item value="true" key="expanded0"/>
 	</section>
+	<section name="org.eclipse.jdt.internal.ui.preferences.EditTemplateDialog_dialogBounds">
+		<item value="617" key="DIALOG_WIDTH"/>
+		<item value="302" key="DIALOG_Y_ORIGIN"/>
+		<item value="244" key="DIALOG_X_ORIGIN"/>
+		<item value="327" key="DIALOG_HEIGHT"/>
+		<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
+	</section>
 	<section name="org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog2">
 		<item value="true" key="ShowStatusLine"/>
 		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;History/&gt;" key="History"/>
@@ -225,9 +242,9 @@
 		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;History/&gt;" key="History"/>
 		<section name="DialogBoundsSettings">
 			<item value="600" key="DIALOG_WIDTH"/>
-			<item value="4" key="DIALOG_Y_ORIGIN"/>
+			<item value="91" key="DIALOG_Y_ORIGIN"/>
 			<item value="500" key="DIALOG_HEIGHT"/>
-			<item value="-27" key="DIALOG_X_ORIGIN"/>
+			<item value="239" key="DIALOG_X_ORIGIN"/>
 			<item value="1|微软雅黑|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|微软雅黑" key="DIALOG_FONT_NAME"/>
 		</section>
 	</section>
@@ -237,12 +254,16 @@
 		<item value="2" key="AccessModifier"/>
 	</section>
 	<section name="completion_proposal_size">
+		<item value="603" key="size.x"/>
+		<item value="275" key="size.y"/>
 	</section>
 	<section name="org.eclipse.ltk.ui.refactoring.settings">
 		<item value="*" key="patterns"/>
 		<item value="false" key="updateQualifiedNames"/>
 		<item value="true" key="renameSubpackages"/>
 		<item value="1" key="updateSimilarElementsMatchStrategy"/>
+		<item value="true" key="renameGetter"/>
+		<item value="true" key="renameSetter"/>
 		<item value="false" key="updateTextualMatches"/>
 		<item value="false" key="updateSimilarElements"/>
 	</section>

@@ -1,0 +1,15 @@
+package com.bpms.listener.investRedeem;
+
+import org.activiti.engine.delegate.DelegateExecution;
+import org.activiti.engine.delegate.ExecutionListener;
+
+public class InvestRedeemStopExecutionListener implements ExecutionListener {
+
+	private static final long serialVersionUID = -8090900348891490793L;
+
+	@Override
+	public void notify(DelegateExecution execution) throws Exception {
+
+	}
+
+}

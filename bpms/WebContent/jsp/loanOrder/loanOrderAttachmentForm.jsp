@@ -198,10 +198,12 @@ pageEncoding="UTF-8"%>
                 },
                 //dnd: '#dndArea',
                 paste: '#uploader',
+                //SWF文件地址，必备 
                 swf: '../../dist/Uploader.swf',
                 chunked: false,
                 chunkSize: 512 * 1024,
                 //server: 'uploadAction/uploadAction!upload.action',
+                //接收请求ACTION地址
                 server: 'attachment/attachmentAction!saveAttachment.action',
                 // runtimeOrder: 'flash',
 
@@ -455,8 +457,8 @@ pageEncoding="UTF-8"%>
                 } else if ( state === 'confirm' ) {
                     stats = uploader.getStats();
                     if ( stats.uploadFailNum ) {
-                        text = '已成功上传' + stats.successNum+ '张照片至XX相册，'+
-                            stats.uploadFailNum + '张照片上传失败，<a class="retry" href="#">重新上传</a>失败图片或<a class="ignore" href="#">忽略</a>'
+                        text = '已成功上传' + stats.successNum+ '张照片，'+
+                            stats.uploadFailNum + '张照片上传失败，<a class="retry" href="javascript:void(0);">重新上传</a>失败图片或<a class="ignore" href="javascript:void(0);">忽略</a>'
                     }
 
                 } else {
@@ -614,7 +616,7 @@ pageEncoding="UTF-8"%>
             } );
 
             $info.on( 'click', '.ignore', function() {
-                alert( 'todo' );
+                setState("ready");
             } );
 
             $upload.addClass( 'state-' + state );

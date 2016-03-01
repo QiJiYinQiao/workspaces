@@ -21,7 +21,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   	$(function(){
   		var  $menuTree = $('#menuTree', window.parent.document);
   		// 如果含有任务菜单，则进行渲染任务提示窗，渲染消息提示窗体
-  		if($menuTree.tree('find',"168") !=null || $menuTree.tree('find',"169") !=null || $menuTree.tree('find',"151") !=null || $menuTree.tree('find',"152") !=null){
+  		if(   $menuTree.tree('find',"168") !=null || $menuTree.tree('find',"169") !=null 
+  	       || $menuTree.tree('find',"151") !=null || $menuTree.tree('find',"152") !=null
+  	       || $menuTree.tree('find',"236") !=null || $menuTree.tree('find',"237") !=null
+  	       ){
 		  	// 渲染任务提示窗
   			$('#taskMessagePanel').panel({    
 			  	  width:500,    
@@ -31,18 +34,32 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			  	  collapsible:true
 		  	}); 
   			
-		  	// 含有财富受理任务的菜单，则进行发送消息，获取首页的任务提示的个数，如果没有，则不发送获取任务个数的消息。
+		  	// 含有“投资申请”任务的菜单，则进行发送消息，获取首页的任务提示的个数，如果没有，则不发送获取任务个数的消息。
 	  		if($menuTree.tree('find',"151") !=null || $menuTree.tree('find',"152") !=null){
 	  			$.ajax({
-	  			   url: "investOrder/investOrderAction!findInvestTaskCount.action",
+	  			   url: "investApply/investApplyAction!findInvestUnclaimedAndClaimedTaskCount.action",
 	  			   type: "POST",
 	  			   success: function(data){
-	  				 $("#investUnClaimCount").html(data.unClaimTaskCount);
-	  				 $("#investClaimCount").html(data.claimTaskCount);
+	  				 $("#investApplyUnClaimCount").html(data.unClaimTaskCount);
+	  				 $("#investApplyClaimCount").html(data.claimTaskCount);
 	  			   }
 	  			});
 	  		}else{
 	  			$("#investTaskMessage").remove();
+	  		}
+		  	
+	  		// 含有“投资赎回”任务的菜单，则进行发送消息，获取首页的任务提示的个数，如果没有，则不发送获取任务个数的消息。
+	  		if($menuTree.tree('find',"236") !=null || $menuTree.tree('find',"237") !=null){
+	  			$.ajax({
+	  			   url: "investRedeem/investRedeemAction!findInvestUnclaimedAndClaimedTaskCount.action",
+	  			   type: "POST",
+	  			   success: function(data){
+	  				 $("#investRedeemUnClaimCount").html(data.unClaimTaskCount);
+	  				 $("#investRedeemClaimCount").html(data.claimTaskCount);
+	  			   }
+	  			});
+	  		}else{
+	  			$("#investReedemTaskMessage").remove();
 	  		}
 		  	
 	  		// 含有贷款受理任务的菜单，则进行发送消息，获取首页的任务提示的个数，如果没有，则不发送获取任务个数的消息。
@@ -71,23 +88,37 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    <div id="taskMessagePanel">
 			<ol>
 				<li id="investTaskMessage">
-					<span style="font-size: 10px;font-weight: bold;">*财富</span>
+					<span style="font-size: 10px;font-weight: bold;">*投资申请</span>
 					<dl>
 						<dt>
-							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">代办任务</font>共有:
-							<font id="investUnClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
+							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">投资申请-待办任务</font>共有:
+							<font id="investApplyUnClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
 						</dt>
 						<dt>
-							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">受理任务</font>共有:
-							<font id="investClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
+							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">投资申请-受理任务</font>共有:
+							<font id="investApplyClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
 						</dt>
 					</dl>
 				</li>
+				
+				<li id="investReedemTaskMessage">
+					<span style="font-size: 10px;font-weight: bold;">*投资赎回</span>
+					<dl>
+						<dt>
+							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">投资赎回-待办任务</font>共有:
+							<font id="investRedeemUnClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
+						</dt>
+						<dt>
+							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">投资赎回-受理任务</font>共有:
+							<font id="investRedeemClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
+						</dt>
+					</dl>
+				</li>				
 				<li id="loanOrderTaskMessage">
 					<span style="font-size: 10px;font-weight: bold;">*贷款</span>
 					<dl>
 						<dt>
-							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">代办任务</font>共有:
+							到目前为止您的<font style="font-weight: bold;font-size: 15px;" color="blue">待办任务</font>共有:
 							<font id="loanUnClaimCount" style="font-weight: bold;font-size: 20px;margin: 10px;" color="red"></font>个。
 						</dt>
 						<dt>

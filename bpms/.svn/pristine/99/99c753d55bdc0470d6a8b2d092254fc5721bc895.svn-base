@@ -1,0 +1,52 @@
+package com.bpms.service.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.activiti.engine.runtime.ProcessInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.bpms.model.InvestOrder;
+import com.bpms.service.InvestOrderHisService;
+import com.bpms.service.InvestOrderService;
+import com.bpms.service.InvestRedeemWorkFlowService;
+import com.bpms.service.OrderStatusService;
+import com.bpms.service.RoleService;
+import com.bpms.service.UserService;
+import com.bpms.service.WorkFlowService;
+import com.bpms.util.Constants;
+
+@Service("investRedeemWorkFlowService")
+public class InvestRedeemWorkFlowServiceImpl extends WorkFlowBaseServiceImpl implements InvestRedeemWorkFlowService{		
+
+	@Autowired
+	private InvestOrderService investOrderServiceImple;
+	@Autowired
+	private InvestOrderHisService investOrderHisService;
+	@Autowired
+	private OrderStatusService orderStatusService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private WorkFlowService workFlowService;
+	@Autowired
+	private RoleService roleService;	
+
+	@Override
+	public boolean saveStartProcess4InvestRedeem(InvestOrder investOrder) {		
+		//思路：将BPMN图中的Process整体ID(ProcessDefinitionKey)与investOrderId相结合，创造BUSINESS_KEY
+		//1、获取processDefinitionKey（即processDefinitionId）
+		String processDefinitionKey = "InvestRedeemProcess";
+		//2、获取Business_Key
+		String businessKey = processDefinitionKey + "." + investOrder.getInvestOrderId();
+		//3、定义流程变量
+		Map<String, Object> variables = new HashMap<String, Object>();
+		String userId = String.valueOf(Constants.getCurrendUser().getUserId());
+		variables.put(Constants.CURRENT_USER_KEY, userId);
+		//4、启动流程实例
+		ProcessInstance processInstance = this.runtimeService.startProcessInstanceByKey(processDefinitionKey, businessKey, variables);		
+		return (processInstance!=null) ? true : false;
+	}
+
+}

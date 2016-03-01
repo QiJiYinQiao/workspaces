@@ -1,0 +1,24 @@
+package com.bpms.service;
+
+import com.bpms.model.UserAndRole;
+
+
+/**
+ * 用户角色绑定的service
+ * 
+ * @author liuhh
+ *
+ */
+public interface UserAndRoleService {
+
+	/**
+	 * 保存用户角色的关系
+	 */
+	void saveUserAndRoles(UserAndRole userAndRole);
+	
+	/**
+	 * 查看用户的角色绑定关系是否已经存在,如果存在则不再进行编写
+	 * @param userAndRole
+	 */
+	UserAndRole isExistUserAndRoles(UserAndRole userAndRole);
+}
